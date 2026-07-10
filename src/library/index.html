@@ -1,0 +1,31 @@
+<!doctype html>
+<html lang="cs" data-theme="dark">
+<head>
+<meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><meta name="theme-color" content="#14395d">
+<meta http-equiv="Content-Security-Policy" content="default-src 'self'; script-src 'self'; style-src 'self'; img-src 'self' data:; connect-src 'self'; object-src 'none'; base-uri 'self'; form-action 'self'">
+<title>Knihovna · AI Studio GHRAB</title><link rel="manifest" href="../manifest.webmanifest"><link rel="icon" href="../assets/brand/icon-32.png" sizes="32x32"><link rel="stylesheet" href="../styles.css">
+</head>
+<body data-page="library" data-title-cs="Knihovna · AI Studio GHRAB" data-title-en="Library · AI Studio GHRAB">
+
+<a class="skip-link" href="#main" data-cs="Přejít na obsah" data-en="Skip to content">Přejít na obsah</a>
+<header class="site-header">
+  <a class="brand" href="../" aria-label="AI Studio GHRAB — domů"><img src="../assets/brand/brand-mark.svg" alt="" width="48" height="48"><span><strong>AI Studio GHRAB</strong><small data-cs="Gymnázium, Ostrava-Hrabůvka" data-en="Gymnázium, Ostrava-Hrabůvka">Gymnázium, Ostrava-Hrabůvka</small></span></a>
+  <button class="nav-toggle" type="button" aria-expanded="false" aria-controls="main-nav" data-cs-aria="Otevřít navigaci" data-en-aria="Open navigation">☰</button>
+  <nav id="main-nav" class="main-nav" aria-label="Hlavní navigace">
+    <a href="../" data-cs="Domů" data-en="Home">Domů</a><a href="../#applications" data-cs="Aplikace" data-en="Applications">Aplikace</a><a href="../automation/" data-nav="automation" data-cs="Automatizace" data-en="Automation">Automatizace</a><a href="../demo/" data-nav="demo" data-cs="Ukázka" data-en="Demo">Ukázka</a><a href="../library/" data-nav="library" data-cs="Knihovna" data-en="Library">Knihovna</a><a href="../safety/" data-nav="safety" data-cs="Bezpečnost" data-en="Safety">Bezpečnost</a><a href="../pilot/" data-nav="pilot" data-cs="Pilot" data-en="Pilot">Pilot</a>
+  </nav>
+  <div class="header-actions"><div class="segmented" aria-label="Jazyk"><button type="button" data-lang="cs" aria-pressed="true">CZ</button><button type="button" data-lang="en" aria-pressed="false">EN</button></div><button class="icon-button" type="button" data-theme-toggle data-cs-aria="Přepnout vzhled" data-en-aria="Switch theme">◐</button></div>
+</header>
+
+<main id="main">
+<section class="page-hero shell"><p class="breadcrumb"><a href="../">AI Studio</a> / <span data-cs="Knihovna" data-en="Library">Knihovna</span></p><p class="eyebrow" data-cs="Ukázkový katalog" data-en="Sample catalogue">Ukázkový katalog</p><h1 data-cs="První materiály ve společném formátu." data-en="The first materials in a shared format.">První materiály ve společném formátu.</h1><p data-cs="Knihovna je zatím pouze pro čtení. Balíček lze stáhnout a prohlédnout; přímý import do aplikací bude následovat v další etapě." data-en="The library is currently read-only. Packages can be downloaded and inspected; direct import into applications will follow in the next phase.">Knihovna je zatím pouze pro čtení. Balíček lze stáhnout a prohlédnout; přímý import do aplikací bude následovat v další etapě.</p></section>
+<section class="section shell">
+<div class="library-toolbar"><div class="field"><label for="subject-filter" data-cs="Předmět" data-en="Subject">Předmět</label><select id="subject-filter"><option value="all" data-cs="Všechny" data-en="All">Všechny</option></select></div><div class="field"><label for="type-filter" data-cs="Typ" data-en="Type">Typ</label><select id="type-filter"><option value="all" data-cs="Všechny" data-en="All">Všechny</option></select></div><div class="field"><label for="library-search" data-cs="Hledat" data-en="Search">Hledat</label><input id="library-search" type="search" placeholder="Název nebo téma" data-cs-placeholder="Název nebo téma" data-en-placeholder="Title or topic"></div></div>
+<div id="library-grid" class="library-grid" aria-live="polite"></div>
+</section>
+</main>
+
+<footer class="site-footer"><div class="shell footer-inner"><div><strong>AI Studio GHRAB</strong><p data-cs="Serverless pilotní portál · verze __APP_VERSION__" data-en="Serverless pilot portal · version __APP_VERSION__">Serverless pilotní portál · verze __APP_VERSION__</p></div><p>© 2026 Daniel Baláž · Gymnázium, Ostrava-Hrabůvka</p></div></footer>
+<script src="../app.js" type="module"></script>
+<script src="./library.js" type="module"></script>
+</body></html>

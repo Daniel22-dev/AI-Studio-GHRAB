@@ -1,0 +1,32 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://ghrabuvka.cz/schemas/ai-studio-app-manifest-v1.schema.json",
+  "title": "AI Studio GHRAB application manifest",
+  "type": "object",
+  "required": ["schema","id","name","version","status","description","launchUrl","repository","icon","accent"],
+  "properties": {
+    "schema": {"const":"ai-studio-app-manifest-v1"},
+    "id": {"type":"string","pattern":"^[a-z][a-z0-9-]+$"},
+    "name": {"$ref":"#/$defs/i18n"},
+    "version": {"type":"string","pattern":"^\\d+\\.\\d+\\.\\d+(?:[-+][0-9A-Za-z.-]+)?$"},
+    "status": {"$ref":"#/$defs/i18n"},
+    "description": {"$ref":"#/$defs/i18n"},
+    "launchUrl": {"type":"string","format":"uri","pattern":"^https://"},
+    "repository": {"type":"string"},
+    "icon": {"type":"string"},
+    "accent": {"type":"string","pattern":"^#[0-9A-Fa-f]{6}$"},
+    "tags": {"type":"array","items":{"$ref":"#/$defs/i18n"}},
+    "capabilities": {"type":"array","items":{"type":"string"}},
+    "compatibility": {"type":"object"},
+    "publishedAt": {"type":"string","format":"date-time"}
+  },
+  "$defs": {
+    "i18n": {
+      "type":"object",
+      "required":["cs","en"],
+      "properties":{"cs":{"type":"string","minLength":1},"en":{"type":"string","minLength":1}},
+      "additionalProperties":false
+    }
+  },
+  "additionalProperties":true
+}

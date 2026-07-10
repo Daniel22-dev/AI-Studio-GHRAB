@@ -1,0 +1,86 @@
+<!doctype html>
+<html lang="cs" data-theme="dark">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width,initial-scale=1">
+  <meta name="description" content="AI Studio GHRAB — centrální portál školních digitálních a AI nástrojů.">
+  <meta name="theme-color" content="#030915">
+  <meta http-equiv="Content-Security-Policy" content="default-src 'self'; script-src 'self'; style-src 'self'; img-src 'self' data:; connect-src 'self'; object-src 'none'; base-uri 'self'; form-action 'self'">
+  <title>AI Studio GHRAB</title>
+  <link rel="manifest" href="./manifest.webmanifest">
+  <link rel="icon" href="./assets/brand/icon-32.png" sizes="32x32">
+  <link rel="apple-touch-icon" href="./assets/brand/apple-touch-icon.png">
+  <link rel="stylesheet" href="./styles.css">
+</head>
+<body data-page="home">
+<canvas id="starfield" class="starfield" aria-hidden="true"></canvas>
+<a class="skip-link" href="#main" data-cs="Přejít na obsah" data-en="Skip to content">Přejít na obsah</a>
+<header class="site-header cosmic-header">
+  <a class="brand" href="./" aria-label="AI Studio GHRAB — domů">
+    <span class="brand-orbit"><img src="./assets/brand/brand-mark.svg" alt="" width="46" height="46"></span>
+    <span><strong>AI Studio <em>GHRAB</em></strong><small data-cs="Centrální portál školních AI aplikací" data-en="Central portal for school AI applications">Centrální portál školních AI aplikací</small></span>
+  </a>
+  <button class="nav-toggle" type="button" aria-expanded="false" aria-controls="main-nav" data-cs-aria="Otevřít navigaci" data-en-aria="Open navigation">☰</button>
+  <nav id="main-nav" class="main-nav" aria-label="Hlavní navigace">
+    <a href="./" aria-current="page" data-cs="Domů" data-en="Home">Domů</a>
+    <a href="#applications" data-cs="Aplikace" data-en="Applications">Aplikace</a>
+    <a href="./automation/" data-cs="Automatizace" data-en="Automation">Automatizace</a>
+    <a href="./library/" data-cs="Knihovna" data-en="Library">Knihovna</a>
+    <a href="./safety/" data-cs="Bezpečnost" data-en="Safety">Bezpečnost</a>
+    <a href="./demo/" data-cs="Demo" data-en="Demo">Demo</a>
+    <a href="./pilot/" data-cs="Pilot" data-en="Pilot">Pilot</a>
+  </nav>
+  <div class="header-actions">
+    <div class="segmented" aria-label="Jazyk"><button type="button" data-lang="cs" aria-pressed="true">CZ</button><button type="button" data-lang="en" aria-pressed="false">EN</button></div>
+    <button class="icon-button" type="button" data-theme-toggle data-cs-aria="Přepnout jas rozhraní" data-en-aria="Switch interface brightness" title="Přepnout vzhled">◐</button>
+  </div>
+</header>
+
+<main id="main">
+  <section class="portal-hero shell-wide">
+    <div class="portal-title">
+      <p class="eyebrow" data-cs="PRO ŠKOLY · PRO VÝUKU · PRO BUDOUCNOST" data-en="FOR SCHOOLS · FOR LEARNING · FOR THE FUTURE">PRO ŠKOLY · PRO VÝUKU · PRO BUDOUCNOST</p>
+      <h1>AI Studio <span>GHRAB</span></h1>
+      <p class="portal-subtitle" data-cs="Jeden portál. Samostatné aplikace. Automaticky vždy aktuální." data-en="One portal. Independent applications. Automatically kept up to date.">Jeden portál. Samostatné aplikace. Automaticky vždy aktuální.</p>
+    </div>
+
+    <div id="applications" class="portal-stage" aria-label="Aplikace AI Studia">
+      <div id="portal-apps" class="portal-apps" aria-live="polite"></div>
+      <div class="portal-core-zone" aria-hidden="true">
+        <div class="energy-halo halo-a"></div><div class="energy-halo halo-b"></div>
+        <img class="portal-core-image" src="./assets/brand/portal-core.svg" alt="">
+        <div class="portal-beam"></div>
+        <div class="portal-platform"><span></span><span></span><span></span></div>
+        <div class="portal-state"><i></i><strong data-cs="PORTÁL AKTIVNÍ" data-en="PORTAL ACTIVE">PORTÁL AKTIVNÍ</strong></div>
+      </div>
+    </div>
+
+    <div class="studio-status panel-glass" id="studio-status">
+      <div><span class="status-light"></span><strong data-cs="Systém připraven" data-en="System ready">Systém připraven</strong><small id="sync-summary" data-cs="Načítám registr aplikací…" data-en="Loading application registry…">Načítám registr aplikací…</small></div>
+      <a href="./automation/" class="status-link" data-cs="Otevřít řídicí centrum →" data-en="Open control centre →">Otevřít řídicí centrum →</a>
+    </div>
+  </section>
+
+  <section class="mission-strip shell-wide" aria-label="Hlavní části AI Studia">
+    <a href="./library/" class="mission-item"><span class="mission-icon">▤</span><span><strong data-cs="Knihovna" data-en="Library">Knihovna</strong><small data-cs="Materiály a šablony" data-en="Resources and templates">Materiály a šablony</small></span></a>
+    <a href="./safety/" class="mission-item"><span class="mission-icon">⬡</span><span><strong data-cs="Bezpečnost" data-en="Safety">Bezpečnost</strong><small data-cs="Pravidla a anonymizace" data-en="Rules and anonymisation">Pravidla a anonymizace</small></span></a>
+    <a href="./demo/" class="mission-item"><span class="mission-icon">▶</span><span><strong>Demo</strong><small data-cs="Pětiminutová ukázka" data-en="Five-minute demonstration">Pětiminutová ukázka</small></span></a>
+    <a href="./automation/" class="mission-item"><span class="mission-icon">⟳</span><span><strong data-cs="Automatizace" data-en="Automation">Automatizace</strong><small data-cs="Verze a synchronizace" data-en="Versions and synchronisation">Verze a synchronizace</small></span></a>
+  </section>
+
+  <section class="section shell future-section">
+    <div class="section-heading">
+      <div><p class="eyebrow" data-cs="ROZŠIŘITELNÝ EKOSYSTÉM" data-en="EXTENSIBLE ECOSYSTEM">ROZŠIŘITELNÝ EKOSYSTÉM</p><h2 data-cs="Nová aplikace se připojí jako další destinace." data-en="A new application joins as another destination.">Nová aplikace se připojí jako další destinace.</h2></div>
+      <p data-cs="AI Studio neobsahuje kopie aplikací. Čte jejich ověřené manifesty, zobrazuje aktuální verze a směruje učitele do samostatných repozitářů." data-en="AI Studio does not contain copies of the applications. It reads their verified manifests, displays current versions and routes teachers to independent repositories.">AI Studio neobsahuje kopie aplikací. Čte jejich ověřené manifesty, zobrazuje aktuální verze a směruje učitele do samostatných repozitářů.</p>
+    </div>
+    <div class="future-grid">
+      <article class="future-card"><span>01</span><h3 data-cs="Samostatný vývoj" data-en="Independent development">Samostatný vývoj</h3><p data-cs="Každý nástroj se aktualizuje a testuje bez rizika pro ostatní." data-en="Each tool is updated and tested without risking the others.">Každý nástroj se aktualizuje a testuje bez rizika pro ostatní.</p></article>
+      <article class="future-card"><span>02</span><h3 data-cs="Automatická synchronizace" data-en="Automatic synchronisation">Automatická synchronizace</h3><p data-cs="Po vydání nové verze se portál obnoví okamžitě nebo při pravidelné kontrole." data-en="After a new release, the portal refreshes immediately or during its scheduled check.">Po vydání nové verze se portál obnoví okamžitě nebo při pravidelné kontrole.</p></article>
+      <article class="future-card"><span>03</span><h3 data-cs="Připraveno pro server" data-en="Server-ready">Připraveno pro server</h3><p data-cs="Dnešní manifesty se později mohou napojit na školní přihlášení, databázi a knihovnu." data-en="Today's manifests can later connect to school sign-in, a database and a library.">Dnešní manifesty se později mohou napojit na školní přihlášení, databázi a knihovnu.</p></article>
+    </div>
+  </section>
+</main>
+<footer class="site-footer"><div class="shell-wide footer-inner"><div><strong>AI Studio GHRAB</strong><p data-cs="Serverless školní portál · verze __APP_VERSION__" data-en="Serverless school portal · version __APP_VERSION__">Serverless školní portál · verze __APP_VERSION__</p></div><p>© 2026 Daniel Baláž · Gymnázium, Ostrava-Hrabůvka</p></div></footer>
+<script src="./app.js" type="module"></script>
+</body>
+</html>

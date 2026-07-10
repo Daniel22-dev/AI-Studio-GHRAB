@@ -1,0 +1,122 @@
+[
+  {
+    "id": "generator",
+    "name": {
+      "cs": "Generátor interaktivních testů",
+      "en": "Interactive Test Generator"
+    },
+    "version": "7.0.1",
+    "status": {
+      "cs": "Připraveno pro pilot",
+      "en": "Pilot-ready"
+    },
+    "description": {
+      "cs": "Tvorba procvičování a klasifikovaných testů, variant, kódů i bezpečného offline odevzdání.",
+      "en": "Create practice and graded tests, variants, access codes and secure offline submissions."
+    },
+    "launchUrl": "https://daniel22-dev.github.io/generator-testu/",
+    "icon": "assets/apps/generator.png",
+    "tint": "rgba(31,95,140,.13)",
+    "demoStep": "generator",
+    "tags": [
+      {
+        "cs": "Testování",
+        "en": "Assessment"
+      },
+      {
+        "cs": "AJ · ŠJ · NJ · ČJ",
+        "en": "EN · ES · DE · CS"
+      }
+    ]
+  },
+  {
+    "id": "differentiator",
+    "name": {
+      "cs": "Diferenciátor",
+      "en": "Differentiator"
+    },
+    "version": "1.0.0",
+    "status": {
+      "cs": "Připraveno pro pilot",
+      "en": "Pilot-ready"
+    },
+    "description": {
+      "cs": "Převádí jeden materiál do pedagogicky smysluplných variant pro různé potřeby žáků.",
+      "en": "Transforms one resource into pedagogically meaningful variants for different learner needs."
+    },
+    "launchUrl": "https://daniel22-dev.github.io/Skolni-aplikace/diferenciator/",
+    "icon": "assets/apps/differentiator.png",
+    "tint": "rgba(37,126,99,.13)",
+    "demoStep": "differentiator",
+    "tags": [
+      {
+        "cs": "Diferenciace",
+        "en": "Differentiation"
+      },
+      {
+        "cs": "Pracovní listy",
+        "en": "Worksheets"
+      }
+    ]
+  },
+  {
+    "id": "ludus",
+    "name": {
+      "cs": "LUDUS",
+      "en": "LUDUS"
+    },
+    "version": "1.14.0",
+    "status": {
+      "cs": "Produkční jádro",
+      "en": "Production core"
+    },
+    "description": {
+      "cs": "Dílna výukových her, která převádí učivo do různých herních světů a mechanik.",
+      "en": "A learning-game workshop that transforms content into different game worlds and mechanics."
+    },
+    "launchUrl": "https://daniel22-dev.github.io/Ludus/",
+    "icon": "assets/apps/ludus.png",
+    "tint": "rgba(125,74,190,.14)",
+    "demoStep": "ludus",
+    "tags": [
+      {
+        "cs": "Gamifikace",
+        "en": "Gamification"
+      },
+      {
+        "cs": "Týmová výuka",
+        "en": "Team learning"
+      }
+    ]
+  },
+  {
+    "id": "correspondence",
+    "name": {
+      "cs": "Korespondenční asistent",
+      "en": "Correspondence Assistant"
+    },
+    "version": "4.0.0",
+    "status": {
+      "cs": "Připraveno pro pilot",
+      "en": "Pilot-ready"
+    },
+    "description": {
+      "cs": "Pomáhá rozebrat příchozí zprávu, anonymizovat ji a připravit profesionální školní odpověď.",
+      "en": "Helps analyse an incoming message, anonymise it and prepare a professional school reply."
+    },
+    "launchUrl": "https://daniel22-dev.github.io/Skolni-aplikace/korespondencni-asistent/",
+    "icon": "assets/apps/correspondence.png",
+    "tint": "rgba(207,128,34,.14)",
+    "demoStep": "communication",
+    "tags": [
+      {
+        "cs": "Komunikace",
+        "en": "Communication"
+      },
+      {
+        "cs": "Anonymizace",
+        "en": "Anonymisation"
+      }
+    ]
+  }
+]

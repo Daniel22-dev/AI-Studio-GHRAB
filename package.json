@@ -1,0 +1,17 @@
+{
+  "name": "ai-studio-ghrab",
+  "version": "0.2.0",
+  "private": true,
+  "description": "Serverless portál školních aplikací Gymnázia, Ostrava-Hrabůvka s automatickou synchronizací manifestů",
+  "type": "module",
+  "scripts": {
+    "sync": "node scripts/sync-registry.mjs",
+    "sync:offline": "node scripts/sync-registry.mjs --offline",
+    "build": "node scripts/build.mjs",
+    "test": "node scripts/test.mjs",
+    "check": "node scripts/test.mjs"
+  },
+  "engines": {
+    "node": ">=18"
+  }
+}
