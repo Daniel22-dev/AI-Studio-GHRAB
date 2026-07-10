@@ -1,0 +1,184 @@
+{
+  "schema": "ai-studio-changelog-v1",
+  "current": "0.5.1",
+  "items": [
+    {
+      "version": "0.5.1",
+      "date": "2026-07-10",
+      "title": {
+        "cs": "Zpevnění před pilotem podle nezávislého hloubkového auditu",
+        "en": "Pre-pilot hardening after an independent deep audit"
+      },
+      "changes": [
+        {
+          "cs": "Sjednoceny pilotní statusy ve Studiu i ve zdrojových manifestech; automatická validace nyní odmítne předčasné označení produkčního školního provozu.",
+          "en": "Unified pilot statuses in Studio and source manifests; automated validation now rejects premature production-school-operation wording."
+        },
+        {
+          "cs": "Veškeré zápisy do místního úložiště jsou chráněny proti zaplnění nebo zablokování; uživatel dostane srozumitelnou zprávu a není klamně informován o úspěšném uložení.",
+          "en": "All local-storage writes are protected against full or blocked storage; users receive a clear message and are not falsely told that saving succeeded."
+        },
+        {
+          "cs": "Pracovní tok automaticky ukládá rozpracovaný koncept, umí jej obnovit a před zavřením upozorní na neuložené změny.",
+          "en": "Workflow now autosaves and restores drafts and warns before closing with unsaved changes."
+        },
+        {
+          "cs": "Kontrola anonymních exportů používá skutečné exportní funkce s testovacími citlivými daty; CI testuje stejnou transformaci.",
+          "en": "Anonymous-export checks now use real export functions with poisoned sensitive data; CI tests the same transformation."
+        },
+        {
+          "cs": "Report odděluje minuty vykázané učitelem od automatického orientačního odhadu.",
+          "en": "Reports separate teacher-reported minutes from automatic indicative estimates."
+        },
+        {
+          "cs": "Zpevněny integrační adaptéry: validace materiálu, bezpečné ukládání, přenos návratové adresy Studia a tvorba bannerů bez innerHTML.",
+          "en": "Hardened integration adapters with material validation, safe storage, return-URL handoff and banner construction without innerHTML."
+        },
+        {
+          "cs": "Vyčištěn distribuční balík Školních aplikací od zastaralých sestavených artefaktů a doplněna kontrola proti jejich návratu.",
+          "en": "Cleaned stale built artefacts from the School Apps source package and added a regression guard."
+        },
+        {
+          "cs": "Aktualizována bezpečnostní, serverová a provozní dokumentace včetně sdíleného originu, GitHub synchronizace a kontinuity vlastnictví repozitářů.",
+          "en": "Updated security, server and operations documentation, including shared origin, GitHub synchronisation and repository ownership continuity."
+        }
+      ]
+    },
+    {
+      "version": "0.5.0",
+      "date": "2026-07-10",
+      "title": {
+        "cs": "Bezpečné exporty, lokální proškolení a rozšířená diagnostika",
+        "en": "Safe exports, local training demo and expanded diagnostics"
+      },
+      "changes": [
+        {
+          "cs": "Opraveny anonymní exporty: neexportují obsah pracovního prostoru, prompty, texty materiálů, názvy materiálů ani volné poznámky.",
+          "en": "Fixed anonymous exports: workspace content, prompts, resource text, resource titles and free notes are not exported."
+        },
+        {
+          "cs": "Doplněn lokální demonstrační režim proškolení pro serverless verzi včetně zámků aplikací a jasného upozornění, že skutečné vynucení musí řešit server.",
+          "en": "Added a local training demo for the serverless version, including app locks and a clear notice that real enforcement requires a server."
+        },
+        {
+          "cs": "Na telefonu zůstává dostupný přepínač jazyka CZ/EN.",
+          "en": "The CZ/EN language switch remains available on mobile."
+        },
+        {
+          "cs": "Rozšířena Kontrola Studia o bezpečnost exportů, model oprávnění, service worker, jazykový přepínač a lokální pilotní data.",
+          "en": "Expanded Studio Check with export safety, permission model, service worker, language switch and local pilot data."
+        },
+        {
+          "cs": "Připraven model Top 4 aplikací: při růstu portálu zůstanou kolem jádra čtyři prioritní aplikace, ostatní budou v katalogu a uživatel si je může připnout.",
+          "en": "Prepared the Top 4 app model: as the portal grows, four priority apps remain around the core, while others move to a catalogue and can be pinned."
+        },
+        {
+          "cs": "Sjednoceno zápatí podle dohodnuté formulace Autor a vývojový garant / Školní projekt.",
+          "en": "Unified footer with the agreed Author and development guarantor / School project wording."
+        }
+      ]
+    },
+    {
+      "version": "0.4.0",
+      "date": "2026-07-10",
+      "title": {
+        "cs": "Profesionální audit, diagnostika a serverová připravenost",
+        "en": "Professional audit, diagnostics and server readiness"
+      },
+      "changes": [
+        {
+          "cs": "Přidána samostatná stránka Změny s přehledným changelogem přímo v aplikaci.",
+          "en": "Added a standalone Changes page with a clear changelog inside the application."
+        },
+        {
+          "cs": "Přidána stránka Kontrola Studia pro rychlý test registru, ikon, lokálního úložiště, handoffu, PWA a statistických dat.",
+          "en": "Added a Studio Check page for quick testing of the registry, icons, local storage, handoff, PWA and statistics."
+        },
+        {
+          "cs": "Doplněn konfigurační model proškolení a budoucích serverových oprávnění pro jednotlivé aplikace.",
+          "en": "Added a configuration model for training and future server permissions for each application."
+        },
+        {
+          "cs": "Rozšířena domovská stránka o schéma růstu brány při přibývání dalších aplikací.",
+          "en": "Expanded the home page with a growth model for the gateway as more applications are added."
+        },
+        {
+          "cs": "Sjednoceno zápatí: vlastník, správce, verze, changelog a kontrola Studia jsou dostupné na všech stránkách.",
+          "en": "Unified footer: owner, administrator, version, changelog and Studio Check are available on all pages."
+        },
+        {
+          "cs": "Rozšířeny automatické testy o kontrolu nových stránek, zápatí, PWA cache, oprávnění a duplicitních JavaScriptových polí.",
+          "en": "Expanded automated tests to cover new pages, footer, PWA cache, permissions and duplicate JavaScript keys."
+        }
+      ]
+    },
+    {
+      "version": "0.3.0",
+      "date": "2026-07-10",
+      "title": {
+        "cs": "Serverless pracovní tok a pilotní měření",
+        "en": "Serverless workflow and pilot measurement"
+      },
+      "changes": [
+        {
+          "cs": "Přidán společný formát GHRAB Material a krátkodobý handoff do dílčích aplikací.",
+          "en": "Added the GHRAB Material format and short-term handoff into individual applications."
+        },
+        {
+          "cs": "Přidán pilotní dashboard, anonymní report, knihovna a centrum bezpečnosti.",
+          "en": "Added pilot dashboard, anonymous report, library and safety centre."
+        },
+        {
+          "cs": "Doplněna automatizovaná synchronizace manifestů aplikací.",
+          "en": "Added automated application manifest synchronisation."
+        }
+      ]
+    },
+    {
+      "version": "0.2.1",
+      "date": "2026-07-10",
+      "title": {
+        "cs": "Výkon, animace a celá obrazovka",
+        "en": "Performance, motion and full screen"
+      },
+      "changes": [
+        {
+          "cs": "Doplněny režimy animací: automatické, plné, úsporné a vypnuté.",
+          "en": "Added motion modes: automatic, full, economy and off."
+        },
+        {
+          "cs": "Doplněno tlačítko celé obrazovky a úspornější mobilní režim.",
+          "en": "Added full-screen control and a more efficient mobile mode."
+        }
+      ]
+    },
+    {
+      "version": "0.2.0",
+      "date": "2026-07-10",
+      "title": {
+        "cs": "Portál a automatizace",
+        "en": "Portal and automation"
+      },
+      "changes": [
+        {
+          "cs": "Přidán sci-fi portál, automatizace a manifesty dílčích aplikací.",
+          "en": "Added sci-fi portal, automation and manifests for individual apps."
+        }
+      ]
+    },
+    {
+      "version": "0.1.0",
+      "date": "2026-07-10",
+      "title": {
+        "cs": "První serverless portál",
+        "en": "First serverless portal"
+      },
+      "changes": [
+        {
+          "cs": "Vznikl první společný rozcestník aplikací s PWA jádrem.",
+          "en": "Created the first common application gateway with a PWA core."
+        }
+      ]
+    }
+  ]
+}

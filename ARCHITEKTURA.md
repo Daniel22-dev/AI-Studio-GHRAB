@@ -1,41 +1,49 @@
-# Architektura 0.1.0
+# Architektura AI Studio GHRAB 0.5.1
 
-## Princip
+## Základní princip
 
-AI Studio GHRAB je statický portál. Čtyři aplikace zůstávají v samostatných repozitářích a portál je otevírá pomocí odkazů definovaných v `src/config/apps.json`.
+Studio je federovaný portál. Generátor, Diferenciátor, LUDUS a Korespondenční asistent zůstávají v samostatných repozitářích. Každá aplikace zveřejňuje `studio-manifest.json`; Studio jej načte, zkontroluje a sestaví registr. Pokud živý zdroj selže nebo deklaruje nepovolený stav, použije ověřený fallback.
 
 ```text
-AI Studio GHRAB (GitHub Pages)
-├── katalog aplikací
-├── Centrum bezpečnosti
-├── demo bez API
-├── čtecí knihovna
-├── pilotní lokální přehled
-└── schéma ghrab-material-v1
-        │
-        ├── Generátor testů
-        ├── Diferenciátor
-        ├── LUDUS
-        └── Korespondenční asistent
+zdrojové aplikace ── manifesty ──► AI Studio GHRAB
+                                      ├─ Top 4 kolem jádra
+                                      ├─ katalog ostatních aplikací
+                                      ├─ pracovní tok a knihovna
+                                      ├─ bezpečnost a diagnostika
+                                      └─ pilotní report
 ```
 
-## Úložiště
+## Top 4 a růst portálu
 
-Používá se pouze `localStorage` pro:
+Dokud jsou aplikace čtyři, zůstávají všechny kolem centrálního jádra. Při růstu portálu se kolem jádra zobrazí nejvýše čtyři uživatelské priority. Uživatel si je připne z katalogu; ostatní aplikace zůstanou dostupné v přehledném seznamu s filtrem, stavem proškolení a verzí. Na telefonu se používá svislý seznam „Moje aplikace“.
 
-- `ghrab.language`,
-- `ghrab.theme`,
-- `ghrab.pilot.launches`.
+## Výměnný formát a předávka
 
-Žádný obsah materiálů se v portálu neukládá.
+- `ghrab-material-v1` — přenositelný výukový materiál,
+- `ghrab-handoff-v1` — krátkodobá předávka s expirací 30 minut,
+- `ludus-content-v2` — herní obsah pro LUDUS.
+
+Předávka v serverless režimu používá `localStorage`, a proto vyžaduje stejný origin. Handoff nyní přenáší také návratovou adresu Studia. Adaptéry ji použijí s bezpečným fallbackem na repozitář `AI-Studio-GHRAB`.
+
+`sessionStorage` se pro přímou předávku nepoužívá: při otevření cílové aplikace do nové karty s `noopener` by nová karta neměla spolehlivě sdílený stav. Pro přechod mezi různými originy slouží `.ghrab.json`; v serverové etapě předávku převezme API.
+
+## Místní datové vrstvy
+
+- `ghrab.workspace.v1` — maximálně 20 materiálů,
+- `ghrab.workflow.draft.v1` — automaticky ukládaný koncept,
+- `ghrab.handoff.v1` — jedna krátkodobá předávka,
+- `ghrab.pilot.launches` — počty spuštění,
+- `ghrab.pilot.events.v2` — provozní události bez obsahu,
+- `ghrab.report.cases.v1` — anonymní případové studie.
+
+Všechny zápisy procházejí bezpečným helperem. Při zaplnění kvóty nebo zablokovaném úložišti se operace ukončí kontrolovaně a uživatel dostane srozumitelnou zprávu.
 
 ## Připravenost na backend
 
-Datové vrstvy mají záměrně samostatná rozhraní:
+Datová rozhraní jsou oddělena od úložiště. Budoucí backend nahradí lokální úložiště, lokální zámek proškolení a ruční sběr reportů, aniž by se musela měnit základní logika uživatelského rozhraní.
 
-- registr aplikací v JSON,
-- katalog knihovny v JSON,
-- výměnný formát v JSON Schema,
-- pilotní export v JSON.
+## Provozní kontrakty
 
-Budoucí backend může tyto soubory nahradit API bez zásadní změny uživatelského rozhraní.
+- Název repozitáře `AI-Studio-GHRAB` zůstává závazným fallbackem pro GitHub Pages.
+- Zdrojové manifesty nesmějí před formálním schválením školy označovat aplikaci jako školní produkční provoz.
+- Bridge 1.1 vyžaduje Studio 0.5.1 a zachovává kompatibilitu s formáty verze 1.0.

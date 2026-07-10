@@ -1,40 +1,10 @@
-let catalog = { items: [] };
-const grid = document.querySelector('#library-grid');
-const subject = document.querySelector('#subject-filter');
-const type = document.querySelector('#type-filter');
-const search = document.querySelector('#library-search');
-
-function label(value){ return typeof value === 'string' ? value : value?.[window.GHRAB.state.language] || ''; }
-function option(value, text){ const o=document.createElement('option'); o.value=value; o.textContent=text; return o; }
-function uniqueOptions(keyField, labelField){
-  const map = new Map();
-  catalog.items.forEach(item => map.set(item[keyField], label(item[labelField])));
-  return [...map.entries()].sort((a,b)=>a[1].localeCompare(b[1], window.GHRAB.state.language));
-}
-function renderFilters(){
-  const currentS=subject.value || 'all', currentT=type.value || 'all';
-  subject.replaceChildren(option('all', window.GHRAB.t('Všechny','All')));
-  type.replaceChildren(option('all', window.GHRAB.t('Všechny','All')));
-  uniqueOptions('subjectKey','subject').forEach(([key,text])=>subject.append(option(key,text)));
-  uniqueOptions('typeKey','type').forEach(([key,text])=>type.append(option(key,text)));
-  subject.value=[...subject.options].some(o=>o.value===currentS)?currentS:'all';
-  type.value=[...type.options].some(o=>o.value===currentT)?currentT:'all';
-}
-function render(){
-  const q=search.value.trim().toLocaleLowerCase();
-  const items=catalog.items.filter(i =>
-    (subject.value==='all'||i.subjectKey===subject.value) &&
-    (type.value==='all'||i.typeKey===type.value) &&
-    (!q || [i.title.cs,i.title.en,i.description.cs,i.description.en,i.topic.cs,i.topic.en].join(' ').toLocaleLowerCase().includes(q))
-  );
-  if(!items.length){grid.innerHTML=`<div class="empty-state">${window.GHRAB.t('Žádný materiál neodpovídá filtrům.','No material matches the filters.')}</div>`;return;}
-  grid.replaceChildren(...items.map(i=>{
-    const a=document.createElement('article'); a.className='material-card';
-    a.innerHTML=`<span class="quality">${label(i.quality)}</span><h2>${label(i.title)}</h2><p>${label(i.description)}</p><div class="app-meta"><span class="chip">${label(i.subject)}</span><span class="chip">${i.level}</span><span class="chip">${label(i.type)}</span></div><div class="app-actions"><a class="button primary" href="../${i.download}" download>${window.GHRAB.t('Stáhnout balíček','Download package')}</a><a class="button ghost" href="../schemas/ghrab-material-v1.schema.json" target="_blank" rel="noopener">${window.GHRAB.t('Zobrazit schéma','View schema')}</a></div>`;
-    return a;
-  }));
-}
-fetch('../library/catalog.json').then(r=>r.json()).then(data=>{catalog=data;renderFilters();render();}).catch(()=>grid.innerHTML=`<div class="empty-state">${window.GHRAB.t('Katalog se nepodařilo načíst.','The catalogue could not be loaded.')}</div>`);
-[subject,type,search].forEach(el=>el.addEventListener('input',render));
-document.addEventListener('ghrab:language',()=>{renderFilters();render();});
-document.querySelector('[data-nav="library"]')?.setAttribute('aria-current','page');
+const G=window.GHRAB;let catalog={items:[]};const grid=document.querySelector('#library-grid'),workspace=document.querySelector('#library-workspace'),subject=document.querySelector('#subject-filter'),type=document.querySelector('#type-filter'),search=document.querySelector('#library-search');
+const label=v=>typeof v==='string'?v:v?.[G.state.language]||v?.cs||v?.en||'';const option=(v,t)=>{const o=document.createElement('option');o.value=v;o.textContent=t;return o};
+function uniqueOptions(key,labelKey){const map=new Map();catalog.items.forEach(i=>map.set(i[key],label(i[labelKey])));return [...map.entries()].sort((a,b)=>a[1].localeCompare(b[1],G.state.language))}
+function renderFilters(){const s=subject.value||'all',t=type.value||'all';subject.replaceChildren(option('all',G.t('Všechny','All')));type.replaceChildren(option('all',G.t('Všechny','All')));uniqueOptions('subjectKey','subject').forEach(x=>subject.append(option(...x)));uniqueOptions('typeKey','type').forEach(x=>type.append(option(...x)));subject.value=[...subject.options].some(o=>o.value===s)?s:'all';type.value=[...type.options].some(o=>o.value===t)?t:'all'}
+async function loadMaterial(item){const r=await fetch(`../${item.download}`,{cache:'no-store'});if(!r.ok)throw new Error(String(r.status));return r.json()}
+function qualityClass(q){return q?.includes('komis')||q?.includes('Commission')?'commission':q?.includes('výuce')||q?.includes('Classroom')?'tested':q?.includes('učite')||q?.includes('Teacher')?'reviewed':'draft'}
+function card(item){const a=document.createElement('article');a.className='material-card';const q=document.createElement('span');q.className=`quality ${qualityClass(label(item.quality))}`;q.textContent=label(item.quality);const h=document.createElement('h2');h.textContent=label(item.title);const p=document.createElement('p');p.textContent=label(item.description);const meta=document.createElement('div');meta.className='app-meta';[label(item.subject),item.level,label(item.type)].forEach(x=>{const s=document.createElement('span');s.className='chip';s.textContent=x;meta.append(s)});const actions=document.createElement('div');actions.className='app-actions';const download=document.createElement('a');download.className='button ghost';download.href=`../${item.download}`;download.download='';download.textContent=G.t('Stáhnout','Download');const save=document.createElement('button');save.type='button';save.className='button secondary';save.textContent=G.t('Uložit do pracovního prostoru','Save to workspace');save.addEventListener('click',async()=>{try{const m=await loadMaterial(item);G.saveWorkspaceMaterial(m);renderWorkspace();G.showToast(G.t('Materiál byl uložen místně.','The resource was saved locally.'))}catch{G.showToast(G.t('Materiál se nepodařilo načíst.','The resource could not be loaded.'))}});const open=document.createElement('button');open.type='button';open.className='button primary';open.textContent=G.t('Otevřít v pracovním toku','Open in workflow');open.addEventListener('click',async()=>{try{const m=await loadMaterial(item);G.createHandoff('workflow',m);location.href='../workflow/'}catch{G.showToast(G.t('Materiál se nepodařilo načíst.','The resource could not be loaded.'))}});actions.append(open,save,download);a.append(q,h,p,meta,actions);return a}
+function render(){const q=search.value.trim().toLocaleLowerCase();const items=catalog.items.filter(i=>(subject.value==='all'||i.subjectKey===subject.value)&&(type.value==='all'||i.typeKey===type.value)&&(!q||[i.title.cs,i.title.en,i.description.cs,i.description.en,i.topic.cs,i.topic.en].join(' ').toLocaleLowerCase().includes(q)));if(!items.length){grid.innerHTML=`<div class="empty-state">${G.t('Žádný materiál neodpovídá filtrům.','No resource matches the filters.')}</div>`;return}grid.replaceChildren(...items.map(card))}
+function renderWorkspace(){const list=G.getWorkspace();if(!list.length){workspace.innerHTML=`<div class="empty-state">${G.t('Pracovní prostor je zatím prázdný.','The workspace is empty.')}</div>`;return}workspace.replaceChildren(...list.map(m=>{const a=document.createElement('article');a.className='workspace-card';const q=document.createElement('span');q.className='quality';q.textContent=m.quality?.status||'ai-draft';const h=document.createElement('h3');h.textContent=m.title||G.t('Bez názvu','Untitled');const p=document.createElement('p');p.textContent=[m.subject,m.level,m.yearGroup].filter(Boolean).join(' · ');const actions=document.createElement('div');actions.className='app-actions';const open=document.createElement('button');open.type='button';open.className='button primary';open.textContent=G.t('Otevřít','Open');open.addEventListener('click',()=>{G.createHandoff('workflow',m);location.href='../workflow/'});const exp=document.createElement('button');exp.type='button';exp.className='button ghost';exp.textContent=G.t('Export','Export');exp.addEventListener('click',()=>G.downloadJson(m,`${m.title||'material'}.ghrab.json`));actions.append(open,exp);a.append(q,h,p,actions);return a}))}
+fetch('../library/catalog.json').then(r=>r.json()).then(d=>{catalog=d;renderFilters();render()}).catch(()=>grid.innerHTML=`<div class="empty-state">${G.t('Katalog se nepodařilo načíst.','The catalogue could not be loaded.')}</div>`);[subject,type,search].forEach(el=>el.addEventListener('input',render));document.querySelector('#library-import').addEventListener('change',async e=>{const f=e.target.files?.[0];if(!f)return;try{const m=JSON.parse(await f.text());if(m.schema!=='ghrab-material-v1')throw new Error();G.saveWorkspaceMaterial(m);renderWorkspace();G.showToast(G.t('Vlastní balíček byl přidán.','Your package was added.'))}catch{G.showToast(G.t('Soubor není platný GHRAB Material v1.','The file is not a valid GHRAB Material v1 package.'))}e.target.value=''});document.addEventListener('ghrab:language',()=>{renderFilters();render();renderWorkspace()});document.querySelector('[data-nav="library"]')?.setAttribute('aria-current','page');renderWorkspace();

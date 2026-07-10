@@ -1,0 +1,33 @@
+<!doctype html>
+<html lang="cs" data-theme="dark">
+<head>
+<meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><meta name="theme-color" content="#14395d">
+<meta http-equiv="Content-Security-Policy" content="default-src 'self'; script-src 'self'; style-src 'self'; img-src 'self' data:; connect-src 'self'; object-src 'none'; base-uri 'self'; form-action 'self'">
+<title>Kontrola Studia · AI Studio GHRAB</title><link rel="manifest" href="../manifest.webmanifest"><link rel="icon" href="../assets/brand/icon-32.png" sizes="32x32"><link rel="stylesheet" href="../styles.css">
+</head>
+<body data-page="tests" data-title-cs="Kontrola Studia · AI Studio GHRAB" data-title-en="Studio check · AI Studio GHRAB">
+<a class="skip-link" href="#main" data-cs="Přejít na obsah" data-en="Skip to content">Přejít na obsah</a>
+<header class="site-header cosmic-header">
+  <a class="brand" href="../" aria-label="AI Studio GHRAB — domů"><span class="brand-orbit"><img src="../assets/brand/brand-mark.svg" alt="" width="46" height="46"></span><span><strong>AI Studio <em>GHRAB</em></strong><small data-cs="Kontrolovaný školní portál" data-en="Controlled school portal">Kontrolovaný školní portál</small></span></a>
+  <button class="nav-toggle" type="button" aria-expanded="false" aria-controls="main-nav" data-cs-aria="Otevřít navigaci" data-en-aria="Open navigation">☰</button>
+  <nav id="main-nav" class="main-nav" aria-label="Hlavní navigace"><a href="../" data-cs="Domů" data-en="Home">Domů</a><a href="../workflow/" data-nav="workflow" data-cs="Pracovní tok" data-en="Workflow">Pracovní tok</a><a href="../library/" data-nav="library" data-cs="Knihovna" data-en="Library">Knihovna</a><a href="../automation/" data-nav="automation" data-cs="Automatizace" data-en="Automation">Automatizace</a><a href="../safety/" data-nav="safety" data-cs="Bezpečnost" data-en="Safety">Bezpečnost</a><a href="../demo/" data-nav="demo" data-cs="Demo" data-en="Demo">Demo</a><a href="../pilot/" data-nav="pilot" data-cs="Pilot" data-en="Pilot">Pilot</a></nav>
+  <div class="header-actions"><div class="segmented" aria-label="Jazyk"><button type="button" data-lang="cs" aria-pressed="true">CZ</button><button type="button" data-lang="en" aria-pressed="false">EN</button></div><button class="icon-button" type="button" data-theme-toggle data-cs-aria="Přepnout jas rozhraní" data-en-aria="Switch interface brightness">◐</button></div>
+</header>
+<main id="main">
+<section class="page-hero shell"><p class="breadcrumb"><a href="../">AI Studio</a> / <span data-cs="Kontrola Studia" data-en="Studio check">Kontrola Studia</span></p><p class="eyebrow" data-cs="DIAGNOSTIKA" data-en="DIAGNOSTICS">DIAGNOSTIKA</p><h1 data-cs="Rychlý test před ukázkou nebo pilotem." data-en="A quick check before a demo or pilot.">Rychlý test před ukázkou nebo pilotem.</h1><p data-cs="Tato stránka provede bezpečné lokální testy. Neodesílá žádný obsah a nečte data z dílčích aplikací." data-en="This page runs safe local checks. It does not send content or read data from individual applications.">Tato stránka provede bezpečné lokální testy. Neodesílá žádný obsah a nečte data z dílčích aplikací.</p><div class="home-cta"><button id="run-tests" class="button primary" type="button" data-cs="Spustit kontrolu" data-en="Run check">Spustit kontrolu</button><a class="button ghost" href="../pilot/" data-cs="Otevřít pilotní dashboard" data-en="Open pilot dashboard">Otevřít pilotní dashboard</a></div></section>
+<section class="section shell-wide"><div id="test-results" class="test-grid" aria-live="polite"></div></section>
+<section class="section shell-wide access-panel panel">
+  <p class="eyebrow" data-cs="LOKÁLNÍ DEMO PROŠKOLENÍ" data-en="LOCAL TRAINING DEMO">LOKÁLNÍ DEMO PROŠKOLENÍ</p>
+  <h2 data-cs="Jak bude později fungovat přístup až po proškolení" data-en="How access after training will work later">Jak bude později fungovat přístup až po proškolení</h2>
+  <p class="safe-export-note" data-cs="Toto je pouze lokální ukázka pro verzi bez serveru. Skutečné oprávnění musí v oficiálním provozu ověřovat školní přihlášení, cílová aplikace i API brána." data-en="This is only a local demo for the serverless version. In official operation, real permissions must be checked by school sign-in, the target app and the API gateway.">Toto je pouze lokální ukázka pro verzi bez serveru. Skutečné oprávnění musí v oficiálním provozu ověřovat školní přihlášení, cílová aplikace i API brána.</p>
+  <div class="access-controls" role="group" aria-label="Režim přístupu">
+    <label class="access-option"><input type="radio" name="access-mode" value="open"><span><strong data-cs="Otevřený pilot" data-en="Open pilot">Otevřený pilot</strong><small data-cs="Aplikace jsou dostupné jako dnes. Vhodné pro ukázku vedení." data-en="Apps remain available as today. Suitable for leadership demo.">Aplikace jsou dostupné jako dnes. Vhodné pro ukázku vedení.</small></span></label>
+    <label class="access-option"><input type="radio" name="access-mode" value="training-demo"><span><strong data-cs="Simulovat proškolení" data-en="Simulate training">Simulovat proškolení</strong><small data-cs="Studio lokálně uzamkne aplikace, které nejsou zaškrtnuté níže." data-en="Studio locally locks apps that are not checked below.">Studio lokálně uzamkne aplikace, které nejsou zaškrtnuté níže.</small></span></label>
+  </div>
+  <div id="training-list" class="training-list"></div>
+</section>
+</main>
+<footer class="site-footer"><div class="shell-wide footer-inner"><div><strong>AI Studio GHRAB</strong><p data-cs="Autor a vývojový garant: Daniel Baláž · Školní projekt Gymnázia, Ostrava-Hrabůvka · verze __APP_VERSION__" data-en="Author and development guarantor: Daniel Baláž · School project of Gymnázium, Ostrava-Hrabůvka · version __APP_VERSION__">Autor a vývojový garant: Daniel Baláž · Školní projekt Gymnázia, Ostrava-Hrabůvka · verze __APP_VERSION__</p></div><nav class="footer-links" aria-label="Doplňková navigace"><a href="../changelog/" data-cs="Změny" data-en="Changes">Změny</a><a href="../tests/" data-cs="Kontrola Studia" data-en="Studio check">Kontrola Studia</a><a href="../safety/" data-cs="Bezpečnost" data-en="Safety">Bezpečnost</a></nav></div></footer>
+<script src="../app.js" type="module"></script>
+<script src="./tests.js" type="module"></script>
+</body></html>

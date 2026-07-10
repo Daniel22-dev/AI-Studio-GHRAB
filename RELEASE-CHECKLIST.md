@@ -1,28 +1,43 @@
-# Release checklist AI Studio GHRAB 0.2.0
+# Release checklist AI Studio GHRAB 0.5.1
 
-## Před vydáním
+## Blokující kontrola před nahráním
 
-- [x] Verze v `package.json` je 0.2.0.
-- [x] Registr obsahuje čtyři aktuální aplikace a je připraven na další.
-- [x] Verze odpovídají dodaným balíčkům: Generátor 7.0.4, Diferenciátor 1.0.1, LUDUS 1.14.1, Korespondenční asistent 4.0.1.
-- [x] Každý zdrojový repozitář vytváří veřejný `studio-manifest.json`.
-- [x] Studio umí online synchronizaci i bezpečný fallback.
-- [x] GitHub Actions podporují hodinovou i okamžitou aktualizaci.
-- [x] Portál neobsahuje API klíč ani jiná tajemství.
-- [x] Hlavní stránky mají českou a anglickou variantu.
-- [x] PWA manifest, service worker a ikony jsou součástí buildu.
-- [x] Knihovna obsahuje pouze fiktivní ukázková data.
-- [x] Pilotní přehled ukládá jen místní počet spuštění.
-- [x] `npm run sync:offline && npm test` prochází bez chyby.
-- [x] Workflow soubory jsou syntakticky platné.
+- [x] Všechny čtyři zdrojové manifesty používají pilotní, nikoli školní produkční status.
+- [x] Studio i buildy dílčích aplikací obsahují pojistku proti návratu statusu „produkční“.
+- [x] Školní aplikace neobsahují v kořeni zastaralé sestavené složky.
+- [x] Zápisy do `localStorage` jsou chráněny proti zaplnění a zablokování.
+- [x] Pracovní tok má autosave, obnovu konceptu a varování při zavření.
+- [x] Exportní sebetest používá skutečnou transformační funkci.
+- [x] Report odděluje učitelem vykázaný čas od automatického odhadu.
+- [x] PWA cache obsahuje sdílený modul bezpečného exportu.
+- [x] Bezpečnostní dokumentace vysvětluje sdílený origin a profily prohlížeče.
+- [x] Dokumentace je označena jako platná pro 0.5.1.
 
-## Po nasazení
+## Zdrojové aplikace
 
-- [ ] Nahrát nejprve tři zdrojové repozitáře aplikací.
-- [ ] V každém zdrojovém repozitáři zkontrolovat zelený deploy.
-- [ ] Ověřit dostupnost všech čtyř souborů `studio-manifest.json`.
-- [ ] Nahrát a nasadit repozitář `AI-Studio-GHRAB`.
-- [ ] Ve Studiu otevřít stránku **Automatizace** a potvrdit 4/4 zdrojů online.
-- [ ] Provést smoke test skutečných odkazů všech aplikací.
-- [ ] Otestovat instalaci PWA na počítači a mobilní zobrazení.
-- [ ] Volitelně nastavit `AI_STUDIO_DISPATCH_TOKEN` pro okamžitou synchronizaci.
+- [x] Generátor 7.0.5: bridge 1.1, validace materiálu, bezpečné zápisy, návratová URL, banner bez `innerHTML`.
+- [x] Diferenciátor 1.0.2: bridge 1.1 a pilotní manifest.
+- [x] Korespondenční asistent 4.0.2: bridge 1.1 a pilotní manifest.
+- [x] LUDUS 1.14.2: validace handoffu, bezpečné zápisy a pilotní manifest.
+- [x] Manifesty vyžadují Studio 0.5.1 a deklarují Studio Bridge 1.1.
+
+## Testy
+
+- [ ] `npm run sync:offline && npm test` ve Studiu.
+- [ ] `npm test` v Generátoru.
+- [ ] `npm run build && npm test` ve Školních aplikacích.
+- [ ] `npm test` v LUDUSu.
+- [ ] Ručně ověřit čtyři předávky na stejném originu.
+- [ ] Ručně ověřit import `.ghrab.json` mezi různými originy.
+- [ ] Ověřit Android Chrome a iPhone Safari na výšku i na šířku.
+
+## Po nahrání
+
+- [ ] Nejdříve nasadit tři repozitáře dílčích aplikací.
+- [ ] U Školních aplikací jednorázově odstranit staré kořenové sestavené artefakty podle návodu.
+- [ ] Poté nasadit Studio 0.5.1.
+- [ ] Ověřit zelený běh GitHub Actions.
+- [ ] Ve Studiu zkontrolovat `4/4` manifestů a režim synchronizace.
+- [ ] Spustit **Kontrolu Studia**.
+- [ ] Vyzkoušet anonymní JSON/CSV export a ruční předání správci.
+- [ ] Po delší neaktivitě zkontrolovat, zda GitHub nevypnul plánované workflow.

@@ -1,59 +1,27 @@
-# Pokročilá automatizace aktualizací
+# Automatizace aktualizací AI Studio GHRAB 0.5.1
 
-Studio funguje automaticky ve dvou vrstvách.
+## Denní bezpečnostní synchronizace
 
-## Vrstva 1 — bez tokenu
+Workflow Studia se jako pojistka spouští jednou denně v 05:17 UTC. Načte veřejné manifesty, ověří jejich schema, verzi, HTTPS adresy a pilotní status a následně provede testy a nasazení.
 
-Workflow AI Studia se spustí každou hodinu. Stáhne veřejné manifesty aplikací, ověří je a znovu nasadí portál. Tato vrstva nevyžaduje žádné tajné údaje.
+GitHub může v neaktivním veřejném repozitáři plánované workflow po 60 dnech bez aktivity automaticky vypnout. Po delší prázdninové pauze proto otevřete `Actions`, workflow znovu povolte a spusťte `Run workflow`.
 
-## Vrstva 2 — okamžitá aktualizace
+## Okamžitá aktualizace přes repository_dispatch
 
-Po úspěšném nasazení Generátoru, LUDUSu nebo společného repozitáře školních aplikací se odešle událost `repository_dispatch` do AI Studia. To spustí synchronizaci během několika sekund.
+Doporučený provoz nespoléhá jen na plán. Po nasazení Generátoru, LUDUSu nebo Školních aplikací odešle zdrojový repozitář událost `repository_dispatch` do Studia.
 
-### 1. Vytvoř jemně omezený token
+### Fine-grained token
 
-Na GitHubu otevři:
+1. GitHub: `Settings → Developer settings → Personal access tokens → Fine-grained tokens`.
+2. Přístup pouze k repozitáři `AI-Studio-GHRAB`.
+3. Oprávnění repozitáře **Contents: Read and write**.
+4. Token uložte ve zdrojových repozitářích jako secret `AI_STUDIO_DISPATCH_TOKEN`.
+5. Token nikdy nevkládejte do HTML, JavaScriptu, README ani manifestu.
 
-`Settings → Developer settings → Personal access tokens → Fine-grained tokens → Generate new token`
+## Ověření
 
-Nastav:
+1. Spusťte deploy jedné dílčí aplikace.
+2. V `AI-Studio-GHRAB → Actions` se musí objevit běh vyvolaný `repository_dispatch`.
+3. Ve Studiu otevřete **Automatizace** a zkontrolujte čas synchronizace i režim `live/mixed/fallback`.
 
-- **Token name:** `AI Studio dispatch`
-- **Repository access:** pouze repozitář `AI-Studio-GHRAB`
-- **Repository permissions → Contents:** `Read and write`
-- ostatní oprávnění ponech bez přístupu
-
-Token po vytvoření zkopíruj. Později už se znovu nezobrazí.
-
-### 2. Ulož token jako secret
-
-Stejný postup proveď ve třech zdrojových repozitářích:
-
-- `generator-testu`
-- `Skolni-aplikace`
-- `Ludus`
-
-V každém:
-
-`Settings → Secrets and variables → Actions → New repository secret`
-
-Název musí být přesně:
-
-`AI_STUDIO_DISPATCH_TOKEN`
-
-Do hodnoty vlož vytvořený token.
-
-### 3. Ověř funkci
-
-1. V jednom zdrojovém repozitáři spusť jeho deploy workflow ručně.
-2. Po úspěšném nasazení otevři Actions v `AI-Studio-GHRAB`.
-3. Měl by se objevit nový běh vyvolaný událostí `repository_dispatch`.
-4. Po dokončení otevři ve Studiu stránku **Automatizace**.
-
-## Bezpečnost
-
-- Token není v kódu ani v ZIPu.
-- Token má přístup pouze k jednomu repozitáři.
-- Zdrojové repozitáře mohou pouze vyvolat synchronizační událost.
-- Pokud token odstraníš, zůstane funkční hodinová synchronizace.
-- Token nikdy nevkládej do HTML, JavaScriptu, README ani manifestu.
+Pokud token není nastaven, denní synchronizace zůstane záložní cestou.

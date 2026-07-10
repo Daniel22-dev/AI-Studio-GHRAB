@@ -1,0 +1,114 @@
+{
+  "schema": "ai-studio-permissions-v1",
+  "mode": "server-ready-with-local-training-demo",
+  "note": {
+    "cs": "V serverless režimu lze zapnout lokální ukázku proškolení. Skutečné vynucení přístupů musí po spuštění školy řešit backend podle přihlášeného uživatele.",
+    "en": "In serverless mode a local training demo can be enabled. Real enforcement must be handled by the backend after school login is introduced."
+  },
+  "roles": [
+    {
+      "id": "admin",
+      "name": {
+        "cs": "Správce AI Studia",
+        "en": "AI Studio administrator"
+      },
+      "canUseAll": true,
+      "canManageTraining": true,
+      "canViewInternalStats": true
+    },
+    {
+      "id": "teacher-trained",
+      "name": {
+        "cs": "Proškolený učitel",
+        "en": "Trained teacher"
+      },
+      "canUseAll": false,
+      "canManageTraining": false,
+      "canViewInternalStats": false
+    },
+    {
+      "id": "teacher-untrained",
+      "name": {
+        "cs": "Učitel bez proškolení",
+        "en": "Untrained teacher"
+      },
+      "canUseAll": false,
+      "canManageTraining": false,
+      "canViewInternalStats": false
+    }
+  ],
+  "apps": {
+    "generator": {
+      "trainingRequired": true,
+      "trainingCode": "GEN-01",
+      "defaultState": "enabled-after-training",
+      "riskLevel": "medium",
+      "serverClaim": "app.generator.use"
+    },
+    "differentiator": {
+      "trainingRequired": true,
+      "trainingCode": "DIF-01",
+      "defaultState": "enabled-after-training",
+      "riskLevel": "medium",
+      "serverClaim": "app.differentiator.use"
+    },
+    "ludus": {
+      "trainingRequired": true,
+      "trainingCode": "LUD-01",
+      "defaultState": "pilot-only-after-training",
+      "riskLevel": "medium-high",
+      "serverClaim": "app.ludus.use"
+    },
+    "correspondence": {
+      "trainingRequired": true,
+      "trainingCode": "KOR-01",
+      "defaultState": "enabled-after-training",
+      "riskLevel": "medium-high",
+      "serverClaim": "app.correspondence.use"
+    }
+  },
+  "serverModel": [
+    {
+      "step": "login",
+      "cs": "Učitel se přihlásí školním účtem.",
+      "en": "A teacher signs in with a school account."
+    },
+    {
+      "step": "claims",
+      "cs": "Backend vrátí seznam oprávnění podle absolvovaných školení.",
+      "en": "The backend returns permissions based on completed training."
+    },
+    {
+      "step": "gate",
+      "cs": "Studio zobrazí a povolí pouze aplikace, na které má uživatel oprávnění.",
+      "en": "Studio shows and enables only applications the user is allowed to use."
+    },
+    {
+      "step": "audit",
+      "cs": "Do statistik se ukládají pouze anonymní agregace, nikoli obsah ani jména žáků.",
+      "en": "Only anonymous aggregates are stored for statistics, not content or student names."
+    }
+  ],
+  "localDemo": {
+    "storageKeys": [
+      "ghrab.access.mode.v1",
+      "ghrab.access.trainedApps.v1",
+      "ghrab.favoriteApps.v1"
+    ],
+    "cs": "Lokální demo může na jednom zařízení skrýt aplikace, na které není učitel označen jako proškolený. Nejde o bezpečnostní ochranu; přímý odkaz lze bez serveru obejít.",
+    "en": "The local demo can hide apps on one device if the teacher is not marked as trained. It is not a security boundary; direct links can bypass it without a server."
+  },
+  "serverEnforcement": {
+    "required": true,
+    "checks": [
+      "school_login",
+      "user_claims",
+      "studio_gate",
+      "app_gate",
+      "api_gateway",
+      "anonymous_aggregate_logs"
+    ],
+    "cs": "Oficiální provoz musí oprávnění kontrolovat v AI Studiu, v cílové aplikaci i na API bráně.",
+    "en": "Official operation must enforce permissions in AI Studio, in the target app and at the API gateway."
+  }
+}

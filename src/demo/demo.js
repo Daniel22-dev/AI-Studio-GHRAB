@@ -1,20 +1,4 @@
-const steps = ['source','differentiator','generator','ludus','communication'];
-let index = Math.max(0, steps.indexOf(location.hash.slice(1)));
-const buttons = [...document.querySelectorAll('[data-step]')];
-const slides = [...document.querySelectorAll('[data-slide]')];
-function show(next){
-  index = Math.max(0, Math.min(steps.length - 1, next));
-  const id = steps[index];
-  buttons.forEach(btn => btn.setAttribute('aria-current', btn.dataset.step === id ? 'step' : 'false'));
-  slides.forEach(slide => slide.classList.toggle('active', slide.dataset.slide === id));
-  history.replaceState(null,'',`#${id}`);
-  document.querySelector('#demo-prev').disabled = index === 0;
-  const nextBtn = document.querySelector('#demo-next');
-  nextBtn.disabled = index === steps.length - 1;
-  nextBtn.textContent = index === steps.length - 1 ? window.GHRAB.t('Hotovo','Done') : window.GHRAB.t('Další →','Next →');
-}
-buttons.forEach(btn => btn.addEventListener('click', () => show(steps.indexOf(btn.dataset.step))));
-document.querySelector('#demo-prev').addEventListener('click', () => show(index-1));
-document.querySelector('#demo-next').addEventListener('click', () => show(index+1));
-document.addEventListener('ghrab:language', () => show(index));
-document.querySelector('[data-nav="demo"]')?.setAttribute('aria-current','page'); show(index);
+const steps=['source','differentiator','generator','ludus','communication'];let index=Math.max(0,steps.indexOf(location.hash.slice(1))),timer=null,notes=false;const buttons=[...document.querySelectorAll('[data-step]')],slides=[...document.querySelectorAll('[data-slide]')],autoplay=document.querySelector('#demo-autoplay'),notesButton=document.querySelector('#demo-notes-toggle');
+function stopAuto(){if(timer){clearInterval(timer);timer=null}autoplay.textContent=window.GHRAB.t('▶ Spustit automaticky','▶ Start autoplay');autoplay.setAttribute('aria-pressed','false')}
+function show(next){index=Math.max(0,Math.min(steps.length-1,next));const id=steps[index];buttons.forEach(b=>b.setAttribute('aria-current',b.dataset.step===id?'step':'false'));slides.forEach(s=>s.classList.toggle('active',s.dataset.slide===id));history.replaceState(null,'',`#${id}`);document.querySelector('#demo-prev').disabled=index===0;const nextBtn=document.querySelector('#demo-next');nextBtn.disabled=index===steps.length-1;nextBtn.textContent=index===steps.length-1?window.GHRAB.t('Hotovo','Done'):window.GHRAB.t('Další →','Next →');document.querySelector('#demo-progress-bar').style.setProperty('--demo-progress',`${(index+1)/steps.length*100}%`);if(index===steps.length-1)stopAuto()}
+buttons.forEach(b=>b.addEventListener('click',()=>{stopAuto();show(steps.indexOf(b.dataset.step))}));document.querySelector('#demo-prev').addEventListener('click',()=>{stopAuto();show(index-1)});document.querySelector('#demo-next').addEventListener('click',()=>{stopAuto();show(index+1)});autoplay.addEventListener('click',()=>{if(timer){stopAuto();return}autoplay.textContent=window.GHRAB.t('⏸ Pozastavit','⏸ Pause');autoplay.setAttribute('aria-pressed','true');timer=setInterval(()=>show(index+1),12000)});notesButton.addEventListener('click',()=>{notes=!notes;document.documentElement.dataset.speakerNotes=String(notes);notesButton.setAttribute('aria-pressed',String(notes))});document.addEventListener('keydown',e=>{if(['ArrowRight','PageDown',' '].includes(e.key)){e.preventDefault();stopAuto();show(index+1)}if(['ArrowLeft','PageUp'].includes(e.key)){e.preventDefault();stopAuto();show(index-1)}if(e.key==='Home'){stopAuto();show(0)}if(e.key==='End'){stopAuto();show(steps.length-1)}});document.addEventListener('ghrab:language',()=>show(index));document.querySelector('[data-nav="demo"]')?.setAttribute('aria-current','page');show(index);

@@ -6,10 +6,10 @@
       "cs": "Generátor interaktivních testů",
       "en": "Interactive Test Generator"
     },
-    "version": "7.0.4",
+    "version": "7.0.5",
     "status": {
-      "cs": "Produkční serverless verze",
-      "en": "Production serverless release"
+      "cs": "Připraveno k řízenému pilotu",
+      "en": "Ready for controlled pilot"
     },
     "description": {
       "cs": "Tvorba procvičování a klasifikovaných testů, variant, kódů i bezpečného offline odevzdání.",
@@ -36,10 +36,11 @@
       "variants"
     ],
     "compatibility": {
-      "studioMinVersion": "0.2.0",
-      "materialSchema": "ghrab-material-v1"
+      "studioMinVersion": "0.5.1",
+      "materialSchema": "ghrab-material-v1",
+      "studioBridge": "1.1"
     },
-    "publishedAt": "2026-07-10T00:00:00.000Z"
+    "publishedAt": "2026-07-10T14:10:30.029Z"
   },
   {
     "schema": "ai-studio-app-manifest-v1",
@@ -48,10 +49,10 @@
       "cs": "Diferenciátor",
       "en": "Differentiator"
     },
-    "version": "1.0.1",
+    "version": "1.0.2",
     "status": {
-      "cs": "Produkční verze",
-      "en": "Production release"
+      "cs": "Připraveno k řízenému pilotu",
+      "en": "Ready for controlled pilot"
     },
     "description": {
       "cs": "Převádí jeden materiál do pedagogicky smysluplných variant pro různé potřeby žáků.",
@@ -78,10 +79,11 @@
       "pdf"
     ],
     "compatibility": {
-      "studioMinVersion": "0.2.0",
-      "materialSchema": "ghrab-material-v1"
+      "studioMinVersion": "0.5.1",
+      "materialSchema": "ghrab-material-v1",
+      "studioBridge": "1.1"
     },
-    "publishedAt": "2026-07-10T00:00:00.000Z"
+    "publishedAt": "2026-07-10T14:09:05.229Z"
   },
   {
     "schema": "ai-studio-app-manifest-v1",
@@ -90,10 +92,10 @@
       "cs": "LUDUS",
       "en": "LUDUS"
     },
-    "version": "1.14.1",
+    "version": "1.14.2",
     "status": {
-      "cs": "Produkční jádro",
-      "en": "Production core"
+      "cs": "Ověřováno v pilotu",
+      "en": "Being validated in pilot"
     },
     "description": {
       "cs": "Dílna výukových her, která převádí učivo do různých herních světů a mechanik.",
@@ -120,10 +122,11 @@
       "offline-export"
     ],
     "compatibility": {
-      "studioMinVersion": "0.2.0",
-      "materialSchema": "ghrab-material-v1"
+      "studioMinVersion": "0.5.1",
+      "materialSchema": "ghrab-material-v1",
+      "studioBridge": "1.1"
     },
-    "publishedAt": "2026-07-10T00:00:00.000Z"
+    "publishedAt": "2026-07-10T14:09:05.493Z"
   },
   {
     "schema": "ai-studio-app-manifest-v1",
@@ -132,10 +135,10 @@
       "cs": "Korespondenční asistent",
       "en": "Correspondence Assistant"
     },
-    "version": "4.0.1",
+    "version": "4.0.2",
     "status": {
-      "cs": "Produkční verze",
-      "en": "Production release"
+      "cs": "Pracovní pilotní verze",
+      "en": "Working pilot release"
     },
     "description": {
       "cs": "Pomáhá rozebrat příchozí zprávu, anonymizovat ji a připravit profesionální školní odpověď.",
@@ -162,8 +165,10 @@
       "templates"
     ],
     "compatibility": {
-      "studioMinVersion": "0.2.0"
+      "studioMinVersion": "0.5.1",
+      "materialSchema": "ghrab-material-v1",
+      "studioBridge": "1.1"
     },
-    "publishedAt": "2026-07-10T00:00:00.000Z"
+    "publishedAt": "2026-07-10T14:09:05.232Z"
   }
 ]

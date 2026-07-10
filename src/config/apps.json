@@ -5,10 +5,10 @@
       "cs": "Generátor interaktivních testů",
       "en": "Interactive Test Generator"
     },
-    "version": "7.0.1",
+    "version": "7.0.5",
     "status": {
-      "cs": "Připraveno pro pilot",
-      "en": "Pilot-ready"
+      "cs": "Připraveno k řízenému pilotu",
+      "en": "Ready for controlled pilot"
     },
     "description": {
       "cs": "Tvorba procvičování a klasifikovaných testů, variant, kódů i bezpečného offline odevzdání.",
@@ -16,8 +16,6 @@
     },
     "launchUrl": "https://daniel22-dev.github.io/generator-testu/",
     "icon": "assets/apps/generator.png",
-    "tint": "rgba(31,95,140,.13)",
-    "demoStep": "generator",
     "tags": [
       {
         "cs": "Testování",
@@ -27,7 +25,9 @@
         "cs": "AJ · ŠJ · NJ · ČJ",
         "en": "EN · ES · DE · CS"
       }
-    ]
+    ],
+    "tint": "rgba(31,95,140,.13)",
+    "demoStep": "generator"
   },
   {
     "id": "differentiator",
@@ -35,10 +35,10 @@
       "cs": "Diferenciátor",
       "en": "Differentiator"
     },
-    "version": "1.0.0",
+    "version": "1.0.2",
     "status": {
-      "cs": "Připraveno pro pilot",
-      "en": "Pilot-ready"
+      "cs": "Připraveno k řízenému pilotu",
+      "en": "Ready for controlled pilot"
     },
     "description": {
       "cs": "Převádí jeden materiál do pedagogicky smysluplných variant pro různé potřeby žáků.",
@@ -46,8 +46,6 @@
     },
     "launchUrl": "https://daniel22-dev.github.io/Skolni-aplikace/diferenciator/",
     "icon": "assets/apps/differentiator.png",
-    "tint": "rgba(37,126,99,.13)",
-    "demoStep": "differentiator",
     "tags": [
       {
         "cs": "Diferenciace",
@@ -57,7 +55,9 @@
         "cs": "Pracovní listy",
         "en": "Worksheets"
       }
-    ]
+    ],
+    "tint": "rgba(37,126,99,.13)",
+    "demoStep": "differentiator"
   },
   {
     "id": "ludus",
@@ -65,10 +65,10 @@
       "cs": "LUDUS",
       "en": "LUDUS"
     },
-    "version": "1.14.0",
+    "version": "1.14.2",
     "status": {
-      "cs": "Produkční jádro",
-      "en": "Production core"
+      "cs": "Ověřováno v pilotu",
+      "en": "Being validated in pilot"
     },
     "description": {
       "cs": "Dílna výukových her, která převádí učivo do různých herních světů a mechanik.",
@@ -76,8 +76,6 @@
     },
     "launchUrl": "https://daniel22-dev.github.io/Ludus/",
     "icon": "assets/apps/ludus.png",
-    "tint": "rgba(125,74,190,.14)",
-    "demoStep": "ludus",
     "tags": [
       {
         "cs": "Gamifikace",
@@ -87,7 +85,9 @@
         "cs": "Týmová výuka",
         "en": "Team learning"
       }
-    ]
+    ],
+    "tint": "rgba(125,74,190,.14)",
+    "demoStep": "ludus"
   },
   {
     "id": "correspondence",
@@ -95,10 +95,10 @@
       "cs": "Korespondenční asistent",
       "en": "Correspondence Assistant"
     },
-    "version": "4.0.0",
+    "version": "4.0.2",
     "status": {
-      "cs": "Připraveno pro pilot",
-      "en": "Pilot-ready"
+      "cs": "Pracovní pilotní verze",
+      "en": "Working pilot release"
     },
     "description": {
       "cs": "Pomáhá rozebrat příchozí zprávu, anonymizovat ji a připravit profesionální školní odpověď.",
@@ -106,8 +106,6 @@
     },
     "launchUrl": "https://daniel22-dev.github.io/Skolni-aplikace/korespondencni-asistent/",
     "icon": "assets/apps/correspondence.png",
-    "tint": "rgba(207,128,34,.14)",
-    "demoStep": "communication",
     "tags": [
       {
         "cs": "Komunikace",
@@ -117,6 +115,8 @@
         "cs": "Anonymizace",
         "en": "Anonymisation"
       }
-    ]
+    ],
+    "tint": "rgba(207,128,34,.14)",
+    "demoStep": "communication"
   }
 ]

@@ -1,35 +1,52 @@
-# Bezpečnostní hranice serverless verze
+# Bezpečnostní hranice AI Studio GHRAB 0.5.1
 
-## Co portál dělá
+## Co serverless portál dělá
 
-- načítá pouze vlastní statické soubory,
-- otevírá samostatné aplikace přes HTTPS odkazy,
-- ukládá do prohlížeče jen jazyk, vzhled a počet spuštění aplikací z portálu,
-- umožňuje uživateli lokální data vymazat nebo exportovat.
+- načítá vlastní statické soubory a veřejné manifesty aplikací,
+- ukládá nastavení, anonymní materiály, koncept a pilotní události do místního profilu prohlížeče,
+- umožňuje vše exportovat a lokální data vymazat,
+- používá striktní CSP, neobsahuje API klíče a neposílá vlastní analytiku třetím stranám.
 
-## Co portál nedělá
+## Co nedělá
 
-- nemá databázi ani backend,
 - nepřihlašuje uživatele,
-- neukládá osobní údaje,
-- neukládá obsah testů, e-mailů nebo pracovních listů,
-- neobsahuje společný API klíč,
-- neodesílá analytiku třetím stranám,
-- nezná výsledky žáků ani dokončené úkoly.
+- nevynucuje skutečná oprávnění,
+- nemá školní databázi ani centrální zálohu,
+- nesynchronizuje data mezi zařízeními,
+- neukládá prompty nebo obsah materiálů do pilotních exportů.
+
+## Sdílený origin a sdílené počítače
+
+Všechny aplikace hostované pod stejným originem `daniel22-dev.github.io` sdílejí technickou hranici místního úložiště. Proto:
+
+- učitel nesmí používat Studio v profilu prohlížeče určeném žákům nebo pro veřejné třídní hraní,
+- na sdíleném počítači se použije oddělený učitelský profil, režim hosta nebo se po práci vymažou místní data,
+- žákovské zařízení neslouží k přípravě materiálů ve Studiu,
+- do pracovního prostoru patří pouze anonymní, veřejný nebo smyšlený obsah,
+- `localStorage` není šifrovaný trezor.
+
+## Handoff
+
+Předávka je platná 30 minut a po převzetí se smaže. Funguje jen na stejném originu. Mezi různými doménami se používá ruční soubor `.ghrab.json`; po nasazení backendu se předávka nahradí serverovým API.
+
+## Anonymní pilotní export
+
+Export smí obsahovat pouze:
+
+- typ aplikace a události,
+- čas události,
+- počet spuštění,
+- výsledek operace,
+- hodnocení užitečnosti,
+- učitelem vykázané minuty,
+- oddělený automatický orientační odhad.
+
+Nesmí obsahovat jména, prompty, názvy materiálů, texty, studentské práce, volné poznámky ani identifikátory osob. Funkční regresní test používá syntetická „otrávená“ data a ověřuje skutečné exportní funkce.
 
 ## Pro pilot
 
-Do nástrojů se nesmí vkládat identifikovatelné zdravotní, kázeňské nebo jiné citlivé údaje. Práce žáků a školní korespondence musí být před odesláním externí AI službě anonymizována. Každý výstup AI musí před použitím zkontrolovat učitel.
+Každý výstup AI kontroluje učitel. Do externí AI služby nepatří identifikovatelné zdravotní, kázeňské, rodinné ani jiné citlivé údaje. Studentské práce a školní korespondence se anonymizují ještě před vložením.
 
 ## Budoucí serverová verze
 
-Před zavedením účtů, databáze nebo centrálního API je nutné vyřešit:
-
-- správce systému a odpovědnosti,
-- přihlášení školní identitou,
-- minimalizaci a dobu uchování dat,
-- oddělenou databázi,
-- zálohování a obnovu,
-- auditní logy,
-- bezpečnou správu tajemství,
-- schválený provozní a aktualizační proces.
+Před oficiálním provozem musí škola vyřešit přihlášení školní identitou, serverové vynucení proškolení, minimalizaci dat, dobu uchování, zálohování, auditní logy, správu tajemství, incidenty a odpovědnosti.

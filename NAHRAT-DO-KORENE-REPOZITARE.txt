@@ -1,0 +1,12 @@
+AI STUDIO GHRAB 0.3.0
+
+Nejdříve nahraj aktualizované zdrojové aplikace a až potom Studio.
+
+1. Rozbal ZIP.
+2. Na GitHubu otevři repozitář AI-Studio-GHRAB.
+3. Nahraj OBSAH této složky přímo do kořene repozitáře.
+4. Povol přepsání souborů a potvrď commit do větve main.
+5. Počkej na zelený běh v Actions.
+6. Proveď Ctrl+F5; na telefonu stránku zavři a znovu otevři.
+
+Podrobný postup je v NAHRANI-NA-GITHUB.md.
