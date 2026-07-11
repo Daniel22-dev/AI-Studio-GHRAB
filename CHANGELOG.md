@@ -1,5 +1,13 @@
 # Changelog
 
+## 0.6.1 — 2026-07-11
+
+- opravena absolutní adresa Studia v zamykací obrazovce,
+- aktualizovány verze všech čtyř chráněných aplikací v centrálním registru,
+- dokončena integrace ochrany přímých URL do Generátoru, Diferenciátoru, LUDUSu a Korespondenčního asistenta,
+- potvrzeno jednotné přihlášení správce i omezené přístupy učitelů,
+- zachováno volné použití exportovaných LUDUS her pro žáky.
+
 ## 0.6.0 — 2026-07-10
 
 - zavedena kryptograficky podepsaná bezserverová oprávnění a výchozí uzamčení aplikací,

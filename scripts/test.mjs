@@ -96,6 +96,9 @@ for(const file of sourceFiles.filter(f=>f.endsWith('.html'))){
 }
 for(const file of ['automation/automation.js','pilot/pilot.js','report/report.js','demo/demo.js','changelog/changelog.js','tests/tests.js']){const text=await readFile(path.join(src,file),'utf8');if(!text.includes('accessReady')||!text.includes('isAdmin'))fail(`${file} nemá správcovskou bránu.`)}
 for(const file of ['integration/generator-access-bootstrap.example.js','integration/differentiator-access-bootstrap.example.js','integration/ludus-access-bootstrap.example.js','integration/correspondence-access-bootstrap.example.js'])if(!(await exists(path.join(src,file))))fail(`Chybí integrační šablona ${file}.`);
+const appGuardText=await readFile(path.join(src,'access/app-guard.js'),'utf8');
+if(!appGuardText.includes("new URL(options.studioUrl || '../', location.href)"))fail('app-guard nepřevádí relativní adresu Studia na úplnou URL.');
+if(new URL('/AI-Studio-GHRAB/','https://daniel22-dev.github.io/generator-testu/').href!=='https://daniel22-dev.github.io/AI-Studio-GHRAB/')fail('Regresní test adresy Studia selhal.');
 
 const directStorageWriters=sourceFiles.filter(file=>file.endsWith('.js')&&!['app.js','bridge/studio-bridge.js','tests/tests.js','access/access-control.js','tools/access-issuer/issuer.js'].some(s=>file.endsWith(path.join('src',s))));
 for(const file of directStorageWriters){const text=await readFile(file,'utf8');if(text.includes('localStorage.setItem('))fail(`Přímý zápis do localStorage mimo bezpečný modul: ${path.relative(root,file)}`)}

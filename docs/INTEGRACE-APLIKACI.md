@@ -1,34 +1,21 @@
-# Integrace samostatných aplikací — AI Studio 0.6.0
+# Integrace samostatných aplikací — AI Studio 0.6.1
 
-## Princip
+## Aktuální stav
 
-Aplikace zůstávají samostatně nasaditelné. Studio jim poskytuje tři společné vrstvy:
+Integrace je dokončena v Generátoru 7.0.6, Diferenciátoru 1.0.3, LUDUSu 1.14.3 a Korespondenčním asistentovi 4.0.3. Ochrana se nevztahuje jen na karty ve Studiu; probíhá také při přímém otevření každé aplikace.
 
-1. veřejný manifest pro katalog a synchronizaci,
-2. anonymní materiál a krátkodobý handoff,
-3. kontrolu podepsaného přístupu po školení.
+## Jak funguje jednotné přihlášení
+
+AI Studio i všechny aplikace běží pod originem `https://daniel22-dev.github.io`. Po aktivaci přístupu Studio uloží jediný podepsaný token do `localStorage` pod klíčem `ghrab.access.permit.v2`. Jednotlivé aplikace tento token pouze čtou a samy kryptograficky ověřují.
+
+- role `admin` otevírá všechny aplikace,
+- proškolený učitel otevře jen ID uvedená v poli `apps`,
+- chybějící, expirovaný, pozměněný nebo zneplatněný přístup se odmítne,
+- při nedostupnosti centrální konfigurace se aplikace neotevře.
 
 ## Povinné pořadí spuštění
 
-Cílová aplikace nesmí načíst vlastní hlavní modul dříve, než proběhne kontrola oprávnění. Použijte bootstrap v `src/integration/`:
-
-```js
-import { protectApp } from 'https://daniel22-dev.github.io/AI-Studio-GHRAB/access/app-guard.js';
-const allowed = await protectApp('generator', {
-  studioUrl: 'https://daniel22-dev.github.io/AI-Studio-GHRAB/'
-});
-if (allowed) await import('./app.js');
-```
-
-Pro každou aplikaci změňte `appId` a cestu k jejímu skutečnému vstupnímu modulu. Bez této změny chrání Studio pouze spuštění z rozcestníku, nikoli přímou URL.
-
-## Společný formát
-
-`ghrab-material-v1` obsahuje metadata, cíle, anonymní zdrojový obsah, strukturované úlohy a stav kvality. Studio kontroluje velikost, povinná pole, délky a počty položek.
-
-## Přímá předávka
-
-Studio vytvoří `ghrab-handoff-v1` s expirací 30 minut a otevře cílovou aplikaci. Současné aplikace pod `https://daniel22-dev.github.io` mohou sdílet místní úložiště. Při rozdílném originu se použije `.ghrab.json` nebo budoucí serverové API.
+Aplikační JavaScript je v distribučním HTML inertní. Bootstrap nejprve načte `/AI-Studio-GHRAB/access/app-guard.js`; až po úspěšném ověření obnoví původní typy skriptů. Přímou URL proto nelze obejít pouhým otevřením jiné cesty.
 
 ## Aplikační identifikátory
 
@@ -37,8 +24,16 @@ Studio vytvoří `ghrab-handoff-v1` s expirací 30 minut a otevře cílovou apli
 - `ludus`
 - `correspondence`
 
-Identifikátor musí být shodný v manifestu, přístupové politice, oprávnění, bootstrapu a handoffu.
+Identifikátor musí být shodný v manifestu, přístupové politice, oprávnění a bootstrapu.
 
-## Povinný test
+## Zvláštní pravidlo LUDUSu
 
-Pro každou aplikaci ověřte přímou URL bez oprávnění, s oprávněním pro jinou aplikaci, se správným učitelským oprávněním, se správcovským oprávněním a s expirovaným nebo zneplatněným oprávněním.
+Dílna a přímo hostované enginy vyžadují oprávnění `ludus`. Při exportu hotové hry však LUDUS ochrannou vrstvu odstraní a obnoví běžné skripty. Výsledný HTML soubor je určen žákům a funguje bez účtu i offline.
+
+## Společný formát a handoff
+
+`ghrab-material-v1` obsahuje metadata, cíle, anonymní zdrojový obsah, strukturované úlohy a stav kvality. Krátkodobý `ghrab-handoff-v1` předává materiál mezi aplikacemi v rámci stejného originu. Přístupové oprávnění a výukový materiál jsou oddělené datové vrstvy.
+
+## Povinné regresní scénáře
+
+Pro každé vydání ověřit: přímou URL bez přístupu, správce, učitele s příslušnou aplikací, učitele s jinou aplikací, pozměněný podpis, expiraci, revokaci a nedostupnou centrální konfiguraci.

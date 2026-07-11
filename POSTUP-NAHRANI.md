@@ -2,7 +2,7 @@
 
 ## Důležité pořadí
 
-Nejdříve aktualizujte dílčí aplikace, potom AI Studio. Jinak by Studio mohlo krátce načíst staré manifesty s nevhodným statusem.
+Nejdříve nasaďte AI Studio 0.6.1, potom chráněné verze dílčích aplikací. Aplikace tak při prvním spuštění vždy najdou aktuální centrální ověřovací modul.
 
 ## 1. Generátor interaktivních testů
 

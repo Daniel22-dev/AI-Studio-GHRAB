@@ -1,16 +1,28 @@
 # Ochrana samostatných aplikací bez serveru
 
-AI Studio kontroluje podepsané oprávnění při spuštění karty. Aby nešlo ochranu obejít přímým odkazem, musí každá samostatná aplikace načíst ochranný bootstrap **před vlastním aplikačním kódem**.
+## Stav ve verzi 0.6.1
 
-## Doporučené zapojení
+Ochranná vrstva je již integrována v těchto vydáních:
 
-1. Do `<head>` cílové aplikace vložte styl z `app-guard-snippet.html`.
-2. Původní vstupní modul aplikace nenačítejte přímo.
-3. Vytvořte `access-bootstrap.js` podle příslušné šablony a v posledním řádku upravte cestu k původnímu vstupnímu modulu.
-4. Ověřte přímou adresu bez oprávnění, s oprávněním pro jinou aplikaci a se správným oprávněním.
+- Generátor interaktivních testů 7.0.6 — ID `generator`,
+- Diferenciátor 1.0.3 — ID `differentiator`,
+- LUDUS 1.14.3 — ID `ludus`,
+- Korespondenční asistent 4.0.3 — ID `correspondence`.
 
-Veřejný ověřovací klíč je bezpečné publikovat. Soukromý podpisový klíč nesmí být v žádném veřejném repozitáři.
+Přímé otevření jejich veřejných adres proto používá stejné podepsané oprávnění jako spuštění z AI Studia.
+
+## Princip pro budoucí aplikace
+
+1. Stránka začíná ve stavu `data-ghrab-access="checking"`.
+2. Vlastní aplikační skripty mají inertní typ `application/ghrab-protected`.
+3. Bootstrap načte `/AI-Studio-GHRAB/access/app-guard.js`.
+4. Centrální modul načte veřejný klíč, politiku a revokační seznam.
+5. Ověří podpis ECDSA P-256, vydavatele, publikum, časovou platnost, JTI, roli a ID aplikace.
+6. Teprve při úspěchu se aplikační skripty převedou na spustitelné.
+7. Při zamítnutí nebo chybě konfigurace se původní rozhraní odstraní a zobrazí se zamykací obrazovka.
+
+Veřejný ověřovací klíč je bezpečné publikovat. Soukromý podpisový klíč ani osobní přístupové soubory nesmějí být v žádném veřejném repozitáři.
 
 ## Důležité omezení
 
-Bezserverové oprávnění je praktická přechodová kontrola, nikoli náhrada školního přihlášení. Nelze jím bezpečně ověřit totožnost osoby ani zabránit předání platného souboru jinému kolegovi.
+Bezserverové oprávnění je profesionální přechodová kontrola, nikoli náhrada školního přihlášení. Nelze jím bezpečně ověřit totožnost osoby, zabránit předání platného souboru ani znemožnit technicky zkušenému uživateli stáhnout a upravit veřejný statický kód.

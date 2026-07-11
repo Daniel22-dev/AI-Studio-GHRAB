@@ -1,23 +1,23 @@
 {
-  "version": "0.6.0",
-  "builtAt": "2026-07-10T20:45:28.929Z",
+  "version": "0.6.1",
+  "builtAt": "2026-07-11T06:29:38.098Z",
   "syncMode": "fallback",
   "apps": [
     {
       "id": "generator",
-      "version": "7.0.5"
+      "version": "7.0.6"
     },
     {
       "id": "differentiator",
-      "version": "1.0.2"
+      "version": "1.0.3"
     },
     {
       "id": "ludus",
-      "version": "1.14.2"
+      "version": "1.14.3"
     },
     {
       "id": "correspondence",
-      "version": "4.0.2"
+      "version": "4.0.3"
     }
   ]
 }

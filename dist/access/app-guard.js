@@ -2,7 +2,7 @@ import { initialiseAccess, hasAppAccess, requiredTraining, formatReason } from '
 
 function language(){ return document.documentElement.lang === 'en' ? 'en' : 'cs'; }
 function text(cs, en){ return language() === 'cs' ? cs : en; }
-function studioHref(options){ return options.studioUrl || new URL('../', import.meta.url).href; }
+function studioHref(options){ return new URL(options.studioUrl || '../', location.href).href; }
 function renderGate(appId, access, options = {}){
   const training = requiredTraining(appId);
   const appName = training?.label?.[language()] || training?.label?.cs || appId;

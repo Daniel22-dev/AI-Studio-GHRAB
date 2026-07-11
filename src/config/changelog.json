@@ -1,7 +1,37 @@
 {
   "schema": "ai-studio-changelog-v1",
-  "current": "0.6.0",
+  "current": "0.6.1",
   "items": [
+    {
+      "version": "0.6.1",
+      "date": "2026-07-11",
+      "title": {
+        "cs": "Dokončené uzamykání přímých adres aplikací",
+        "en": "Completed direct-URL locking for applications"
+      },
+      "changes": [
+        {
+          "cs": "Opravena tvorba odkazů na AI Studio v zamykací obrazovce; relativní cesta se nyní vždy bezpečně převede na úplnou adresu.",
+          "en": "Fixed AI Studio links in the lock screen; relative paths are now safely resolved to absolute URLs."
+        },
+        {
+          "cs": "Centrální registr byl aktualizován na Generátor 7.0.6, Diferenciátor 1.0.3, LUDUS 1.14.3 a Korespondenčního asistenta 4.0.3.",
+          "en": "Updated the central registry to Generator 7.0.6, Differentiator 1.0.3, LUDUS 1.14.3 and Correspondence Assistant 4.0.3."
+        },
+        {
+          "cs": "Integrační ochrana byla vložena přímo do všech čtyř aplikací, takže přímá veřejná adresa již neobchází přístup aktivovaný ve Studiu.",
+          "en": "Integrated the access guard directly into all four applications so direct public URLs no longer bypass Studio access."
+        },
+        {
+          "cs": "Správce aktivuje jediný podepsaný přístup ve Studiu a všechny aplikace jej ověřují ze společného úložiště stejné domény.",
+          "en": "The administrator activates one signed permit in Studio and all applications verify it from the shared same-origin storage."
+        },
+        {
+          "cs": "LUDUS chrání dílnu i veřejné enginy, ale z exportovaných studentských her ochranu záměrně odstraňuje.",
+          "en": "LUDUS protects the builder and hosted engines while intentionally removing the guard from exported student games."
+        }
+      ]
+    },
     {
       "version": "0.6.0",
       "date": "2026-07-10",

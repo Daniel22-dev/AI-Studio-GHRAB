@@ -67,8 +67,8 @@
       "target_app_bootstrap"
     ],
     "limitations": {
-      "cs": "Bez serveru nelze spolehlivě ověřit totožnost uživatele ani zabránit předání platného souboru. Přímý odkaz je zablokován pouze po vložení dodaného bootstrapu do každé samostatné aplikace.",
-      "en": "Without a server, user identity cannot be reliably verified and a valid permit file can be shared. Direct URLs are blocked only after the supplied bootstrap is added to every separate application."
+      "cs": "Bez serveru nelze spolehlivě ověřit totožnost uživatele ani zabránit předání platného souboru. Přímé adresy současných čtyř aplikací jsou chráněny integračním bootstrapem; stejnou vrstvu musí dostat každá budoucí aplikace.",
+      "en": "Without a server, user identity cannot be reliably verified and a valid permit file can be shared. Direct URLs of the current four applications are protected by the integration bootstrap; every future application must receive the same layer."
     }
   },
   "serverMigration": [

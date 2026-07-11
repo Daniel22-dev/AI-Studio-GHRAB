@@ -1,4 +1,4 @@
-# Bezpečnostní hranice AI Studio GHRAB 0.6.0
+# Bezpečnostní hranice AI Studio GHRAB 0.6.1
 
 ## Co serverless portál zajišťuje
 
@@ -18,7 +18,11 @@
 - centrální synchronizaci mezi zařízeními,
 - okamžitý audit používání,
 - bezpečnou centrální databázi,
-- ochranu přímé URL aplikace, dokud v jejím repozitáři není integrační bootstrap.
+- ochranu proti stažení veřejného statického kódu a jeho lokální úpravě technicky zkušeným uživatelem.
+
+## Stav ochrany přímých adres
+
+Ochranný bootstrap je integrován v Generátoru 7.0.6, Diferenciátoru 1.0.3, LUDUSu 1.14.3 a Korespondenčním asistentovi 4.0.3. Jejich aplikační skripty zůstávají inertní, dokud centrální modul neověří podpis, platnost, revokaci, roli a příslušné ID aplikace. Při nedostupnosti centrální konfigurace se aplikace bezpečně neotevře.
 
 ## Klíče
 

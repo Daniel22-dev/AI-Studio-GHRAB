@@ -1,4 +1,4 @@
-const CACHE = 'ai-studio-ghrab-v0.6.0';
+const CACHE = 'ai-studio-ghrab-v0.6.1';
 const CORE = [
   './','./index.html','./styles.css','./polish.css','./app.js','./manifest.webmanifest',
   './config/apps.generated.json','./config/apps.fallback.json','./config/sources.json','./config/sync-report.json','./config/permissions.json','./config/changelog.json','./config/access-policy.json','./config/access-public-key.json','./config/revoked-access.json',

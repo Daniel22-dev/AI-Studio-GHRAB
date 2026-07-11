@@ -1,12 +1,16 @@
-AI STUDIO GHRAB 0.3.0
+AI STUDIO GHRAB 0.6.1 — CENTRÁLNÍ PŘÍSTUP
 
-Nejdříve nahraj aktualizované zdrojové aplikace a až potom Studio.
+TENTO BALÍK NAHRAJ JAKO PRVNÍ.
 
 1. Rozbal ZIP.
-2. Na GitHubu otevři repozitář AI-Studio-GHRAB.
-3. Nahraj OBSAH této složky přímo do kořene repozitáře.
-4. Povol přepsání souborů a potvrď commit do větve main.
-5. Počkej na zelený běh v Actions.
-6. Proveď Ctrl+F5; na telefonu stránku zavři a znovu otevři.
+2. V GitHub Desktopu otevři repozitář AI-Studio-GHRAB.
+3. Nahraď obsah repozitáře obsahem rozbaleného ZIPu; zachovej pouze lokální složku .git.
+4. Commit: AI Studio GHRAB v0.6.1.
+5. Push origin a počkej na zelený běh v Actions.
+6. Otevři Studio a proveď Ctrl+Shift+R.
+7. Až potom nahraj chráněné verze dílčích aplikací.
 
-Podrobný postup je v NAHRANI-NA-GITHUB.md.
+Soukromý podpisový klíč ani administrátorský přístup nikdy nepatří na GitHub.
+Podrobný postup je v NAHRANI-NA-GITHUB-v0.6.1.md.
+
+8. Po nasazení všech aplikací spusť workflow Studia ještě jednou, aby se okamžitě synchronizovaly nové manifesty.

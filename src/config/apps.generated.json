@@ -6,7 +6,7 @@
       "cs": "Generátor interaktivních testů",
       "en": "Interactive Test Generator"
     },
-    "version": "7.0.5",
+    "version": "7.0.6",
     "status": {
       "cs": "Připraveno k řízenému pilotu",
       "en": "Ready for controlled pilot"
@@ -49,7 +49,7 @@
       "cs": "Diferenciátor",
       "en": "Differentiator"
     },
-    "version": "1.0.2",
+    "version": "1.0.3",
     "status": {
       "cs": "Připraveno k řízenému pilotu",
       "en": "Ready for controlled pilot"
@@ -92,7 +92,7 @@
       "cs": "LUDUS",
       "en": "LUDUS"
     },
-    "version": "1.14.2",
+    "version": "1.14.3",
     "status": {
       "cs": "Ověřováno v pilotu",
       "en": "Being validated in pilot"
@@ -135,7 +135,7 @@
       "cs": "Korespondenční asistent",
       "en": "Correspondence Assistant"
     },
-    "version": "4.0.2",
+    "version": "4.0.3",
     "status": {
       "cs": "Pracovní pilotní verze",
       "en": "Working pilot release"
