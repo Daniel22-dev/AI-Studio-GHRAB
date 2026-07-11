@@ -35,7 +35,7 @@
 ## Po nasazení
 
 - [ ] Ověřit zelený GitHub Actions build.
-- [ ] V anonymním okně potvrdit čtyři viditelné a uzamčené karty.
+- [ ] V anonymním okně potvrdit pět viditelných a uzamčených aplikací (čtyři v Top 4 a jednu v katalogu).
 - [ ] Načíst správcovské oprávnění.
 - [ ] Spustit Kontrolu Studia.
 - [ ] Ověřit Android Chrome, desktop Chrome/Edge a iPhone Safari.

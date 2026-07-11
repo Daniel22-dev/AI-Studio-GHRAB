@@ -1,8 +1,8 @@
-# Architektura AI Studio GHRAB 0.6.0
+# Architektura AI Studio GHRAB 0.6.2
 
 ## Federovaný portál
 
-Generátor, Diferenciátor, LUDUS a Korespondenční asistent zůstávají v samostatných repozitářích. Každá aplikace zveřejňuje manifest; Studio sestaví společný registr a při nedostupnosti živého zdroje použije ověřený fallback.
+Generátor, Diferenciátor, Hodnotitel maturitních slohů, LUDUS a Korespondenční asistent zůstávají v samostatných repozitářích. Každá aplikace zveřejňuje manifest; Studio sestaví společný registr a při nedostupnosti živého zdroje použije ověřený fallback.
 
 ```text
 samostatné aplikace ─ manifesty ─► AI Studio
@@ -40,9 +40,9 @@ Podpis používá ECDSA P-256 / SHA-256. Veřejná část klíče je v `access-p
 
 `access/app-guard.js` ověří stejné oprávnění i v cílové aplikaci. Doporučený bootstrap nejprve zavolá `protectApp(appId)` a původní aplikační modul dynamicky importuje pouze při úspěchu. Tím se nezobrazí ani nespustí vlastní aplikace bez oprávnění.
 
-## Top 4
+## Top 4 a katalog
 
-Kolem jádra jsou nejvýše čtyři uživatelské priority. Při růstu katalogu lze další aplikace připnout; přebytečné se přesunou do navazujícího katalogu. Top 4 je záměrně zachováno již nyní.
+Kolem jádra jsou nejvýše čtyři uživatelské priority. Ve výchozím pořadí jsou Generátor, Diferenciátor, Hodnotitel a Korespondenční asistent; LUDUS zůstává v katalogu. Při růstu katalogu lze další aplikace připnout; přebytečné se přesunou do navazujícího katalogu. Top 4 je záměrně zachováno již nyní.
 
 ## Materiály a handoff
 

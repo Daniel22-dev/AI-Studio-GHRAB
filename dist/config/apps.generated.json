@@ -87,46 +87,56 @@
   },
   {
     "schema": "ai-studio-app-manifest-v1",
-    "id": "ludus",
+    "id": "essay-evaluator",
     "name": {
-      "cs": "LUDUS",
-      "en": "LUDUS"
+      "cs": "Hodnotitel maturitních slohů",
+      "en": "Matura Essay Evaluator"
     },
-    "version": "1.14.3",
+    "version": "1.3.1",
     "status": {
-      "cs": "Ověřováno v pilotu",
-      "en": "Being validated in pilot"
+      "cs": "Připraveno k řízenému pilotu",
+      "en": "Ready for controlled pilot"
     },
     "description": {
-      "cs": "Dílna výukových her, která převádí učivo do různých herních světů a mechanik.",
-      "en": "A learning-game workshop that transforms content into different game worlds and mechanics."
+      "cs": "Důkazní hodnocení maturitních slohů podle školní rubriky, anonymizace, učitelská revize, profesionální reporty a anonymní třídní analytika.",
+      "en": "Evidence-based Matura essay assessment with anonymisation, teacher review, professional reports and anonymous class analytics."
     },
-    "launchUrl": "https://daniel22-dev.github.io/Ludus/",
-    "repository": "daniel22-dev/Ludus",
-    "icon": "assets/apps/ludus.png",
-    "accent": "#a877ff",
+    "launchUrl": "https://daniel22-dev.github.io/Hodnotitel-maturitnich-slohu/",
+    "repository": "daniel22-dev/Hodnotitel-maturitnich-slohu",
+    "icon": "assets/apps/essay-evaluator.png",
+    "accent": "#d7a04b",
     "tags": [
       {
-        "cs": "Gamifikace",
-        "en": "Gamification"
+        "cs": "Hodnocení slohů",
+        "en": "Essay assessment"
       },
       {
-        "cs": "Týmová výuka",
-        "en": "Team learning"
+        "cs": "AJ · maturita",
+        "en": "EN · Matura"
+      },
+      {
+        "cs": "Anonymizace",
+        "en": "Anonymisation"
       }
     ],
     "capabilities": [
-      "gamification",
-      "game-builder",
-      "team-learning",
-      "offline-export"
+      "essay-assessment",
+      "versioned-rubric",
+      "anonymisation",
+      "batch-evaluation",
+      "teacher-review",
+      "professional-reports",
+      "styled-docx",
+      "anonymous-class-analytics",
+      "offline-docx-import",
+      "exports"
     ],
     "compatibility": {
-      "studioMinVersion": "0.5.1",
+      "studioMinVersion": "0.6.2",
       "materialSchema": "ghrab-material-v1",
       "studioBridge": "1.1"
     },
-    "publishedAt": "2026-07-10T14:09:05.493Z"
+    "publishedAt": "2026-07-11T13:55:00.000Z"
   },
   {
     "schema": "ai-studio-app-manifest-v1",
@@ -170,5 +180,48 @@
       "studioBridge": "1.1"
     },
     "publishedAt": "2026-07-10T14:09:05.232Z"
+  },
+  {
+    "schema": "ai-studio-app-manifest-v1",
+    "id": "ludus",
+    "name": {
+      "cs": "LUDUS",
+      "en": "LUDUS"
+    },
+    "version": "1.14.3",
+    "status": {
+      "cs": "Ověřováno v pilotu",
+      "en": "Being validated in pilot"
+    },
+    "description": {
+      "cs": "Dílna výukových her, která převádí učivo do různých herních světů a mechanik.",
+      "en": "A learning-game workshop that transforms content into different game worlds and mechanics."
+    },
+    "launchUrl": "https://daniel22-dev.github.io/Ludus/",
+    "repository": "daniel22-dev/Ludus",
+    "icon": "assets/apps/ludus.png",
+    "accent": "#a877ff",
+    "tags": [
+      {
+        "cs": "Gamifikace",
+        "en": "Gamification"
+      },
+      {
+        "cs": "Týmová výuka",
+        "en": "Team learning"
+      }
+    ],
+    "capabilities": [
+      "gamification",
+      "game-builder",
+      "team-learning",
+      "offline-export"
+    ],
+    "compatibility": {
+      "studioMinVersion": "0.5.1",
+      "materialSchema": "ghrab-material-v1",
+      "studioBridge": "1.1"
+    },
+    "publishedAt": "2026-07-10T14:09:05.493Z"
   }
 ]

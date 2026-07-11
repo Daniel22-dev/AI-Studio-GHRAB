@@ -1,5 +1,15 @@
 # Changelog
 
+## 0.6.2 — 2026-07-11
+
+- přidán Hodnotitel maturitních slohů 1.3.1 jako pátá chráněná aplikace;
+- doplněno ID `essay-evaluator`, školení `HOD-01`, claim `app.essay-evaluator.use` a riziková úroveň `high`;
+- Hodnotitel zařazen do výchozího Top 4, LUDUS zůstává v katalogu a lze jej připnout;
+- přidána lokální ikona, zdroj živého manifestu, offline fallback, PWA cache a integrační bootstrap;
+- synchronizace manifestů zachovává lokální ikonu portálu;
+- diagnostika a release testy nyní vyžadují pět aplikací;
+- repository dispatch Hodnotitele byl sjednocen s automatizací AI Studia.
+
 ## 0.6.1 — 2026-07-11
 
 - opravena absolutní adresa Studia v zamykací obrazovce,

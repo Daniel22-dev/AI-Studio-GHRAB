@@ -1,6 +1,6 @@
 {
-  "version": "0.6.1",
-  "builtAt": "2026-07-11T06:29:38.098Z",
+  "version": "0.6.2",
+  "builtAt": "2026-07-11T13:53:38.589Z",
   "syncMode": "fallback",
   "apps": [
     {
@@ -12,12 +12,16 @@
       "version": "1.0.3"
     },
     {
-      "id": "ludus",
-      "version": "1.14.3"
+      "id": "essay-evaluator",
+      "version": "1.3.1"
     },
     {
       "id": "correspondence",
       "version": "4.0.3"
+    },
+    {
+      "id": "ludus",
+      "version": "1.14.3"
     }
   ]
 }

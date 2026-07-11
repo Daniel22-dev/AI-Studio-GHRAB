@@ -1,8 +1,8 @@
-# Integrace samostatných aplikací — AI Studio 0.6.1
+# Integrace samostatných aplikací — AI Studio 0.6.2
 
 ## Aktuální stav
 
-Integrace je dokončena v Generátoru 7.0.6, Diferenciátoru 1.0.3, LUDUSu 1.14.3 a Korespondenčním asistentovi 4.0.3. Ochrana se nevztahuje jen na karty ve Studiu; probíhá také při přímém otevření každé aplikace.
+Integrace je dokončena v Generátoru 7.0.6, Diferenciátoru 1.0.3, Hodnotiteli maturitních slohů 1.3.1, LUDUSu 1.14.3 a Korespondenčním asistentovi 4.0.3. Ochrana se nevztahuje jen na karty ve Studiu; probíhá také při přímém otevření každé aplikace.
 
 ## Jak funguje jednotné přihlášení
 
@@ -21,6 +21,7 @@ Aplikační JavaScript je v distribučním HTML inertní. Bootstrap nejprve nač
 
 - `generator`
 - `differentiator`
+- `essay-evaluator`
 - `ludus`
 - `correspondence`
 
@@ -37,3 +38,7 @@ Dílna a přímo hostované enginy vyžadují oprávnění `ludus`. Při exportu
 ## Povinné regresní scénáře
 
 Pro každé vydání ověřit: přímou URL bez přístupu, správce, učitele s příslušnou aplikací, učitele s jinou aplikací, pozměněný podpis, expiraci, revokaci a nedostupnou centrální konfiguraci.
+
+## Hodnotitel
+
+Hodnotitel používá ID `essay-evaluator`, školení `HOD-01` a rizikovou úroveň `high`. Učitel potřebuje nový podepsaný přístup obsahující toto ID; staré přístupy se automaticky nerozšíří.

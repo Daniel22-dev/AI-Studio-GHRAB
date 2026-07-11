@@ -44,13 +44,13 @@
       "riskLevel": "medium",
       "serverClaim": "app.differentiator.use"
     },
-    "ludus": {
+    "essay-evaluator": {
       "trainingRequired": true,
-      "trainingCode": "LUD-01",
+      "trainingCode": "HOD-01",
       "trainingVersion": "2026-09",
       "defaultState": "locked",
-      "riskLevel": "medium-high",
-      "serverClaim": "app.ludus.use"
+      "riskLevel": "high",
+      "serverClaim": "app.essay-evaluator.use"
     },
     "correspondence": {
       "trainingRequired": true,
@@ -59,6 +59,14 @@
       "defaultState": "locked",
       "riskLevel": "medium-high",
       "serverClaim": "app.correspondence.use"
+    },
+    "ludus": {
+      "trainingRequired": true,
+      "trainingCode": "LUD-01",
+      "trainingVersion": "2026-09",
+      "defaultState": "locked",
+      "riskLevel": "medium-high",
+      "serverClaim": "app.ludus.use"
     }
   },
   "serverlessEnforcement": {
@@ -67,8 +75,8 @@
       "target_app_bootstrap"
     ],
     "limitations": {
-      "cs": "Bez serveru nelze spolehlivě ověřit totožnost uživatele ani zabránit předání platného souboru. Přímé adresy současných čtyř aplikací jsou chráněny integračním bootstrapem; stejnou vrstvu musí dostat každá budoucí aplikace.",
-      "en": "Without a server, user identity cannot be reliably verified and a valid permit file can be shared. Direct URLs of the current four applications are protected by the integration bootstrap; every future application must receive the same layer."
+      "cs": "Bez serveru nelze spolehlivě ověřit totožnost uživatele ani zabránit předání platného souboru. Přímé adresy současných pěti aplikací jsou chráněny integračním bootstrapem; stejnou vrstvu musí dostat každá budoucí aplikace.",
+      "en": "Without a server, user identity cannot be reliably verified and a valid permit file can be shared. Direct URLs of the current five applications are protected by the integration bootstrap; every future application must receive the same layer."
     }
   },
   "serverMigration": [

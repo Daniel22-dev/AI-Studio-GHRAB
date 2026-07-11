@@ -26,9 +26,11 @@ const changes=await loadJson(path.join(src,'config/changelog.json'));
 const policy=await loadJson(path.join(src,'config/access-policy.json'));
 const publicKeyInfo=await loadJson(path.join(src,'config/access-public-key.json'));
 const revocations=await loadJson(path.join(src,'config/revoked-access.json'));
+const syncScript=await readFile(path.join(root,'scripts/sync-registry.mjs'),'utf8');
+const deployWorkflow=await readFile(path.join(root,'.github/workflows/deploy.yml'),'utf8');
 
 for(const [label,list] of [['generated registry',apps],['fallback registry',fallback]]){
- if(!Array.isArray(list)||list.length<4){fail(`${label} musí obsahovat alespoň čtyři aplikace.`);continue}
+ if(!Array.isArray(list)||list.length<5){fail(`${label} musí obsahovat alespoň pět aplikací.`);continue}
  const ids=new Set();
  for(const app of list){
   if(app.schema!=='ai-studio-app-manifest-v1')fail(`${label}: ${app.id||'?'} má neplatné schema.`);
@@ -40,7 +42,15 @@ for(const [label,list] of [['generated registry',apps],['fallback registry',fall
   if(!(await exists(path.join(src,app.icon))))fail(`Chybí ikona ${app.id}: ${app.icon}`);
  }
 }
-if(!Array.isArray(sources)||sources.length<4)fail('sources.json musí obsahovat alespoň čtyři zdroje.');
+if(!Array.isArray(sources)||sources.length<5)fail('sources.json musí obsahovat alespoň pět zdrojů.');
+if(!apps?.some(app=>app.id==='essay-evaluator'))fail('Generovaný registr neobsahuje essay-evaluator.');
+if(!fallback?.some(app=>app.id==='essay-evaluator'))fail('Fallback registr neobsahuje essay-evaluator.');
+if(apps?.slice(0,4).every(app=>app.id!=='essay-evaluator'))fail('Hodnotitel musí být ve výchozím Top 4.');
+if(apps?.slice(4).every(app=>app.id!=='ludus'))fail('LUDUS má zůstat ve výchozím katalogu mimo Top 4.');
+if(!syncScript.includes('const localIcon = fallbackById.get(source.id)?.icon'))fail('Synchronizace nezachovává lokální ikonu portálu.');
+if(!deployWorkflow.includes('app-updated'))fail('Workflow nepřijímá událost app-updated.');
+if(permissions?.apps?.['essay-evaluator']?.serverClaim!=='app.essay-evaluator.use')fail('Hodnotitel má neplatný server claim.');
+if(policy?.applications?.['essay-evaluator']?.trainingCode!=='HOD-01')fail('Hodnotitel nemá školení HOD-01.');
 if(syncReport?.schema!=='ai-studio-sync-report-v1')fail('sync-report.json má neplatné schema.');
 if(!Array.isArray(syncReport?.sources)||syncReport.sources.length!==sources?.length)fail('Sync report neodpovídá seznamu zdrojů.');
 
@@ -95,7 +105,7 @@ for(const file of sourceFiles.filter(f=>f.endsWith('.html'))){
  }
 }
 for(const file of ['automation/automation.js','pilot/pilot.js','report/report.js','demo/demo.js','changelog/changelog.js','tests/tests.js']){const text=await readFile(path.join(src,file),'utf8');if(!text.includes('accessReady')||!text.includes('isAdmin'))fail(`${file} nemá správcovskou bránu.`)}
-for(const file of ['integration/generator-access-bootstrap.example.js','integration/differentiator-access-bootstrap.example.js','integration/ludus-access-bootstrap.example.js','integration/correspondence-access-bootstrap.example.js'])if(!(await exists(path.join(src,file))))fail(`Chybí integrační šablona ${file}.`);
+for(const file of ['integration/generator-access-bootstrap.example.js','integration/differentiator-access-bootstrap.example.js','integration/essay-evaluator-access-bootstrap.example.js','integration/ludus-access-bootstrap.example.js','integration/correspondence-access-bootstrap.example.js'])if(!(await exists(path.join(src,file))))fail(`Chybí integrační šablona ${file}.`);
 const appGuardText=await readFile(path.join(src,'access/app-guard.js'),'utf8');
 if(!appGuardText.includes("new URL(options.studioUrl || '../', location.href)"))fail('app-guard nepřevádí relativní adresu Studia na úplnou URL.');
 if(new URL('/AI-Studio-GHRAB/','https://daniel22-dev.github.io/generator-testu/').href!=='https://daniel22-dev.github.io/AI-Studio-GHRAB/')fail('Regresní test adresy Studia selhal.');
@@ -104,7 +114,7 @@ const directStorageWriters=sourceFiles.filter(file=>file.endsWith('.js')&&!['app
 for(const file of directStorageWriters){const text=await readFile(file,'utf8');if(text.includes('localStorage.setItem('))fail(`Přímý zápis do localStorage mimo bezpečný modul: ${path.relative(root,file)}`)}
 
 try{execFileSync(process.execPath,[path.join(root,'scripts/build.mjs')],{stdio:'inherit'})}catch{fail('Build selhal.');}
-const distFiles=await walk(dist);const required=['index.html','styles.css','polish.css','app.js','manifest.webmanifest','sw.js','build-info.json','access/index.html','access/access-control.js','access/app-guard.js','tools/access-issuer/index.html','automation/index.html','workflow/index.html','report/index.html','demo/index.html','library/index.html','safety/index.html','pilot/index.html','changelog/index.html','tests/index.html','config/access-policy.json','config/access-public-key.json','config/revoked-access.json','shared/material-validator.js','integration/README.md','integration/generator-access-bootstrap.example.js'];
+const distFiles=await walk(dist);const required=['index.html','styles.css','polish.css','app.js','manifest.webmanifest','sw.js','build-info.json','access/index.html','access/access-control.js','access/app-guard.js','tools/access-issuer/index.html','automation/index.html','workflow/index.html','report/index.html','demo/index.html','library/index.html','safety/index.html','pilot/index.html','changelog/index.html','tests/index.html','config/access-policy.json','config/access-public-key.json','config/revoked-access.json','shared/material-validator.js','integration/README.md','integration/generator-access-bootstrap.example.js','integration/essay-evaluator-access-bootstrap.example.js','assets/apps/essay-evaluator.png'];
 for(const rel of required)if(!distFiles.includes(path.join(dist,rel)))fail(`Build neobsahuje ${rel}`);
 const builtSw=await readFile(path.join(dist,'sw.js'),'utf8');const block=builtSw.match(/const CORE = \[([\s\S]*?)\];/)?.[1]||'';const precache=[...block.matchAll(/['"](\.\/[^'"]+)['"]/g)].map(m=>m[1].replace(/^\.\//,'').replace(/\/$/,'index.html'));if(!precache.length)fail('Service worker nemá čitelný CORE seznam.');for(const rel of precache)if(!distFiles.includes(path.join(dist,rel)))fail(`PWA precache odkazuje na chybějící ${rel}`);
 for(const file of distFiles.filter(f=>/\.(html|js|json|webmanifest|css|md)$/.test(f))){const text=await readFile(file,'utf8');if(text.includes('__APP_VERSION__'))fail(`V buildu zůstal token verze: ${path.relative(dist,file)}`);if(file.endsWith('.ghrab-access.json'))fail(`Ve veřejném buildu je přístupový soubor: ${path.relative(dist,file)}`)}

@@ -1,6 +1,6 @@
 {
   "schema": "ai-studio-sync-report-v1",
-  "generatedAt": "2026-07-11T00:00:00.000Z",
+  "generatedAt": "2026-07-11T13:52:44.999Z",
   "mode": "fallback",
   "sources": [
     {
@@ -18,10 +18,10 @@
       "error": "offline režim"
     },
     {
-      "id": "ludus",
-      "url": "https://daniel22-dev.github.io/Ludus/studio-manifest.json",
+      "id": "essay-evaluator",
+      "url": "https://daniel22-dev.github.io/Hodnotitel-maturitnich-slohu/studio-manifest.json",
       "ok": false,
-      "version": "1.14.3",
+      "version": "1.3.1",
       "error": "offline režim"
     },
     {
@@ -29,6 +29,13 @@
       "url": "https://daniel22-dev.github.io/Skolni-aplikace/korespondencni-asistent/studio-manifest.json",
       "ok": false,
       "version": "4.0.3",
+      "error": "offline režim"
+    },
+    {
+      "id": "ludus",
+      "url": "https://daniel22-dev.github.io/Ludus/studio-manifest.json",
+      "ok": false,
+      "version": "1.14.3",
       "error": "offline režim"
     }
   ]

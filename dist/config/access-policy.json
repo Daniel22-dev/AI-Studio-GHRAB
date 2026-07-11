@@ -27,13 +27,13 @@
         "en": "Differentiator"
       }
     },
-    "ludus": {
+    "essay-evaluator": {
       "trainingRequired": true,
-      "trainingCode": "LUD-01",
+      "trainingCode": "HOD-01",
       "trainingVersion": "2026-09",
       "label": {
-        "cs": "LUDUS",
-        "en": "LUDUS"
+        "cs": "Hodnotitel maturitních slohů",
+        "en": "Matura Essay Evaluator"
       }
     },
     "correspondence": {
@@ -43,6 +43,15 @@
       "label": {
         "cs": "Korespondenční asistent",
         "en": "Correspondence Assistant"
+      }
+    },
+    "ludus": {
+      "trainingRequired": true,
+      "trainingCode": "LUD-01",
+      "trainingVersion": "2026-09",
+      "label": {
+        "cs": "LUDUS",
+        "en": "LUDUS"
       }
     }
   },

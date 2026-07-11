@@ -5,7 +5,7 @@ on:
     branches: [ main ]
   workflow_dispatch:
   repository_dispatch:
-    types: [app-updated, school-apps-updated]
+    types: [app-updated, app_manifest_updated, school-apps-updated]
   schedule:
     - cron: '17 * * * *'
 

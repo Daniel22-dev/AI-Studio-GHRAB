@@ -40,7 +40,9 @@ const apps = [];
 const reportSources = [];
 for (const source of sources) {
   try {
-    const app = await fetchManifest(source);
+    const fetched = await fetchManifest(source);
+    const localIcon = fallbackById.get(source.id)?.icon;
+    const app = localIcon ? { ...fetched, icon: localIcon } : fetched;
     apps.push(app);
     reportSources.push({ id: source.id, url: source.url, ok: true, version: app.version });
   } catch (error) {
