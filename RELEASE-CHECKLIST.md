@@ -1,43 +1,42 @@
-# Release checklist AI Studio GHRAB 0.5.1
+# Release checklist AI Studio GHRAB 0.6.0
 
-## Blokující kontrola před nahráním
+## Veřejný balík
 
-- [x] Všechny čtyři zdrojové manifesty používají pilotní, nikoli školní produkční status.
-- [x] Studio i buildy dílčích aplikací obsahují pojistku proti návratu statusu „produkční“.
-- [x] Školní aplikace neobsahují v kořeni zastaralé sestavené složky.
-- [x] Zápisy do `localStorage` jsou chráněny proti zaplnění a zablokování.
-- [x] Pracovní tok má autosave, obnovu konceptu a varování při zavření.
-- [x] Exportní sebetest používá skutečnou transformační funkci.
-- [x] Report odděluje učitelem vykázaný čas od automatického odhadu.
-- [x] PWA cache obsahuje sdílený modul bezpečného exportu.
-- [x] Bezpečnostní dokumentace vysvětluje sdílený origin a profily prohlížeče.
-- [x] Dokumentace je označena jako platná pro 0.5.1.
+- [x] Verze 0.6.0 je shodná v package, manifestu, buildu a changelogu.
+- [x] Všechny aplikace jsou ve výchozím stavu uzamčené.
+- [x] Veřejný balík obsahuje pouze veřejný ověřovací klíč.
+- [x] Ve zdroji ani buildu není soukromý klíč ani `.ghrab-access.json`.
+- [x] Učitelské a správcovské rozhraní jsou oddělené.
+- [x] Správcovské moduly se bez role admin nespouštějí.
+- [x] Top 4 a sci-fi herní styl jsou zachovány.
+- [x] Komunikace je oddělena od výukového workflow.
+- [x] Import materiálů má hloubkovou validaci a limity.
+- [x] Pilotní metriky jsou přesně označeny jako místní.
+- [x] PWA cache obsahuje nové přístupové a integrační moduly.
+- [x] `npm test` prochází bez chyby.
 
-## Zdrojové aplikace
+## Soukromý administrátorský balík
 
-- [x] Generátor 7.0.5: bridge 1.1, validace materiálu, bezpečné zápisy, návratová URL, banner bez `innerHTML`.
-- [x] Diferenciátor 1.0.2: bridge 1.1 a pilotní manifest.
-- [x] Korespondenční asistent 4.0.2: bridge 1.1 a pilotní manifest.
-- [x] LUDUS 1.14.2: validace handoffu, bezpečné zápisy a pilotní manifest.
-- [x] Manifesty vyžadují Studio 0.5.1 a deklarují Studio Bridge 1.1.
+- [x] Obsahuje soukromý klíč.
+- [x] Obsahuje platné správcovské oprávnění.
+- [x] Obsahuje bezpečnostní návod.
+- [ ] Uložit do bezpečné soukromé zálohy.
+- [ ] Nikdy nenahrát na GitHub ani nesdílet s kolegy.
 
-## Testy
+## Dílčí aplikace
 
-- [ ] `npm run sync:offline && npm test` ve Studiu.
-- [ ] `npm test` v Generátoru.
-- [ ] `npm run build && npm test` ve Školních aplikacích.
-- [ ] `npm test` v LUDUSu.
-- [ ] Ručně ověřit čtyři předávky na stejném originu.
-- [ ] Ručně ověřit import `.ghrab.json` mezi různými originy.
-- [ ] Ověřit Android Chrome a iPhone Safari na výšku i na šířku.
+- [ ] Vložit správný `*-access-bootstrap.example.js` do každého repozitáře.
+- [ ] Upravit poslední dynamický import podle skutečného vstupního modulu.
+- [ ] Ověřit přímou URL bez oprávnění.
+- [ ] Ověřit oprávnění pro jinou aplikaci.
+- [ ] Ověřit správné učitelské oprávnění.
+- [ ] Ověřit správcovské oprávnění.
 
-## Po nahrání
+## Po nasazení
 
-- [ ] Nejdříve nasadit tři repozitáře dílčích aplikací.
-- [ ] U Školních aplikací jednorázově odstranit staré kořenové sestavené artefakty podle návodu.
-- [ ] Poté nasadit Studio 0.5.1.
-- [ ] Ověřit zelený běh GitHub Actions.
-- [ ] Ve Studiu zkontrolovat `4/4` manifestů a režim synchronizace.
-- [ ] Spustit **Kontrolu Studia**.
-- [ ] Vyzkoušet anonymní JSON/CSV export a ruční předání správci.
-- [ ] Po delší neaktivitě zkontrolovat, zda GitHub nevypnul plánované workflow.
+- [ ] Ověřit zelený GitHub Actions build.
+- [ ] V anonymním okně potvrdit čtyři viditelné a uzamčené karty.
+- [ ] Načíst správcovské oprávnění.
+- [ ] Spustit Kontrolu Studia.
+- [ ] Ověřit Android Chrome, desktop Chrome/Edge a iPhone Safari.
+- [ ] Ověřit přenos materiálu do všech podporovaných aplikací.

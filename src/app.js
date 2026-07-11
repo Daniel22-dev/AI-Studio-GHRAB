@@ -1,10 +1,12 @@
+import { validateMaterialPackage } from './shared/material-validator.js';
+import { initialiseAccess, setPermitToken, clearPermit, readPermitFile, getAccessSnapshot, getPermitToken, isAdmin, hasAppAccess, requiredTraining, formatReason } from './access/access-control.js';
 const VERSION = '__APP_VERSION__';
 const root = document.documentElement;
 const page = document.body.dataset.page || 'home';
-const base = page === 'home' ? './' : '../';
+const base = document.body.dataset.base || (page === 'home' ? './' : '../');
 const state = {
   language: safeGetItem('ghrab.language') || 'cs',
-  theme: safeGetItem('ghrab.theme') || 'dark',
+  theme: 'dark',
   motion: safeGetItem('ghrab.motion') || 'auto'
 };
 const MOTION_MODES = ['auto', 'full', 'lite', 'off'];
@@ -12,8 +14,6 @@ const MOTION_MODES = ['auto', 'full', 'lite', 'off'];
 const WORKSPACE_KEY = 'ghrab.workspace.v1';
 const HANDOFF_KEY = 'ghrab.handoff.v1';
 const PILOT_EVENTS_KEY = 'ghrab.pilot.events.v2';
-const ACCESS_MODE_KEY = 'ghrab.access.mode.v1';
-const TRAINED_APPS_KEY = 'ghrab.access.trainedApps.v1';
 const FAVORITE_APPS_KEY = 'ghrab.favoriteApps.v1';
 const HANDOFF_TTL_MS = 30 * 60 * 1000;
 const WORKSPACE_SOFT_LIMIT_CHARS = 120000;
@@ -35,10 +35,11 @@ function applyLanguage(){
 }
 
 function applyTheme(){
-  root.dataset.theme = state.theme;
+  state.theme = 'dark';
+  root.dataset.theme = 'dark';
+  safeRemoveItem('ghrab.theme');
   const meta = document.querySelector('meta[name="theme-color"]');
-  if (meta) meta.content = state.theme === 'dark' ? '#030915' : '#dceaf3';
-  document.querySelector('[data-theme-toggle]')?.setAttribute('aria-pressed', String(state.theme === 'light'));
+  if (meta) meta.content = '#030915';
 }
 
 function detectedMotionMode(){
@@ -152,27 +153,66 @@ function storageUsage(){
   } catch { /* best effort */ }
   return { bytes, kilobytes: Math.round(bytes / 1024), megabytes: Math.round(bytes / 1024 / 1024 * 100) / 100 };
 }
-function validMaterial(material){
-  return Boolean(material && material.schema === 'ghrab-material-v1' && material.id && material.title && material.subject && material.content && typeof material.content === 'object');
-}
+function validMaterial(material){ return validateMaterialPackage(material).valid; }
 
-function ensureHeaderControl(attribute, text){
+
+function createSettingsMenu(){
   const actions = document.querySelector('.header-actions');
   if (!actions) return null;
-  let button = actions.querySelector(`[${attribute}]`);
-  if (button) return button;
-  button = document.createElement('button');
-  button.className = 'icon-button';
+  const languageControl = actions.querySelector('.segmented');
+  actions.querySelector('[data-theme-toggle]')?.remove();
+  const wrapper = document.createElement('div');
+  wrapper.className = 'settings-menu';
+  const button = document.createElement('button');
+  button.className = 'icon-button settings-toggle';
   button.type = 'button';
-  button.setAttribute(attribute, '');
-  button.textContent = text;
-  actions.append(button);
-  return button;
+  button.textContent = '⚙';
+  button.setAttribute('aria-expanded', 'false');
+  button.setAttribute('aria-haspopup', 'true');
+  button.setAttribute('aria-label', t('Nastavení rozhraní', 'Interface settings'));
+  const panel = document.createElement('div');
+  panel.className = 'settings-panel';
+  panel.hidden = true;
+  const heading = document.createElement('strong');
+  heading.textContent = t('Nastavení', 'Settings');
+  const languageLabel = document.createElement('span');
+  languageLabel.className = 'settings-label';
+  languageLabel.textContent = t('Jazyk', 'Language');
+  if (languageControl) panel.append(heading, languageLabel, languageControl);
+  else panel.append(heading);
+  const motionButton = document.createElement('button');
+  motionButton.className = 'settings-action';
+  motionButton.type = 'button';
+  motionButton.dataset.motionToggle = '';
+  const fullscreenButton = document.createElement('button');
+  fullscreenButton.className = 'settings-action';
+  fullscreenButton.type = 'button';
+  fullscreenButton.dataset.fullscreenToggle = '';
+  panel.append(motionButton, fullscreenButton);
+  wrapper.append(button, panel);
+  actions.replaceChildren(wrapper);
+  const close = () => { panel.hidden = true; button.setAttribute('aria-expanded', 'false'); };
+  button.addEventListener('click', event => {
+    event.stopPropagation();
+    const open = panel.hidden;
+    panel.hidden = !open;
+    button.setAttribute('aria-expanded', String(open));
+  });
+  document.addEventListener('click', event => { if (!wrapper.contains(event.target)) close(); });
+  document.addEventListener('keydown', event => { if (event.key === 'Escape') close(); });
+  document.addEventListener('ghrab:language', () => {
+    button.setAttribute('aria-label', t('Nastavení rozhraní', 'Interface settings'));
+    heading.textContent = t('Nastavení', 'Settings');
+    languageLabel.textContent = t('Jazyk', 'Language');
+    updateMotionButton();
+    updateFullscreenButton();
+  });
+  return { motionButton, fullscreenButton };
 }
 
-function setupMotionControl(){
-  const button = ensureHeaderControl('data-motion-toggle', 'A');
-  button?.addEventListener('click', () => {
+function setupMotionControl(button){
+  if (!button) return;
+  button.addEventListener('click', () => {
     const index = MOTION_MODES.indexOf(state.motion);
     state.motion = MOTION_MODES[(index + 1) % MOTION_MODES.length];
     safeSetItem('ghrab.motion', state.motion);
@@ -191,10 +231,9 @@ function updateFullscreenButton(){
   const button = document.querySelector('[data-fullscreen-toggle]');
   if (!button) return;
   const active = Boolean(fullscreenElement());
-  button.textContent = active ? '⤢' : '⛶';
+  button.textContent = active ? `⤢ ${t('Ukončit celou obrazovku', 'Exit full screen')}` : `⛶ ${t('Celá obrazovka', 'Full screen')}`;
   button.setAttribute('aria-pressed', String(active));
   button.setAttribute('aria-label', active ? t('Ukončit celou obrazovku', 'Exit full screen') : t('Zobrazit na celou obrazovku', 'Enter full screen'));
-  button.title = active ? t('Ukončit celou obrazovku', 'Exit full screen') : t('Celá obrazovka', 'Full screen');
   root.classList.toggle('is-fullscreen', active);
 }
 
@@ -206,43 +245,22 @@ async function toggleFullscreen(){
       else if (document.webkitExitFullscreen) document.webkitExitFullscreen();
       return;
     }
-    if (target.requestFullscreen) {
-      await target.requestFullscreen({ navigationUI: 'hide' });
-      return;
-    }
-    if (target.webkitRequestFullscreen) {
-      target.webkitRequestFullscreen();
-      return;
-    }
+    if (target.requestFullscreen) { await target.requestFullscreen({ navigationUI: 'hide' }); return; }
+    if (target.webkitRequestFullscreen) { target.webkitRequestFullscreen(); return; }
     showToast(t('Tento prohlížeč nepodporuje celou obrazovku. Na telefonu nainstalujte AI Studio na plochu.', 'This browser does not support full screen. Install AI Studio to the home screen on mobile.'));
   } catch {
     showToast(t('Celou obrazovku se nepodařilo aktivovat. Zkuste F11 nebo nainstalovanou PWA.', 'Full screen could not be activated. Try F11 or the installed PWA.'));
   }
 }
 
-function setupFullscreenControl(){
-  const button = ensureHeaderControl('data-fullscreen-toggle', '⛶');
+function setupFullscreenControl(button){
   button?.addEventListener('click', toggleFullscreen);
   document.addEventListener('fullscreenchange', updateFullscreenButton);
   document.addEventListener('webkitfullscreenchange', updateFullscreenButton);
   updateFullscreenButton();
 }
 
-function setupChrome(){
-  setupMotionControl();
-  setupFullscreenControl();
-  document.querySelectorAll('[data-lang]').forEach(btn => btn.addEventListener('click', () => {
-    state.language = btn.dataset.lang;
-    safeSetItem('ghrab.language', state.language);
-    applyLanguage();
-    updateMotionButton();
-    updateFullscreenButton();
-  }));
-  document.querySelector('[data-theme-toggle]')?.addEventListener('click', () => {
-    state.theme = state.theme === 'dark' ? 'light' : 'dark';
-    safeSetItem('ghrab.theme', state.theme);
-    applyTheme();
-  });
+function setupNavigation(){
   const navToggle = document.querySelector('.nav-toggle');
   const nav = document.querySelector('.main-nav');
   navToggle?.addEventListener('click', () => {
@@ -253,6 +271,26 @@ function setupChrome(){
     nav?.classList.remove('open'); navToggle?.setAttribute('aria-expanded', 'false');
   }));
   document.querySelector(`.main-nav a[data-nav="${page}"]`)?.setAttribute('aria-current', 'page');
+}
+
+function updateAdminVisibility(){
+  const admin = isAdmin();
+  root.classList.toggle('access-admin', admin);
+  document.querySelectorAll('[data-admin-nav],[data-admin-link],[data-admin-only]').forEach(node => { node.hidden = !admin; });
+}
+
+function setupChrome(){
+  const controls = createSettingsMenu();
+  setupMotionControl(controls?.motionButton);
+  setupFullscreenControl(controls?.fullscreenButton);
+  setupNavigation();
+  document.querySelectorAll('[data-lang]').forEach(btn => btn.addEventListener('click', () => {
+    state.language = btn.dataset.lang;
+    safeSetItem('ghrab.language', state.language);
+    applyLanguage();
+  }));
+  document.addEventListener('ghrab:access-changed', updateAdminVisibility);
+  updateAdminVisibility();
 }
 
 function getLaunches(){
@@ -351,35 +389,32 @@ function el(tag, className, text){
 }
 
 
-function getAccessMode(){
-  return safeGetItem(ACCESS_MODE_KEY, 'open');
+function accessExplanation(access, appId){
+  if (access.enabled) return access.reason === 'administrator'
+    ? t('Správcovský přístup je aktivní.', 'Administrator access is active.')
+    : t('Aplikace je odemčena vaším platným oprávněním.', 'The application is unlocked by your valid permit.');
+  const training = requiredTraining(appId);
+  if (access.reason === 'app-not-permitted' && training) {
+    return t(`Vyžaduje školení ${training.trainingCode} · verze ${training.trainingVersion}.`, `Requires training ${training.trainingCode} · version ${training.trainingVersion}.`);
+  }
+  return formatReason(access.reason, state.language);
 }
-function setAccessMode(mode){
-  const allowed = ['open','training-demo'];
-  safeSetItem(ACCESS_MODE_KEY, allowed.includes(mode) ? mode : 'open');
-  document.dispatchEvent(new CustomEvent('ghrab:access', { detail: { mode: getAccessMode() } }));
+function accessChip(access, appId){
+  const chip = el('span', `chip access-chip ${access.enabled ? 'access-ok' : 'access-locked'}`, access.enabled ? t('Odemčeno', 'Unlocked') : t('Uzamčeno', 'Locked'));
+  chip.title = accessExplanation(access, appId);
+  return chip;
 }
-function getTrainedApps(){
-  const list = parseLocal(TRAINED_APPS_KEY, []);
-  return Array.isArray(list) ? list.filter(Boolean) : [];
+function permissionInfoFor(app, permissions){
+  return permissions?.apps?.[app.id] || requiredTraining(app.id) || null;
 }
-function setTrainedApps(list){
-  safeSetJson(TRAINED_APPS_KEY, [...new Set(list)].slice(0, 80));
-  document.dispatchEvent(new CustomEvent('ghrab:access', { detail: { mode: getAccessMode(), trainedApps: getTrainedApps() } }));
+function permissionChip(info){
+  if (!info?.trainingRequired) return null;
+  const label = t(`Školení ${info.trainingCode}`, `Training ${info.trainingCode}`);
+  const chip = el('span', 'chip training-chip', label);
+  chip.title = t(`Aktuální verze školení: ${info.trainingVersion || '—'}.`, `Current training version: ${info.trainingVersion || '—'}.`);
+  return chip;
 }
-function hasLocalAccess(appId, permissionInfo){
-  const mode = getAccessMode();
-  if (mode !== 'training-demo') return { enabled: true, mode, reason: t('Lokální pilotní režim: aplikace je dostupná.', 'Local pilot mode: the app is available.') };
-  if (!permissionInfo?.trainingRequired) return { enabled: true, mode, reason: t('Aplikace nevyžaduje proškolení.', 'The app does not require training.') };
-  const trained = getTrainedApps().includes(appId);
-  return {
-    enabled: trained,
-    mode,
-    reason: trained
-      ? t(`Proškolení ${permissionInfo.trainingCode} je v tomto prohlížeči označeno jako splněné.`, `Training ${permissionInfo.trainingCode} is marked as completed in this browser.`)
-      : t(`Lokální demo: aplikace je uzamčena, dokud není označeno proškolení ${permissionInfo.trainingCode}.`, `Local demo: the app is locked until training ${permissionInfo.trainingCode} is marked as completed.`)
-  };
-}
+
 function getFavoriteApps(){
   const list = parseLocal(FAVORITE_APPS_KEY, []);
   return Array.isArray(list) ? list.filter(Boolean).slice(0,4) : [];
@@ -402,25 +437,22 @@ function selectCoreApps(apps){
   const coreIds = new Set(core.map(app => app.id));
   return { core, extra: apps.filter(app => !coreIds.has(app.id)) };
 }
-function accessChip(access){
-  const chip = el('span', `chip access-chip ${access.enabled ? 'access-ok' : 'access-locked'}`, access.enabled ? t('Dostupné', 'Available') : t('Uzamčeno', 'Locked'));
-  chip.title = access.reason;
-  return chip;
-}
 
-function permissionInfoFor(app, permissions){
-  return permissions?.apps?.[app.id] || null;
-}
-function permissionChip(info){
-  if (!info?.trainingRequired) return null;
-  const label = t(`Proškolení ${info.trainingCode}`, `Training ${info.trainingCode}`);
-  const chip = el('span', 'chip training-chip', label);
-  chip.title = t('V serverless režimu jde o informativní štítek. Ostrý přístup musí později vynutit backend.', 'In serverless mode this is an informational label. Real access must later be enforced by the backend.');
-  return chip;
+function launchApp(app, article){
+  const access = hasAppAccess(app.id);
+  if (!access.enabled) {
+    showToast(accessExplanation(access, app.id));
+    article.classList.add('lock-pulse');
+    setTimeout(() => article.classList.remove('lock-pulse'), 700);
+    return false;
+  }
+  recordLaunch(app.id);
+  window.open(app.launchUrl, '_blank', 'noopener,noreferrer');
+  return true;
 }
 function portalAppCard(app, index, permissions){
   const info = permissionInfoFor(app, permissions);
-  const access = hasLocalAccess(app.id, info);
+  const access = hasAppAccess(app.id);
   const favorites = getFavoriteApps();
   const article = el('article', 'portal-app-card');
   article.dataset.position = String(index);
@@ -428,7 +460,6 @@ function portalAppCard(app, index, permissions){
   article.classList.add(`accent-${app.id}`);
   if (!access.enabled) article.classList.add('is-locked');
   if (favorites.includes(app.id)) article.classList.add('is-favorite');
-  article.title = access.reason;
 
   const head = el('div', 'portal-card-head');
   const identity = el('div', 'portal-app-identity');
@@ -442,52 +473,37 @@ function portalAppCard(app, index, permissions){
   const pin = el('button', `icon-button pin-button ${favorites.includes(app.id) ? 'is-pinned' : ''}`, '★');
   pin.type = 'button';
   pin.setAttribute('aria-label', favorites.includes(app.id) ? t('Odebrat z Top 4', 'Remove from Top 4') : t('Přidat do Top 4', 'Add to Top 4'));
-  pin.title = favorites.includes(app.id) ? t('Odebrat z Top 4', 'Remove from Top 4') : t('Přidat do Top 4', 'Add to Top 4');
-  pin.addEventListener('click', event => { event.preventDefault(); event.stopPropagation(); toggleFavoriteApp(app.id); renderHome(); });
+  pin.title = pin.getAttribute('aria-label');
+  pin.addEventListener('click', event => { event.preventDefault(); toggleFavoriteApp(app.id); });
   headActions.append(pin, el('span', 'chip version-chip', `v${app.version}`));
   head.append(identity, headActions);
 
   const title = el('h2', '', localised(app.name));
   const description = el('p', '', localised(app.description));
   const meta = el('div', 'portal-card-meta');
-  (app.tags || []).slice(0, 4).forEach(tag => meta.append(el('span', 'chip', localised(tag))));
+  (app.tags || []).slice(0, 3).forEach(tag => meta.append(el('span', 'chip', localised(tag))));
   const pchip = permissionChip(info);
   if (pchip) meta.append(pchip);
-  meta.append(accessChip(access));
+  meta.append(accessChip(access, app.id));
 
-  const launch = el('a', 'portal-launch', '→');
-  launch.href = access.enabled ? app.launchUrl : '#';
-  launch.target = access.enabled ? '_blank' : '_self';
-  launch.rel = 'noopener noreferrer';
-  launch.setAttribute('aria-label', `${t('Spustit', 'Launch')} ${localised(app.name)}`);
-  launch.addEventListener('pointerdown', () => article.classList.add('is-activating'));
-  const activate = event => {
-    if (!access.enabled) {
-      event?.preventDefault?.();
-      showToast(access.reason);
-      article.classList.add('lock-pulse');
-      setTimeout(() => article.classList.remove('lock-pulse'), 700);
-      return false;
-    }
-    recordLaunch(app.id);
-    return true;
-  };
-  launch.addEventListener('click', activate);
-  article.addEventListener('click', event => {
-    if (event.target.closest('a,button,input,select,textarea,label')) return;
-    if (!activate(event)) return;
-    window.open(app.launchUrl, '_blank', 'noopener,noreferrer');
-  });
-  article.tabIndex = 0;
-  article.setAttribute('role', 'link');
-  article.setAttribute('aria-label', `${t('Spustit', 'Launch')} ${localised(app.name)}. ${access.reason}`);
-  article.addEventListener('keydown', event => {
-    if (!['Enter', ' '].includes(event.key)) return;
-    event.preventDefault();
-    if (!activate(event)) return;
-    window.open(app.launchUrl, '_blank', 'noopener,noreferrer');
-  });
-  article.append(head, title, description, meta, launch);
+  const accessNote = el('p', `portal-access-note ${access.enabled ? 'ok' : 'locked'}`, accessExplanation(access, app.id));
+  const actions = el('div', 'portal-card-bottom');
+  if (access.enabled) {
+    const launch = el('button', 'portal-launch-button', t('Spustit aplikaci', 'Launch application'));
+    launch.type = 'button';
+    launch.addEventListener('click', () => launchApp(app, article));
+    actions.append(launch);
+    article.tabIndex = 0;
+    article.setAttribute('role', 'link');
+    article.setAttribute('aria-label', `${t('Spustit', 'Launch')} ${localised(app.name)}`);
+    article.addEventListener('click', event => { if (!event.target.closest('button,a,input,select,textarea,label')) launchApp(app, article); });
+    article.addEventListener('keydown', event => { if (['Enter',' '].includes(event.key)) { event.preventDefault(); launchApp(app, article); } });
+  } else {
+    const details = el('a', 'portal-unlock-button', t('Aktivovat přístup', 'Activate access'));
+    details.href = `${base}access/`;
+    actions.append(details);
+  }
+  article.append(head, title, description, meta, accessNote, actions);
   return article;
 }
 
@@ -510,34 +526,68 @@ function renderExtraApps(apps){
   document.querySelector('.mission-strip')?.before(section);
 }
 
+let homeContext = null;
+function renderHomeCards(){
+  if (!homeContext) return;
+  const { grid, apps, permissions } = homeContext;
+  const selection = selectCoreApps(apps);
+  grid.replaceChildren(...selection.core.map((app, index) => portalAppCard(app, index, permissions)));
+  renderExtraApps(selection.extra);
+  renderHomeAccessSummary();
+}
+function renderHomeAccessSummary(){
+  const host = document.querySelector('#access-summary');
+  if (!host) return;
+  const snapshot = getAccessSnapshot();
+  const valid = snapshot.valid;
+  host.className = `access-summary ${valid ? 'active' : 'inactive'}`;
+  host.replaceChildren();
+  const icon = el('span', 'access-summary-icon', valid ? (isAdmin() ? '◆' : '✓') : '🔒');
+  const body = el('div');
+  body.append(el('strong', '', valid ? (isAdmin() ? t('Správcovský přístup aktivní', 'Administrator access active') : t('Přístup aktivní', 'Access active')) : t('Aplikace jsou zatím uzamčené', 'Applications are currently locked')));
+  body.append(el('small', '', valid ? `${snapshot.permit.displayName || snapshot.permit.sub} · ${t('platnost do', 'valid until')} ${new Date(snapshot.permit.exp * 1000).toLocaleDateString(state.language === 'cs' ? 'cs-CZ' : 'en-GB')}` : t('Po školení načtěte přístupový soubor od správce.', 'After training, load the access file from the administrator.')));
+  const link = el('a', 'button compact secondary', valid ? t('Spravovat přístup', 'Manage access') : t('Aktivovat přístup', 'Activate access'));
+  link.href = `${base}access/`;
+  host.append(icon, body, link);
+}
 async function renderHome(){
   const grid = document.querySelector('#portal-apps');
   if (!grid) return;
   try {
-    const apps = await loadApps();
-    const permissions = await loadPermissions();
+    await accessReady;
+    const [apps, permissions] = await Promise.all([loadApps(), loadPermissions()]);
     window.__GHRAB_PERMISSIONS__ = permissions;
-    const render = () => {
-      const selection = selectCoreApps(apps);
-      grid.replaceChildren(...selection.core.map((app, index) => portalAppCard(app, index, permissions)));
-      renderExtraApps(selection.extra);
-    };
-    render();
-    document.addEventListener('ghrab:language', render);
-    document.addEventListener('ghrab:access', render);
-    document.addEventListener('ghrab:favorites', render);
+    homeContext = { grid, apps, permissions };
+    renderHomeCards();
   } catch {
     grid.innerHTML = `<div class="portal-empty">${t('Registr aplikací se nepodařilo načíst. Obnovte stránku.','The application registry could not be loaded. Refresh the page.')}</div>`;
   }
-
   const report = await loadSyncReport();
+  const status = document.querySelector('#studio-status');
+  const title = status?.querySelector('[data-status-title]');
   const summary = document.querySelector('#sync-summary');
   if (summary && report) {
     const ok = report.sources?.filter(item => item.ok).length || 0;
     const total = report.sources?.length || 0;
-    const text = () => t(`${ok}/${total} manifestů ověřeno · sestavení ${new Date(report.generatedAt).toLocaleString('cs-CZ')}`, `${ok}/${total} manifests verified · built ${new Date(report.generatedAt).toLocaleString('en-GB')}`);
-    summary.textContent = text();
-    document.addEventListener('ghrab:language', () => { summary.textContent = text(); });
+    const allLive = total > 0 && ok === total;
+    const available = report.sources?.filter(item => item.version).length || 0;
+    status?.classList.toggle('status-live', allLive);
+    status?.classList.toggle('status-fallback', !allLive && available === total);
+    status?.classList.toggle('status-error', available < total);
+    const update = () => {
+      if (allLive) {
+        if (title) title.textContent = t('Všechny nástroje jsou aktuální', 'All tools are up to date');
+        summary.textContent = t(`${total}/${total} manifestů ověřeno přímo u aplikací.`, `${total}/${total} manifests verified directly from the applications.`);
+      } else if (available === total) {
+        if (title) title.textContent = t('Všechny nástroje jsou dostupné', 'All tools are available');
+        summary.textContent = t(`Studio používá ověřenou záložní konfiguraci · poslední sestavení ${new Date(report.generatedAt).toLocaleString('cs-CZ')}.`, `The Studio is using its verified fallback configuration · last build ${new Date(report.generatedAt).toLocaleString('en-GB')}.`);
+      } else {
+        if (title) title.textContent = t('Některé nástroje vyžadují kontrolu', 'Some tools require attention');
+        summary.textContent = t(`${available}/${total} nástrojů má dostupnou konfiguraci.`, `${available}/${total} tools have an available configuration.`);
+      }
+    };
+    update();
+    document.addEventListener('ghrab:language', update, { once: true });
   }
 }
 
@@ -616,5 +666,24 @@ async function registerPwa(){
   }
 }
 
-window.GHRAB = { VERSION, state, t, localised, base, loadApps, loadSyncReport, loadPermissions, getLaunches, recordLaunch, getWorkspace, saveWorkspaceMaterial, deleteWorkspaceMaterial, createHandoff, readHandoff, clearHandoff, getPilotEvents, recordPilotEvent, clearPilotEvents, downloadJson, showToast, applyLanguage, applyMotion, getAccessMode, setAccessMode, getTrainedApps, setTrainedApps, hasLocalAccess, getFavoriteApps, setFavoriteApps, toggleFavoriteApp, safeGetItem, safeSetItem, safeSetJson, safeRemoveItem, storageUsage, validMaterial };
+const ADMIN_PAGES = new Set(['automation','demo','pilot','report','tests','changelog','issuer']);
+function renderPageAccessGate(){
+  if (!ADMIN_PAGES.has(page) || isAdmin()) return;
+  const main = document.querySelector('main');
+  if (!main) return;
+  main.replaceChildren();
+  const section = el('section', 'page-hero shell access-denied-page');
+  section.append(el('p', 'eyebrow', t('SPRÁVCOVSKÁ ČÁST', 'ADMINISTRATOR AREA')), el('h1', '', t('Tato stránka je dostupná pouze správci AI Studia.', 'This page is available to the AI Studio administrator only.')), el('p', '', t('Na stránce Můj přístup načtěte platné správcovské oprávnění.', 'Load a valid administrator permit on the My access page.')));
+  const link = el('a', 'button primary', t('Otevřít Můj přístup', 'Open My access')); link.href = `${base}access/`; section.append(link); main.append(section);
+}
+
+const accessReady = initialiseAccess().then(snapshot => {
+  updateAdminVisibility();
+  renderPageAccessGate();
+  return snapshot;
+});
+window.GHRAB = { VERSION, state, t, localised, base, loadApps, loadSyncReport, loadPermissions, getLaunches, recordLaunch, getWorkspace, saveWorkspaceMaterial, deleteWorkspaceMaterial, createHandoff, readHandoff, clearHandoff, getPilotEvents, recordPilotEvent, clearPilotEvents, downloadJson, showToast, applyLanguage, applyMotion, getFavoriteApps, setFavoriteApps, toggleFavoriteApp, safeGetItem, safeSetItem, safeSetJson, safeRemoveItem, storageUsage, validMaterial, validateMaterialPackage, initialiseAccess, setPermitToken, clearPermit, readPermitFile, getAccessSnapshot, getPermitToken, isAdmin, hasAppAccess, requiredTraining, formatReason, accessReady };
 setupChrome(); applyTheme(); applyLanguage(); applyMotion(); renderHome(); setupStarfield(); registerPwa();
+document.addEventListener('ghrab:language', () => { renderHomeCards(); renderHomeAccessSummary(); });
+document.addEventListener('ghrab:access-changed', () => { updateAdminVisibility(); renderPageAccessGate(); renderHomeCards(); });
+document.addEventListener('ghrab:favorites', renderHomeCards);

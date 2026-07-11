@@ -1,0 +1,27 @@
+{
+  "schema": "ghrab-material-v1",
+  "id": "demo-spanish-travel",
+  "version": 1,
+  "title": "Viajes y experiencias",
+  "subject": "Španělský jazyk",
+  "yearGroup": "A2",
+  "level": "A2",
+  "language": "cs",
+  "objectives": [
+    "Ukázat přenositelnost materiálu mezi nástroji."
+  ],
+  "content": {
+    "sourceText": "Krátký jazykový balíček pro procvičení zkušeností a cestování.",
+    "vocabulary": [],
+    "tasks": []
+  },
+  "differentiation": {},
+  "quality": {
+    "status": "teacher-reviewed",
+    "reviewedAt": "2026-07-10"
+  },
+  "provenance": {
+    "demo": true,
+    "containsPersonalData": false
+  }
+}

@@ -1,44 +1,22 @@
-# Studio Bridge v1
+# Studio Bridge 1.1 a Access Guard
 
-Studio Bridge je lokální integrační vrstva pro aplikace provozované pod stejným původem GitHub Pages.
+## Studio Bridge
 
-## Co dělá
+Lokální integrační vrstva čte `ghrab-handoff-v1`, ověří cíl, expiraci a základní tvar materiálu, předávku po převzetí odstraní a poskytne návratový odkaz do Studia. Nic neposílá na server.
 
-- čte krátkodobou předávku `ghrab-handoff-v1`,
-- ověří základní tvar `ghrab-material-v1`,
-- kontroluje cílovou aplikaci a expiraci,
-- po převzetí předávku odstraní,
-- umí uložit materiál do místního pracovního prostoru,
-- nic neposílá na server.
+## Access Guard
 
-## Aktuální adaptéry
+`access/app-guard.js` je samostatná vrstva spuštěná před Bridgem a před vlastním kódem aplikace. Ověří podpis, časovou platnost, revokaci, roli a konkrétní `appId`. Při neúspěchu zobrazí uzamčenou obrazovku; při úspěchu bootstrap načte původní aplikaci.
 
-- `generator` — Generátor 7.0.5,
-- `differentiator` — Diferenciátor 1.0.2,
-- `ludus` — LUDUS 1.14.2,
-- `correspondence` — Korespondenční asistent 4.0.2.
+## Doporučený životní cyklus
 
-Každá aplikace má vlastní mapování polí, protože jejich formuláře a pedagogický účel se liší.
-
-## Životní cyklus
-
-1. Studio validuje materiál.
-2. Zapíše handoff s cílem a expirací 30 minut.
-3. Stáhne záložní `.ghrab.json`.
-4. Otevře cílovou aplikaci s `?studioHandoff=1`.
-5. Aplikace handoff převezme a okamžitě smaže.
-6. Zobrazí banner o importu a odkaz zpět.
-
-## Klíče
-
-- `ghrab.handoff.v1` — jedna krátkodobá předávka,
-- `ghrab.workspace.v1` — maximálně 20 místních materiálů,
-- `ghrab.pilot.events.v2` — anonymní události použití.
+1. Access Guard ověří oprávnění.
+2. Bootstrap načte hlavní modul aplikace.
+3. Studio Bridge převezme případný handoff.
+4. Aplikace zmapuje anonymní materiál do vlastního formuláře.
+5. Handoff se odstraní.
+6. Uživatel dostane informaci o importu a odkaz zpět.
 
 ## Bezpečnost
 
-Předávka není šifrovaná. Je určena pouze pro anonymní, veřejný nebo didaktický obsah bez identifikačních údajů. Na sdíleném počítači je nutné místní data po práci odstranit.
-
-## Omezení stejného původu
-
-Přímá lokální předávka funguje, dokud jsou aplikace pod stejným schématem, hostitelem a portem. V současnosti jde o `https://daniel22-dev.github.io`. Při budoucím rozdělení na více domén se použije serverové API nebo souborový import.
+Oprávnění ani handoff nejsou náhradou serverového přihlášení. Handoff není šifrovaný a patří do něj pouze anonymní, veřejný nebo smyšlený obsah. Přístupový soubor lze bez serveru předat jiné osobě; tento limit je v rozhraní i dokumentaci výslovně uveden.

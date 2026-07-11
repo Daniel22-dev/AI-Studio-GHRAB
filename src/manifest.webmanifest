@@ -1,7 +1,7 @@
 {
   "name": "AI Studio GHRAB",
   "short_name": "AI Studio",
-  "description": "Centrální portál školních digitálních a AI nástrojů s automatickou synchronizací verzí.",
+  "description": "Profesionální školní portál digitálních a AI nástrojů s řízeným přístupem po absolvovaných školeních.",
   "version": "__APP_VERSION__",
   "lang": "cs",
   "start_url": "./",

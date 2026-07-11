@@ -1,27 +1,19 @@
-# Automatizace aktualizací AI Studio GHRAB 0.5.1
+# Automatizace aktualizací AI Studio GHRAB 0.6.0
 
-## Denní bezpečnostní synchronizace
+## Pravidelná synchronizace
 
-Workflow Studia se jako pojistka spouští jednou denně v 05:17 UTC. Načte veřejné manifesty, ověří jejich schema, verzi, HTTPS adresy a pilotní status a následně provede testy a nasazení.
+Workflow Studia se jako pojistka spouští každou hodinu v 17. minutě. Načte veřejné manifesty, ověří jejich schema, verzi, HTTPS adresy a pilotní status, provede testy a nasadí pouze ověřený build.
 
-GitHub může v neaktivním veřejném repozitáři plánované workflow po 60 dnech bez aktivity automaticky vypnout. Po delší prázdninové pauze proto otevřete `Actions`, workflow znovu povolte a spusťte `Run workflow`.
+GitHub může plánované workflow v dlouhodobě neaktivním veřejném repozitáři vypnout. Po prázdninové pauze proto zkontrolujte kartu Actions a případně použijte `Run workflow`.
 
-## Okamžitá aktualizace přes repository_dispatch
+## Okamžitá aktualizace
 
-Doporučený provoz nespoléhá jen na plán. Po nasazení Generátoru, LUDUSu nebo Školních aplikací odešle zdrojový repozitář událost `repository_dispatch` do Studia.
+Po nasazení dílčí aplikace může její repozitář odeslat `repository_dispatch` do Studia. Fine-grained token má mít přístup pouze k repozitáři Studia a musí být uložen jako GitHub secret `AI_STUDIO_DISPATCH_TOKEN`. Nikdy nepatří do HTML, JavaScriptu, manifestu ani dokumentace.
 
-### Fine-grained token
+## Ověření vydání
 
-1. GitHub: `Settings → Developer settings → Personal access tokens → Fine-grained tokens`.
-2. Přístup pouze k repozitáři `AI-Studio-GHRAB`.
-3. Oprávnění repozitáře **Contents: Read and write**.
-4. Token uložte ve zdrojových repozitářích jako secret `AI_STUDIO_DISPATCH_TOKEN`.
-5. Token nikdy nevkládejte do HTML, JavaScriptu, README ani manifestu.
-
-## Ověření
-
-1. Spusťte deploy jedné dílčí aplikace.
-2. V `AI-Studio-GHRAB → Actions` se musí objevit běh vyvolaný `repository_dispatch`.
-3. Ve Studiu otevřete **Automatizace** a zkontrolujte čas synchronizace i režim `live/mixed/fallback`.
-
-Pokud token není nastaven, denní synchronizace zůstane záložní cestou.
+1. V Actions musí projít synchronizace, test a build.
+2. Ve Správě zkontrolujte živé manifesty a fallbacky.
+3. Spusťte Kontrolu Studia.
+4. V anonymním okně ověřte výchozí uzamčení.
+5. Se správcovským oprávněním ověřte odemčení a administraci.

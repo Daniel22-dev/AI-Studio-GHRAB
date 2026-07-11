@@ -1,58 +1,55 @@
-# Přechod AI Studio GHRAB ze serverless pilotu na školní provoz
+# Přechod AI Studio GHRAB na školní server
 
-## Etapa A — řízený serverless pilot
+## Etapa A — řízený bezserverový provoz
 
 - GitHub Pages a samostatné repozitáře,
-- lokální demo proškolení,
-- lokální pracovní prostor a autosave konceptu,
-- ruční anonymní export pilotních dat od jednotlivých učitelů,
-- přímý handoff na stejném originu a `.ghrab.json` mezi originy,
-- vlastní API klíče uživatelů podle pravidel jednotlivých aplikací.
+- podepsaná oprávnění vydávaná správcem,
+- zámek ve Studiu a integrační zámek v každé aplikaci,
+- místní pracovní prostor a automatický koncept,
+- ruční anonymní export pilotních dat,
+- handoff na stejném originu a `.ghrab.json` mezi originy,
+- vlastní API klíče podle pravidel dílčích aplikací.
 
 ## Etapa B — školní server
 
-- školní subdoména,
-- přihlášení školním účtem,
-- role a absolvovaná školení uložená na serveru,
-- serverové vynucení přístupu také v aplikaci nebo API bráně,
+- školní subdoména a HTTPS,
+- přihlášení Google Workspace nebo Microsoft 365 účtem,
+- role a školení uložené centrálně,
+- oprávnění kontrolovaná v portálu, aplikaci i API bráně,
 - osobní pracovní prostor v databázi,
-- serverové handoff API,
-- bezpečná správa společných API klíčů,
-- anonymní souhrnné statistiky za školu.
+- jednorázové handoff API,
+- bezpečné serverové uložení API klíčů,
+- anonymní agregované statistiky,
+- zálohy, obnova a auditní logy.
 
-Při přesunu na jiný origin přestane lokální handoff fungovat. Migrace proto musí proběhnout současně se zavedením serverového API; do té doby zůstává oficiální náhradní cestou export/import `.ghrab.json`.
-
-## Etapa C — plná školní platforma
+## Etapa C — plná platforma
 
 - role učitel / komise / správce / vedení,
 - schvalování a verzování materiálů,
-- centrální katalog aplikací a Top 4 uživatele,
-- auditní logy bez ukládání obsahu promptů,
+- centrální katalog a osobní Top 4,
 - rozpočtové limity a monitoring spotřeby,
-- zálohování a pravidelný test obnovy,
 - testovací a produkční prostředí,
-- řízené aktualizace a návrat na předchozí verzi.
+- řízené aktualizace a rollback,
+- dokumentované incidenty a odpovědnosti.
+
+## Převod prvků
+
+| Bez serveru | Školní server |
+|---|---|
+| podepsaný soubor | školní identita a serverové claims |
+| veřejný revokační JSON | okamžitá správa účtů a oprávnění |
+| místní workspace | osobní databázový prostor |
+| lokální handoff | jednorázové API |
+| ruční anonymní export | centrální anonymní agregace |
+| soukromý vydavatelský klíč | správa identit a serverových tajemství |
 
 ## Otázky pro IT
 
-1. Jaký backend je škola schopna dlouhodobě provozovat?
-2. Lze použít Docker, Node.js nebo jinou podporovanou technologii?
-3. Jaká databáze a zálohování jsou k dispozici?
-4. Lze použít školní Google nebo Microsoft účty?
-5. Kde budou uložena serverová tajemství a API klíče?
-6. Kdo bude správcem, kdo nasazuje aktualizace a kdo řeší incidenty?
-7. Jak se bude oddělovat testovací a ostré prostředí?
-8. Může být služba dostupná z domova pod školní subdoménou?
-9. Kdo bude vlastnit GitHub organizaci a repozitáře, aby projekt nebyl závislý na jediném osobním účtu?
-10. Jak bude formálně evidováno absolvované proškolení a jeho případná expirace?
-
-## Převod lokálních prvků na server
-
-| Serverless pilot | Školní server |
-|---|---|
-| `ghrab.workspace.v1` | osobní pracovní prostor v databázi |
-| `.ghrab.json` | verzovaný materiál |
-| lokální handoff | serverové jednorázové API |
-| demo proškolení | role a oprávnění z identity školy |
-| ruční export učitele | anonymní centrální analytika |
-| lokální report | souhrnný report pro vedení |
+1. Jaké přihlášení škola podporuje?
+2. Kdo spravuje role a evidenci školení?
+3. Jaký backend, databázi a zálohování lze dlouhodobě provozovat?
+4. Kde budou API klíče a serverová tajemství?
+5. Jak se oddělí testovací a produkční prostředí?
+6. Kdo nasazuje aktualizace a řeší incidenty?
+7. Jak bude nastavena doba uchování a anonymizace statistik?
+8. Kdo vlastní doménu, GitHub organizaci a provozní účty?

@@ -1,5 +1,15 @@
 # Changelog
 
+## 0.6.0 — 2026-07-10
+
+- zavedena kryptograficky podepsaná bezserverová oprávnění a výchozí uzamčení aplikací,
+- odděleno učitelské a správcovské rozhraní,
+- přidán vydavatel oprávnění, revokační seznam a integrační ochrana přímých URL,
+- přepracována domovská stránka při zachování herního stylu a Top 4,
+- oddělena komunikace od výukového workflow,
+- zpřesněny materiály, importy, pilotní metriky a report,
+- rozšířeny testy, PWA cache a bezpečnost distribučního balíku.
+
 ## 0.5.1 — 2026-07-10
 
 - sjednoceny pilotní statusy ve fallbacku i zdrojových manifestech a doplněny release pojistky,

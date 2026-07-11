@@ -1,42 +1,46 @@
 # AI Studio GHRAB
 
-**Verze 0.5.1 — zpevněná serverless pilotní platforma s automatickou diagnostikou a přípravou na školní server.**
+**Verze 0.6.0 — profesionální serverless rozcestník s řízeným přístupem po školení.**
 
-AI Studio GHRAB je centrální brána školních digitálních a AI nástrojů. Jednotlivé aplikace zůstávají ve vlastních repozitářích a vyvíjejí se nezávisle. Studio nad nimi vytváří společnou navigaci, správu verzí, bezpečnostní rámec, výměnný formát materiálů, pilotní měření a prezentační vrstvu.
+AI Studio GHRAB je centrální brána školních digitálních a AI nástrojů. Jednotlivé aplikace zůstávají v samostatných repozitářích; Studio zajišťuje společnou navigaci, Top 4, synchronizaci verzí, pracovní materiály, bezpečnostní rámec, pilotní měření a správu přístupů.
 
-## Co verze 0.5.1 přináší
+## Hlavní novinky 0.6.0
 
-- čtyři prioritní aplikace kolem centrálního jádra a model uživatelských **Top 4** pro budoucí růst,
-- automaticky synchronizovaný registr aplikací s ověřeným fallbackem,
-- pilotní označení aplikací chráněné automatickým testem,
-- lokální demonstrační režim proškolení; skutečné oprávnění je připraveno pro budoucí backend,
-- Pracovní tok s formátem `ghrab-material-v1`, automatickým konceptem a obnovou rozpracované práce,
-- bezpečné zápisy do místního úložiště s hlášením zaplnění nebo zablokování,
-- krátkodobou předávku `ghrab-handoff-v1` a ruční zálohu `.ghrab.json`,
-- knihovnu, Centrum bezpečnosti, changelog a stránku Kontrola Studia,
-- anonymní pilotní exporty bez promptů, obsahu, názvů materiálů a volných poznámek,
-- oddělení učitelem vykázané úspory času od automatického orientačního odhadu,
-- režimy animací: automatický, plný, úsporný a vypnutý,
-- PWA a offline jádro.
+- digitálně podepsaná oprávnění místo veřejného demonstračního zámku,
+- výchozí stav všech aplikací **uzamčeno**,
+- odemykání jednotlivých aplikací podle absolvovaných školení,
+- samostatná stránka **Můj přístup** a lokální administrátorský vydavatel oprávnění,
+- oddělené učitelské a správcovské rozhraní,
+- integrační ochrana přímých adres všech čtyř aplikací,
+- přepracovaná domovská stránka při zachování sci-fi herního stylu a Top 4,
+- výukový workflow oddělený od komunikace a administrativy,
+- hlubší validace importovaných materiálů,
+- přesnější lokální pilotní metriky,
+- rozšířená diagnostika, PWA cache a release kontroly.
 
-## Důležitá hranice serverless verze
+## Přístup bez serveru
 
-Studio nemá školní účty, centrální databázi ani společný API klíč. Materiály, koncepty, handoff a pilotní záznamy zůstávají v konkrétním profilu prohlížeče. Lokální zámek proškolení je pouze věrná demonstrace budoucího modelu; nelze jej považovat za bezpečnostní oprávnění.
+Veřejný portál obsahuje pouze veřejný EC P-256 klíč. Správce vytvoří podepsaný přístup na stránce `tools/access-issuer/` pomocí soukromého klíče uloženého mimo repozitář. Oprávnění určuje roli, povolené aplikace, datum platnosti a verzi školení.
 
-Přímá předávka přes `localStorage` funguje jen mezi aplikacemi na stejném webovém originu. Při přesunu Studia na školní subdoménu se předávka nahradí serverovým API; do té doby zůstává spolehlivou mezioriginovou cestou export a import `.ghrab.json`.
+Bez serveru nelze spolehlivě ověřit totožnost držitele ani zabránit předání platného souboru. Jde o profesionální přechodové řešení před školním přihlášením, nikoli o plnou identitní službu.
 
-## Pilotní statistiky bez serveru
+## Ochrana přímých adres
 
-Každý proškolený kolega může v části **Pilot** stáhnout anonymní JSON nebo CSV a předat jej správci projektu. Export obsahuje pouze provozní události, počty, hodnocení a časové odhady. Neobsahuje jména, prompty, texty materiálů, jejich názvy ani volné poznámky. Správce může soubory ručně sloučit pro průběžný report vedení.
+Studio samo chrání spuštění z karet. Aby nešlo zámek obejít přímou URL samostatné aplikace, musí být do jejího repozitáře vložen bootstrap z `src/integration/`. Přesný postup je v `src/integration/README.md`.
+
+## Data a soukromí
+
+Koncepty, materiály, oprávnění a pilotní záznamy zůstávají v konkrétním profilu prohlížeče. Nejde o centrální databázi ani zálohu. Do Studia patří pouze anonymní, veřejný nebo smyšlený obsah. Pilotní exporty neobsahují prompty, texty materiálů, jejich názvy ani volné poznámky.
 
 ## Nasazení
 
-1. Nejdříve aktualizujte manifesty a integrační adaptéry v repozitářích dílčích aplikací.
-2. Poté nahrajte obsah GitHub ZIPu Studia do kořene repozitáře `AI-Studio-GHRAB`.
-3. V `Settings → Pages` ponechte `Source: GitHub Actions`.
-4. Počkejte na zelený běh workflow a ve Studiu otevřete **Automatizace** a **Kontrola Studia**.
+1. Nahrajte obsah `AI-Studio-GHRAB-v0.6.0-GitHub.zip` do kořene repozitáře.
+2. Soukromý administrátorský balíček nikdy nenahrávejte na GitHub.
+3. Po nasazení načtěte na stránce Můj přístup správcovské oprávnění.
+4. Ve Správě spusťte Kontrolu Studia.
+5. Ochranu přímých adres doplňte do repozitářů dílčích aplikací.
 
-Podrobný postup je v `NAHRANI-NA-GITHUB-v0.5.1.md`.
+Podrobný návod: `NAHRANI-NA-GITHUB-v0.6.0.md`.
 
 ## Lokální kontrola
 
@@ -49,12 +53,11 @@ npm test
 
 - `ARCHITEKTURA.md`
 - `BEZPECNOST.md`
-- `AUTOMATIZACE-GITHUB.md`
 - `ROADMAP-SERVER.md`
 - `RELEASE-CHECKLIST.md`
-- `KOMENTAR-ZMEN-0.5.1.md`
-- `QA_REPORT_0.5.1.md`
-- `REAKCE-NA-AUDIT-CLAUDE-FABLE-5.md`
+- `KOMENTAR-ZMEN-0.6.0.md`
+- `QA_REPORT_0.6.0.md`
+- `NAHRANI-NA-GITHUB-v0.6.0.md`
 
 Autor a vývojový garant: Daniel Baláž  
 Školní projekt Gymnázia, Ostrava-Hrabůvka

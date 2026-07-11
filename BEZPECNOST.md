@@ -1,52 +1,43 @@
-# Bezpečnostní hranice AI Studio GHRAB 0.5.1
+# Bezpečnostní hranice AI Studio GHRAB 0.6.0
 
-## Co serverless portál dělá
+## Co serverless portál zajišťuje
 
-- načítá vlastní statické soubory a veřejné manifesty aplikací,
-- ukládá nastavení, anonymní materiály, koncept a pilotní události do místního profilu prohlížeče,
-- umožňuje vše exportovat a lokální data vymazat,
-- používá striktní CSP, neobsahuje API klíče a neposílá vlastní analytiku třetím stranám.
+- ověřuje digitální podpis přístupového oprávnění,
+- odemyká pouze povolené aplikace,
+- odděluje správcovské stránky,
+- kontroluje expiraci, publikum, klíč a revokační seznam,
+- používá striktní CSP,
+- neobsahuje API klíče ani soukromý podpisový klíč,
+- ukládá pracovní data pouze místně,
+- exportuje pouze omezené anonymní provozní údaje.
 
-## Co nedělá
+## Co bez serveru nezajišťuje
 
-- nepřihlašuje uživatele,
-- nevynucuje skutečná oprávnění,
-- nemá školní databázi ani centrální zálohu,
-- nesynchronizuje data mezi zařízeními,
-- neukládá prompty nebo obsah materiálů do pilotních exportů.
+- spolehlivé ověření totožnosti osoby,
+- zákaz předání platného přístupového souboru,
+- centrální synchronizaci mezi zařízeními,
+- okamžitý audit používání,
+- bezpečnou centrální databázi,
+- ochranu přímé URL aplikace, dokud v jejím repozitáři není integrační bootstrap.
 
-## Sdílený origin a sdílené počítače
+## Klíče
 
-Všechny aplikace hostované pod stejným originem `daniel22-dev.github.io` sdílejí technickou hranici místního úložiště. Proto:
+Soukromý klíč je nejcitlivější soubor celého systému. Patří pouze správci, ideálně na šifrované zařízení a do oddělené offline zálohy. Nesmí být v GitHubu, e-mailu, veřejném cloudu ani společné školní složce. Veřejný klíč je určen k publikaci.
 
-- učitel nesmí používat Studio v profilu prohlížeče určeném žákům nebo pro veřejné třídní hraní,
-- na sdíleném počítači se použije oddělený učitelský profil, režim hosta nebo se po práci vymažou místní data,
-- žákovské zařízení neslouží k přípravě materiálů ve Studiu,
-- do pracovního prostoru patří pouze anonymní, veřejný nebo smyšlený obsah,
-- `localStorage` není šifrovaný trezor.
+Při kompromitaci soukromého klíče je nutné vytvořit nový pár klíčů, aktualizovat veřejný klíč a vydat nová oprávnění.
 
-## Handoff
+## Revokace
 
-Předávka je platná 30 minut a po převzetí se smaže. Funguje jen na stejném originu. Mezi různými doménami se používá ruční soubor `.ghrab.json`; po nasazení backendu se předávka nahradí serverovým API.
+Konkrétní oprávnění se zneplatní přidáním jeho `jti` do `config/revoked-access.json`. Pole `revokedBefore` umožňuje zneplatnit všechna oprávnění vydaná před určeným okamžikem. Offline zařízení může dočasně používat naposledy uložený seznam; po připojení se načte aktuální verze.
 
-## Anonymní pilotní export
+## Sdílené počítače
 
-Export smí obsahovat pouze:
+Oprávnění i pracovní data jsou v profilu prohlížeče. Na sdíleném zařízení používejte oddělený učitelský profil nebo po práci odeberte přístup a vymažte místní data. Žákovský profil nesmí být používán k přípravě učitelských materiálů.
 
-- typ aplikace a události,
-- čas události,
-- počet spuštění,
-- výsledek operace,
-- hodnocení užitečnosti,
-- učitelem vykázané minuty,
-- oddělený automatický orientační odhad.
+## Obsah a anonymizace
 
-Nesmí obsahovat jména, prompty, názvy materiálů, texty, studentské práce, volné poznámky ani identifikátory osob. Funkční regresní test používá syntetická „otrávená“ data a ověřuje skutečné exportní funkce.
+Do externí AI služby nepatří identifikovatelné zdravotní, rodinné, kázeňské ani jiné citlivé údaje. Studentské práce a korespondence se anonymizují před vložením. Každý výstup kontroluje učitel.
 
-## Pro pilot
+## Pilotní export
 
-Každý výstup AI kontroluje učitel. Do externí AI služby nepatří identifikovatelné zdravotní, kázeňské, rodinné ani jiné citlivé údaje. Studentské práce a školní korespondence se anonymizují ještě před vložením.
-
-## Budoucí serverová verze
-
-Před oficiálním provozem musí škola vyřešit přihlášení školní identitou, serverové vynucení proškolení, minimalizaci dat, dobu uchování, zálohování, auditní logy, správu tajemství, incidenty a odpovědnosti.
+Povolené jsou pouze počty, typy událostí, čas, výsledek, hodnocení, učitelem vykázané minuty a oddělený orientační odhad. Zakázány jsou prompty, texty, názvy materiálů, studentské práce, jména a volné poznámky.
