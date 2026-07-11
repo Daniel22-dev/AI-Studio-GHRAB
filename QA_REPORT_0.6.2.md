@@ -1,8 +1,8 @@
-# QA report — AI Studio GHRAB 0.6.2
+# QA report — AI Studio GHRAB 0.6.3
 
 ## Rozsah vydání
 
-Verze 0.6.2 připojuje Hodnotitel maturitních slohů 1.3.1 jako pátou chráněnou aplikaci ekosystému.
+Verze 0.6.3 připojuje Hodnotitel maturitních slohů 1.3.2 jako pátou chráněnou aplikaci ekosystému.
 
 ## Ověřené oblasti
 
@@ -10,7 +10,7 @@ Verze 0.6.2 připojuje Hodnotitel maturitních slohů 1.3.1 jako pátou chráně
 - `essay-evaluator` je ve výchozím Top 4;
 - LUDUS zůstává dostupný v katalogu a lze jej připnout;
 - živý zdroj manifestu má správnou veřejnou URL;
-- offline fallback obsahuje verzi 1.3.1 a lokální ikonu;
+- offline fallback obsahuje verzi 1.3.2 a lokální ikonu;
 - přístupová politika obsahuje školení `HOD-01`;
 - oprávnění obsahuje claim `app.essay-evaluator.use` a rizikovou úroveň `high`;
 - vydavatel přístupů načítá novou aplikaci dynamicky z politiky;

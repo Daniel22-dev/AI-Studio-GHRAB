@@ -1,4 +1,4 @@
-# Bezpečnostní hranice AI Studio GHRAB 0.6.2
+# Bezpečnostní hranice AI Studio GHRAB 0.6.3
 
 ## Co serverless portál zajišťuje
 
@@ -22,7 +22,7 @@
 
 ## Stav ochrany přímých adres
 
-Ochranný bootstrap je integrován v Generátoru 7.0.6, Diferenciátoru 1.0.3, Hodnotiteli maturitních slohů 1.3.1, LUDUSu 1.14.3 a Korespondenčním asistentovi 4.0.3. Jejich aplikační skripty zůstávají inertní, dokud centrální modul neověří podpis, platnost, revokaci, roli a příslušné ID aplikace. Při nedostupnosti centrální konfigurace se aplikace bezpečně neotevře.
+Ochranný bootstrap je integrován v Generátoru 7.0.6, Diferenciátoru 1.0.3, Hodnotiteli maturitních slohů 1.3.2, LUDUSu 1.14.3 a Korespondenčním asistentovi 4.0.3. Jejich aplikační skripty zůstávají inertní, dokud centrální modul neověří podpis, platnost, revokaci, roli a příslušné ID aplikace. Při nedostupnosti centrální konfigurace se aplikace bezpečně neotevře.
 
 ## Klíče
 

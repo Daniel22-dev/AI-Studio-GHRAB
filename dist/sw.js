@@ -1,9 +1,9 @@
-const CACHE = 'ai-studio-ghrab-v0.6.2';
+const CACHE = 'ai-studio-ghrab-v0.6.3';
 const CORE = [
   './','./index.html','./styles.css','./polish.css','./app.js','./manifest.webmanifest',
   './config/apps.generated.json','./config/apps.fallback.json','./config/sources.json','./config/sync-report.json','./config/permissions.json','./config/changelog.json','./config/access-policy.json','./config/access-public-key.json','./config/revoked-access.json',
   './assets/brand/brand-mark.svg','./assets/brand/portal-core.svg','./assets/brand/icon-32.png','./assets/brand/icon-48.png','./assets/brand/icon-72.png','./assets/brand/icon-96.png','./assets/brand/icon-128.png','./assets/brand/icon-192.png','./assets/brand/icon-512.png','./assets/brand/icon-maskable-512.png','./assets/brand/apple-touch-icon.png',
-  './assets/apps/generator.png','./assets/apps/differentiator.png','./assets/apps/essay-evaluator.png','./assets/apps/ludus.png','./assets/apps/correspondence.png',
+  './assets/apps/generator.png','./assets/apps/differentiator.png','./assets/apps/essay-evaluator-v2.png','./assets/apps/ludus.png','./assets/apps/correspondence.png',
   './shared/safe-export.js','./shared/material-validator.js','./access/index.html','./access/access.js','./access/access-control.js','./access/app-guard.js','./access/access-gate.css',
   './automation/index.html','./automation/automation.js','./workflow/index.html','./workflow/workflow.js','./report/index.html','./report/report.js','./bridge/studio-bridge.js','./demo/index.html','./demo/demo.js','./library/index.html','./library/library.js','./library/catalog.json',
   './library/materials/past-simple.ghrab.json','./library/materials/spanish-travel.ghrab.json','./library/materials/czech-syntax.ghrab.json','./library/materials/school-email.ghrab.json',

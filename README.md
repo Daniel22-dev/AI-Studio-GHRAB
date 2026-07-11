@@ -1,12 +1,12 @@
 # AI Studio GHRAB
 
-**Verze 0.6.2 — federovaný serverless portál pěti chráněných školních aplikací.**
+**Verze 0.6.3 — federovaný serverless portál pěti chráněných školních aplikací.**
 
 AI Studio GHRAB je centrální brána školních digitálních a AI nástrojů. Jednotlivé aplikace zůstávají v samostatných repozitářích; Studio zajišťuje společnou navigaci, Top 4, synchronizaci verzí, bezpečnostní rámec, pracovní materiály, pilotní měření a správu podepsaných přístupů.
 
-## Hlavní novinky 0.6.2
+## Hlavní novinky 0.6.3
 
-- připojen **Hodnotitel maturitních slohů 1.3.1** jako pátá aplikace;
+- připojen **Hodnotitel maturitních slohů 1.3.2** jako pátá aplikace;
 - nové aplikační ID `essay-evaluator`, školení `HOD-01` a claim `app.essay-evaluator.use`;
 - Hodnotitel je ve výchozím Top 4, LUDUS zůstává v katalogu a lze jej připnout;
 - doplněna lokální ikona, živý manifest, offline fallback, PWA cache a diagnostika;
@@ -30,7 +30,7 @@ Starší učitelské přístupy neobsahují `essay-evaluator`. Pro učitele, kte
 
 ## Nasazení
 
-1. Nahrajte obsah ZIPu AI Studia 0.6.2 do kořene repozitáře `AI-Studio-GHRAB`.
+1. Nahrajte obsah ZIPu AI Studia 0.6.3 do kořene repozitáře `AI-Studio-GHRAB`.
 2. Nahrajte obsah ZIPu Hodnotitele AI-STUDIO-READY do kořene repozitáře `Hodnotitel-maturitnich-slohu`.
 3. Soukromý administrátorský balíček ani přístupové soubory nikdy nenahrávejte na GitHub.
 4. Po zeleném nasazení otevřete Správu a spusťte Kontrolu Studia.

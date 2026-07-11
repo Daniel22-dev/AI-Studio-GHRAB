@@ -1,4 +1,4 @@
-# Nahrání AI Studio GHRAB 0.6.2
+# Nahrání AI Studio GHRAB 0.6.3
 
 1. Rozbalte ZIP AI Studia.
 2. Do kořene repozitáře `AI-Studio-GHRAB` nahrajte veškerý obsah včetně `.github`.

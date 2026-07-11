@@ -4,7 +4,7 @@
 
 ### 1. Aktualizovat repozitář Hodnotitele
 
-1. Rozbalte `Hodnotitel-maturitnich-slohu-v1.3.1-AI-STUDIO-READY-GITHUB-ROOT.zip`.
+1. Rozbalte `Hodnotitel-maturitnich-slohu-v1.3.2-AI-STUDIO-READY-GITHUB-ROOT.zip`.
 2. V repozitáři `Hodnotitel-maturitnich-slohu` nahrajte veškerý obsah rozbalené složky do kořene.
 3. Potvrďte nahrazení existujících souborů.
 4. Vyčkejte, až v Actions zezelená `Test and deploy Hodnotitel`.
@@ -12,7 +12,7 @@
 
 ### 2. Aktualizovat repozitář AI Studia
 
-1. Rozbalte `AI-Studio-GHRAB-v0.6.2-HODNOTITEL-GITHUB-ROOT.zip`.
+1. Rozbalte `AI-Studio-GHRAB-v0.6.3-HODNOTITEL-GITHUB-ROOT.zip`.
 2. V repozitáři `AI-Studio-GHRAB` nahrajte veškerý obsah do kořene včetně složky `.github`.
 3. Potvrďte nahrazení existujících souborů.
 4. V Actions vyčkejte na zelené kroky synchronizace, validace, buildu a deploye.

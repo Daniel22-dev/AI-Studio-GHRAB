@@ -1,9 +1,9 @@
 {
   "schema": "ai-studio-changelog-v1",
-  "current": "0.6.2",
+  "current": "0.6.3",
   "items": [
     {
-      "version": "0.6.2",
+      "version": "0.6.3",
       "date": "2026-07-11",
       "title": {
         "cs": "Hodnotitel maturitních slohů připojen do ekosystému",
@@ -11,8 +11,8 @@
       },
       "changes": [
         {
-          "cs": "Přidán Hodnotitel maturitních slohů 1.3.1 jako pátá chráněná aplikace s ID essay-evaluator, školením HOD-01 a rizikovou úrovní high.",
-          "en": "Added Matura Essay Evaluator 1.3.1 as the fifth protected application with ID essay-evaluator, training HOD-01 and high risk level."
+          "cs": "Přidán Hodnotitel maturitních slohů 1.3.2 jako pátá chráněná aplikace s ID essay-evaluator, školením HOD-01 a rizikovou úrovní high.",
+          "en": "Added Matura Essay Evaluator 1.3.2 as the fifth protected application with ID essay-evaluator, training HOD-01 and high risk level."
         },
         {
           "cs": "Hodnotitel je ve výchozím Top 4; LUDUS zůstává plně dostupný v katalogu a lze jej připnout mezi priority.",

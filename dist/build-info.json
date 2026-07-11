@@ -1,6 +1,6 @@
 {
-  "version": "0.6.2",
-  "builtAt": "2026-07-11T13:53:38.589Z",
+  "version": "0.6.3",
+  "builtAt": "2026-07-11T14:19:04.560Z",
   "syncMode": "fallback",
   "apps": [
     {
@@ -13,7 +13,7 @@
     },
     {
       "id": "essay-evaluator",
-      "version": "1.3.1"
+      "version": "1.3.2"
     },
     {
       "id": "correspondence",

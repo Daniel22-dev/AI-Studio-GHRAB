@@ -65,7 +65,7 @@
       "cs": "Hodnotitel maturitních slohů",
       "en": "Matura Essay Evaluator"
     },
-    "version": "1.3.1",
+    "version": "1.3.2",
     "status": {
       "cs": "Připraveno k řízenému pilotu",
       "en": "Ready for controlled pilot"
@@ -75,7 +75,7 @@
       "en": "Evidence-based Matura essay assessment with anonymisation, teacher review, professional reports and anonymous class analytics."
     },
     "launchUrl": "https://daniel22-dev.github.io/Hodnotitel-maturitnich-slohu/",
-    "icon": "assets/apps/essay-evaluator.png",
+    "icon": "assets/apps/essay-evaluator-v2.png",
     "tags": [
       {
         "cs": "Hodnocení slohů",

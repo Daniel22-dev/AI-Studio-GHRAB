@@ -1,12 +1,12 @@
 # Ochrana samostatných aplikací bez serveru
 
-## Stav ve verzi 0.6.2
+## Stav ve verzi 0.6.3
 
 Ochranná vrstva je integrována v těchto vydáních:
 
 - Generátor interaktivních testů 7.0.6 — ID `generator`,
 - Diferenciátor 1.0.3 — ID `differentiator`,
-- Hodnotitel maturitních slohů 1.3.1 — ID `essay-evaluator`,
+- Hodnotitel maturitních slohů 1.3.2 — ID `essay-evaluator`,
 - LUDUS 1.14.3 — ID `ludus`,
 - Korespondenční asistent 4.0.3 — ID `correspondence`.
 

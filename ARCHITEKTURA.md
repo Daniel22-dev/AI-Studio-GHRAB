@@ -1,4 +1,4 @@
-# Architektura AI Studio GHRAB 0.6.2
+# Architektura AI Studio GHRAB 0.6.3
 
 ## Federovaný portál
 
