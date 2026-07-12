@@ -1,18 +1,17 @@
 # AI Studio GHRAB
 
-**Verze 0.6.3 — federovaný serverless portál pěti chráněných školních aplikací.**
+**Verze 0.7.0 — federovaný serverless portál pěti chráněných školních aplikací s interaktivními manuály.**
 
 AI Studio GHRAB je centrální brána školních digitálních a AI nástrojů. Jednotlivé aplikace zůstávají v samostatných repozitářích; Studio zajišťuje společnou navigaci, Top 4, synchronizaci verzí, bezpečnostní rámec, pracovní materiály, pilotní měření a správu podepsaných přístupů.
 
-## Hlavní novinky 0.6.3
+## Hlavní novinky 0.7.0
 
-- připojen **Hodnotitel maturitních slohů 1.3.2** jako pátá aplikace;
-- nové aplikační ID `essay-evaluator`, školení `HOD-01` a claim `app.essay-evaluator.use`;
-- Hodnotitel je ve výchozím Top 4, LUDUS zůstává v katalogu a lze jej připnout;
-- doplněna lokální ikona, živý manifest, offline fallback, PWA cache a diagnostika;
-- vydavatel oprávnění automaticky nabízí všech pět aplikací;
-- synchronizace zachovává důvěryhodné lokální ikony portálu;
-- sladěn repository dispatch Hodnotitele s automatickou aktualizací Studia.
+- Samostatná záložka **Manuály** zobrazuje průvodce všech pěti aplikací.
+- Otevření manuálu dědí stejné podepsané oprávnění jako otevření aplikace.
+- Správce má přístup ke všem manuálům; učitel pouze k aplikacím zahrnutým v jeho oprávnění.
+- Adresy a verze manuálů přicházejí z aplikačních manifestů, takže se průvodce aktualizuje spolu s aplikací.
+- Centrální registr obsahuje Generátor 7.0.8, Diferenciátor 1.1.1, Hodnotitel 1.3.7, Korespondenčního asistenta 5.0.1 a LUDUS 1.14.6.
+- Navigace, PWA cache, validační schéma a release testy byly rozšířeny o manuály.
 
 ## Přístup bez serveru
 
@@ -26,15 +25,15 @@ Ochranný bootstrap je integrován v Generátoru, Diferenciátoru, Hodnotiteli m
 
 ## Důležité po aktualizaci
 
-Starší učitelské přístupy neobsahují `essay-evaluator`. Pro učitele, kteří mají Hodnotitel používat, vydejte nový přístup se zaškrtnutým Hodnotitelem a absolvovaným školením `HOD-01`. Správcovský přístup s `apps: ["*"]` otevře i novou aplikaci automaticky.
+Stávající podepsaná oprávnění není kvůli manuálům nutné vydávat znovu. Manuál automaticky dědí přístup k příslušné aplikaci. Správcovský přístup s `apps: ["*"]` otevře všechny průvodce.
 
 ## Nasazení
 
-1. Nahrajte obsah ZIPu AI Studia 0.6.3 do kořene repozitáře `AI-Studio-GHRAB`.
-2. Nahrajte obsah ZIPu Hodnotitele AI-STUDIO-READY do kořene repozitáře `Hodnotitel-maturitnich-slohu`.
+1. Nejprve musí být nasazené aktuální balíčky všech pěti dílčích aplikací s manuály.
+2. Nahrajte obsah ZIPu AI Studia 0.7.0 do kořene repozitáře `AI-Studio-GHRAB`.
 3. Soukromý administrátorský balíček ani přístupové soubory nikdy nenahrávejte na GitHub.
-4. Po zeleném nasazení otevřete Správu a spusťte Kontrolu Studia.
-5. Vydejte nové učitelské přístupy s oprávněním `essay-evaluator`.
+4. Po zeleném nasazení otevřete záložku **Manuály** a ověřte správný uzamčený i odemčený stav.
+5. Ve Správě spusťte Kontrolu Studia.
 
 ## Lokální kontrola
 

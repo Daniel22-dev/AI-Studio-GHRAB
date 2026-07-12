@@ -1,5 +1,14 @@
 # Changelog
 
+## 0.7.0 — 2026-07-12
+
+- přidána samostatná záložka **Manuály** se všemi pěti interaktivními průvodci;
+- všechny manuály jsou viditelné, ale otevření dědí stejné podepsané oprávnění jako příslušná aplikace;
+- správce otevře všechny manuály, učitel jen průvodce odemčených aplikací;
+- manuály zůstávají u jednotlivých aplikací a AI Studio používá jejich `manualUrl`, takže nevzniká zastarávající kopie;
+- registr aktualizován na Generátor 7.0.8, Diferenciátor 1.1.1, Hodnotitel 1.3.7, Korespondenčního asistenta 5.0.1 a LUDUS 1.14.6;
+- doplněna PWA cache, validace manifestů, jednotná navigace a automatické testy přístupů k manuálům.
+
 ## 0.6.3 — 2026-07-11
 
 - přidán Hodnotitel maturitních slohů 1.3.2 jako pátá chráněná aplikace;

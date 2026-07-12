@@ -40,3 +40,12 @@
 - [ ] Spustit Kontrolu Studia.
 - [ ] Ověřit Android Chrome, desktop Chrome/Edge a iPhone Safari.
 - [ ] Ověřit přenos materiálu do všech podporovaných aplikací.
+
+
+## Manuály
+
+- [ ] Každý manifest obsahuje platné HTTPS `manualUrl`.
+- [ ] Katalog zobrazuje všech pět karet i bez přístupu.
+- [ ] Učitel otevře jen manuály povolených aplikací.
+- [ ] Správce otevře všechny manuály.
+- [ ] `manualy/index.html`, `manualy/manualy.js` a `manualy/manualy.css` jsou v PWA precache.

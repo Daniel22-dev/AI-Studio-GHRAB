@@ -1,7 +1,37 @@
 {
   "schema": "ai-studio-changelog-v1",
-  "current": "0.6.3",
+  "current": "0.7.0",
   "items": [
+    {
+      "version": "0.7.0",
+      "date": "2026-07-12",
+      "title": {
+        "cs": "Interaktivní manuály přímo v AI Studiu",
+        "en": "Interactive manuals directly in AI Studio"
+      },
+      "changes": [
+        {
+          "cs": "Přidána samostatná záložka Manuály se všemi pěti interaktivními průvodci.",
+          "en": "Added a dedicated Manuals tab with all five interactive guides."
+        },
+        {
+          "cs": "Všechny karty jsou viditelné, ale otevření manuálu se řídí stejným podepsaným oprávněním jako příslušná aplikace; správce otevře všechny.",
+          "en": "All cards are visible, while opening a manual follows the same signed permit as its application; the administrator can open all of them."
+        },
+        {
+          "cs": "Manuály se načítají z adres publikovaných v manifestech aplikací, takže nevzniká druhá zastarávající kopie v AI Studiu.",
+          "en": "Manuals are loaded from URLs published in application manifests, avoiding a second stale copy in AI Studio."
+        },
+        {
+          "cs": "Aktualizován centrální registr na Generátor 7.0.8, Diferenciátor 1.1.1, Hodnotitel 1.3.7, Korespondenčního asistenta 5.0.1 a LUDUS 1.14.6.",
+          "en": "Updated the central registry to Generator 7.0.8, Differentiator 1.1.1, Essay Evaluator 1.3.7, Correspondence Assistant 5.0.1 and LUDUS 1.14.6."
+        },
+        {
+          "cs": "Rozšířena PWA cache, manifestový kontrakt, interní odkazy a automatické release testy.",
+          "en": "Expanded the PWA cache, manifest contract, internal links and automated release tests."
+        }
+      ]
+    },
     {
       "version": "0.6.3",
       "date": "2026-07-11",

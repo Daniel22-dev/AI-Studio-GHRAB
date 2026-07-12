@@ -9,7 +9,7 @@ const offline = process.argv.includes('--offline');
 const sources = JSON.parse(await readFile(path.join(configDir, 'sources.json'), 'utf8'));
 const fallback = JSON.parse(await readFile(path.join(configDir, 'apps.fallback.json'), 'utf8'));
 const fallbackById = new Map(fallback.map(app => [app.id, app]));
-const required = ['schema','id','name','version','status','description','launchUrl','repository','icon','accent'];
+const required = ['schema','id','name','version','status','description','launchUrl','manualUrl','repository','icon','accent'];
 const semver = /^\d+\.\d+\.\d+(?:[-+][0-9A-Za-z.-]+)?$/;
 
 function validate(app, expectedId){
@@ -19,6 +19,7 @@ function validate(app, expectedId){
   if (app.id !== expectedId) throw new Error(`id ${app.id} neodpovídá ${expectedId}`);
   if (!semver.test(app.version)) throw new Error(`neplatná verze ${app.version}`);
   if (!/^https:\/\//.test(app.launchUrl)) throw new Error('launchUrl není HTTPS');
+  if (!/^https:\/\//.test(app.manualUrl)) throw new Error('manualUrl není HTTPS');
   if (!app.name.cs || !app.name.en || !app.description.cs || !app.description.en) throw new Error('chybí překlad');
   const statusText = `${app.status?.cs || ''} ${app.status?.en || ''}`.toLowerCase();
   if (/produk|production/.test(statusText)) throw new Error('status před schválením školy nesmí deklarovat produkční provoz');

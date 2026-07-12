@@ -36,6 +36,7 @@ for(const [label,list] of [['generated registry',apps],['fallback registry',fall
   if(app.schema!=='ai-studio-app-manifest-v1')fail(`${label}: ${app.id||'?'} má neplatné schema.`);
   if(!app.id||ids.has(app.id))fail(`${label}: neplatné nebo duplicitní id ${app.id}`);ids.add(app.id);
   if(!/^https:\/\//.test(app.launchUrl||''))fail(`${app.id} nemá HTTPS launchUrl.`);
+  if(!/^https:\/\//.test(app.manualUrl||''))fail(`${app.id} nemá HTTPS manualUrl.`);
   if(!/^\d+\.\d+\.\d+(?:[-+][0-9A-Za-z.-]+)?$/.test(app.version||''))fail(`${app.id} nemá SemVer verzi.`);
   if(!app.name?.cs||!app.name?.en||!app.description?.cs||!app.description?.en)fail(`${app.id} nemá úplný překlad.`);
   if(!/^#[0-9a-f]{6}$/i.test(app.accent||''))fail(`${app.id} nemá platný accent.`);
@@ -90,13 +91,13 @@ for(const file of sourceFiles.filter(f=>/\.(html|js|json|md|css|yml|yaml)$/.test
 }
 for(const file of sourceFiles.filter(f=>f.endsWith('.js'))){try{execFileSync(process.execPath,['--check',file],{stdio:'pipe'})}catch(e){fail(`Chyba syntaxe JS v ${path.relative(root,file)}: ${e.stderr?.toString()||e.message}`)}}
 
-const standardPages=new Set(['index.html','access/index.html','automation/index.html','workflow/index.html','report/index.html','demo/index.html','library/index.html','safety/index.html','pilot/index.html','changelog/index.html','tests/index.html']);
+const standardPages=new Set(['index.html','access/index.html','automation/index.html','workflow/index.html','report/index.html','demo/index.html','library/index.html','manualy/index.html','safety/index.html','pilot/index.html','changelog/index.html','tests/index.html']);
 for(const file of sourceFiles.filter(f=>f.endsWith('.html'))){
  const html=await readFile(file,'utf8');const rel=path.relative(src,file).replaceAll('\\','/');
  const ids=[...html.matchAll(/\sid=["']([^"']+)["']/g)].map(m=>m[1]);const seen=new Set();for(const id of ids){if(seen.has(id))fail(`Duplicitní id ${id} v ${rel}`);seen.add(id)}
  const isFragment=rel.startsWith('integration/');
  if(!isFragment&&!html.includes('Content-Security-Policy'))fail(`Chybí CSP v ${rel}`);if(!isFragment&&!html.includes('name="viewport"')&&!html.includes("name='viewport'"))fail(`Chybí viewport v ${rel}`);
- if(standardPages.has(rel)){if(!html.includes('Autor a vývojový garant: Daniel Baláž'))fail(`Chybí sjednocené zápatí v ${rel}`);if(!html.includes('polish.css'))fail(`Chybí polish.css v ${rel}`)}
+ if(standardPages.has(rel)){if(!html.includes('Autor a vývojový garant: Daniel Baláž'))fail(`Chybí sjednocené zápatí v ${rel}`);if(!html.includes('polish.css'))fail(`Chybí polish.css v ${rel}`);if(!html.includes('data-nav="manualy"'))fail(`Chybí záložka Manuály v ${rel}`)}
  if(isFragment)continue;
  for(const match of html.matchAll(/(?:href|src)=["']([^"'#]+)["']/g)){
   const url=match[1];if(/^(?:https?:|data:|mailto:|tel:)/.test(url)||url.startsWith('__'))continue;
@@ -106,6 +107,8 @@ for(const file of sourceFiles.filter(f=>f.endsWith('.html'))){
 }
 for(const file of ['automation/automation.js','pilot/pilot.js','report/report.js','demo/demo.js','changelog/changelog.js','tests/tests.js']){const text=await readFile(path.join(src,file),'utf8');if(!text.includes('accessReady')||!text.includes('isAdmin'))fail(`${file} nemá správcovskou bránu.`)}
 for(const file of ['integration/generator-access-bootstrap.example.js','integration/differentiator-access-bootstrap.example.js','integration/essay-evaluator-access-bootstrap.example.js','integration/ludus-access-bootstrap.example.js','integration/correspondence-access-bootstrap.example.js'])if(!(await exists(path.join(src,file))))fail(`Chybí integrační šablona ${file}.`);
+const manualPageText=await readFile(path.join(src,'manualy/manualy.js'),'utf8');
+if(!manualPageText.includes('G.hasAppAccess(app.id)')||!manualPageText.includes('manual-locked-button'))fail('Katalog manuálů nedědí oprávnění aplikací nebo neumí uzamčený stav.');
 const appGuardText=await readFile(path.join(src,'access/app-guard.js'),'utf8');
 if(!appGuardText.includes("new URL(options.studioUrl || '../', location.href)"))fail('app-guard nepřevádí relativní adresu Studia na úplnou URL.');
 if(new URL('/AI-Studio-GHRAB/','https://daniel22-dev.github.io/generator-testu/').href!=='https://daniel22-dev.github.io/AI-Studio-GHRAB/')fail('Regresní test adresy Studia selhal.');
@@ -114,7 +117,7 @@ const directStorageWriters=sourceFiles.filter(file=>file.endsWith('.js')&&!['app
 for(const file of directStorageWriters){const text=await readFile(file,'utf8');if(text.includes('localStorage.setItem('))fail(`Přímý zápis do localStorage mimo bezpečný modul: ${path.relative(root,file)}`)}
 
 try{execFileSync(process.execPath,[path.join(root,'scripts/build.mjs')],{stdio:'inherit'})}catch{fail('Build selhal.');}
-const distFiles=await walk(dist);const required=['index.html','styles.css','polish.css','app.js','manifest.webmanifest','sw.js','build-info.json','access/index.html','access/access-control.js','access/app-guard.js','tools/access-issuer/index.html','automation/index.html','workflow/index.html','report/index.html','demo/index.html','library/index.html','safety/index.html','pilot/index.html','changelog/index.html','tests/index.html','config/access-policy.json','config/access-public-key.json','config/revoked-access.json','shared/material-validator.js','integration/README.md','integration/generator-access-bootstrap.example.js','integration/essay-evaluator-access-bootstrap.example.js','assets/apps/essay-evaluator-v2.png'];
+const distFiles=await walk(dist);const required=['index.html','styles.css','polish.css','app.js','manifest.webmanifest','sw.js','build-info.json','access/index.html','access/access-control.js','access/app-guard.js','tools/access-issuer/index.html','automation/index.html','workflow/index.html','report/index.html','demo/index.html','library/index.html','manualy/index.html','manualy/manualy.js','manualy/manualy.css','safety/index.html','pilot/index.html','changelog/index.html','tests/index.html','config/access-policy.json','config/access-public-key.json','config/revoked-access.json','shared/material-validator.js','integration/README.md','integration/generator-access-bootstrap.example.js','integration/essay-evaluator-access-bootstrap.example.js','assets/apps/essay-evaluator-v2.png'];
 for(const rel of required)if(!distFiles.includes(path.join(dist,rel)))fail(`Build neobsahuje ${rel}`);
 const builtSw=await readFile(path.join(dist,'sw.js'),'utf8');const block=builtSw.match(/const CORE = \[([\s\S]*?)\];/)?.[1]||'';const precache=[...block.matchAll(/['"](\.\/[^'"]+)['"]/g)].map(m=>m[1].replace(/^\.\//,'').replace(/\/$/,'index.html'));if(!precache.length)fail('Service worker nemá čitelný CORE seznam.');for(const rel of precache)if(!distFiles.includes(path.join(dist,rel)))fail(`PWA precache odkazuje na chybějící ${rel}`);
 for(const file of distFiles.filter(f=>/\.(html|js|json|webmanifest|css|md)$/.test(f))){const text=await readFile(file,'utf8');if(text.includes('__APP_VERSION__'))fail(`V buildu zůstal token verze: ${path.relative(dist,file)}`);if(file.endsWith('.ghrab-access.json'))fail(`Ve veřejném buildu je přístupový soubor: ${path.relative(dist,file)}`)}

@@ -65,3 +65,12 @@ Přímý handoff používá `localStorage` a vyžaduje stejný origin. Mezi rozd
 ## Přechod na server
 
 Server nahradí import oprávnění školním přihlášením, místní úložiště databází, handoff API a místní reporty centrálními anonymními agregacemi. Uživatelské rozhraní a identifikátory aplikací mohou zůstat zachovány.
+
+
+## Interaktivní manuály
+
+- AI Studio obsahuje pouze katalog `manualy/`; vlastní manuál zůstává v repozitáři konkrétní aplikace.
+- Adresa manuálu je povinné pole `manualUrl` v `ai-studio-app-manifest-v1`.
+- Katalog vždy zobrazí všech pět aplikací a pro otevření použije `hasAppAccess(appId)`.
+- Správce díky roli `admin` otevře všechny manuály; učitel jen manuály aplikací uvedených v podepsaném oprávnění.
+- Samotný manuál je navíc chráněn stejným `app-guard.js`, takže přímá URL neobchází AI Studio.
