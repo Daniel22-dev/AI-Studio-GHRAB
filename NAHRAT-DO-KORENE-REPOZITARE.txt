@@ -1,4 +1,5 @@
-AI Studio GHRAB 0.7.3
+AI Studio GHRAB 0.8.0
 
 Rozbalte ZIP a nahrajte VEŠKERÝ OBSAH této složky přímo do kořene repozitáře AI-Studio-GHRAB.
 Nenahrávejte nadřazenou složku jako další vnořenou složku.
+Po nasazení proveďte tvrdé obnovení stránky nebo ukončete a znovu spusťte nainstalovanou PWA, aby se načetla nová brána.

@@ -1,17 +1,16 @@
 # AI Studio GHRAB
 
-**Verze 0.7.3 — federovaný serverless portál pěti chráněných školních aplikací s interaktivními manuály otevřenými přímo uvnitř PWA.**
+**Verze 0.8.0 — federovaný serverless portál pěti chráněných školních aplikací s prémiovou animovanou hvězdnou bránou a interaktivními manuály uvnitř PWA.**
 
 AI Studio GHRAB je centrální brána školních digitálních a AI nástrojů. Jednotlivé aplikace zůstávají v samostatných repozitářích; Studio zajišťuje společnou navigaci, Top 4, synchronizaci verzí, bezpečnostní rámec, pracovní materiály, pilotní měření a správu podepsaných přístupů.
 
-## Hlavní novinky 0.7.3
+## Hlavní novinky 0.8.0
 
-- Manuály se v nainstalovaném AI Studiu otevírají v interním prohlížeči, takže uživatel nepřechází do nové karty běžného prohlížeče.
-- Interní prohlížeč znovu ověřuje stejné podepsané oprávnění jako katalog manuálů.
-- Aktuální obsah se stále načítá přímo z repozitáře dané aplikace; v AI Studiu nevzniká druhá kopie manuálu.
-- Horní lišta nabízí návrat do katalogu, obnovení a nouzové otevření samostatně.
-- Interaktivita a tlačítko celé obrazovky uvnitř manuálu zůstávají funkční.
-- Opravena hlavní navigace z verze 0.7.1 a zachován přístup správce ke všem pěti průvodcům.
+- Úvodní rozcestník dostal novou centrální hvězdnou bránu vycházející z původního vizuálního konceptu AI Studia.
+- Brána používá více vrstev: rotující prstence, energetický vír, skenovací světlo, jiskry, odlesky a prostorovou platformu.
+- V plném režimu reaguje velmi jemně na pohyb ukazatele; úsporný a vypnutý režim efekty omezuje.
+- Respektuje se systémové nastavení omezení pohybu a zachováno je mobilní rozložení.
+- Funkčnost aplikací, podepsaná oprávnění, Top 4, interní manuály a PWA zůstaly beze změny.
 - Centrální registr obsahuje Generátor 7.0.8, Diferenciátor 1.1.1, Hodnotitel 1.3.7, Korespondenčního asistenta 5.0.1 a LUDUS 1.14.6.
 
 ## Přístup bez serveru
@@ -31,7 +30,7 @@ Stávající podepsaná oprávnění není kvůli manuálům nutné vydávat zno
 ## Nasazení
 
 1. Nejprve musí být nasazené aktuální balíčky všech pěti dílčích aplikací s manuály.
-2. Nahrajte obsah ZIPu AI Studia 0.7.3 do kořene repozitáře `AI-Studio-GHRAB`.
+2. Nahrajte obsah ZIPu AI Studia 0.8.0 do kořene repozitáře `AI-Studio-GHRAB`.
 3. Soukromý administrátorský balíček ani přístupové soubory nikdy nenahrávejte na GitHub.
 4. Po zeleném nasazení otevřete záložku **Manuály** a ověřte správný uzamčený i odemčený stav.
 5. Ve Správě spusťte Kontrolu Studia.

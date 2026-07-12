@@ -148,3 +148,10 @@
 ## 0.7.3
 
 - Opraveno ořezávání čísla verze na kartách aplikací v mobilním zobrazení.
+## 0.8.0
+
+- Nová prémiová hvězdná brána podle původního vizuálního konceptu.
+- Vícevrstvé prstence, vír, skenování, světelné odlesky, jiskry a prostorová platforma.
+- Jemná reakce na ukazatel v plném režimu a respektování omezení pohybu.
+- Zachována funkčnost přístupů, karet aplikací, Top 4, manuálů a PWA.
+

@@ -1,0 +1,8 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512" role="img" aria-label="AI Studio GHRAB">
+<defs><linearGradient id="g" x1="72" y1="48" x2="446" y2="470" gradientUnits="userSpaceOnUse"><stop stop-color="#23658f"/><stop offset=".55" stop-color="#14395d"/><stop offset="1" stop-color="#0d2741"/></linearGradient><linearGradient id="a" x1="181" y1="135" x2="351" y2="366" gradientUnits="userSpaceOnUse"><stop stop-color="#ffd88d"/><stop offset="1" stop-color="#d99328"/></linearGradient></defs>
+<rect x="24" y="24" width="464" height="464" rx="126" fill="url(#g)"/>
+<path d="M128 161c51-10 91 4 128 38 37-34 77-48 128-38v205c-51-10-91 4-128 38-37-34-77-48-128-38V161Z" fill="none" stroke="#fff" stroke-width="24" stroke-linejoin="round"/>
+<path d="M256 199v205" stroke="#fff" stroke-width="18" stroke-linecap="round" opacity=".9"/>
+<path d="m338 93 13 36 36 13-36 13-13 36-13-36-36-13 36-13 13-36Z" fill="url(#a)"/>
+<circle cx="116" cy="116" r="15" fill="#f2b751"/><circle cx="406" cy="390" r="11" fill="#71c4e8"/>
+</svg>

@@ -1,0 +1,17 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://ghrabuvka.cz/schemas/ghrab-handoff-v1.schema.json",
+  "title": "GHRAB Handoff v1",
+  "type": "object",
+  "required": ["schema", "target", "createdAt", "expiresAt", "material"],
+  "properties": {
+    "schema": {"const": "ghrab-handoff-v1"},
+    "target": {"type": "string", "minLength": 2},
+    "createdAt": {"type": "string"},
+    "expiresAt": {"type": "string"},
+    "source": {"type": "string"},
+    "portalVersion": {"type": "string"},
+    "material": {"type": "object"}
+  },
+  "additionalProperties": true
+}
