@@ -1,5 +1,13 @@
 # Changelog
 
+## 0.7.2 — 2026-07-12
+
+- manuály se z nainstalované PWA otevírají přímo uvnitř AI Studia, nikoli v nové kartě běžného prohlížeče;
+- přidán interní prohlížeč manuálu s kontrolou stejného oprávnění jako u příslušné aplikace;
+- zachováno načítání aktuálního manuálu z repozitáře aplikace bez duplicitní kopie ve Studiu;
+- doplněno tlačítko zpět, obnovení, nouzové samostatné otevření a podpora celé obrazovky;
+- interní prohlížeč je zahrnut do PWA cache a automatických release testů.
+
 ## 0.7.1 — 2026-07-12
 
 - opravena poškozená položka **Bezpečnost** v hlavní navigaci, která se zobrazovala jako část HTML kódu;
@@ -136,3 +144,7 @@
 - společný rozcestník čtyř aplikací,
 - demo, knihovna, bezpečnostní centrum a pilotní přehled,
 - PWA a automatické nasazení přes GitHub Pages.
+
+## 0.7.3
+
+- Opraveno ořezávání čísla verze na kartách aplikací v mobilním zobrazení.

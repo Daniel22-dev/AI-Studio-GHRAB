@@ -46,10 +46,8 @@ function manualCard(app){
   const actions = make('div', 'manual-actions');
 
   if (enabled) {
-    const open = make('a', 'button manual-open', G.t('Otevřít interaktivní manuál ↗', 'Open interactive manual ↗'));
-    open.href = app.manualUrl;
-    open.target = '_blank';
-    open.rel = 'noopener';
+    const open = make('a', 'button manual-open', G.t('Otevřít přímo v AI Studiu →', 'Open directly in AI Studio →'));
+    open.href = `./viewer.html?app=${encodeURIComponent(app.id)}`;
     actions.append(open);
   } else {
     const locked = make('button', 'button secondary manual-locked-button', G.t('Manuál uzamčen', 'Manual locked'));

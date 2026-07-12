@@ -1,7 +1,4 @@
-AI Studio GHRAB 0.7.1
+AI Studio GHRAB 0.7.3
 
-NAHRAJTE OBSAH TOHOTO BALÍČKU PŘÍMO DO KOŘENE REPOZITÁŘE AI-Studio-GHRAB.
-NENAHRÁVEJTE NADŘAZENOU SLOŽKU NAVÍC.
-
-Tato verze opravuje poškozenou položku Bezpečnost v hlavní navigaci.
-Dílčí aplikace s interaktivními manuály musí být již nasazené.
+Rozbalte ZIP a nahrajte VEŠKERÝ OBSAH této složky přímo do kořene repozitáře AI-Studio-GHRAB.
+Nenahrávejte nadřazenou složku jako další vnořenou složku.

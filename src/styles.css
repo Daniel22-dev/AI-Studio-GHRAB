@@ -118,3 +118,15 @@ html[data-motion="off"] .portal-beam{opacity:.18}
 .compact-check{margin:12px 0 14px;padding:10px 12px;border:1px solid var(--line);border-radius:12px;background:rgba(80,232,255,.035)}
 .compact-check span{font-size:.76rem;color:var(--soft)}
 @media(max-width:700px){.portal-app-card[role="link"]{min-height:0}.compact-check{align-items:flex-start}}
+
+/* v0.7.3 — mobile: verze aplikace se nesmí oříznout */
+.version-chip{white-space:nowrap;flex:0 0 auto}
+.portal-card-actions{max-width:100%;flex:0 0 auto}
+.portal-app-identity{min-width:0}
+.portal-app-identity>div{min-width:0}
+@media (max-width:650px){
+  .portal-card-head{display:grid;grid-template-columns:minmax(0,1fr);gap:10px}
+  .portal-app-identity{width:100%}
+  .portal-app-identity .status{max-width:100%;white-space:normal;line-height:1.25}
+  .portal-card-actions{justify-self:end}
+}

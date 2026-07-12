@@ -1,8 +1,8 @@
 {
   "name": "ai-studio-ghrab",
-  "version": "0.7.1",
+  "version": "0.7.3",
   "private": true,
-  "description": "Profesionální PWA rozcestník pěti školních AI nástrojů s podepsanými oprávněními, interaktivními manuály, bezpečnými exporty a správou pilotu",
+  "description": "Profesionální PWA rozcestník pěti školních AI nástrojů s podepsanými oprávněními, interaktivními manuály otevřenými přímo ve Studiu, bezpečnými exporty a správou pilotu",
   "type": "module",
   "scripts": {
     "sync": "node scripts/sync-registry.mjs",

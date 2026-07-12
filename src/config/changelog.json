@@ -1,7 +1,55 @@
 {
   "schema": "ai-studio-changelog-v1",
-  "current": "0.7.1",
+  "current": "0.7.3",
   "items": [
+    {
+      "version": "0.7.3",
+      "date": "2026-07-12",
+      "title": {
+        "cs": "Oprava čísla verze na mobilních kartách",
+        "en": "Mobile application version badge fix"
+      },
+      "changes": [
+        {
+          "cs": "Číslo verze aplikace se na úzkých displejích již neořezává mimo pravý okraj karty.",
+          "en": "Application version numbers are no longer clipped at the right edge on narrow screens."
+        },
+        {
+          "cs": "Horní část karty se na telefonu bezpečně přeskupí do dvou řádků a ovládací prvky zůstanou zarovnané doprava.",
+          "en": "On phones, the card header safely reflows into two rows while controls remain right-aligned."
+        },
+        {
+          "cs": "Stavový štítek se může zalomit bez přetečení; desktopové rozložení zůstává beze změny.",
+          "en": "The status badge can wrap without overflow, while the desktop layout remains unchanged."
+        }
+      ]
+    },
+    {
+      "version": "0.7.2",
+      "date": "2026-07-12",
+      "title": {
+        "cs": "Manuály otevřené přímo v nainstalovaném AI Studiu",
+        "en": "Manuals opened directly inside the installed AI Studio"
+      },
+      "changes": [
+        {
+          "cs": "Kliknutí na odemčený manuál nyní otevře interní prohlížeč v rámci AI Studia místo nové karty běžného prohlížeče.",
+          "en": "Clicking an unlocked manual now opens an internal viewer inside AI Studio instead of a new regular browser tab."
+        },
+        {
+          "cs": "Interní prohlížeč ověřuje stejné oprávnění jako katalog a načítá aktuální manuál přímo z repozitáře příslušné aplikace.",
+          "en": "The internal viewer checks the same permit as the catalogue and loads the current manual directly from the application repository."
+        },
+        {
+          "cs": "Doplněna horní lišta se návratem do katalogu, obnovením a nouzovou možností otevřít manuál samostatně.",
+          "en": "Added a top bar with catalogue return, reload and a fallback option to open the manual separately."
+        },
+        {
+          "cs": "Vložený manuál zachovává své interaktivní prvky a tlačítko celé obrazovky; prohlížeč manuálu je součástí PWA cache a release testů.",
+          "en": "The embedded manual keeps its interactive elements and full-screen control; the viewer is included in the PWA cache and release tests."
+        }
+      ]
+    },
     {
       "version": "0.7.1",
       "date": "2026-07-12",
