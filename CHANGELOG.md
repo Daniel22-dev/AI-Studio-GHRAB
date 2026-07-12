@@ -1,5 +1,11 @@
 # Changelog
 
+## 0.7.1 — 2026-07-12
+
+- opravena poškozená položka **Bezpečnost** v hlavní navigaci, která se zobrazovala jako část HTML kódu;
+- oprava aplikována na všechny standardní stránky AI Studia;
+- doplněn regresní test platné navigace **Manuály → Bezpečnost**.
+
 ## 0.7.0 — 2026-07-12
 
 - přidána samostatná záložka **Manuály** se všemi pěti interaktivními průvodci;

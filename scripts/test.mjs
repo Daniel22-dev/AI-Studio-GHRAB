@@ -97,7 +97,7 @@ for(const file of sourceFiles.filter(f=>f.endsWith('.html'))){
  const ids=[...html.matchAll(/\sid=["']([^"']+)["']/g)].map(m=>m[1]);const seen=new Set();for(const id of ids){if(seen.has(id))fail(`Duplicitní id ${id} v ${rel}`);seen.add(id)}
  const isFragment=rel.startsWith('integration/');
  if(!isFragment&&!html.includes('Content-Security-Policy'))fail(`Chybí CSP v ${rel}`);if(!isFragment&&!html.includes('name="viewport"')&&!html.includes("name='viewport'"))fail(`Chybí viewport v ${rel}`);
- if(standardPages.has(rel)){if(!html.includes('Autor a vývojový garant: Daniel Baláž'))fail(`Chybí sjednocené zápatí v ${rel}`);if(!html.includes('polish.css'))fail(`Chybí polish.css v ${rel}`);if(!html.includes('data-nav="manualy"'))fail(`Chybí záložka Manuály v ${rel}`)}
+ if(standardPages.has(rel)){if(!html.includes('Autor a vývojový garant: Daniel Baláž'))fail(`Chybí sjednocené zápatí v ${rel}`);if(!html.includes('polish.css'))fail(`Chybí polish.css v ${rel}`);if(!html.includes('data-nav="manualy"'))fail(`Chybí záložka Manuály v ${rel}`);if(!html.includes('data-nav="safety"'))fail(`Chybí platná záložka Bezpečnost v ${rel}`);if(/<\/a>\.{1,2}\/\s+data-/i.test(html))fail(`Poškozená HTML navigace v ${rel}`)}
  if(isFragment)continue;
  for(const match of html.matchAll(/(?:href|src)=["']([^"'#]+)["']/g)){
   const url=match[1];if(/^(?:https?:|data:|mailto:|tel:)/.test(url)||url.startsWith('__'))continue;

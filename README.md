@@ -1,11 +1,13 @@
 # AI Studio GHRAB
 
-**Verze 0.7.0 — federovaný serverless portál pěti chráněných školních aplikací s interaktivními manuály.**
+**Verze 0.7.1 — federovaný serverless portál pěti chráněných školních aplikací s interaktivními manuály.**
 
 AI Studio GHRAB je centrální brána školních digitálních a AI nástrojů. Jednotlivé aplikace zůstávají v samostatných repozitářích; Studio zajišťuje společnou navigaci, Top 4, synchronizaci verzí, bezpečnostní rámec, pracovní materiály, pilotní měření a správu podepsaných přístupů.
 
-## Hlavní novinky 0.7.0
+## Hlavní novinky 0.7.1
 
+- Opravena hlavní navigace: položka **Bezpečnost** se již nezobrazuje jako část HTML kódu.
+- Doplněna automatická kontrola, která stejnou regresi při příští aktualizaci zastaví.
 - Samostatná záložka **Manuály** zobrazuje průvodce všech pěti aplikací.
 - Otevření manuálu dědí stejné podepsané oprávnění jako otevření aplikace.
 - Správce má přístup ke všem manuálům; učitel pouze k aplikacím zahrnutým v jeho oprávnění.
@@ -30,7 +32,7 @@ Stávající podepsaná oprávnění není kvůli manuálům nutné vydávat zno
 ## Nasazení
 
 1. Nejprve musí být nasazené aktuální balíčky všech pěti dílčích aplikací s manuály.
-2. Nahrajte obsah ZIPu AI Studia 0.7.0 do kořene repozitáře `AI-Studio-GHRAB`.
+2. Nahrajte obsah ZIPu AI Studia 0.7.1 do kořene repozitáře `AI-Studio-GHRAB`.
 3. Soukromý administrátorský balíček ani přístupové soubory nikdy nenahrávejte na GitHub.
 4. Po zeleném nasazení otevřete záložku **Manuály** a ověřte správný uzamčený i odemčený stav.
 5. Ve Správě spusťte Kontrolu Studia.

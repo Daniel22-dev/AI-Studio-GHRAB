@@ -1,7 +1,29 @@
 {
   "schema": "ai-studio-changelog-v1",
-  "current": "0.7.0",
+  "current": "0.7.1",
   "items": [
+    {
+      "version": "0.7.1",
+      "date": "2026-07-12",
+      "title": {
+        "cs": "Oprava navigace po přidání manuálů",
+        "en": "Navigation fix after adding manuals"
+      },
+      "changes": [
+        {
+          "cs": "Opravena poškozená HTML značka položky Bezpečnost, která se na stránkách zobrazovala jako zdrojový text.",
+          "en": "Fixed the malformed Safety navigation HTML that was rendered as source text."
+        },
+        {
+          "cs": "Oprava byla provedena na všech standardních stránkách AI Studia, včetně správcovských částí.",
+          "en": "Applied the fix across all standard AI Studio pages, including administration pages."
+        },
+        {
+          "cs": "Automatické testy nyní kontrolují přítomnost platné položky Bezpečnost a odmítnou obdobně poškozenou navigaci.",
+          "en": "Automated tests now require a valid Safety navigation item and reject similarly malformed navigation."
+        }
+      ]
+    },
     {
       "version": "0.7.0",
       "date": "2026-07-12",
