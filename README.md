@@ -1,6 +1,6 @@
 # AI Studio GHRAB
 
-**Verze 0.10.0 - federovaný serverless portál pěti chráněných školních aplikací s anonymním měřením aktivního používání, počty technických výstupů a prémiovým měsíčním reportem PDF.**
+**Verze 0.13.0 – federovaný serverless portál pěti chráněných školních aplikací s mechanicky animovanou hvězdnou bránou, řízeným přístupem, pilotním měřením a diagnostickým hlášením chyb.**
 
 AI Studio GHRAB je centrální brána školních digitálních a AI nástrojů. Jednotlivé aplikace zůstávají v samostatných repozitářích; Studio zajišťuje společnou navigaci, Top 4, synchronizaci verzí, bezpečnostní rámec, pracovní materiály, pilotní měření a správu podepsaných přístupů.
 
@@ -47,6 +47,14 @@ npm test
 
 Autor a vývojový garant: Daniel Baláž  
 Školní projekt Gymnázia, Ostrava-Hrabůvka
+
+## Novinky 0.13.0
+
+- tři skutečné vrstvy prstenců se po kliknutí otáčejí nezávisle a v opačných směrech,
+- prstence několikrát zpomalí a uzamknou se místo obyčejného nepřetržitého točení,
+- sedm světelných zámků postupně potvrzuje navolení brány,
+- stavový štítek zobrazuje jednotlivé fáze otevření,
+- animace respektuje plný, lehký, vypnutý i systémově omezený režim pohybu.
 
 ## Novinky 0.12.0
 

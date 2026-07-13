@@ -1,7 +1,7 @@
 import { validateMaterialPackage } from './shared/material-validator.js';
 import { buildPilotSummary } from './shared/safe-export.js';
 import { initialiseAccess, setPermitToken, clearPermit, readPermitFile, getAccessSnapshot, getPermitToken, isAdmin, hasAppAccess, requiredTraining, formatReason } from './access/access-control.js';
-const VERSION = '0.12.0';
+const VERSION = '0.13.0';
 const root = document.documentElement;
 const page = document.body.dataset.page || 'home';
 const base = document.body.dataset.base || (page === 'home' ? './' : '../');
@@ -628,7 +628,8 @@ function selectCoreApps(apps){
 let portalLaunchInProgress = false;
 function portalLaunchDelay(){
   if (matchMedia('(prefers-reduced-motion: reduce)').matches) return 420;
-  return root.dataset.motion === 'full' ? 2400 : 720;
+  if (root.dataset.motion === 'off') return 260;
+  return root.dataset.motion === 'full' ? 2850 : 900;
 }
 function launchApp(app, article){
   const access = hasAppAccess(app.id);
@@ -647,9 +648,19 @@ function launchApp(app, article){
   launchButtons.forEach(button => { button.disabled = true; });
   article.classList.add('is-launch-selected');
   zone?.classList.add('is-launching');
-  if (stateLabel) stateLabel.textContent = t(`OTEVÍRÁM: ${localised(app.name).toUpperCase()}`, `OPENING: ${localised(app.name).toUpperCase()}`);
+  const appName = localised(app.name).toUpperCase();
+  if (stateLabel) stateLabel.textContent = t(`NAVOLUJI: ${appName}`, `DIALING: ${appName}`);
   const delay = portalLaunchDelay();
+  const phaseTimers = [];
+  const schedulePhase = (after, cs, en) => {
+    if (!stateLabel || after >= delay) return;
+    phaseTimers.push(window.setTimeout(() => { stateLabel.textContent = t(cs, en); }, after));
+  };
+  schedulePhase(720, 'ZAMĚŘUJI SOUŘADNICE', 'CALCULATING COORDINATES');
+  schedulePhase(1550, 'PRSTENCE SE UZAMYKAJÍ', 'RINGS LOCKING');
+  schedulePhase(2380, 'BRÁNA OTEVŘENA', 'GATEWAY OPEN');
   window.setTimeout(() => {
+    phaseTimers.forEach(timer => window.clearTimeout(timer));
     const opened = window.open('about:blank', '_blank');
     if (opened) {
       try { opened.opener = null; opened.location.replace(app.launchUrl); }

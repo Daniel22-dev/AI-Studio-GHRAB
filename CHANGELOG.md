@@ -1,5 +1,13 @@
 # Changelog
 
+## 0.13.0 — 2026-07-13
+
+- skutečné obrazové vrstvy tří soustředných prstenců se po kliknutí mechanicky otáčejí různými směry;
+- pohyb obsahuje krátké zastávky a uzamknutí, takže nepůsobí jako obyčejné souvislé CSS točení;
+- sedm světelných zámků se rozsvěcí postupně kolem obvodu brány;
+- stavový štítek ukazuje fáze navolování, výpočtu souřadnic, uzamčení a otevření;
+- plná animace trvá 2,85 sekundy, zatímco lehký, vypnutý a omezený režim respektují nastavení pohybu.
+
 ## 0.12.0 — 2026-07-13
 
 - hlášení chyby ponechává chybovou hlášku, nastavení a potřebný kontext viditelný; začernění je pouze volitelné pro nesouvisející osobní údaje;
