@@ -1,4 +1,5 @@
 import { validateMaterialPackage } from './shared/material-validator.js';
+import { buildPilotSummary } from './shared/safe-export.js';
 import { initialiseAccess, setPermitToken, clearPermit, readPermitFile, getAccessSnapshot, getPermitToken, isAdmin, hasAppAccess, requiredTraining, formatReason } from './access/access-control.js';
 const VERSION = '__APP_VERSION__';
 const root = document.documentElement;
@@ -14,6 +15,9 @@ const MOTION_MODES = ['auto', 'full', 'lite', 'off'];
 const WORKSPACE_KEY = 'ghrab.workspace.v1';
 const HANDOFF_KEY = 'ghrab.handoff.v1';
 const PILOT_EVENTS_KEY = 'ghrab.pilot.events.v2';
+const TEST_LAUNCHES_KEY = 'ghrab.pilot.test.launches';
+const TEST_EVENTS_KEY = 'ghrab.pilot.test.events.v2';
+const TELEMETRY_MODE_KEY = 'ghrab.pilot.telemetry.mode';
 const FAVORITE_APPS_KEY = 'ghrab.favoriteApps.v1';
 const HANDOFF_TTL_MS = 30 * 60 * 1000;
 const WORKSPACE_SOFT_LIMIT_CHARS = 120000;
@@ -297,11 +301,48 @@ function getLaunches(){
   try { return JSON.parse(safeGetItem('ghrab.pilot.launches', '{}')); }
   catch { return {}; }
 }
+function getTestLaunches(){
+  try { return JSON.parse(safeGetItem(TEST_LAUNCHES_KEY, '{}')); }
+  catch { return {}; }
+}
+function getTelemetryMode(){ return safeGetItem(TELEMETRY_MODE_KEY) === 'test' ? 'test' : 'live'; }
+function setTelemetryMode(mode){
+  const next = mode === 'test' ? 'test' : 'live';
+  safeSetItem(TELEMETRY_MODE_KEY, next, { silent: true });
+  document.dispatchEvent(new CustomEvent('ghrab:telemetry-mode', { detail: { mode: next } }));
+  updateTelemetryModeBanner();
+  return next;
+}
+function clearTestTelemetry(){
+  safeRemoveItem(TEST_LAUNCHES_KEY);
+  safeRemoveItem(TEST_EVENTS_KEY);
+  document.dispatchEvent(new CustomEvent('ghrab:test-telemetry-cleared'));
+}
+function telemetryEventKey(){ return isAdmin() && getTelemetryMode() === 'test' ? TEST_EVENTS_KEY : PILOT_EVENTS_KEY; }
+function updateTelemetryModeBanner(){
+  document.querySelector('.telemetry-test-banner')?.remove();
+  if (!isAdmin() || getTelemetryMode() !== 'test') return;
+  const banner = document.createElement('div');
+  banner.className = 'telemetry-test-banner';
+  banner.innerHTML = `<strong>${t('TESTOVACÍ REŽIM MĚŘENÍ', 'TELEMETRY TEST MODE')}</strong><span>${t('Spuštění, aktivní čas a výstupy správce se ukládají odděleně a nevstupují do pilotního reportu.', 'Administrator launches, active time and outputs are stored separately and excluded from the pilot report.')}</span>`;
+  document.body.prepend(banner);
+}
 function recordLaunch(id){
   const launches = getLaunches();
   const item = launches[id] || { count: 0, lastOpened: null };
-  item.count += 1;
-  item.lastOpened = new Date().toISOString();
+  const now = new Date();
+  const timestamp = now.toISOString();
+  const period = `${now.getFullYear()}-${String(now.getMonth() + 1).padStart(2, '0')}`;
+  item.count = Math.max(0, Number(item.count || 0)) + 1;
+  item.lastOpened = timestamp;
+  item.monthly = item.monthly && typeof item.monthly === 'object' && !Array.isArray(item.monthly) ? item.monthly : {};
+  const bucket = item.monthly[period] && typeof item.monthly[period] === 'object' ? item.monthly[period] : {};
+  bucket.count = Math.max(0, Number(bucket.count || 0)) + 1;
+  bucket.lastOpened = timestamp;
+  bucket.activeSeconds = Math.max(0, Number(bucket.activeSeconds || 0));
+  bucket.activeSessions = Math.max(0, Number(bucket.activeSessions || 0));
+  bucket.lastActiveAt = bucket.lastActiveAt || null;
+  item.monthly[period] = bucket;
   launches[id] = item;
   return safeSetJson('ghrab.pilot.launches', launches);
 }
@@ -350,10 +391,15 @@ function getPilotEvents(){
   const list = parseLocal(PILOT_EVENTS_KEY, []);
   return Array.isArray(list) ? list : [];
 }
+function getTestPilotEvents(){
+  const list = parseLocal(TEST_EVENTS_KEY, []);
+  return Array.isArray(list) ? list : [];
+}
 function recordPilotEvent(event){
+  const key = telemetryEventKey();
   const item = { id: `${Date.now().toString(36)}-${Math.random().toString(36).slice(2,8)}`, at: new Date().toISOString(), ...event };
-  const list = getPilotEvents(); list.push(item);
-  return safeSetJson(PILOT_EVENTS_KEY, list.slice(-500)) ? item : null;
+  const list = parseLocal(key, []); const safeList = Array.isArray(list) ? list : []; safeList.push(item);
+  return safeSetJson(key, safeList.slice(-2000)) ? item : null;
 }
 function clearPilotEvents(){ return safeRemoveItem(PILOT_EVENTS_KEY); }
 function downloadJson(data, filename){
@@ -361,6 +407,147 @@ function downloadJson(data, filename){
   const url = URL.createObjectURL(blob); const a = document.createElement('a');
   a.href = url; a.download = filename; document.body.append(a); a.click(); a.remove();
   setTimeout(() => URL.revokeObjectURL(url), 1500);
+}
+
+
+function anonymousSourceId(period = currentPilotPeriod()){
+  const key = `ghrab.pilot.anonymous-source-id.${period}`;
+  const existing = safeGetItem(key);
+  if (existing) return existing;
+  const value = globalThis.crypto?.randomUUID?.() || `device-${Date.now().toString(36)}-${Math.random().toString(36).slice(2, 10)}`;
+  safeSetItem(key, value, { silent: true });
+  return value;
+}
+function currentPilotPeriod(date = new Date()){
+  return `${date.getFullYear()}-${String(date.getMonth() + 1).padStart(2, '0')}`;
+}
+function pilotSummaryPayload(period = currentPilotPeriod()){
+  return buildPilotSummary({
+    portalVersion: VERSION,
+    currentPhase: Number(safeGetItem('ghrab.pilot.phase') || 1),
+    sourceId: anonymousSourceId(period),
+    period,
+    launches: getLaunches(),
+    events: getPilotEvents(),
+    workspace: getWorkspace()
+  });
+}
+function reportReminderKeys(date = new Date()){
+  const month = monthlyReminderId(date);
+  return {
+    sent: `ghrab.pilot.report-reminder.sent.${month}`,
+    downloaded: `ghrab.pilot.report-reminder.downloaded.${month}`,
+    snooze: `ghrab.pilot.report-reminder.snooze.${month}`,
+    shown: `ghrab.pilot.report-reminder.shown.${month}`
+  };
+}
+function downloadPilotSummary(){
+  const date = new Date();
+  const filenameDate = date.toISOString().slice(0, 10);
+  downloadJson(pilotSummaryPayload(), `ghrab-pilot-anonymni-souhrn-${filenameDate}.json`);
+  safeSetItem(reportReminderKeys(date).downloaded, date.toISOString(), { silent: true });
+}
+function isMonthlyReminderWindow(date = new Date()){
+  const lastDay = new Date(date.getFullYear(), date.getMonth() + 1, 0).getDate();
+  return date.getDate() >= Math.max(1, lastDay - 6);
+}
+function monthlyReminderId(date = new Date()){
+  return `${date.getFullYear()}-${String(date.getMonth() + 1).padStart(2, '0')}`;
+}
+function localDateId(date = new Date()){
+  return `${date.getFullYear()}-${String(date.getMonth() + 1).padStart(2, '0')}-${String(date.getDate()).padStart(2, '0')}`;
+}
+function tomorrowMorning(date = new Date()){
+  const next = new Date(date.getFullYear(), date.getMonth(), date.getDate() + 1, 8, 0, 0, 0);
+  return next.getTime();
+}
+function setupMonthlyReportReminder(options = {}){
+  const force = Boolean(options.force);
+  const snapshot = getAccessSnapshot();
+  if (!snapshot.valid || (!force && (snapshot.permit?.role === 'admin' || !isMonthlyReminderWindow()))) return;
+  const keys = reportReminderKeys();
+  const sentKey = keys.sent;
+  const downloadedKey = keys.downloaded;
+  const snoozeKey = keys.snooze;
+  const shownKey = keys.shown;
+  if (!force && safeGetItem(sentKey)) return;
+  const snoozeUntil = Number(safeGetItem(snoozeKey) || 0);
+  if (!force && snoozeUntil > Date.now()) return;
+  if (!force && safeGetItem(shownKey) === localDateId()) return;
+  if (document.querySelector('.monthly-report-dialog')) return;
+  if (!force) safeSetItem(shownKey, localDateId(), { silent: true });
+
+  const backdrop = document.createElement('div');
+  backdrop.className = 'monthly-report-backdrop';
+  const dialog = document.createElement('section');
+  dialog.className = 'monthly-report-dialog';
+  dialog.setAttribute('role', 'dialog');
+  dialog.setAttribute('aria-modal', 'true');
+  dialog.setAttribute('aria-labelledby', 'monthly-report-title');
+  const mark = document.createElement('div');
+  mark.className = 'monthly-report-mark';
+  mark.textContent = '▤';
+  const eyebrow = document.createElement('p');
+  eyebrow.className = 'eyebrow';
+  eyebrow.textContent = t('MĚSÍČNÍ SOUHRN PILOTU', 'MONTHLY PILOT SUMMARY');
+  const title = document.createElement('h2');
+  title.id = 'monthly-report-title';
+  title.textContent = t('Mohu vás poprosit o anonymní souhrn?', 'May I ask you for an anonymous summary?');
+  const description = document.createElement('p');
+  description.textContent = t(
+    'Není to vaše povinnost, ale je to má osobní prosba. Vedení bude chtít vidět, které nástroje se skutečně používají, kolik času v nich trávíme a kolik anonymních výstupů vzniká. Soubor neobsahuje jména, prompty ani obsah vytvořených materiálů.',
+    'This is not an obligation, but a personal request. School leadership will want to see which tools are used, how much active time is spent in them and how many anonymous outputs are created. The file contains no names, prompts or generated content.'
+  );
+  const status = document.createElement('p');
+  status.className = 'monthly-report-note';
+  status.textContent = safeGetItem(downloadedKey)
+    ? t('Souhrn už byl na tomto zařízení stažen. Po jeho přiložení ke školnímu e-mailu prosím potvrďte odeslání.', 'The summary has already been downloaded on this device. After attaching it to the school email, please confirm that it was sent.')
+    : t('Prosba se zobrazuje během posledních sedmi dnů měsíce, dokud nepotvrdíte odeslání. Používáte-li Studio na dvou zařízeních, odešlete jeden soubor z každého.', 'This request appears during the final seven days of the month until you confirm sending it. If you use the Studio on two devices, send one file from each.');
+  const actions = document.createElement('div');
+  actions.className = 'monthly-report-actions';
+  const download = document.createElement('button');
+  download.type = 'button';
+  download.className = 'button primary';
+  download.textContent = t('Stáhnout anonymní souhrn', 'Download anonymous summary');
+  const guide = document.createElement('a');
+  guide.className = 'button secondary';
+  guide.href = new URL('manualy/pilot-report.html', new URL(base, location.href)).href;
+  guide.textContent = t('Otevřít krátký návod', 'Open the short guide');
+  const later = document.createElement('button');
+  later.type = 'button';
+  later.className = 'button ghost';
+  later.textContent = t('Připomenout zítra', 'Remind me tomorrow');
+  const sent = document.createElement('button');
+  sent.type = 'button';
+  sent.className = 'button success';
+  sent.textContent = t('Souhrn jsem již odeslal(a)', 'I have already sent the summary');
+  sent.disabled = !safeGetItem(downloadedKey);
+  sent.title = sent.disabled ? t('Nejprve stáhněte souhrn z tohoto zařízení.', 'Download the summary from this device first.') : '';
+  const close = () => { backdrop.remove(); };
+  download.addEventListener('click', () => {
+    downloadPilotSummary();
+    safeSetItem(snoozeKey, String(tomorrowMorning()), { silent: true });
+    close();
+    showToast(t('Děkuji. Souhrn je stažený; nyní jej prosím přiložte ke školnímu e-mailu. Připomenutí skončí po potvrzení odeslání.', 'Thank you. The summary is downloaded; please attach it to the school email. Reminders stop after you confirm sending it.'));
+  });
+  guide.addEventListener('click', () => close());
+  later.addEventListener('click', () => {
+    safeSetItem(snoozeKey, String(tomorrowMorning()), { silent: true });
+    close();
+  });
+  sent.addEventListener('click', () => {
+    safeSetItem(sentKey, new Date().toISOString(), { silent: true });
+    safeRemoveItem(snoozeKey);
+    close();
+    showToast(t('Děkuji za odeslání anonymního souhrnu.', 'Thank you for sending the anonymous summary.'));
+  });
+  backdrop.addEventListener('click', event => { if (event.target === backdrop) close(); });
+  dialog.addEventListener('keydown', event => { if (event.key === 'Escape') close(); });
+  actions.append(download, guide, later, sent);
+  dialog.append(mark, eyebrow, title, description, status, actions);
+  backdrop.append(dialog);
+  document.body.append(backdrop);
+  setTimeout(() => download.focus(), 20);
 }
 
 async function fetchJson(url){
@@ -438,6 +625,11 @@ function selectCoreApps(apps){
   return { core, extra: apps.filter(app => !coreIds.has(app.id)) };
 }
 
+let portalLaunchInProgress = false;
+function portalLaunchDelay(){
+  if (matchMedia('(prefers-reduced-motion: reduce)').matches) return 420;
+  return root.dataset.motion === 'full' ? 2400 : 720;
+}
 function launchApp(app, article){
   const access = hasAppAccess(app.id);
   if (!access.enabled) {
@@ -446,8 +638,31 @@ function launchApp(app, article){
     setTimeout(() => article.classList.remove('lock-pulse'), 700);
     return false;
   }
-  recordLaunch(app.id);
-  window.open(app.launchUrl, '_blank', 'noopener,noreferrer');
+  if (portalLaunchInProgress) return false;
+  portalLaunchInProgress = true;
+  const zone = document.querySelector('.portal-core-zone');
+  const stateLabel = zone?.querySelector('.portal-state strong');
+  const originalLabel = stateLabel?.textContent || '';
+  const launchButtons = [...document.querySelectorAll('.portal-launch-button')];
+  launchButtons.forEach(button => { button.disabled = true; });
+  article.classList.add('is-launch-selected');
+  zone?.classList.add('is-launching');
+  if (stateLabel) stateLabel.textContent = t(`OTEVÍRÁM: ${localised(app.name).toUpperCase()}`, `OPENING: ${localised(app.name).toUpperCase()}`);
+  const delay = portalLaunchDelay();
+  window.setTimeout(() => {
+    const opened = window.open('about:blank', '_blank');
+    if (opened) {
+      try { opened.opener = null; opened.location.replace(app.launchUrl); }
+      catch { location.href = app.launchUrl; }
+    } else location.href = app.launchUrl;
+    window.setTimeout(() => {
+      zone?.classList.remove('is-launching');
+      article.classList.remove('is-launch-selected');
+      launchButtons.forEach(button => { button.disabled = false; });
+      if (stateLabel) stateLabel.textContent = originalLabel;
+      portalLaunchInProgress = false;
+    }, 650);
+  }, delay);
   return true;
 }
 function portalAppCard(app, index, permissions){
@@ -674,13 +889,37 @@ function setupStarfield(){
   start();
 }
 
+async function refreshSharedAccessModuleCache(){
+  if (!('caches' in globalThis)) return;
+  const refreshKey = `ghrab.shared-access-cache-refreshed.${VERSION}`;
+  if (safeGetItem(refreshKey)) return;
+  const sharedPaths = [
+    '/AI-Studio-GHRAB/access/app-guard.js',
+    '/AI-Studio-GHRAB/access/access-control.js',
+    '/AI-Studio-GHRAB/access/error-reporter.js',
+    '/AI-Studio-GHRAB/access/error-reporter.css'
+  ];
+  try {
+    for (const cacheName of await caches.keys()) {
+      const cache = await caches.open(cacheName);
+      for (const request of await cache.keys()) {
+        const pathname = new URL(request.url).pathname;
+        if (sharedPaths.some(path => pathname.endsWith(path))) await cache.delete(request);
+      }
+    }
+    safeSetItem(refreshKey, new Date().toISOString(), { silent: true });
+  } catch (error) {
+    console.warn('AI Studio: obnovení sdíleného měřicího modulu se nezdařilo.', error);
+  }
+}
+
 async function registerPwa(){
   if ('serviceWorker' in navigator) {
     try { await navigator.serviceWorker.register(`${base}sw.js`); } catch { /* optional */ }
   }
 }
 
-const ADMIN_PAGES = new Set(['automation','demo','pilot','report','tests','changelog','issuer']);
+const ADMIN_PAGES = new Set(['automation','demo','report','tests','changelog','issuer']);
 function renderPageAccessGate(){
   if (!ADMIN_PAGES.has(page) || isAdmin()) return;
   const main = document.querySelector('main');
@@ -696,8 +935,8 @@ const accessReady = initialiseAccess().then(snapshot => {
   renderPageAccessGate();
   return snapshot;
 });
-window.GHRAB = { VERSION, state, t, localised, base, loadApps, loadSyncReport, loadPermissions, getLaunches, recordLaunch, getWorkspace, saveWorkspaceMaterial, deleteWorkspaceMaterial, createHandoff, readHandoff, clearHandoff, getPilotEvents, recordPilotEvent, clearPilotEvents, downloadJson, showToast, applyLanguage, applyMotion, getFavoriteApps, setFavoriteApps, toggleFavoriteApp, safeGetItem, safeSetItem, safeSetJson, safeRemoveItem, storageUsage, validMaterial, validateMaterialPackage, initialiseAccess, setPermitToken, clearPermit, readPermitFile, getAccessSnapshot, getPermitToken, isAdmin, hasAppAccess, requiredTraining, formatReason, accessReady };
-setupChrome(); applyTheme(); applyLanguage(); applyMotion(); renderHome(); setupPortalMotion(); setupStarfield(); registerPwa();
+window.GHRAB = { VERSION, state, t, localised, base, loadApps, loadSyncReport, loadPermissions, getLaunches, getTestLaunches, getTelemetryMode, setTelemetryMode, clearTestTelemetry, recordLaunch, getWorkspace, saveWorkspaceMaterial, deleteWorkspaceMaterial, createHandoff, readHandoff, clearHandoff, getPilotEvents, getTestPilotEvents, recordPilotEvent, clearPilotEvents, downloadJson, downloadPilotSummary, pilotSummaryPayload, anonymousSourceId, currentPilotPeriod, setupMonthlyReportReminder, refreshSharedAccessModuleCache, showToast, applyLanguage, applyMotion, getFavoriteApps, setFavoriteApps, toggleFavoriteApp, safeGetItem, safeSetItem, safeSetJson, safeRemoveItem, storageUsage, validMaterial, validateMaterialPackage, initialiseAccess, setPermitToken, clearPermit, readPermitFile, getAccessSnapshot, getPermitToken, isAdmin, hasAppAccess, requiredTraining, formatReason, accessReady };
+setupChrome(); applyTheme(); applyLanguage(); applyMotion(); renderHome(); setupPortalMotion(); setupStarfield(); refreshSharedAccessModuleCache(); registerPwa(); accessReady.then(() => { updateTelemetryModeBanner(); setupMonthlyReportReminder(); });
 document.addEventListener('ghrab:language', () => { renderHomeCards(); renderHomeAccessSummary(); });
-document.addEventListener('ghrab:access-changed', () => { updateAdminVisibility(); renderPageAccessGate(); renderHomeCards(); });
+document.addEventListener('ghrab:access-changed', () => { updateAdminVisibility(); renderPageAccessGate(); renderHomeCards(); updateTelemetryModeBanner(); });
 document.addEventListener('ghrab:favorites', renderHomeCards);

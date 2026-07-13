@@ -1,7 +1,173 @@
 {
   "schema": "ai-studio-changelog-v1",
-  "current": "0.8.2",
+  "current": "0.12.0",
   "items": [
+    {
+      "version": "0.12.0",
+      "date": "2026-07-13",
+      "title": {
+        "cs": "Diagnostické hlášení chyby připravené pro správce a vývojáře",
+        "en": "Diagnostic issue report prepared for administrator and developer"
+      },
+      "changes": [
+        {
+          "cs": "Hlášení už nevyžaduje začerňování; screenshot má ponechat chybu, nastavení a diagnostický kontext viditelné. Volitelně lze skrýt pouze nesouvisející osobní údaje.",
+          "en": "Reports no longer require redaction; screenshots should keep the error, settings and diagnostic context visible. Only unrelated personal data may be optionally hidden."
+        },
+        {
+          "cs": "E-mail obsahuje název a verzi aplikace, popis, postup k zopakování, bezpečně zachycené technické chyby, HTTP stavy a prostředí.",
+          "en": "The email includes application name and version, description, reproduction steps, safely captured technical errors, HTTP statuses and environment."
+        },
+        {
+          "cs": "ZIP nově obsahuje samostatné přehledné HTML hlášení se screenshoty, textový souhrn a technický JSON.",
+          "en": "The ZIP now includes a self-contained readable HTML report with screenshots, a text summary and technical JSON."
+        },
+        {
+          "cs": "Nástroj se pokusí zkopírovat hlavní screenshot do schránky, aby jej učitel mohl vložit přímo do e-mailu pomocí Ctrl+V.",
+          "en": "The tool attempts to copy the main screenshot to the clipboard so the teacher can paste it directly into the email."
+        }
+      ]
+    },
+    {
+      "version": "0.11.0",
+      "date": "2026-07-13",
+      "title": {
+        "cs": "Aktivační animace brány a bezpečné hlášení chyb",
+        "en": "Gateway launch animation and safe issue reporting"
+      },
+      "changes": [
+        {
+          "cs": "Po spuštění aplikace se centrální prstence brány na krátkou dobu zrychlí, brána se energeticky aktivuje a teprve poté se otevře vybraný nástroj.",
+          "en": "After an application is launched, the central gateway rings briefly accelerate, the gateway charges and only then opens the selected tool."
+        },
+        {
+          "cs": "Všechny chráněné aplikace získaly jednotné tlačítko Nahlásit chybu bez nutnosti upravovat jejich jednotlivá rozhraní.",
+          "en": "All protected applications now have a uniform Report an issue button without modifying each individual interface."
+        },
+        {
+          "cs": "Nástroj podporuje přímé snímání obrazovky, až pět screenshotů, nahrání obrázku z disku a vestavěné začernění citlivých údajů.",
+          "en": "The tool supports direct screen capture, up to five screenshots, image upload and built-in redaction of sensitive data."
+        },
+        {
+          "cs": "Hlášení se uloží jako jediný ZIP s komentářem, bezpečnými technickými údaji a zvolenými snímky; následně se otevře předvyplněný e-mail správci.",
+          "en": "The report is saved as one ZIP containing the comment, safe technical details and selected screenshots, followed by a prefilled email to the administrator."
+        },
+        {
+          "cs": "Přidán interaktivní návod k hlášení chyb a progresivní systémové sdílení souboru na podporovaných zařízeních.",
+          "en": "Added an interactive issue-reporting guide and progressive native file sharing on supported devices."
+        }
+      ]
+    },
+    {
+      "version": "0.10.0",
+      "date": "2026-07-13",
+      "title": {
+        "cs": "Kompletní telemetrie výstupů a prémiový PDF report",
+        "en": "Complete output telemetry and premium PDF report"
+      },
+      "changes": [
+        {
+          "cs": "Všech pět aplikací zapisuje jednotné anonymní technické metriky výstupů: požadovaný, úspěšný, chybný a zrušený počet podle typu aplikace.",
+          "en": "All five applications record uniform anonymous technical output metrics: attempted, successful, failed and cancelled quantities by application output type."
+        },
+        {
+          "cs": "Report odděluje moje místní používání, importované souhrny kolegů a celkový součet; místní data lze z celku vypnout.",
+          "en": "The report separates my local use, imported colleague summaries and the combined total; local data can be excluded from the total."
+        },
+        {
+          "cs": "Správce má testovací režim měření, který ukládá vývojová spuštění, aktivní čas a výstupy odděleně a nikdy je nezahrne do reportu.",
+          "en": "The administrator has a telemetry test mode that stores development launches, active time and outputs separately and never includes them in reports."
+        },
+        {
+          "cs": "Zdvořilá prosba o měsíční souhrn se zobrazuje každý den během posledních sedmi dnů měsíce, dokud uživatel nepotvrdí odeslání.",
+          "en": "The polite monthly summary request appears daily during the final seven days of the month until the user confirms sending it."
+        },
+        {
+          "cs": "Přidán přímý export jednostránkového barevného i černobílého A4 PDF se školním logem, skutečnou bránou AI Studia, přehledem aplikací, metodikou a autorstvím.",
+          "en": "Added direct export of one-page colour and monochrome A4 PDFs with the school logo, actual AI Studio gateway, application overview, methodology and authorship."
+        },
+        {
+          "cs": "Čtení interaktivních manuálů se nezapočítává jako používání dílčích aplikací.",
+          "en": "Reading interactive manuals is not counted as use of the individual applications."
+        }
+      ]
+    },
+    {
+      "version": "0.9.0",
+      "date": "2026-07-13",
+      "title": {
+        "cs": "Aktivní čas, výsledky generování a měsíční souhrny",
+        "en": "Active time, generation outcomes and monthly summaries"
+      },
+      "changes": [
+        {
+          "cs": "Spuštění se zapíše až po skutečném načtení aplikace a ověření přístupu, včetně otevření z ikony PWA nebo přímé adresy.",
+          "en": "A launch is recorded only after the application actually loads and access is verified, including launches from an installed PWA icon or direct address."
+        },
+        {
+          "cs": "Aplikace anonymně měří přibližný aktivní čas pouze při viditelné kartě, zaměřeném okně a nedávné interakci; po pěti minutách nečinnosti se měření zastaví.",
+          "en": "Applications anonymously measure approximate active time only while the tab is visible, the window is focused and interaction is recent; measurement stops after five minutes of inactivity."
+        },
+        {
+          "cs": "Generátor rozlišuje úspěšné, chybové a zrušené pokusy bez ukládání promptů, otázek, odpovědí nebo obsahu testu.",
+          "en": "The Generator distinguishes successful, failed and cancelled attempts without storing prompts, questions, answers or test content."
+        },
+        {
+          "cs": "Ruční vykazování úspory času bylo odstraněno a pilotní přehled používá automatické technické metriky.",
+          "en": "Manual time-saving reporting was removed and the pilot overview now uses automatic technical metrics."
+        },
+        {
+          "cs": "Poslední den měsíce se učitelům zobrazí zdvořilá neblokující prosba o anonymní souhrn s možností stažení, odložení a otevření interaktivního návodu.",
+          "en": "On the last day of the month, teachers receive a polite non-blocking request for an anonymous summary with download, snooze and interactive-guide options."
+        },
+        {
+          "cs": "Přidán pětikrokový návod pro odeslání souhrnu a postup pro práci na jednom nebo více zařízeních.",
+          "en": "Added a five-step guide for submitting the summary and instructions for one or multiple devices."
+        },
+        {
+          "cs": "Souhrn obsahuje pouze aktuální kalendářní měsíc; náhodný měsíční technický identifikátor prohlížeče umožní nahradit opakovaný soubor ze stejného zařízení a měsíce bez zdvojení dat.",
+          "en": "The summary covers the current calendar month only; a random monthly browser identifier allows a repeated file from the same device and month to replace the earlier one without double counting."
+        },
+        {
+          "cs": "Správce může měsíční prosbu kdykoli otevřít v náhledovém režimu ze Správy, bez čekání na konec měsíce.",
+          "en": "The administrator can preview the monthly request from Administration at any time without waiting for month-end."
+        },
+        {
+          "cs": "Studio při prvním otevření nové verze jednorázově odstraní staré kopie sdíleného ochranného modulu z PWA cache.",
+          "en": "On first opening the new version, Studio removes stale copies of the shared access module from PWA caches once."
+        }
+      ]
+    },
+    {
+      "version": "0.8.3",
+      "date": "2026-07-13",
+      "title": {
+        "cs": "Anonymní souhrny a sjednocení pilotu",
+        "en": "Anonymous summaries and pilot cleanup"
+      },
+      "changes": [
+        {
+          "cs": "Kolega si může ze stránky Můj přístup stáhnout bezpečný anonymní souhrn pro správce pilotu.",
+          "en": "A colleague can download a safe anonymous summary for the pilot administrator from My access."
+        },
+        {
+          "cs": "Report správce umí importovat více anonymních souhrnů a sloučit je s místními daty do jednoho přehledu.",
+          "en": "The administrator report can import multiple anonymous summaries and merge them with local data into one overview."
+        },
+        {
+          "cs": "Pilot byl převeden z pevného 12týdenního plánu na volné fáze školního roku.",
+          "en": "The pilot was moved from a fixed 12-week plan to flexible school-year phases."
+        },
+        {
+          "cs": "V horní navigaci zůstává Správa jako hlavní administrátorský rozcestník; samostatná záložka Pilot byla z horní lišty odstraněna.",
+          "en": "Administration remains the main administrator hub; the separate Pilot tab was removed from the top navigation."
+        },
+        {
+          "cs": "Patičkové duplicitní odkazy jsou skryté a prezentační lišta již nepřekrývá úvodní text.",
+          "en": "Duplicate footer links are hidden and the presentation toolbar no longer overlaps the intro text."
+        }
+      ]
+    },
     {
       "version": "0.8.2",
       "date": "2026-07-13",

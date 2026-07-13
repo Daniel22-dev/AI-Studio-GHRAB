@@ -130,3 +130,10 @@ html[data-motion="off"] .portal-beam{opacity:.18}
   .portal-app-identity .status{max-width:100%;white-space:normal;line-height:1.25}
   .portal-card-actions{justify-self:end}
 }
+
+
+/* v0.8.3 — horní navigace je primární, patičkové odkazy se neduplikují */
+.footer-links{display:none!important}.footer-inner{justify-content:flex-start}
+
+/* v0.8.3 — prezentační lišta nesmí překrývat úvodní text */
+.presentation-toolbar{margin-top:24px;align-items:flex-start}.presentation-toolbar .app-actions{justify-content:flex-end}

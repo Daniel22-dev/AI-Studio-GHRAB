@@ -1,5 +1,56 @@
 # Changelog
 
+## 0.12.0 — 2026-07-13
+
+- hlášení chyby ponechává chybovou hlášku, nastavení a potřebný kontext viditelný; začernění je pouze volitelné pro nesouvisející osobní údaje;
+- do e-mailu se předvyplní podrobný popis aplikace, verze, postupu, prostředí a bezpečně zachycených technických chyb;
+- zachycují se neošetřené JavaScriptové a Promise chyby a chybové HTTP odpovědi bez obsahu požadavků;
+- hlavní screenshot se nástroj pokusí zkopírovat do schránky pro vložení do e-mailu pomocí Ctrl+V;
+- ZIP obsahuje soubor `00-PREHLED-HLASENI.html`, textový přehled, technický JSON a jednotlivé screenshoty.
+
+## 0.11.0 - 2026-07-13
+
+- krátká prémiová aktivační sekvence centrální brány před otevřením aplikace;
+- jednotné tlačítko **Nahlásit chybu** ve všech chráněných aplikacích;
+- přímé snímání obrazovky nebo nahrání vlastního obrázku, nejvýše pět snímků;
+- vestavěné začernění citlivých údajů před odesláním;
+- jediný ZIP balíček s komentářem, bezpečnými technickými údaji a screenshoty;
+- předvyplněný e-mail správci a přímé systémové sdílení na podporovaných zařízeních;
+- nový interaktivní manuál pro učitele.
+
+## 0.10.0 - 2026-07-13
+
+- jednotné anonymní metriky výstupů ve všech pěti aplikacích;
+- oddělené místní, importované a celkové údaje;
+- správcovský testovací režim mimo ostrý report;
+- připomenutí během posledních sedmi dnů měsíce až do potvrzení odeslání;
+- prémiový jednostránkový barevný i černobílý A4 PDF report;
+- skutečné školní logo vlevo nahoře, brána AI Studia vpravo nahoře a autorství Daniela Baláže v zápatí;
+- interaktivní manuály jsou z měření používání vyloučeny.
+
+## 0.9.0 — 2026-07-13
+
+- spuštění se nově zapíše až po skutečném načtení aplikace a ověření přístupu, takže se počítá i otevření z ikony PWA nebo přímé adresy a nikoli jen kliknutí ve Studiu;
+- doplněno anonymní měření aktivního času v jednotlivých aplikacích; počítá se pouze viditelná karta se zaměřeným oknem a po pěti minutách bez interakce se měření zastaví;
+- více otevřených karet stejné aplikace se navzájem blokuje, aby se čas nepočítal souběžně, a dlouhé prodlevy uspání počítače se nezapočítávají;
+- Generátor testů nyní technicky rozlišuje úspěšné generování, generování ukončené chybou a zrušené pokusy bez ukládání promptů nebo obsahu testu;
+- odstraněno ruční vykazování úspory času a hodnocení užitečnosti; pilot používá pouze automatické technické metriky a případové studie správce;
+- poslední kalendářní den měsíce se učitelům zobrazí zdvořilá, neblokující prosba o anonymní souhrn s možností stažení, odložení nebo otevření interaktivního návodu;
+- přidán pětikrokový interaktivní manuál pro odeslání souhrnu e-mailem a postup při používání dvou zařízení;
+- ve Správě je tlačítko pro okamžitý náhled měsíční prosby, takže ji lze ověřit bez čekání na poslední den měsíce;
+- anonymní export obsahuje pouze aktuální kalendářní měsíc a náhodný měsíční technický identifikátor prohlížeče; opakovaný souhrn ze stejného zařízení a měsíce v reportu nahradí starší verzi, takže se čísla nezdvojí;
+- anonymní export a společný report byly povýšeny na schémata `ghrab-pilot-summary-v7-safe` a `ghrab-impact-report-v5-safe`.
+- při prvním otevření verze 0.9.0 Studio jednorázově odstraní staré kopie sdíleného ochranného modulu z PWA cache, aby dílčí aplikace po novém otevření načetly aktuální měření.
+
+## 0.8.3 — 2026-07-13
+
+- doplněn export anonymního pilotního souhrnu přímo ze stránky **Můj přístup**, aby jej mohl poslat každý zapojený kolega;
+- vizuální report správce umí importovat více anonymních JSON souhrnů od kolegů a sloučit je do společných čísel;
+- pilotní plán byl převeden z 12 týdnů na volné fáze školního roku;
+- horní navigace byla zjednodušena: administrátorský rozcestník je **Správa**, samostatný tab **Pilot** už horní lištu neduplikuje;
+- skryty duplicitní odkazy v patičce a opravena prezentační lišta, která překrývala text;
+- report používá nové logo/bránu místo starého symbolu.
+
 ## 0.8.2 — 2026-07-13
 
 - opravena animace hlavního obrazu brány, která rušila středové zarovnání a posouvala portál doprava dolů;
