@@ -1,7 +1,29 @@
 {
   "schema": "ai-studio-changelog-v1",
-  "current": "0.8.0",
+  "current": "0.8.1",
   "items": [
+    {
+      "version": "0.8.1",
+      "date": "2026-07-12",
+      "title": {
+        "cs": "Vycentrovaná hvězdná brána",
+        "en": "Centered stellar gateway"
+      },
+      "changes": [
+        {
+          "cs": "Odstraněno prostorové naklánění podle pohybu ukazatele, aby centrální prstenec a světelné kruhy zůstaly vždy opticky souměrné.",
+          "en": "Removed pointer-driven 3D tilt so the central ring and light circles remain visually symmetrical at all times."
+        },
+        {
+          "cs": "Hlavní obraz brány, vertikální paprsek, platforma i stavový štítek nyní používají pevné středové zarovnání.",
+          "en": "The main gateway image, vertical beam, platform and status badge now use fixed central alignment."
+        },
+        {
+          "cs": "Ostatní animace, světelné efekty a funkce AI Studia zůstaly zachovány beze změny.",
+          "en": "All other animations, lighting effects and AI Studio functions remain unchanged."
+        }
+      ]
+    },
     {
       "version": "0.8.0",
       "date": "2026-07-12",

@@ -1,6 +1,6 @@
 import { validateMaterialPackage } from './shared/material-validator.js';
 import { initialiseAccess, setPermitToken, clearPermit, readPermitFile, getAccessSnapshot, getPermitToken, isAdmin, hasAppAccess, requiredTraining, formatReason } from './access/access-control.js';
-const VERSION = '0.8.0';
+const VERSION = '0.8.1';
 const root = document.documentElement;
 const page = document.body.dataset.page || 'home';
 const base = document.body.dataset.base || (page === 'home' ? './' : '../');
@@ -593,33 +593,16 @@ async function renderHome(){
 
 function setupPortalMotion(){
   const stage = document.querySelector('.portal-stage');
-  const zone = document.querySelector('.portal-core-zone');
-  if (!stage || !zone || stage.dataset.portalMotionReady === 'true') return;
+  if (!stage || stage.dataset.portalMotionReady === 'true') return;
   stage.dataset.portalMotionReady = 'true';
-  let raf = 0;
   const reset = () => {
     stage.style.setProperty('--portal-tilt-x', '0deg');
     stage.style.setProperty('--portal-tilt-y', '0deg');
     stage.style.setProperty('--portal-shift-x', '0px');
     stage.style.setProperty('--portal-shift-y', '0px');
   };
-  const update = event => {
-    if (root.dataset.motion !== 'full' || matchMedia('(prefers-reduced-motion: reduce)').matches) { reset(); return; }
-    cancelAnimationFrame(raf);
-    raf = requestAnimationFrame(() => {
-      const rect = zone.getBoundingClientRect();
-      const x = Math.max(-1, Math.min(1, (event.clientX - (rect.left + rect.width / 2)) / (rect.width / 2)));
-      const y = Math.max(-1, Math.min(1, (event.clientY - (rect.top + rect.height / 2)) / (rect.height / 2)));
-      stage.style.setProperty('--portal-tilt-x', `${(-y * 2.6).toFixed(2)}deg`);
-      stage.style.setProperty('--portal-tilt-y', `${(x * 3.4).toFixed(2)}deg`);
-      stage.style.setProperty('--portal-shift-x', `${(x * 5).toFixed(1)}px`);
-      stage.style.setProperty('--portal-shift-y', `${(y * 4).toFixed(1)}px`);
-    });
-  };
-  stage.addEventListener('pointermove', update, { passive: true });
-  stage.addEventListener('pointerleave', reset, { passive: true });
+  reset();
   document.addEventListener('ghrab:motion', reset);
-  addEventListener('pagehide', () => cancelAnimationFrame(raf), { once: true });
 }
 
 function setupStarfield(){

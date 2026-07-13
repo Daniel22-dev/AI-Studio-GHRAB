@@ -1,5 +1,11 @@
 # Changelog
 
+## 0.8.1 — 2026-07-12
+
+- odstraněno prostorové naklánění brány podle ukazatele, aby centrální portál zůstal vždy opticky přesně vycentrovaný;
+- doplněno explicitní vycentrování hlavního obrazu, středového paprsku, platformy a stavového štítku;
+- zachovány všechny ostatní animace, světelné efekty i funkce portálu.
+
 ## 0.7.2 — 2026-07-12
 
 - manuály se z nainstalované PWA otevírají přímo uvnitř AI Studia, nikoli v nové kartě běžného prohlížeče;
