@@ -2,7 +2,7 @@
   "name": "AI Studio GHRAB",
   "short_name": "AI Studio",
   "description": "Profesionální školní portál digitálních a AI nástrojů s řízeným přístupem po absolvovaných školeních.",
-  "version": "0.8.1",
+  "version": "0.8.2",
   "lang": "cs",
   "start_url": "./",
   "scope": "./",

@@ -73,14 +73,14 @@ html:not(.access-ready) body[data-page="automation"] main,html:not(.access-ready
 .portal-app-card::after{animation:connector-pulse 2.5s ease-in-out infinite}
 .portal-app-card:hover{transform:translateY(-7px) scale(1.008);box-shadow:0 31px 76px rgba(0,0,0,.52),0 0 37px color-mix(in srgb,var(--app-accent) 18%,transparent),inset 0 0 42px color-mix(in srgb,var(--app-accent) 7%,transparent)}
 .portal-app-icon{transition:transform .35s ease,filter .35s ease}.portal-app-card:hover .portal-app-icon{transform:translateY(-2px) scale(1.06);filter:drop-shadow(0 0 14px color-mix(in srgb,var(--app-accent) 42%,transparent))}
-@keyframes gateway-float{0%,100%{transform:translate3d(0,0,18px) scale(1)}50%{transform:translate3d(0,-7px,24px) scale(1.012)}}
+@keyframes gateway-float{0%,100%{transform:translate3d(-50%,-50%,18px) scale(1)}50%{transform:translate3d(-50%,calc(-50% - 7px),24px) scale(1.012)}}
 @keyframes gateway-luminance{0%,100%{filter:contrast(1.05) saturate(1.05) brightness(.96) drop-shadow(0 0 23px rgba(54,214,255,.27)) drop-shadow(0 0 50px rgba(238,163,71,.09))}50%{filter:contrast(1.09) saturate(1.15) brightness(1.08) drop-shadow(0 0 34px rgba(76,225,255,.48)) drop-shadow(0 0 64px rgba(238,163,71,.16))}}
 @keyframes portal-aura-pulse{0%,100%{opacity:.65;transform:scale(.97)}50%{opacity:1;transform:scale(1.04)}}
 @keyframes vortex-pulse{0%,100%{opacity:.46;transform:scale(.96)}50%{opacity:.82;transform:scale(1.04)}}
 @keyframes portal-scan{0%{top:-28%;opacity:0}18%{opacity:.45}50%{opacity:.72}82%{opacity:.35}100%{top:108%;opacity:0}}
 @keyframes flare-pulse{0%,100%{opacity:.32;transform:translate(-50%,-50%) scale(.88)}50%{opacity:.82;transform:translate(-50%,-50%) scale(1.04)}}
 @keyframes spark-twinkle{0%,100%{opacity:.28;transform:scale(.65)}50%{opacity:1;transform:scale(1.35)}}
-@keyframes beam-breathe{0%,100%{opacity:.42;transform:scaleY(.94)}50%{opacity:.82;transform:scaleY(1.03)}}
+@keyframes beam-breathe{0%,100%{opacity:.42;transform:translateX(-50%) scaleY(.94)}50%{opacity:.82;transform:translateX(-50%) scaleY(1.03)}}
 @keyframes floor-breathe{0%,100%{opacity:.55;transform:scale(.94)}50%{opacity:.94;transform:scale(1.06)}}
 @keyframes platform-pulse{0%,100%{filter:brightness(.88)}50%{filter:brightness(1.18)}}
 @keyframes connector-pulse{0%,100%{opacity:.45}50%{opacity:1}}

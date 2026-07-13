@@ -1,7 +1,29 @@
 {
   "schema": "ai-studio-changelog-v1",
-  "current": "0.8.1",
+  "current": "0.8.2",
   "items": [
+    {
+      "version": "0.8.2",
+      "date": "2026-07-13",
+      "title": {
+        "cs": "Oprava posunuté brány",
+        "en": "Gateway position fix"
+      },
+      "changes": [
+        {
+          "cs": "Opravena animace hlavního obrazu brány, která při plném režimu přepisovala středové zarovnání a posouvala portál doprava dolů.",
+          "en": "Fixed the main gateway animation, which overrode centering in full-motion mode and shifted the portal down and right."
+        },
+        {
+          "cs": "Svislý světelný paprsek nyní při animaci rovněž zachovává přesnou středovou osu.",
+          "en": "The vertical light beam now also preserves its exact centre axis during animation."
+        },
+        {
+          "cs": "Brána, prstence, paprsek a platforma nyní tvoří jeden soustředný celek bez překrytí karet aplikací.",
+          "en": "The gateway, rings, beam and platform now form one concentric composition without overlapping application cards."
+        }
+      ]
+    },
     {
       "version": "0.8.1",
       "date": "2026-07-12",

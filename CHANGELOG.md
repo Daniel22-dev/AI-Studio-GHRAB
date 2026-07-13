@@ -1,5 +1,11 @@
 # Changelog
 
+## 0.8.2 — 2026-07-13
+
+- opravena animace hlavního obrazu brány, která rušila středové zarovnání a posouvala portál doprava dolů;
+- svislý světelný paprsek nyní při animaci zachovává přesnou středovou osu;
+- brána, prstence, paprsek a platforma tvoří jeden soustředný celek bez překrytí karet aplikací.
+
 ## 0.8.1 — 2026-07-12
 
 - odstraněno prostorové naklánění brány podle ukazatele, aby centrální portál zůstal vždy opticky přesně vycentrovaný;
