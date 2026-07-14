@@ -1,7 +1,33 @@
 {
   "schema": "ai-studio-changelog-v1",
-  "current": "0.14.2",
+  "current": "0.14.3",
   "items": [
+    {
+      "version": "0.14.3",
+      "date": "2026-07-14",
+      "title": {
+        "cs": "Spolehlivá oprava neúplného importu přístupu",
+        "en": "Reliable repair of incomplete access import"
+      },
+      "changes": [
+        {
+          "cs": "Import přístupového souboru nyní výslovně sestaví kompletní záznam a přepíše starý neúplný záznam se stejným JTI.",
+          "en": "Access-file import now explicitly builds a complete registry record and replaces an incomplete record with the same JTI."
+        },
+        {
+          "cs": "Po importu Studio kontroluje, zda se skutečně uložilo interní ID, platnost a seznam aplikací; neúplný výsledek už neohlásí jako úspěch.",
+          "en": "After import, Studio verifies that the subject, validity and application list were really stored; an incomplete result is no longer reported as successful."
+        },
+        {
+          "cs": "Importní modul zobrazuje svou verzi a po úspěchu vypíše načtené jméno, interní ID, platnost a počet aplikací.",
+          "en": "The import module shows its version and reports the imported name, internal ID, validity and application count after success."
+        },
+        {
+          "cs": "Skripty evidence používají verzované adresy, aby se po aktualizaci nenačetla stará kopie z mezipaměti prohlížeče nebo PWA.",
+          "en": "Registry scripts use versioned URLs to prevent stale browser or PWA cache copies after an update."
+        }
+      ]
+    },
     {
       "version": "0.14.2",
       "date": "2026-07-14",

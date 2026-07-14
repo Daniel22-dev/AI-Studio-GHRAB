@@ -260,6 +260,50 @@ if (window.GHRAB.isAdmin()) {
     return new TextDecoder().decode(bytes);
   }
 
+  function decodePermitPayload(token) {
+    const parts = String(token || '').trim().split('.');
+    if (parts.length !== 3 || parts[0] !== 'ghrab1') throw new Error('Přístupový kód má neplatný formát.');
+    try {
+      const payload = JSON.parse(decodeBase64Url(parts[1]));
+      if (!payload || payload.schema !== 'ghrab-access-permit-v1' || !payload.jti) throw new Error();
+      return payload;
+    } catch {
+      throw new Error('Přístupový kód je poškozený nebo v něm chybí povinné údaje.');
+    }
+  }
+
+  function registryRecordFromPermit(permit, wrapper = {}) {
+    const iat = Number.isFinite(Number(permit?.iat)) ? Number(permit.iat) : null;
+    const nbf = Number.isFinite(Number(permit?.nbf)) ? Number(permit.nbf) : null;
+    const exp = Number.isFinite(Number(permit?.exp)) ? Number(permit.exp) : null;
+    return {
+      schema: 'ghrab-issued-access-record-v1',
+      jti: String(permit?.jti || wrapper?.permitId || '').trim(),
+      subject: String(permit?.sub || '').trim(),
+      displayName: String(permit?.displayName || wrapper?.label || permit?.sub || 'Neoznačený uživatel').trim(),
+      role: String(permit?.role || 'teacher').trim(),
+      apps: Array.isArray(permit?.apps) ? permit.apps.map(String) : [],
+      training: permit?.training && typeof permit.training === 'object' ? permit.training : {},
+      iat,
+      nbf,
+      exp,
+      issuedAt: wrapper?.createdAt || (iat != null ? new Date(iat * 1000).toISOString() : new Date().toISOString()),
+      expiresAt: exp != null ? new Date(exp * 1000).toISOString() : null,
+      source: 'imported',
+      importedAt: new Date().toISOString()
+    };
+  }
+
+  function assertCompleteImportedRecord(record) {
+    if (!record) throw new Error('Záznam se po importu nepodařilo v evidenci dohledat.');
+    const missing = [];
+    if (!record.subject) missing.push('interní ID');
+    if (!record.expiresAt || !record.exp) missing.push('platnost');
+    if (!Array.isArray(record.apps) || !record.apps.length) missing.push('aplikace');
+    if (missing.length) throw new Error(`Import proběhl neúplně. Chybí: ${missing.join(', ')}.`);
+    return record;
+  }
+
   async function readFileText(file) {
     if (!file) throw new Error('Nebyl vybrán soubor.');
     if (file.size > 512 * 1024) throw new Error('Soubor je příliš velký.');
@@ -273,16 +317,24 @@ if (window.GHRAB.isAdmin()) {
   }
 
   async function importPayload(parsed, label = 'soubor') {
-    // Přístupový soubor obsahuje vedle tokenu také permitId. Token proto musí mít
-    // přednost před rozpoznáním samostatného záznamu evidence; jedině z něj lze
-    // bezpečně ověřit podpis a načíst interní ID, aplikace i konec platnosti.
+    // Přístupový soubor obsahuje vedle tokenu také permitId. Token musí mít
+    // absolutní přednost; jedině v něm jsou interní ID, aplikace a platnost.
     const token = typeof parsed === 'string' ? parsed : parsed?.token;
     if (token) {
+      const decoded = decodePermitPayload(token);
+      if (parsed?.permitId && String(parsed.permitId) !== String(decoded.jti)) {
+        throw new Error('JTI v obalu souboru neodpovídá JTI v podepsaném přístupu.');
+      }
       const inspected = await G.inspectPermitToken(token);
       if (!inspected.ok || !inspected.permit) throw new Error(G.formatReason(inspected.reason || 'invalid-file', 'cs'));
-      const saved = G.recordIssuedAccess(inspected.permit, { source: 'imported', createdAt: parsed?.createdAt });
-      if (!saved.ok) throw new Error(saved.reason === 'storage-error' ? 'Prohlížeč nepovolil uložení evidence.' : 'Přístup se nepodařilo uložit.');
-      return { imported: 1, kind: 'permit' };
+
+      // Sestavení kompletního evidenčního záznamu děláme výslovně zde. Tím
+      // se starý neúplný záznam se stejným JTI spolehlivě přepíše.
+      const completeRecord = registryRecordFromPermit(inspected.permit, parsed);
+      const result = G.importIssuedAccessRecords([completeRecord]);
+      if (!result.ok) throw new Error(result.reason === 'storage-error' ? 'Prohlížeč nepovolil uložení evidence.' : 'Přístup se nepodařilo uložit.');
+      const stored = assertCompleteImportedRecord(G.getIssuedAccessRecords().find(item => item.jti === completeRecord.jti));
+      return { imported: 1, kind: 'permit', record: stored };
     }
 
     const recordsPayload = Array.isArray(parsed)
@@ -296,7 +348,7 @@ if (window.GHRAB.isAdmin()) {
     if (recordsPayload) {
       const result = G.importIssuedAccessRecords(recordsPayload);
       if (!result.ok) throw new Error(result.reason === 'storage-error' ? 'Prohlížeč nepovolil uložení evidence.' : 'Záloha neobsahuje platné záznamy.');
-      return { imported: result.imported, kind: 'registry' };
+      return { imported: result.imported, kind: 'registry', record: null };
     }
 
     throw new Error('Studio v souboru nenašlo přístup ani zálohu evidence.');
@@ -308,11 +360,15 @@ if (window.GHRAB.isAdmin()) {
     setFeedback(`Načítám ${files.length === 1 ? files[0].name : `${files.length} souborů`}…`);
     let imported = 0;
     const failures = [];
+    const summaries = [];
     for (const file of files) {
       try {
         const parsed = JSON.parse(await readFileText(file));
         const result = await importPayload(parsed, file.name);
         imported += result.imported;
+        if (result.record) {
+          summaries.push(`${result.record.displayName} · ID ${result.record.subject} · platnost do ${dateText(result.record.expiresAt)} · ${result.record.apps.length} aplikací`);
+        }
       } catch (error) {
         failures.push(`${file.name}: ${error.message}`);
       }
@@ -320,7 +376,8 @@ if (window.GHRAB.isAdmin()) {
     importFiles.value = '';
     render();
     if (imported > 0) {
-      setFeedback(`Hotovo. Do evidence bylo načteno ${imported} ${imported === 1 ? 'záznam' : imported < 5 ? 'záznamy' : 'záznamů'}.${failures.length ? ` Nezdařilo se: ${failures.join(' | ')}` : ''}`);
+      const detailText = summaries.length ? ` Načteno: ${summaries.join(' | ')}.` : '';
+      setFeedback(`Hotovo. Do evidence bylo načteno ${imported} ${imported === 1 ? 'záznam' : imported < 5 ? 'záznamy' : 'záznamů'}.${detailText}${failures.length ? ` Nezdařilo se: ${failures.join(' | ')}` : ''}`);
       document.querySelector('.registry-list-panel')?.scrollIntoView({ behavior: 'smooth', block: 'start' });
     } else {
       setFeedback(`Import se nezdařil. ${failures.join(' | ') || 'Soubor nebyl rozpoznán.'}`, false);

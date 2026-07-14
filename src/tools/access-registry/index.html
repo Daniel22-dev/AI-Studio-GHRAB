@@ -3,7 +3,7 @@
 <head>
 <meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><meta name="theme-color" content="#030915">
 <meta http-equiv="Content-Security-Policy" content="default-src 'self'; script-src 'self'; style-src 'self'; img-src 'self' data:; connect-src 'self'; object-src 'none'; base-uri 'self'; form-action 'self'">
-<title>Evidence přístupů · AI Studio GHRAB</title><link rel="manifest" href="../../manifest.webmanifest"><link rel="icon" href="../../assets/brand/icon-32.png"><link rel="stylesheet" href="../../styles.css"><link rel="stylesheet" href="../../polish.css"><link rel="stylesheet" href="./registry.css">
+<title>Evidence přístupů · AI Studio GHRAB</title><link rel="manifest" href="../../manifest.webmanifest"><link rel="icon" href="../../assets/brand/icon-32.png"><link rel="stylesheet" href="../../styles.css?v=__APP_VERSION__"><link rel="stylesheet" href="../../polish.css?v=__APP_VERSION__"><link rel="stylesheet" href="./registry.css?v=__APP_VERSION__">
 </head>
 <body data-page="access-registry" data-base="../../" data-title-cs="Evidence přístupů · AI Studio GHRAB" data-title-en="Access registry · AI Studio GHRAB">
 <a class="skip-link" href="#main">Přejít na obsah</a>
@@ -26,7 +26,7 @@
     <strong>Přetáhněte sem soubor</strong>
     <span>Studio samo pozná přístupový soubor i zálohu evidence.</span>
   </div>
-  <p id="registry-feedback" class="form-feedback" role="status" aria-live="polite"></p>
+  <p class="registry-module-version">Importní modul verze <strong>__APP_VERSION__</strong></p><p id="registry-feedback" class="form-feedback" role="status" aria-live="polite"></p>
 </article>
 <article class="panel registry-list-panel">
   <div class="registry-list-head"><div><p class="eyebrow">VYDANÉ PŘÍSTUPY</p><h2>Uživatelé, aplikace a stav oprávnění</h2></div><div class="registry-filters"><label class="field"><span>Hledat</span><input id="registry-search" type="search" placeholder="Jméno, interní ID nebo JTI"></label><label class="field"><span>Stav</span><select id="registry-status"><option value="all">Všechny</option><option value="active">Aktivní</option><option value="pending">Připravené ke zneplatnění</option><option value="superseded">Nahrazené novějším</option><option value="expired">Prošlé</option><option value="revoked">Zneplatněné</option><option value="unknown">Neúplné údaje</option></select></label></div></div>
@@ -38,5 +38,5 @@
 <dialog id="registry-detail" class="registry-dialog"><form method="dialog"><button class="registry-dialog-close" value="close" aria-label="Zavřít">×</button></form><div id="registry-detail-content"></div><label class="field"><span>Interní poznámka</span><textarea id="registry-note" rows="3" maxlength="500" placeholder="např. školení 14. 7. 2026"></textarea></label><div class="registry-dialog-actions"><button id="save-note" class="button secondary" type="button">Uložit poznámku</button><a id="renew-access" class="button primary" href="../access-issuer/">Vydat nový přístup</a><button id="toggle-revocation" class="button warning" type="button">Připravit zneplatnění</button><button id="delete-record" class="button ghost" type="button">Odstranit z evidence</button></div></dialog>
 </main>
 <footer class="site-footer"><div class="shell-wide footer-inner"><div><strong>AI Studio GHRAB</strong><p>Autor a vývojový garant: Daniel Baláž · Školní projekt Gymnázia, Ostrava-Hrabůvka · verze __APP_VERSION__</p></div><nav class="footer-links"><a href="../../safety/">Bezpečnost</a><a href="../../changelog/" data-admin-link hidden>Změny</a><a href="../../tests/" data-admin-link hidden>Kontrola Studia</a></nav></div></footer>
-<script src="../../app.js" type="module"></script><script src="./registry.js" type="module"></script>
+<script src="../../app.js?v=__APP_VERSION__" type="module"></script><script src="./registry.js?v=__APP_VERSION__" type="module"></script>
 </body></html>
