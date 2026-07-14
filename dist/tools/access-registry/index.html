@@ -1,0 +1,40 @@
+<!doctype html>
+<html lang="cs" data-theme="dark">
+<head>
+<meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><meta name="theme-color" content="#030915">
+<meta http-equiv="Content-Security-Policy" content="default-src 'self'; script-src 'self'; style-src 'self'; img-src 'self' data:; connect-src 'self'; object-src 'none'; base-uri 'self'; form-action 'self'">
+<title>Evidence přístupů · AI Studio GHRAB</title><link rel="manifest" href="../../manifest.webmanifest"><link rel="icon" href="../../assets/brand/icon-32.png"><link rel="stylesheet" href="../../styles.css"><link rel="stylesheet" href="../../polish.css"><link rel="stylesheet" href="./registry.css">
+</head>
+<body data-page="access-registry" data-base="../../" data-title-cs="Evidence přístupů · AI Studio GHRAB" data-title-en="Access registry · AI Studio GHRAB">
+<a class="skip-link" href="#main">Přejít na obsah</a>
+<header class="site-header cosmic-header"><a class="brand" href="../../" aria-label="AI Studio GHRAB — domů"><span class="brand-orbit"><img src="../../assets/brand/brand-mark.svg" alt="" width="46" height="46"></span><span><strong>AI Studio <em>GHRAB</em></strong><small>Evidence vydaných oprávnění</small></span></a><button class="nav-toggle" type="button" aria-expanded="false" aria-controls="main-nav">☰</button><nav id="main-nav" class="main-nav" aria-label="Hlavní navigace"><a href="../../">Aplikace</a><a href="../../access/">Můj přístup</a><a href="../../automation/" data-admin-nav hidden>Správa</a><a href="../../tests/" data-admin-nav hidden>Kontrola Studia</a></nav><div class="header-actions"><div class="segmented" aria-label="Jazyk"><button type="button" data-lang="cs" aria-pressed="true">CZ</button><button type="button" data-lang="en" aria-pressed="false">EN</button></div></div></header>
+<main id="main">
+<section class="page-hero shell-wide"><p class="breadcrumb"><a href="../../automation/">Správa</a> / Evidence přístupů</p><p class="eyebrow">AUTOMATICKÁ MÍSTNÍ EVIDENCE</p><h1>Vydané přístupy přehledně přímo ve Studiu.</h1><p>Každý nově vytvořený přístup se sem uloží automaticky. Evidence obsahuje pouze administrativní údaje a JTI; soukromý klíč ani dlouhé přístupové kódy se neukládají.</p></section>
+<section class="section shell-wide registry-page">
+<div id="registry-stats" class="registry-stats" aria-live="polite"></div>
+<article class="panel registry-toolbar">
+  <div><p class="eyebrow">RYCHLÉ AKCE</p><h2>Správa bez ručního přepisování JTI</h2><p class="registry-local-note">Data jsou uložena jen v tomto prohlížeči. Po větší změně nebo na konci školního roku stáhněte zálohu evidence.</p></div>
+  <div class="registry-actions">
+    <a class="button primary" href="../access-issuer/">＋ Vydat nový přístup</a>
+    <button class="button secondary" id="import-permit-button" type="button">Importovat přístupový soubor</button>
+    <button class="button secondary" id="import-backup-button" type="button">Importovat zálohu</button>
+    <button class="button ghost" id="export-backup" type="button">Záloha JSON</button>
+    <button class="button ghost" id="export-csv" type="button">Přehled CSV</button>
+    <button class="button warning" id="export-revocations" type="button">Stáhnout seznam zneplatnění</button>
+  </div>
+  <input id="import-permit" type="file" accept="application/json,.json,.ghrab-access.json" multiple hidden>
+  <input id="import-backup" type="file" accept="application/json,.json" hidden>
+  <p id="registry-feedback" class="form-feedback" role="status"></p>
+</article>
+<article class="panel registry-list-panel">
+  <div class="registry-list-head"><div><p class="eyebrow">VYDANÉ PŘÍSTUPY</p><h2>Uživatelé, aplikace a stav oprávnění</h2></div><div class="registry-filters"><label class="field"><span>Hledat</span><input id="registry-search" type="search" placeholder="Jméno, interní ID nebo JTI"></label><label class="field"><span>Stav</span><select id="registry-status"><option value="all">Všechny</option><option value="active">Aktivní</option><option value="pending">Připravené ke zneplatnění</option><option value="superseded">Nahrazené novějším</option><option value="expired">Prošlé</option><option value="revoked">Zneplatněné</option><option value="unknown">Neúplné údaje</option></select></label></div></div>
+  <div id="registry-empty" class="registry-empty" hidden><strong>Zatím tu není žádný přístup.</strong><p>Nové přístupy se zapisují automaticky. Již vydaný soubor přidáte tlačítkem „Importovat přístupový soubor“.</p></div>
+  <div class="table-scroll"><table class="registry-table"><thead><tr><th>Uživatel</th><th>Oprávnění</th><th>Platnost</th><th>Stav</th><th>JTI</th><th>Akce</th></tr></thead><tbody id="registry-body"></tbody></table></div>
+</article>
+<article class="panel registry-revocation-guide"><div><p class="eyebrow">ZNEPLATNĚNÍ</p><h2>Dva kroky místo ručního přepisování</h2></div><ol><li>U konkrétního přístupu zvolte <strong>Připravit zneplatnění</strong>.</li><li>Stáhněte hotový <code>revoked-access.json</code> a nahraďte jím soubor <code>src/config/revoked-access.json</code> v repozitáři.</li></ol><p>Teprve po nahrání na GitHub a novém nasazení je přístup skutečně centrálně zablokován.</p></article>
+</section>
+<dialog id="registry-detail" class="registry-dialog"><form method="dialog"><button class="registry-dialog-close" value="close" aria-label="Zavřít">×</button></form><div id="registry-detail-content"></div><label class="field"><span>Interní poznámka</span><textarea id="registry-note" rows="3" maxlength="500" placeholder="např. školení 14. 7. 2026"></textarea></label><div class="registry-dialog-actions"><button id="save-note" class="button secondary" type="button">Uložit poznámku</button><a id="renew-access" class="button primary" href="../access-issuer/">Vydat nový přístup</a><button id="toggle-revocation" class="button warning" type="button">Připravit zneplatnění</button><button id="delete-record" class="button ghost" type="button">Odstranit z evidence</button></div></dialog>
+</main>
+<footer class="site-footer"><div class="shell-wide footer-inner"><div><strong>AI Studio GHRAB</strong><p>Autor a vývojový garant: Daniel Baláž · Školní projekt Gymnázia, Ostrava-Hrabůvka · verze 0.14.0</p></div><nav class="footer-links"><a href="../../safety/">Bezpečnost</a><a href="../../changelog/" data-admin-link hidden>Změny</a><a href="../../tests/" data-admin-link hidden>Kontrola Studia</a></nav></div></footer>
+<script src="../../app.js" type="module"></script><script src="./registry.js" type="module"></script>
+</body></html>

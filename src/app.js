@@ -1,6 +1,6 @@
 import { validateMaterialPackage } from './shared/material-validator.js';
 import { buildPilotSummary } from './shared/safe-export.js';
-import { initialiseAccess, setPermitToken, clearPermit, readPermitFile, getAccessSnapshot, getPermitToken, isAdmin, hasAppAccess, requiredTraining, formatReason } from './access/access-control.js';
+import { initialiseAccess, setPermitToken, clearPermit, readPermitFile, getAccessSnapshot, getPermitToken, isAdmin, hasAppAccess, requiredTraining, formatReason, inspectPermitToken } from './access/access-control.js';
 const VERSION = '__APP_VERSION__';
 const root = document.documentElement;
 const page = document.body.dataset.page || 'home';
@@ -19,6 +19,8 @@ const TEST_LAUNCHES_KEY = 'ghrab.pilot.test.launches';
 const TEST_EVENTS_KEY = 'ghrab.pilot.test.events.v2';
 const TELEMETRY_MODE_KEY = 'ghrab.pilot.telemetry.mode';
 const FAVORITE_APPS_KEY = 'ghrab.favoriteApps.v1';
+const ISSUED_ACCESS_KEY = 'ghrab.access.issued-registry.v1';
+const ISSUED_ACCESS_SCHEMA = 'ghrab-issued-access-registry-v1';
 const HANDOFF_TTL_MS = 30 * 60 * 1000;
 const WORKSPACE_SOFT_LIMIT_CHARS = 120000;
 const t = (cs, en) => state.language === 'cs' ? cs : en;
@@ -158,6 +160,110 @@ function storageUsage(){
   return { bytes, kilobytes: Math.round(bytes / 1024), megabytes: Math.round(bytes / 1024 / 1024 * 100) / 100 };
 }
 function validMaterial(material){ return validateMaterialPackage(material).valid; }
+
+function normaliseIssuedAccessRecord(input){
+  if (!input || typeof input !== 'object') return null;
+  const jti = String(input.jti || input.permitId || '').trim();
+  if (!jti) return null;
+  const numberOrNull = value => value == null || value === '' ? null : Number(value);
+  const rawIat = numberOrNull(input.iat);
+  const rawNbf = numberOrNull(input.nbf);
+  const rawExp = numberOrNull(input.exp);
+  const iat = Number.isFinite(rawIat) ? rawIat : null;
+  const nbf = Number.isFinite(rawNbf) ? rawNbf : null;
+  const exp = Number.isFinite(rawExp) ? rawExp : null;
+  const issuedAt = input.issuedAt || input.createdAt || (iat != null ? new Date(iat * 1000).toISOString() : new Date().toISOString());
+  const expiresAt = input.expiresAt || (exp != null ? new Date(exp * 1000).toISOString() : null);
+  return {
+    schema: 'ghrab-issued-access-record-v1',
+    jti,
+    subject: String(input.subject || input.sub || '').trim(),
+    displayName: String(input.displayName || input.label || input.subject || input.sub || 'Neoznačený uživatel').trim(),
+    role: String(input.role || 'teacher').trim(),
+    apps: [...new Set(Array.isArray(input.apps) ? input.apps.map(String).filter(Boolean) : [])],
+    training: input.training && typeof input.training === 'object' ? structuredClone(input.training) : {},
+    iat,
+    nbf,
+    exp,
+    issuedAt,
+    expiresAt,
+    source: ['issued','imported','backup'].includes(input.source) ? input.source : 'imported',
+    note: String(input.note || '').slice(0, 500),
+    pendingRevocation: Boolean(input.pendingRevocation),
+    supersededBy: input.supersededBy ? String(input.supersededBy) : null,
+    supersededAt: input.supersededAt || null,
+    createdAt: input.createdAt || issuedAt,
+    importedAt: input.importedAt || null,
+    updatedAt: input.updatedAt || new Date().toISOString()
+  };
+}
+function getIssuedAccessRecords(){
+  try {
+    const parsed = JSON.parse(safeGetItem(ISSUED_ACCESS_KEY, 'null'));
+    const source = Array.isArray(parsed) ? parsed : parsed?.records;
+    if (!Array.isArray(source)) return [];
+    return source.map(normaliseIssuedAccessRecord).filter(Boolean).sort((a,b) => Date.parse(b.issuedAt || 0) - Date.parse(a.issuedAt || 0));
+  } catch (error) {
+    console.warn('AI Studio: evidenci vydaných přístupů se nepodařilo načíst.', error);
+    return [];
+  }
+}
+function persistIssuedAccessRecords(records){
+  const clean = records.map(normaliseIssuedAccessRecord).filter(Boolean).sort((a,b) => Date.parse(b.issuedAt || 0) - Date.parse(a.issuedAt || 0));
+  const ok = safeSetJson(ISSUED_ACCESS_KEY, { schema: ISSUED_ACCESS_SCHEMA, updatedAt: new Date().toISOString(), records: clean });
+  if (ok) document.dispatchEvent(new CustomEvent('ghrab:issued-access-changed', { detail: { count: clean.length } }));
+  return ok;
+}
+function recordIssuedAccess(permit, options = {}){
+  const incoming = normaliseIssuedAccessRecord({
+    ...permit,
+    subject: permit?.sub,
+    source: options.source || 'issued',
+    createdAt: options.createdAt,
+    issuedAt: options.createdAt || (Number.isFinite(Number(permit?.iat)) ? new Date(Number(permit.iat) * 1000).toISOString() : new Date().toISOString()),
+    importedAt: options.source === 'imported' ? new Date().toISOString() : null
+  });
+  if (!incoming) return { ok: false, reason: 'invalid-record' };
+  const now = new Date().toISOString();
+  const records = getIssuedAccessRecords().map(item => {
+    if (item.jti === incoming.jti) return item;
+    if (incoming.subject && item.subject === incoming.subject && !item.supersededBy) return { ...item, supersededBy: incoming.jti, supersededAt: now, updatedAt: now };
+    return item;
+  });
+  const existing = records.find(item => item.jti === incoming.jti);
+  const merged = existing ? { ...existing, ...incoming, note: existing.note || incoming.note, pendingRevocation: existing.pendingRevocation, updatedAt: now } : incoming;
+  const next = [merged, ...records.filter(item => item.jti !== incoming.jti)];
+  return persistIssuedAccessRecords(next) ? { ok: true, record: merged } : { ok: false, reason: 'storage-error' };
+}
+function updateIssuedAccessRecord(jti, patch = {}){
+  const target = String(jti || '').trim();
+  if (!target) return false;
+  let changed = false;
+  const next = getIssuedAccessRecords().map(item => {
+    if (item.jti !== target) return item;
+    changed = true;
+    return normaliseIssuedAccessRecord({ ...item, ...patch, jti: item.jti, updatedAt: new Date().toISOString() });
+  });
+  return changed && persistIssuedAccessRecords(next);
+}
+function removeIssuedAccessRecord(jti){
+  const target = String(jti || '').trim();
+  const records = getIssuedAccessRecords();
+  const next = records.filter(item => item.jti !== target);
+  return next.length !== records.length && persistIssuedAccessRecords(next);
+}
+function importIssuedAccessRecords(records, options = {}){
+  if (!Array.isArray(records)) return { ok: false, imported: 0, reason: 'invalid-data' };
+  const incoming = records.map(item => normaliseIssuedAccessRecord({ ...item, source: item?.source || 'backup', importedAt: item?.importedAt || new Date().toISOString() })).filter(Boolean);
+  if (!incoming.length) return { ok: false, imported: 0, reason: 'empty' };
+  const current = options.replace ? [] : getIssuedAccessRecords();
+  const map = new Map(current.map(item => [item.jti, item]));
+  for (const item of incoming) map.set(item.jti, { ...map.get(item.jti), ...item, note: item.note || map.get(item.jti)?.note || '', updatedAt: new Date().toISOString() });
+  return persistIssuedAccessRecords([...map.values()]) ? { ok: true, imported: incoming.length } : { ok: false, imported: 0, reason: 'storage-error' };
+}
+function issuedAccessBackup(){
+  return { schema: ISSUED_ACCESS_SCHEMA, exportedAt: new Date().toISOString(), records: getIssuedAccessRecords() };
+}
 
 
 function createSettingsMenu(){
@@ -930,7 +1036,7 @@ async function registerPwa(){
   }
 }
 
-const ADMIN_PAGES = new Set(['automation','demo','report','tests','changelog','issuer']);
+const ADMIN_PAGES = new Set(['automation','demo','report','tests','changelog','issuer','access-registry']);
 function renderPageAccessGate(){
   if (!ADMIN_PAGES.has(page) || isAdmin()) return;
   const main = document.querySelector('main');
@@ -946,7 +1052,7 @@ const accessReady = initialiseAccess().then(snapshot => {
   renderPageAccessGate();
   return snapshot;
 });
-window.GHRAB = { VERSION, state, t, localised, base, loadApps, loadSyncReport, loadPermissions, getLaunches, getTestLaunches, getTelemetryMode, setTelemetryMode, clearTestTelemetry, recordLaunch, getWorkspace, saveWorkspaceMaterial, deleteWorkspaceMaterial, createHandoff, readHandoff, clearHandoff, getPilotEvents, getTestPilotEvents, recordPilotEvent, clearPilotEvents, downloadJson, downloadPilotSummary, pilotSummaryPayload, anonymousSourceId, currentPilotPeriod, setupMonthlyReportReminder, refreshSharedAccessModuleCache, showToast, applyLanguage, applyMotion, getFavoriteApps, setFavoriteApps, toggleFavoriteApp, safeGetItem, safeSetItem, safeSetJson, safeRemoveItem, storageUsage, validMaterial, validateMaterialPackage, initialiseAccess, setPermitToken, clearPermit, readPermitFile, getAccessSnapshot, getPermitToken, isAdmin, hasAppAccess, requiredTraining, formatReason, accessReady };
+window.GHRAB = { VERSION, state, t, localised, base, loadApps, loadSyncReport, loadPermissions, getLaunches, getTestLaunches, getTelemetryMode, setTelemetryMode, clearTestTelemetry, recordLaunch, getWorkspace, saveWorkspaceMaterial, deleteWorkspaceMaterial, createHandoff, readHandoff, clearHandoff, getPilotEvents, getTestPilotEvents, recordPilotEvent, clearPilotEvents, downloadJson, downloadPilotSummary, pilotSummaryPayload, anonymousSourceId, currentPilotPeriod, setupMonthlyReportReminder, refreshSharedAccessModuleCache, showToast, applyLanguage, applyMotion, getFavoriteApps, setFavoriteApps, toggleFavoriteApp, safeGetItem, safeSetItem, safeSetJson, safeRemoveItem, storageUsage, validMaterial, validateMaterialPackage, initialiseAccess, setPermitToken, clearPermit, readPermitFile, getAccessSnapshot, getPermitToken, isAdmin, hasAppAccess, requiredTraining, formatReason, inspectPermitToken, getIssuedAccessRecords, recordIssuedAccess, updateIssuedAccessRecord, removeIssuedAccessRecord, importIssuedAccessRecords, issuedAccessBackup, accessReady };
 setupChrome(); applyTheme(); applyLanguage(); applyMotion(); renderHome(); setupPortalMotion(); setupStarfield(); refreshSharedAccessModuleCache(); registerPwa(); accessReady.then(() => { updateTelemetryModeBanner(); setupMonthlyReportReminder(); });
 document.addEventListener('ghrab:language', () => { renderHomeCards(); renderHomeAccessSummary(); });
 document.addEventListener('ghrab:access-changed', () => { updateAdminVisibility(); renderPageAccessGate(); renderHomeCards(); updateTelemetryModeBanner(); });

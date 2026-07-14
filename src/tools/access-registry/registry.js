@@ -1,0 +1,329 @@
+await window.GHRAB.accessReady;
+
+if (window.GHRAB.isAdmin()) {
+  const G = window.GHRAB;
+  const body = document.querySelector('#registry-body');
+  const empty = document.querySelector('#registry-empty');
+  const stats = document.querySelector('#registry-stats');
+  const search = document.querySelector('#registry-search');
+  const statusFilter = document.querySelector('#registry-status');
+  const feedback = document.querySelector('#registry-feedback');
+  const detail = document.querySelector('#registry-detail');
+  const detailContent = document.querySelector('#registry-detail-content');
+  const note = document.querySelector('#registry-note');
+  const renew = document.querySelector('#renew-access');
+  const toggleRevocation = document.querySelector('#toggle-revocation');
+  let records = [];
+  let deployedRevocations = { revokedJti: [], revokedBefore: null };
+  let currentJti = null;
+
+  const policy = G.getAccessSnapshot().policy;
+  const locale = () => G.state.language === 'en' ? 'en-GB' : 'cs-CZ';
+  const dateText = value => value ? new Date(value).toLocaleDateString(locale()) : '—';
+  const dateTimeText = value => value ? new Date(value).toLocaleString(locale()) : '—';
+  const csv = value => `"${String(value ?? '').replaceAll('"', '""')}"`;
+
+  function setFeedback(message, ok = true) {
+    feedback.textContent = message;
+    feedback.className = `form-feedback ${ok ? 'success' : 'error'}`;
+  }
+
+  function download(name, content, type = 'application/json') {
+    const blob = new Blob([content], { type });
+    const url = URL.createObjectURL(blob);
+    const anchor = document.createElement('a');
+    anchor.href = url;
+    anchor.download = name;
+    anchor.click();
+    setTimeout(() => URL.revokeObjectURL(url), 1000);
+  }
+
+  function statusOf(record) {
+    if (deployedRevocations.revokedJti?.includes(record.jti)) return 'revoked';
+    if (deployedRevocations.revokedBefore && record.iat && record.iat <= Math.floor(Date.parse(deployedRevocations.revokedBefore) / 1000)) return 'revoked';
+    if (record.exp && record.exp * 1000 <= Date.now()) return 'expired';
+    if (record.pendingRevocation) return 'pending';
+    if (record.supersededBy) return 'superseded';
+    if (!record.exp && !record.expiresAt) return 'unknown';
+    return 'active';
+  }
+
+  function statusLabel(status) {
+    return {
+      active: 'Aktivní',
+      pending: 'Připraveno ke zneplatnění',
+      superseded: 'Nahrazeno novějším',
+      expired: 'Platnost skončila',
+      revoked: 'Centrálně zneplatněno',
+      unknown: 'Chybí údaj o platnosti'
+    }[status] || status;
+  }
+
+  function appLabels(record) {
+    if (record.apps.includes('*')) return ['Všechny současné i budoucí aplikace'];
+    return record.apps.map(id => policy?.applications?.[id]?.label?.cs || id);
+  }
+
+  function filteredRecords() {
+    const query = search.value.trim().toLocaleLowerCase('cs');
+    const wanted = statusFilter.value;
+    return records.filter(record => {
+      const status = statusOf(record);
+      if (wanted !== 'all' && status !== wanted) return false;
+      if (!query) return true;
+      const haystack = [record.displayName, record.subject, record.jti, record.role, ...appLabels(record)].join(' ').toLocaleLowerCase('cs');
+      return haystack.includes(query);
+    });
+  }
+
+  function statCard(value, label) {
+    const card = document.createElement('article');
+    card.className = 'registry-stat';
+    const strong = document.createElement('strong');
+    strong.textContent = String(value);
+    const span = document.createElement('span');
+    span.textContent = label;
+    card.append(strong, span);
+    return card;
+  }
+
+  function renderStats() {
+    const statuses = records.map(statusOf);
+    stats.replaceChildren(
+      statCard(records.length, 'vydaných přístupů'),
+      statCard(statuses.filter(item => item === 'active').length, 'aktuálně aktivních'),
+      statCard(statuses.filter(item => item === 'pending').length, 'čeká na zneplatnění'),
+      statCard(new Set(records.map(item => item.subject).filter(Boolean)).size, 'evidovaných uživatelů')
+    );
+  }
+
+  function rowFor(record) {
+    const tr = document.createElement('tr');
+    const status = statusOf(record);
+    const user = document.createElement('td');
+    user.className = 'registry-user';
+    const name = document.createElement('strong');
+    name.textContent = record.displayName;
+    const subject = document.createElement('small');
+    subject.textContent = record.subject || 'bez interního ID';
+    user.append(name, subject);
+
+    const apps = document.createElement('td');
+    apps.className = 'registry-apps';
+    const labels = appLabels(record);
+    apps.textContent = labels.slice(0, 2).join(', ');
+    if (labels.length > 2) {
+      const more = document.createElement('small');
+      more.textContent = `+ ${labels.length - 2} další`;
+      apps.append(document.createElement('br'), more);
+    }
+
+    const validity = document.createElement('td');
+    validity.textContent = dateText(record.expiresAt);
+    if (record.supersededBy) {
+      const small = document.createElement('small');
+      small.className = 'registry-source-note';
+      small.textContent = `Vydáno ${dateText(record.issuedAt)}`;
+      validity.append(document.createElement('br'), small);
+    }
+
+    const state = document.createElement('td');
+    const badge = document.createElement('span');
+    badge.className = `registry-badge ${status}`;
+    badge.textContent = statusLabel(status);
+    state.append(badge);
+
+    const jti = document.createElement('td');
+    jti.className = 'registry-jti';
+    jti.textContent = record.jti;
+
+    const actions = document.createElement('td');
+    const wrap = document.createElement('div');
+    wrap.className = 'registry-row-actions';
+    const detailButton = document.createElement('button');
+    detailButton.type = 'button';
+    detailButton.className = 'button secondary';
+    detailButton.dataset.action = 'detail';
+    detailButton.dataset.jti = record.jti;
+    detailButton.textContent = 'Detail';
+    const copyButton = document.createElement('button');
+    copyButton.type = 'button';
+    copyButton.className = 'button ghost';
+    copyButton.dataset.action = 'copy';
+    copyButton.dataset.jti = record.jti;
+    copyButton.textContent = 'Kopírovat JTI';
+    wrap.append(detailButton, copyButton);
+    actions.append(wrap);
+
+    tr.append(user, apps, validity, state, jti, actions);
+    return tr;
+  }
+
+  function render() {
+    records = G.getIssuedAccessRecords();
+    const visible = filteredRecords();
+    body.replaceChildren(...visible.map(rowFor));
+    empty.hidden = records.length > 0;
+    document.querySelector('.table-scroll').hidden = records.length === 0;
+    renderStats();
+  }
+
+  function openDetail(jti) {
+    const record = records.find(item => item.jti === jti);
+    if (!record) return;
+    currentJti = jti;
+    const status = statusOf(record);
+    const heading = document.createElement('div');
+    const eyebrow = document.createElement('p');
+    eyebrow.className = 'eyebrow';
+    eyebrow.textContent = 'DETAIL PŘÍSTUPU';
+    const title = document.createElement('h2');
+    title.textContent = record.displayName;
+    const source = document.createElement('p');
+    source.className = 'registry-source-note';
+    source.textContent = record.source === 'issued' ? 'Vytvořeno přímo v tomto Studiu.' : 'Do evidence importováno.';
+    heading.append(eyebrow, title, source);
+    const grid = document.createElement('div');
+    grid.className = 'registry-detail-grid';
+    const values = [
+      ['Interní ID', record.subject || '—'],
+      ['Role', record.role === 'admin' ? 'Správce' : 'Proškolený učitel'],
+      ['Vydáno', dateTimeText(record.issuedAt)],
+      ['Platnost do', dateTimeText(record.expiresAt)],
+      ['Stav', statusLabel(status)],
+      ['JTI', record.jti],
+      ['Aplikace', appLabels(record).join(', ')],
+      ['Nahrazeno JTI', record.supersededBy || '—']
+    ];
+    for (const [label, value] of values) {
+      const item = document.createElement('div');
+      item.className = 'registry-detail-item';
+      const span = document.createElement('span');
+      span.textContent = label;
+      const strong = document.createElement('strong');
+      strong.textContent = value;
+      item.append(span, strong);
+      grid.append(item);
+    }
+    detailContent.replaceChildren(heading, grid);
+    note.value = record.note || '';
+    renew.href = `../access-issuer/?subject=${encodeURIComponent(record.subject || record.jti)}`;
+    toggleRevocation.textContent = record.pendingRevocation ? 'Zrušit přípravu zneplatnění' : 'Připravit zneplatnění';
+    detail.showModal();
+  }
+
+  body.addEventListener('click', async event => {
+    const button = event.target.closest('[data-action]');
+    if (!button) return;
+    if (button.dataset.action === 'detail') openDetail(button.dataset.jti);
+    if (button.dataset.action === 'copy') {
+      try {
+        await navigator.clipboard.writeText(button.dataset.jti);
+        G.showToast('JTI bylo zkopírováno.');
+      } catch {
+        setFeedback('JTI se nepodařilo zkopírovat.', false);
+      }
+    }
+  });
+
+  document.querySelector('#save-note').addEventListener('click', () => {
+    if (!currentJti) return;
+    G.updateIssuedAccessRecord(currentJti, { note: note.value.trim() });
+    setFeedback('Poznámka byla uložena.');
+    render();
+  });
+
+  toggleRevocation.addEventListener('click', () => {
+    const record = records.find(item => item.jti === currentJti);
+    if (!record) return;
+    G.updateIssuedAccessRecord(currentJti, { pendingRevocation: !record.pendingRevocation });
+    detail.close();
+    render();
+    setFeedback(record.pendingRevocation ? 'Příprava zneplatnění byla zrušena.' : 'JTI bylo přidáno do připravovaného seznamu zneplatnění.');
+  });
+
+  document.querySelector('#delete-record').addEventListener('click', () => {
+    const record = records.find(item => item.jti === currentJti);
+    if (!record || !confirm(`Odstranit ${record.displayName} z místní evidence? Samotný přístup tím nebude zneplatněn.`)) return;
+    G.removeIssuedAccessRecord(currentJti);
+    detail.close();
+    render();
+    setFeedback('Záznam byl odstraněn pouze z místní evidence.');
+  });
+
+  document.querySelector('#import-permit-button').addEventListener('click', () => document.querySelector('#import-permit').click());
+  document.querySelector('#import-backup-button').addEventListener('click', () => document.querySelector('#import-backup').click());
+
+  document.querySelector('#import-permit').addEventListener('change', async event => {
+    let imported = 0;
+    const failures = [];
+    for (const file of event.target.files || []) {
+      try {
+        const parsed = JSON.parse(await file.text());
+        const token = typeof parsed === 'string' ? parsed : parsed?.token;
+        const result = await G.inspectPermitToken(token);
+        if (!result.ok || !result.permit) throw new Error(result.reason || 'invalid');
+        const saved = G.recordIssuedAccess(result.permit, { source: 'imported', createdAt: parsed.createdAt });
+        if (!saved.ok) throw new Error(saved.reason || 'storage');
+        imported += 1;
+      } catch (error) {
+        failures.push(`${file.name}: ${error.message}`);
+      }
+    }
+    event.target.value = '';
+    render();
+    setFeedback(imported ? `Importováno ${imported} přístupových souborů.${failures.length ? ` Nezdařilo se: ${failures.join(', ')}` : ''}` : `Import se nezdařil. ${failures.join(', ')}`, imported > 0);
+  });
+
+  document.querySelector('#import-backup').addEventListener('change', async event => {
+    const file = event.target.files?.[0];
+    if (!file) return;
+    try {
+      const parsed = JSON.parse(await file.text());
+      const source = Array.isArray(parsed) ? parsed : parsed.records;
+      const result = G.importIssuedAccessRecords(source);
+      if (!result.ok) throw new Error(result.reason || 'invalid');
+      render();
+      setFeedback(`Do evidence bylo načteno ${result.imported} záznamů.`);
+    } catch {
+      setFeedback('Soubor není platnou zálohou evidence.', false);
+    }
+    event.target.value = '';
+  });
+
+  document.querySelector('#export-backup').addEventListener('click', () => {
+    const payload = G.issuedAccessBackup();
+    download(`AI-STUDIO-EVIDENCE-PRISTUPU-${new Date().toISOString().slice(0, 10)}.json`, `${JSON.stringify(payload, null, 2)}\n`);
+    setFeedback('Záloha evidence byla stažena.');
+  });
+
+  document.querySelector('#export-csv').addEventListener('click', () => {
+    const header = ['Jméno', 'Interní ID', 'Role', 'Aplikace', 'Vydáno', 'Platnost do', 'Stav', 'JTI', 'Poznámka'];
+    const lines = records.map(record => [record.displayName, record.subject, record.role, appLabels(record).join('; '), record.issuedAt, record.expiresAt, statusLabel(statusOf(record)), record.jti, record.note].map(csv).join(','));
+    download(`AI-STUDIO-PREHLED-PRISTUPU-${new Date().toISOString().slice(0, 10)}.csv`, `\ufeff${header.map(csv).join(',')}\n${lines.join('\n')}\n`, 'text/csv;charset=utf-8');
+    setFeedback('Přehled CSV byl stažen.');
+  });
+
+  document.querySelector('#export-revocations').addEventListener('click', () => {
+    const pending = records.filter(record => record.pendingRevocation).map(record => record.jti);
+    const revokedJti = [...new Set([...(deployedRevocations.revokedJti || []), ...pending])].sort();
+    const payload = {
+      schema: 'ghrab-access-revocation-list-v1',
+      updatedAt: new Date().toISOString(),
+      revokedBefore: deployedRevocations.revokedBefore || null,
+      revokedJti
+    };
+    download('revoked-access.json', `${JSON.stringify(payload, null, 2)}\n`);
+    setFeedback(pending.length ? `Stažen hotový seznam s ${pending.length} nově připravenými JTI. Nahraďte jím src/config/revoked-access.json.` : 'Stažen aktuální seznam. Žádné nové JTI zatím není označeno ke zneplatnění.');
+  });
+
+  search.addEventListener('input', render);
+  statusFilter.addEventListener('change', render);
+  document.addEventListener('ghrab:issued-access-changed', render);
+
+  try {
+    const response = await fetch('../../config/revoked-access.json', { cache: 'no-store' });
+    if (response.ok) deployedRevocations = await response.json();
+  } catch { /* evidence remains usable offline */ }
+  render();
+}

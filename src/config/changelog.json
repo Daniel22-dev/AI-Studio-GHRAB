@@ -1,7 +1,33 @@
 {
   "schema": "ai-studio-changelog-v1",
-  "current": "0.13.0",
+  "current": "0.14.0",
   "items": [
+    {
+      "version": "0.14.0",
+      "date": "2026-07-14",
+      "title": {
+        "cs": "Automatická evidence vydaných přístupů",
+        "en": "Automatic registry of issued access permits"
+      },
+      "changes": [
+        {
+          "cs": "Každý nově podepsaný přístup se po vytvoření automaticky uloží do místní správcovské evidence včetně uživatele, aplikací, platnosti a JTI.",
+          "en": "Every newly signed permit is automatically stored in the local administrator registry with the user, applications, validity and JTI."
+        },
+        {
+          "cs": "Správce může vyhledávat, filtrovat, kopírovat JTI, doplňovat poznámky, obnovit přístup s předvyplněnými údaji a importovat již vydané přístupové soubory.",
+          "en": "The administrator can search, filter, copy JTI, add notes, renew access with prefilled data and import existing permit files."
+        },
+        {
+          "cs": "Evidence podporuje bezpečnou zálohu JSON, přehled CSV a automatické vytvoření hotového souboru revoked-access.json z označených přístupů.",
+          "en": "The registry supports a safe JSON backup, CSV overview and automatic creation of a ready revoked-access.json file from selected permits."
+        },
+        {
+          "cs": "Evidence zůstává pouze v prohlížeči správce a neukládá soukromý podpisový klíč ani dlouhé přístupové kódy kolegů.",
+          "en": "The registry remains only in the administrator browser and stores neither the private signing key nor colleagues' long access codes."
+        }
+      ]
+    },
     {
       "version": "0.13.0",
       "date": "2026-07-13",

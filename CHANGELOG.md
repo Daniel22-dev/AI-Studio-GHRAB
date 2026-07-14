@@ -1,5 +1,12 @@
 # Changelog
 
+## 0.14.0 — automatická evidence přístupů
+- automatický zápis vydaných přístupů do správcovské evidence,
+- vyhledávání, filtrování, poznámky, kopírování JTI a předvyplněné obnovení přístupu,
+- import starších přístupových souborů a záloh evidence,
+- export JSON, CSV a připraveného `revoked-access.json`,
+- bezpečné místní uložení bez soukromého klíče a bez celých přístupových tokenů.
+
 ## 0.13.0 — 2026-07-13
 
 - skutečné obrazové vrstvy tří soustředných prstenců se po kliknutí mechanicky otáčejí různými směry;

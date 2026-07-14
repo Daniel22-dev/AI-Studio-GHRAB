@@ -144,6 +144,13 @@ export async function initialiseAccess(options = {}){
   emitChange();
   return getAccessSnapshot();
 }
+export async function inspectPermitToken(token){
+  const clean = String(token || '').trim();
+  if (!clean) return { ok: false, reason: 'missing' };
+  if (!accessState.policy) await initialiseAccess();
+  const result = await verifyToken(clean);
+  return { ok: Boolean(result.valid), valid: Boolean(result.valid), reason: result.reason, permit: result.permit || null };
+}
 export async function setPermitToken(token){
   const clean = String(token || '').trim();
   if (!clean) return { ok: false, reason: 'missing' };
