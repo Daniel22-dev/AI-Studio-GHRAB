@@ -1,7 +1,7 @@
 import { validateMaterialPackage } from './shared/material-validator.js';
 import { buildPilotSummary } from './shared/safe-export.js';
 import { initialiseAccess, setPermitToken, clearPermit, readPermitFile, getAccessSnapshot, getPermitToken, isAdmin, hasAppAccess, requiredTraining, formatReason, inspectPermitToken } from './access/access-control.js';
-const VERSION = '0.14.3';
+const VERSION = '0.14.4';
 const root = document.documentElement;
 const page = document.body.dataset.page || 'home';
 const base = document.body.dataset.base || (page === 'home' ? './' : '../');
@@ -380,7 +380,8 @@ function setupNavigation(){
   document.querySelectorAll('.main-nav a').forEach(a => a.addEventListener('click', () => {
     nav?.classList.remove('open'); navToggle?.setAttribute('aria-expanded', 'false');
   }));
-  document.querySelector(`.main-nav a[data-nav="${page}"]`)?.setAttribute('aria-current', 'page');
+  const activeNavPage = ['issuer', 'access-registry'].includes(page) ? 'automation' : page;
+  document.querySelector(`.main-nav a[data-nav="${activeNavPage}"]`)?.setAttribute('aria-current', 'page');
 }
 
 function updateAdminVisibility(){

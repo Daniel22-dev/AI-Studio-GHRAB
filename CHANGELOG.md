@@ -1,5 +1,11 @@
 # Changelog
 
+## 0.14.4 — jednotná navigace správcovských nástrojů
+- Evidence přístupů a Vydání přístupu mají opět kompletní horní menu AI Studia,
+- při práci v těchto nástrojích zůstává zvýrazněná záložka **Správa**,
+- doplněna kontrola, která zabrání návratu zkrácené navigace,
+- verzované načítání souborů Vydání přístupu omezuje problémy se starou PWA cache.
+
 ## 0.14.1 — oprava importu evidence
 - spolehlivé nativní načítání souboru i v nainstalované PWA,
 - jeden import pro přístupový soubor i zálohu evidence,

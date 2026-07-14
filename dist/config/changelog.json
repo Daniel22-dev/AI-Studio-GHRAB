@@ -1,7 +1,33 @@
 {
   "schema": "ai-studio-changelog-v1",
-  "current": "0.14.3",
+  "current": "0.14.4",
   "items": [
+    {
+      "version": "0.14.4",
+      "date": "2026-07-14",
+      "title": {
+        "cs": "Jednotná navigace správcovských nástrojů",
+        "en": "Consistent navigation in administrator tools"
+      },
+      "changes": [
+        {
+          "cs": "Evidence přístupů a Vydání přístupu nyní zobrazují stejné hlavní záložky jako ostatní části AI Studia.",
+          "en": "Access Registry and Access Issuer now show the same main tabs as the rest of AI Studio."
+        },
+        {
+          "cs": "Při otevření těchto nástrojů zůstává v horní navigaci správně zvýrazněná záložka Správa.",
+          "en": "The Administration tab remains correctly highlighted while these tools are open."
+        },
+        {
+          "cs": "Doplněna automatická regresní kontrola úplnosti navigace na obou správcovských stránkách.",
+          "en": "An automated regression check now verifies complete navigation on both administrator pages."
+        },
+        {
+          "cs": "Soubory stránky Vydání přístupu používají verzované adresy, aby se po aktualizaci nenačetla stará kopie z mezipaměti.",
+          "en": "Access Issuer assets now use versioned URLs to avoid stale cached copies after updates."
+        }
+      ]
+    },
     {
       "version": "0.14.3",
       "date": "2026-07-14",

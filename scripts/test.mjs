@@ -91,7 +91,7 @@ for(const file of sourceFiles.filter(f=>/\.(html|js|json|md|css|yml|yaml)$/.test
 }
 for(const file of sourceFiles.filter(f=>f.endsWith('.js'))){try{execFileSync(process.execPath,['--check',file],{stdio:'pipe'})}catch(e){fail(`Chyba syntaxe JS v ${path.relative(root,file)}: ${e.stderr?.toString()||e.message}`)}}
 
-const standardPages=new Set(['index.html','access/index.html','automation/index.html','workflow/index.html','report/index.html','demo/index.html','library/index.html','manualy/index.html','manualy/pilot-report.html','manualy/error-report.html','safety/index.html','pilot/index.html','changelog/index.html','tests/index.html']);
+const standardPages=new Set(['index.html','access/index.html','automation/index.html','workflow/index.html','report/index.html','demo/index.html','library/index.html','manualy/index.html','manualy/pilot-report.html','manualy/error-report.html','safety/index.html','pilot/index.html','changelog/index.html','tests/index.html','tools/access-issuer/index.html','tools/access-registry/index.html']);
 for(const file of sourceFiles.filter(f=>f.endsWith('.html'))){
  const html=await readFile(file,'utf8');const rel=path.relative(src,file).replaceAll('\\','/');
  const ids=[...html.matchAll(/\sid=["']([^"']+)["']/g)].map(m=>m[1]);const seen=new Set();for(const id of ids){if(seen.has(id))fail(`Duplicitní id ${id} v ${rel}`);seen.add(id)}
@@ -124,6 +124,7 @@ if(!appGuardText.includes('recordOutput(appId, keys')||!appGuardText.includes('O
 if(!appGuardText.includes('options.telemetry !== false'))fail('app-guard neumí vyloučit interaktivní manuály z měření používání.');
 if(!appGuardText.includes("import { setupErrorReporter } from './error-reporter.js'")||!appGuardText.includes('setupErrorReporter({ appId'))fail('app-guard neaktivuje jednotné hlášení chyb v chráněných aplikacích.');
 const mainAppText=await readFile(path.join(src,'app.js'),'utf8');
+if(!mainAppText.includes("['issuer', 'access-registry'].includes(page) ? 'automation' : page"))fail('Správcovské nástroje nezvýrazňují záložku Správa.');
 const issuerScriptText=await readFile(path.join(src,'tools/access-issuer/issuer.js'),'utf8');
 const registryPageText=await readFile(path.join(src,'tools/access-registry/index.html'),'utf8');
 const registryScriptText=await readFile(path.join(src,'tools/access-registry/registry.js'),'utf8');

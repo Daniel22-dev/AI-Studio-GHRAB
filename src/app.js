@@ -380,7 +380,8 @@ function setupNavigation(){
   document.querySelectorAll('.main-nav a').forEach(a => a.addEventListener('click', () => {
     nav?.classList.remove('open'); navToggle?.setAttribute('aria-expanded', 'false');
   }));
-  document.querySelector(`.main-nav a[data-nav="${page}"]`)?.setAttribute('aria-current', 'page');
+  const activeNavPage = ['issuer', 'access-registry'].includes(page) ? 'automation' : page;
+  document.querySelector(`.main-nav a[data-nav="${activeNavPage}"]`)?.setAttribute('aria-current', 'page');
 }
 
 function updateAdminVisibility(){
