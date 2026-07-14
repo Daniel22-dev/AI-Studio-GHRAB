@@ -1,7 +1,29 @@
 {
   "schema": "ai-studio-changelog-v1",
-  "current": "0.14.1",
+  "current": "0.14.2",
   "items": [
+    {
+      "version": "0.14.2",
+      "date": "2026-07-14",
+      "title": {
+        "cs": "Oprava načítání platnosti ze starších přístupových souborů",
+        "en": "Fixed validity import from existing permit files"
+      },
+      "changes": [
+        {
+          "cs": "Při importu původního souboru .ghrab-access.json má nyní podepsaný token přednost před pomocným permitId, takže Studio správně načte interní ID, aplikace, školení a konec platnosti.",
+          "en": "When importing an existing .ghrab-access.json file, the signed token now takes precedence over the helper permitId, so the Studio correctly reads the internal ID, applications, training data and expiry."
+        },
+        {
+          "cs": "Opětovný import stejného souboru opraví již neúplný záznam podle stejného JTI a nevytvoří duplicitu.",
+          "en": "Re-importing the same file repairs an existing incomplete record by the same JTI without creating a duplicate."
+        },
+        {
+          "cs": "Doplněna regresní kontrola pořadí rozpoznávání přístupového souboru a zálohy evidence.",
+          "en": "Added a regression check for permit-file and registry-backup detection order."
+        }
+      ]
+    },
     {
       "version": "0.14.1",
       "date": "2026-07-14",

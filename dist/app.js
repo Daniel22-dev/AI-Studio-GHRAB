@@ -1,7 +1,7 @@
 import { validateMaterialPackage } from './shared/material-validator.js';
 import { buildPilotSummary } from './shared/safe-export.js';
 import { initialiseAccess, setPermitToken, clearPermit, readPermitFile, getAccessSnapshot, getPermitToken, isAdmin, hasAppAccess, requiredTraining, formatReason, inspectPermitToken } from './access/access-control.js';
-const VERSION = '0.14.1';
+const VERSION = '0.14.2';
 const root = document.documentElement;
 const page = document.body.dataset.page || 'home';
 const base = document.body.dataset.base || (page === 'home' ? './' : '../');

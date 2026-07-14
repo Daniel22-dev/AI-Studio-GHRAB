@@ -273,6 +273,18 @@ if (window.GHRAB.isAdmin()) {
   }
 
   async function importPayload(parsed, label = 'soubor') {
+    // Přístupový soubor obsahuje vedle tokenu také permitId. Token proto musí mít
+    // přednost před rozpoznáním samostatného záznamu evidence; jedině z něj lze
+    // bezpečně ověřit podpis a načíst interní ID, aplikace i konec platnosti.
+    const token = typeof parsed === 'string' ? parsed : parsed?.token;
+    if (token) {
+      const inspected = await G.inspectPermitToken(token);
+      if (!inspected.ok || !inspected.permit) throw new Error(G.formatReason(inspected.reason || 'invalid-file', 'cs'));
+      const saved = G.recordIssuedAccess(inspected.permit, { source: 'imported', createdAt: parsed?.createdAt });
+      if (!saved.ok) throw new Error(saved.reason === 'storage-error' ? 'Prohlížeč nepovolil uložení evidence.' : 'Přístup se nepodařilo uložit.');
+      return { imported: 1, kind: 'permit' };
+    }
+
     const recordsPayload = Array.isArray(parsed)
       ? parsed
       : Array.isArray(parsed?.records)
@@ -287,13 +299,7 @@ if (window.GHRAB.isAdmin()) {
       return { imported: result.imported, kind: 'registry' };
     }
 
-    const token = typeof parsed === 'string' ? parsed : parsed?.token;
-    if (!token) throw new Error('Studio v souboru nenašlo přístup ani zálohu evidence.');
-    const inspected = await G.inspectPermitToken(token);
-    if (!inspected.ok || !inspected.permit) throw new Error(G.formatReason(inspected.reason || 'invalid-file', 'cs'));
-    const saved = G.recordIssuedAccess(inspected.permit, { source: 'imported', createdAt: parsed?.createdAt });
-    if (!saved.ok) throw new Error(saved.reason === 'storage-error' ? 'Prohlížeč nepovolil uložení evidence.' : 'Přístup se nepodařilo uložit.');
-    return { imported: 1, kind: 'permit' };
+    throw new Error('Studio v souboru nenašlo přístup ani zálohu evidence.');
   }
 
   async function importSelectedFiles(fileList) {
