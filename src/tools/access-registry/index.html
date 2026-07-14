@@ -16,15 +16,17 @@
   <div><p class="eyebrow">RYCHLÉ AKCE</p><h2>Správa bez ručního přepisování JTI</h2><p class="registry-local-note">Data jsou uložena jen v tomto prohlížeči. Po větší změně nebo na konci školního roku stáhněte zálohu evidence.</p></div>
   <div class="registry-actions">
     <a class="button primary" href="../access-issuer/">＋ Vydat nový přístup</a>
-    <button class="button secondary" id="import-permit-button" type="button">Importovat přístupový soubor</button>
-    <button class="button secondary" id="import-backup-button" type="button">Importovat zálohu</button>
+    <label class="button secondary registry-file-label" for="import-files">Načíst přístup nebo zálohu</label>
     <button class="button ghost" id="export-backup" type="button">Záloha JSON</button>
     <button class="button ghost" id="export-csv" type="button">Přehled CSV</button>
     <button class="button warning" id="export-revocations" type="button">Stáhnout seznam zneplatnění</button>
   </div>
-  <input id="import-permit" type="file" accept="application/json,.json,.ghrab-access.json" multiple hidden>
-  <input id="import-backup" type="file" accept="application/json,.json" hidden>
-  <p id="registry-feedback" class="form-feedback" role="status"></p>
+  <input id="import-files" class="registry-file-input" type="file" accept="application/json,.json,.ghrab-access.json" multiple>
+  <div id="registry-drop-zone" class="registry-drop-zone" tabindex="0" role="button" aria-controls="import-files">
+    <strong>Přetáhněte sem soubor</strong>
+    <span>Studio samo pozná přístupový soubor i zálohu evidence.</span>
+  </div>
+  <p id="registry-feedback" class="form-feedback" role="status" aria-live="polite"></p>
 </article>
 <article class="panel registry-list-panel">
   <div class="registry-list-head"><div><p class="eyebrow">VYDANÉ PŘÍSTUPY</p><h2>Uživatelé, aplikace a stav oprávnění</h2></div><div class="registry-filters"><label class="field"><span>Hledat</span><input id="registry-search" type="search" placeholder="Jméno, interní ID nebo JTI"></label><label class="field"><span>Stav</span><select id="registry-status"><option value="all">Všechny</option><option value="active">Aktivní</option><option value="pending">Připravené ke zneplatnění</option><option value="superseded">Nahrazené novějším</option><option value="expired">Prošlé</option><option value="revoked">Zneplatněné</option><option value="unknown">Neúplné údaje</option></select></label></div></div>

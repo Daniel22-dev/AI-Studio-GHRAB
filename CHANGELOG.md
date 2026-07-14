@@ -1,5 +1,11 @@
 # Changelog
 
+## 0.14.1 — oprava importu evidence
+- spolehlivé nativní načítání souboru i v nainstalované PWA,
+- jeden import pro přístupový soubor i zálohu evidence,
+- přetažení souboru do stránky a přesná chybová hlášení,
+- soukromý jednorázový import přes fragment adresy bez odeslání osobních údajů serveru.
+
 ## 0.14.0 — automatická evidence přístupů
 - automatický zápis vydaných přístupů do správcovské evidence,
 - vyhledávání, filtrování, poznámky, kopírování JTI a předvyplněné obnovení přístupu,

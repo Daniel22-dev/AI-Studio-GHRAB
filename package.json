@@ -1,6 +1,6 @@
 {
   "name": "ai-studio-ghrab",
-  "version": "0.14.0",
+  "version": "0.14.1",
   "private": true,
   "description": "Profesionální PWA rozcestník školních AI nástrojů s mechanicky animovanou hvězdnou bránou, řízeným přístupem, anonymním měřením a diagnostickým hlášením chyb",
   "type": "module",

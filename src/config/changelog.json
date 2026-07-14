@@ -1,7 +1,33 @@
 {
   "schema": "ai-studio-changelog-v1",
-  "current": "0.14.0",
+  "current": "0.14.1",
   "items": [
+    {
+      "version": "0.14.1",
+      "date": "2026-07-14",
+      "title": {
+        "cs": "Spolehlivý import evidence a soukromý jednorázový odkaz",
+        "en": "Reliable registry import and private one-time link"
+      },
+      "changes": [
+        {
+          "cs": "Nahrazeno programové otevírání skrytého výběru souboru nativním ovládáním, které funguje spolehlivěji v běžném prohlížeči i nainstalované PWA.",
+          "en": "Replaced programmatic opening of a hidden file picker with native controls that work more reliably in browsers and installed PWAs."
+        },
+        {
+          "cs": "Jediné tlačítko nyní samo rozpozná přístupový soubor, zálohu evidence, pole záznamů i samostatný záznam; doplněno přetažení souboru a přesná chybová hlášení.",
+          "en": "A single import control now recognises permit files, registry backups, record arrays and individual records; drag and drop and precise errors were added."
+        },
+        {
+          "cs": "Přidán soukromý jednorázový import přes fragment adresy. Osobní data se neposílají serveru a po načtení se z adresního řádku okamžitě odstraní.",
+          "en": "Added private one-time import through the URL fragment. Personal data is not sent to the server and is immediately removed from the address bar after import."
+        },
+        {
+          "cs": "Import po úspěchu viditelně potvrdí počet záznamů a přesune správce k aktualizovanému seznamu.",
+          "en": "After success, import clearly confirms the record count and moves the administrator to the updated list."
+        }
+      ]
+    },
     {
       "version": "0.14.0",
       "date": "2026-07-14",

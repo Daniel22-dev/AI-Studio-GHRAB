@@ -13,6 +13,8 @@ if (window.GHRAB.isAdmin()) {
   const note = document.querySelector('#registry-note');
   const renew = document.querySelector('#renew-access');
   const toggleRevocation = document.querySelector('#toggle-revocation');
+  const importFiles = document.querySelector('#import-files');
+  const dropZone = document.querySelector('#registry-drop-zone');
   let records = [];
   let deployedRevocations = { revokedJti: [], revokedBefore: null };
   let currentJti = null;
@@ -251,45 +253,110 @@ if (window.GHRAB.isAdmin()) {
     setFeedback('Záznam byl odstraněn pouze z místní evidence.');
   });
 
-  document.querySelector('#import-permit-button').addEventListener('click', () => document.querySelector('#import-permit').click());
-  document.querySelector('#import-backup-button').addEventListener('click', () => document.querySelector('#import-backup').click());
+  function decodeBase64Url(value) {
+    const source = String(value || '').replace(/-/g, '+').replace(/_/g, '/');
+    const padded = source.padEnd(Math.ceil(source.length / 4) * 4, '=');
+    const bytes = Uint8Array.from(atob(padded), character => character.charCodeAt(0));
+    return new TextDecoder().decode(bytes);
+  }
 
-  document.querySelector('#import-permit').addEventListener('change', async event => {
+  async function readFileText(file) {
+    if (!file) throw new Error('Nebyl vybrán soubor.');
+    if (file.size > 512 * 1024) throw new Error('Soubor je příliš velký.');
+    if (typeof file.text === 'function') return file.text();
+    return new Promise((resolve, reject) => {
+      const reader = new FileReader();
+      reader.addEventListener('load', () => resolve(String(reader.result || '')));
+      reader.addEventListener('error', () => reject(new Error('Soubor se nepodařilo přečíst.')));
+      reader.readAsText(file);
+    });
+  }
+
+  async function importPayload(parsed, label = 'soubor') {
+    const recordsPayload = Array.isArray(parsed)
+      ? parsed
+      : Array.isArray(parsed?.records)
+        ? parsed.records
+        : parsed?.jti || parsed?.permitId
+          ? [parsed]
+          : null;
+
+    if (recordsPayload) {
+      const result = G.importIssuedAccessRecords(recordsPayload);
+      if (!result.ok) throw new Error(result.reason === 'storage-error' ? 'Prohlížeč nepovolil uložení evidence.' : 'Záloha neobsahuje platné záznamy.');
+      return { imported: result.imported, kind: 'registry' };
+    }
+
+    const token = typeof parsed === 'string' ? parsed : parsed?.token;
+    if (!token) throw new Error('Studio v souboru nenašlo přístup ani zálohu evidence.');
+    const inspected = await G.inspectPermitToken(token);
+    if (!inspected.ok || !inspected.permit) throw new Error(G.formatReason(inspected.reason || 'invalid-file', 'cs'));
+    const saved = G.recordIssuedAccess(inspected.permit, { source: 'imported', createdAt: parsed?.createdAt });
+    if (!saved.ok) throw new Error(saved.reason === 'storage-error' ? 'Prohlížeč nepovolil uložení evidence.' : 'Přístup se nepodařilo uložit.');
+    return { imported: 1, kind: 'permit' };
+  }
+
+  async function importSelectedFiles(fileList) {
+    const files = [...(fileList || [])];
+    if (!files.length) return;
+    setFeedback(`Načítám ${files.length === 1 ? files[0].name : `${files.length} souborů`}…`);
     let imported = 0;
     const failures = [];
-    for (const file of event.target.files || []) {
+    for (const file of files) {
       try {
-        const parsed = JSON.parse(await file.text());
-        const token = typeof parsed === 'string' ? parsed : parsed?.token;
-        const result = await G.inspectPermitToken(token);
-        if (!result.ok || !result.permit) throw new Error(result.reason || 'invalid');
-        const saved = G.recordIssuedAccess(result.permit, { source: 'imported', createdAt: parsed.createdAt });
-        if (!saved.ok) throw new Error(saved.reason || 'storage');
-        imported += 1;
+        const parsed = JSON.parse(await readFileText(file));
+        const result = await importPayload(parsed, file.name);
+        imported += result.imported;
       } catch (error) {
         failures.push(`${file.name}: ${error.message}`);
       }
     }
-    event.target.value = '';
+    importFiles.value = '';
     render();
-    setFeedback(imported ? `Importováno ${imported} přístupových souborů.${failures.length ? ` Nezdařilo se: ${failures.join(', ')}` : ''}` : `Import se nezdařil. ${failures.join(', ')}`, imported > 0);
-  });
-
-  document.querySelector('#import-backup').addEventListener('change', async event => {
-    const file = event.target.files?.[0];
-    if (!file) return;
-    try {
-      const parsed = JSON.parse(await file.text());
-      const source = Array.isArray(parsed) ? parsed : parsed.records;
-      const result = G.importIssuedAccessRecords(source);
-      if (!result.ok) throw new Error(result.reason || 'invalid');
-      render();
-      setFeedback(`Do evidence bylo načteno ${result.imported} záznamů.`);
-    } catch {
-      setFeedback('Soubor není platnou zálohou evidence.', false);
+    if (imported > 0) {
+      setFeedback(`Hotovo. Do evidence bylo načteno ${imported} ${imported === 1 ? 'záznam' : imported < 5 ? 'záznamy' : 'záznamů'}.${failures.length ? ` Nezdařilo se: ${failures.join(' | ')}` : ''}`);
+      document.querySelector('.registry-list-panel')?.scrollIntoView({ behavior: 'smooth', block: 'start' });
+    } else {
+      setFeedback(`Import se nezdařil. ${failures.join(' | ') || 'Soubor nebyl rozpoznán.'}`, false);
     }
-    event.target.value = '';
+  }
+
+  importFiles.addEventListener('change', event => importSelectedFiles(event.target.files));
+  dropZone.addEventListener('click', () => importFiles.click());
+  dropZone.addEventListener('keydown', event => {
+    if (event.key === 'Enter' || event.key === ' ') {
+      event.preventDefault();
+      importFiles.click();
+    }
   });
+  for (const name of ['dragenter', 'dragover']) {
+    dropZone.addEventListener(name, event => {
+      event.preventDefault();
+      dropZone.classList.add('is-dragging');
+    });
+  }
+  for (const name of ['dragleave', 'drop']) {
+    dropZone.addEventListener(name, event => {
+      event.preventDefault();
+      dropZone.classList.remove('is-dragging');
+    });
+  }
+  dropZone.addEventListener('drop', event => importSelectedFiles(event.dataTransfer?.files));
+
+  async function importFromPrivateLink() {
+    const marker = '#registryImport=';
+    if (!location.hash.startsWith(marker)) return;
+    const encoded = location.hash.slice(marker.length);
+    history.replaceState(null, '', `${location.pathname}${location.search}`);
+    try {
+      const parsed = JSON.parse(decodeBase64Url(encoded));
+      const result = await importPayload(parsed, 'soukromý odkaz');
+      render();
+      setFeedback(`Soukromý import proběhl úspěšně. Načteno ${result.imported} záznamů.`);
+    } catch (error) {
+      setFeedback(`Soukromý import se nezdařil: ${error.message}`, false);
+    }
+  }
 
   document.querySelector('#export-backup').addEventListener('click', () => {
     const payload = G.issuedAccessBackup();
@@ -326,4 +393,5 @@ if (window.GHRAB.isAdmin()) {
     if (response.ok) deployedRevocations = await response.json();
   } catch { /* evidence remains usable offline */ }
   render();
+  await importFromPrivateLink();
 }
