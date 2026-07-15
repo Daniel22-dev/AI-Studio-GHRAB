@@ -1,7 +1,29 @@
 {
   "schema": "ai-studio-changelog-v1",
-  "current": "0.16.6",
+  "current": "0.16.7",
   "items": [
+    {
+      "version": "0.16.7",
+      "date": "2026-07-15",
+      "title": {
+        "cs": "Oprava formátování živě synchronizovaného registru",
+        "en": "Fixed formatting of the live-synchronised registry"
+      },
+      "changes": [
+        {
+          "cs": "Po stažení aktuálních manifestů se generované soubory registru automaticky naformátují stejným Prettierem, který používá validační kontrola.",
+          "en": "After current manifests are downloaded, generated registry files are automatically formatted by the same Prettier configuration used by validation."
+        },
+        {
+          "cs": "GitHub Actions už neselže jen proto, že vzdálený manifest vytvoří JSON s jiným zalomením řádků.",
+          "en": "GitHub Actions no longer fails merely because a remote manifest produces JSON with different line wrapping."
+        },
+        {
+          "cs": "Oprava se vztahuje na online i offline synchronizaci a nemění vzhled ani funkce AI Studia.",
+          "en": "The fix applies to both online and offline synchronisation and does not change the appearance or features of AI Studio."
+        }
+      ]
+    },
     {
       "version": "0.16.6",
       "date": "2026-07-15",

@@ -2,6 +2,14 @@
 
 > Tento soubor se generuje ze `src/config/changelog.json`. Neupravujte jej ručně.
 
+## 0.16.7 — 2026-07-15
+
+**Oprava formátování živě synchronizovaného registru**
+
+- Po stažení aktuálních manifestů se generované soubory registru automaticky naformátují stejným Prettierem, který používá validační kontrola.
+- GitHub Actions už neselže jen proto, že vzdálený manifest vytvoří JSON s jiným zalomením řádků.
+- Oprava se vztahuje na online i offline synchronizaci a nemění vzhled ani funkce AI Studia.
+
 ## 0.16.6 — 2026-07-15
 
 **Oprava zaseknutého GitHub buildu**

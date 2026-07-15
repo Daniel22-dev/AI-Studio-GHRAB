@@ -1,4 +1,4 @@
-# Automatizace aktualizací AI Studio GHRAB 0.16.6
+# Automatizace aktualizací AI Studio GHRAB 0.16.7
 
 ## Pravidelná synchronizace
 
