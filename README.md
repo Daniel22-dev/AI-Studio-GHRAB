@@ -1,6 +1,8 @@
 # AI Studio GHRAB
 
-**Verze 0.16.7 – federovaný serverless portál pěti chráněných školních aplikací s mechanicky animovanou hvězdnou bránou, řízeným přístupem, pilotním měřením a diagnostickým hlášením chyb.**
+**Aktuální verze: 0.17.0**
+
+**Verze 0.15.0 – federovaný serverless portál pěti chráněných školních aplikací s mechanicky animovanou hvězdnou bránou, řízeným přístupem, pilotním měřením a diagnostickým hlášením chyb.**
 
 AI Studio GHRAB je centrální brána školních digitálních a AI nástrojů. Jednotlivé aplikace zůstávají v samostatných repozitářích; Studio zajišťuje společnou navigaci, Top 4, synchronizaci verzí, bezpečnostní rámec, pracovní materiály, pilotní měření a správu podepsaných přístupů.
 

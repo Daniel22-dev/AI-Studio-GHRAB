@@ -25,20 +25,19 @@ jobs:
       - uses: actions/checkout@v4
       - uses: actions/setup-node@v4
         with:
-          node-version: 20
+          node-version: 22
           registry-url: https://registry.npmjs.org
           cache: npm
-          cache-dependency-path: package-lock.json
       - name: Install dependencies
         timeout-minutes: 4
+        run: npm ci --no-audit --no-fund
         env:
           NPM_CONFIG_REGISTRY: https://registry.npmjs.org
-        run: npm ci --no-audit --no-fund
       - name: Synchronise application manifests
-        timeout-minutes: 3
         run: npm run sync
+      - name: Format generated registry files
+        run: npx prettier --write src/config/apps.generated.json src/config/sync-report.json
       - name: Validate and build
-        timeout-minutes: 5
         run: npm test
       - uses: actions/upload-pages-artifact@v3
         with:

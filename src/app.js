@@ -1104,10 +1104,15 @@ function selectCoreApps(apps) {
 }
 
 let portalLaunchInProgress = false;
-function portalLaunchDelay() {
+function portalRingPreludeDelay() {
+  if (matchMedia("(prefers-reduced-motion: reduce)").matches) return 320;
+  if (root.dataset.motion === "off") return 220;
+  return root.dataset.motion === "full" ? 2000 : 900;
+}
+function portalAppCinematicDelay() {
   if (matchMedia("(prefers-reduced-motion: reduce)").matches) return 360;
   if (root.dataset.motion === "off") return 240;
-  return root.dataset.motion === "full" ? 3000 : 1250;
+  return root.dataset.motion === "full" ? 2800 : 1250;
 }
 function portalLaunchOverlay(app, delay) {
   const overlay = document.querySelector("#portal-launch-overlay");
@@ -1127,26 +1132,26 @@ function portalLaunchOverlay(app, delay) {
   };
   const phaseCopy = {
     prepare: {
-      kicker: t("PRÉMIOVÝ PŘECHOD", "PREMIUM TRANSITION"),
+      kicker: t("APLIKACE ZAMĚŘENA", "APPLICATION TARGETED"),
       phase: t(
-        "Připravuji bezpečný přechod do vybrané aplikace.",
-        "Preparing a secure transition to the selected application.",
+        "Brána dokončila navolení. Připravuji samostatný přechod do aplikace.",
+        "The gateway has completed dialling. Preparing the dedicated application transition.",
       ),
       progress: "16%",
     },
     align: {
       kicker: t("PŘESNÉ ZAROVNÁNÍ", "PRECISE ALIGNMENT"),
       phase: t(
-        "Světelné vrstvy a mechanické prstence se pomalu synchronizují.",
-        "Light layers and mechanical rings are synchronising slowly.",
+        "Světelné vrstvy a prstence aplikace se synchronizují.",
+        "The application light layers and rings are synchronising.",
       ),
       progress: "44%",
     },
     verify: {
       kicker: t("OVĚŘENÍ CÍLE", "TARGET VERIFICATION"),
       phase: t(
-        "Portál ověřuje cíl a stabilizuje prostorový koridor.",
-        "The gateway is verifying the target and stabilising the spatial corridor.",
+        "Ověřuji přístup a stabilizuji koridor pro vybranou aplikaci.",
+        "Verifying access and stabilising the corridor for the selected application.",
       ),
       progress: "72%",
     },
@@ -1223,24 +1228,19 @@ function launchApp(app, article) {
   }
   if (portalLaunchInProgress) return false;
   portalLaunchInProgress = true;
+
   const stage = document.querySelector(".portal-stage");
   const zone = document.querySelector(".portal-core-zone");
   const stateLabel = zone?.querySelector(".portal-state strong");
   const originalLabel = stateLabel?.textContent || "";
   const launchButtons = [...document.querySelectorAll(".portal-launch-button")];
-  launchButtons.forEach((button) => {
-    button.disabled = true;
-  });
-  article.classList.add("is-launch-selected");
-  stage?.classList.add("is-launching");
-  zone?.classList.add("is-launching");
-  document.body.classList.add("portal-launch-active");
+  const ringDelay = portalRingPreludeDelay();
+  const cinematicDelay = portalAppCinematicDelay();
   const appName = localised(app.name).toUpperCase();
-  if (stateLabel)
-    stateLabel.textContent = t(`NAVOLUJI: ${appName}`, `DIALING: ${appName}`);
+  const timers = [];
+  let completed = false;
+  let cinematic = { setPhase: () => {}, finish: () => {}, skip: null };
 
-  const delay = portalLaunchDelay();
-  const cinematic = portalLaunchOverlay(app, delay);
   const popup = window.open("about:blank", "_blank");
   if (popup) {
     try {
@@ -1251,45 +1251,35 @@ function launchApp(app, article) {
       /* browser-specific */
     }
   }
-  const phaseTimers = [];
-  let launchTimer = 0;
-  let completed = false;
-  const schedulePhase = (after, key, cs, en) => {
-    if (after >= delay) return;
-    phaseTimers.push(
-      window.setTimeout(() => {
-        if (stateLabel) stateLabel.textContent = t(cs, en);
-        cinematic.setPhase(key);
-      }, after),
-    );
+
+  launchButtons.forEach((button) => {
+    button.disabled = true;
+  });
+  article.classList.add("is-launch-selected");
+  stage?.classList.add("is-launching");
+  zone?.classList.add("is-launching");
+  if (stateLabel)
+    stateLabel.textContent = t(`NAVOLUJI: ${appName}`, `DIALING: ${appName}`);
+
+  const schedule = (after, callback) => {
+    timers.push(window.setTimeout(callback, after));
   };
-  schedulePhase(
-    Math.min(650, Math.round(delay * 0.24)),
-    "align",
-    "PRSTENCE SE ZAROVNÁVAJÍ",
-    "RINGS ALIGNING",
-  );
-  schedulePhase(
-    Math.min(1450, Math.round(delay * 0.5)),
-    "verify",
-    "OVĚŘUJI CÍL",
-    "VERIFYING TARGET",
-  );
-  schedulePhase(
-    Math.min(2250, Math.round(delay * 0.76)),
-    "open",
-    "KORIDOR SE OTEVÍRÁ",
-    "CORRIDOR OPENING",
-  );
-  schedulePhase(
-    Math.min(2700, Math.round(delay * 0.91)),
-    "transit",
-    "PŘECHOD DO APLIKACE",
-    "ENTERING APPLICATION",
-  );
+  if (ringDelay > 500) {
+    schedule(Math.round(ringDelay * 0.32), () => {
+      if (stateLabel)
+        stateLabel.textContent = t("PRSTENCE SE OTÁČEJÍ", "RINGS ARE ROTATING");
+    });
+    schedule(Math.round(ringDelay * 0.68), () => {
+      if (stateLabel)
+        stateLabel.textContent = t(
+          "PRSTENCE SE UZAMYKAJÍ",
+          "RINGS ARE LOCKING",
+        );
+    });
+  }
+
   const cleanup = () => {
-    phaseTimers.forEach((timer) => window.clearTimeout(timer));
-    window.clearTimeout(launchTimer);
+    timers.forEach((timer) => window.clearTimeout(timer));
     cinematic.finish();
     stage?.classList.remove("is-launching");
     zone?.classList.remove("is-launching");
@@ -1301,12 +1291,11 @@ function launchApp(app, article) {
     document.body.classList.remove("portal-launch-active");
     portalLaunchInProgress = false;
   };
+
   const navigate = () => {
     if (completed) return;
     completed = true;
     cinematic.setPhase("complete");
-    if (stateLabel)
-      stateLabel.textContent = t("PŘECHOD DOKONČEN", "TRANSITION COMPLETE");
     cleanup();
     if (popup) {
       try {
@@ -1316,10 +1305,35 @@ function launchApp(app, article) {
       }
     } else location.href = app.launchUrl;
   };
-  if (cinematic.skip) cinematic.skip.onclick = navigate;
-  launchTimer = window.setTimeout(navigate, delay);
+
+  schedule(ringDelay, () => {
+    zone?.classList.remove("is-launching");
+    if (stateLabel)
+      stateLabel.textContent = t(
+        "BRÁNA OTEVŘENA — SPOUŠTÍM APLIKACI",
+        "GATEWAY OPEN — LAUNCHING APPLICATION",
+      );
+    document.body.classList.add("portal-launch-active");
+    cinematic = portalLaunchOverlay(app, cinematicDelay);
+    if (cinematic.skip) cinematic.skip.onclick = navigate;
+
+    const scheduleCinematic = (after, callback) => {
+      timers.push(window.setTimeout(callback, after));
+    };
+    const phase = (ratio, key) => {
+      scheduleCinematic(Math.round(cinematicDelay * ratio), () =>
+        cinematic.setPhase(key),
+      );
+    };
+    phase(0.24, "align");
+    phase(0.5, "verify");
+    phase(0.76, "open");
+    phase(0.91, "transit");
+    scheduleCinematic(cinematicDelay, navigate);
+  });
   return true;
 }
+
 function portalAppCard(app, index, permissions) {
   const info = permissionInfoFor(app);
   const access = hasAppAccess(app.id);
@@ -1690,23 +1704,46 @@ function isStandalonePwa() {
     navigator.standalone === true
   );
 }
-
+function isDesktopInstallSurface() {
+  return (
+    matchMedia("(min-width: 760px)").matches &&
+    matchMedia("(pointer: fine)").matches
+  );
+}
 function installPromptDismissed() {
   const until = Date.parse(safeGetItem(PWA_INSTALL_DISMISSED_KEY) || "");
   return Number.isFinite(until) && until > Date.now();
 }
-
-function dismissPwaInstallCard(days = 14) {
+function dismissPwaInstallCard(days = 30) {
   const until = new Date(Date.now() + days * 86400000).toISOString();
   safeSetItem(PWA_INSTALL_DISMISSED_KEY, until, { silent: true });
   document.querySelector(".pwa-install-card")?.remove();
 }
-
+function updatePwaInstallCard() {
+  const card = document.querySelector(".pwa-install-card");
+  if (!card) return;
+  const button = card.querySelector(".pwa-install-primary");
+  const hint = card.querySelector(".pwa-install-copy p");
+  if (button)
+    button.textContent = deferredInstallPrompt
+      ? t("Nainstalovat", "Install")
+      : t("Jak nainstalovat", "How to install");
+  if (hint)
+    hint.textContent = deferredInstallPrompt
+      ? t(
+          "Otevře se jako samostatná aplikace na počítači a bude vždy po ruce.",
+          "Open it as a standalone desktop app and keep it close at hand.",
+        )
+      : t(
+          "V Chrome nebo Edge lze Studio nainstalovat přes ikonu v adresním řádku.",
+          "In Chrome or Edge, install the Studio using the icon in the address bar.",
+        );
+}
 function renderPwaInstallCard() {
   if (
     page !== "home" ||
-    !deferredInstallPrompt ||
     isStandalonePwa() ||
+    !isDesktopInstallSurface() ||
     installPromptDismissed() ||
     document.querySelector(".pwa-install-card")
   )
@@ -1718,33 +1755,27 @@ function renderPwaInstallCard() {
     "aria-label",
     t("Instalace AI Studia", "Install AI Studio"),
   );
-
   const icon = el("img", "pwa-install-icon");
   icon.src = `${base}assets/brand/icon-96.png`;
   icon.alt = "";
-
   const copy = el("div", "pwa-install-copy");
   copy.append(
     el("strong", "", t("Nainstalovat AI Studio", "Install AI Studio")),
-    el(
-      "p",
-      "",
-      t(
-        "Otevře se jako samostatná aplikace na počítači a bude vždy po ruce.",
-        "Open it as a standalone desktop app and keep it close at hand.",
-      ),
-    ),
+    el("p", "", ""),
   );
-
   const actions = el("div", "pwa-install-actions");
-  const install = el(
-    "button",
-    "pwa-install-primary",
-    t("Nainstalovat", "Install"),
-  );
+  const install = el("button", "pwa-install-primary", "");
   install.type = "button";
   install.addEventListener("click", async () => {
-    if (!deferredInstallPrompt) return;
+    if (!deferredInstallPrompt) {
+      showToast(
+        t(
+          "V Chrome nebo Edge klikněte na ikonu instalace vpravo v adresním řádku, případně otevřete nabídku prohlížeče a zvolte Nainstalovat AI Studio.",
+          "In Chrome or Edge, click the install icon on the right side of the address bar, or open the browser menu and choose Install AI Studio.",
+        ),
+      );
+      return;
+    }
     install.disabled = true;
     try {
       deferredInstallPrompt.prompt();
@@ -1753,43 +1784,46 @@ function renderPwaInstallCard() {
         safeRemoveItem(PWA_INSTALL_DISMISSED_KEY);
         card.remove();
       } else {
-        dismissPwaInstallCard(7);
+        install.disabled = false;
       }
     } catch {
       install.disabled = false;
       showToast(
         t(
-          "Instalaci se nepodařilo otevřít. Zkuste nabídku instalace v prohlížeči.",
-          "The install prompt could not be opened. Try the browser install menu.",
+          "Instalační nabídku se nepodařilo otevřít. Použijte ikonu instalace v adresním řádku prohlížeče.",
+          "The install prompt could not be opened. Use the install icon in the browser address bar.",
         ),
       );
-    } finally {
-      deferredInstallPrompt = null;
     }
   });
-
   const close = el("button", "pwa-install-close", "×");
   close.type = "button";
   close.setAttribute("aria-label", t("Skrýt nabídku", "Hide prompt"));
-  close.addEventListener("click", () => dismissPwaInstallCard(14));
-
+  close.addEventListener("click", () => dismissPwaInstallCard(30));
   actions.append(install);
   card.append(icon, copy, actions, close);
   document.body.append(card);
+  updatePwaInstallCard();
 }
-
 function setupPwaInstallPrompt() {
   if (page !== "home" || isStandalonePwa()) return;
+  window.setTimeout(renderPwaInstallCard, 900);
   addEventListener("beforeinstallprompt", (event) => {
     event.preventDefault();
     deferredInstallPrompt = event;
     renderPwaInstallCard();
+    updatePwaInstallCard();
   });
   addEventListener("appinstalled", () => {
     deferredInstallPrompt = null;
     safeRemoveItem(PWA_INSTALL_DISMISSED_KEY);
     document.querySelector(".pwa-install-card")?.remove();
     showToast(t("AI Studio bylo nainstalováno.", "AI Studio was installed."));
+  });
+  addEventListener("resize", () => {
+    if (!isDesktopInstallSurface())
+      document.querySelector(".pwa-install-card")?.remove();
+    else renderPwaInstallCard();
   });
 }
 

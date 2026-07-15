@@ -1,78 +1,30 @@
 {
   "schema": "ai-studio-changelog-v1",
-  "current": "0.16.7",
+  "current": "0.17.0",
   "items": [
     {
-      "version": "0.16.7",
+      "version": "0.17.0",
       "date": "2026-07-15",
       "title": {
-        "cs": "Oprava formátování živě synchronizovaného registru",
-        "en": "Fixed formatting of the live-synchronised registry"
+        "cs": "Čistý základ, dvoufázové spuštění a instalace na PC",
+        "en": "Clean foundation, two-stage launch and desktop installation"
       },
       "changes": [
         {
-          "cs": "Po stažení aktuálních manifestů se generované soubory registru automaticky naformátují stejným Prettierem, který používá validační kontrola.",
-          "en": "After current manifests are downloaded, generated registry files are automatically formatted by the same Prettier configuration used by validation."
+          "cs": "Základem je aktualizovaná verze 0.15.0 před 3D experimenty; domovská obrazovka neobsahuje naklánění, holografické štítky ani rušivé prostorové dekorace.",
+          "en": "The foundation is the updated pre-3D version 0.15.0; the home screen contains no tilting, holographic labels or distracting spatial decorations."
         },
         {
-          "cs": "GitHub Actions už neselže jen proto, že vzdálený manifest vytvoří JSON s jiným zalomením řádků.",
-          "en": "GitHub Actions no longer fails merely because a remote manifest produces JSON with different line wrapping."
+          "cs": "Po kliknutí na aplikaci se nejprve dvě sekundy mechanicky otáčejí prstence centrální brány a teprve potom se otevře samostatná barevně přizpůsobená animace vybrané aplikace.",
+          "en": "After selecting an application, the central gateway rings rotate mechanically for two seconds before a separate colour-matched animation for the selected application opens."
         },
         {
-          "cs": "Oprava se vztahuje na online i offline synchronizaci a nemění vzhled ani funkce AI Studia.",
-          "en": "The fix applies to both online and offline synchronisation and does not change the appearance or features of AI Studio."
-        }
-      ]
-    },
-    {
-      "version": "0.16.6",
-      "date": "2026-07-15",
-      "title": {
-        "cs": "Oprava zaseknutého GitHub buildu",
-        "en": "Fixed stalled GitHub build"
-      },
-      "changes": [
-        {
-          "cs": "Soubor package-lock.json nyní odkazuje na veřejný registr npm namísto interní adresy vývojového prostředí, která nebyla dostupná na GitHub Actions.",
-          "en": "package-lock.json now points to the public npm registry instead of an internal development-environment address unavailable to GitHub Actions."
+          "cs": "Na domovské stránce se vpravo dole na počítači zobrazuje nabídka Nainstalovat AI Studio; při dostupné systémové výzvě spustí instalaci přímo, jinak zobrazí přesný postup pro Chrome nebo Edge.",
+          "en": "On desktop, the home page shows an Install AI Studio prompt in the bottom-right corner; it starts installation directly when available or gives exact Chrome/Edge instructions otherwise."
         },
         {
-          "cs": "Workflow výslovně nastavuje veřejný npm registr, používá cache závislostí a vypíná zbytečný audit a funding dotazy během instalace.",
-          "en": "The workflow explicitly sets the public npm registry, caches dependencies and disables unnecessary audit and funding requests during installation."
-        },
-        {
-          "cs": "Krok instalace závislostí má časový limit, takže se při síťovém problému nemůže neomezeně točit.",
-          "en": "The dependency installation step now has a timeout so it cannot spin indefinitely during a network problem."
-        }
-      ]
-    },
-    {
-      "version": "0.16.5",
-      "date": "2026-07-15",
-      "title": {
-        "cs": "Elegantní prémiové spuštění, instalace na PC a převzetí auditních oprav",
-        "en": "Elegant premium launch, desktop installation and adopted audit fixes"
-      },
-      "changes": [
-        {
-          "cs": "Spouštění aplikací bylo přepracováno do klidnější prémiové celoplošné sekvence s tmavou scénou, velkými skleněnými vrstvami, jemnými částicemi, pomalým přesným pohybem prstenců a plynulým ponořením do portálu.",
-          "en": "Application launch was redesigned as a calmer premium full-screen sequence with a dark scene, large glass layers, subtle particles, slow precise ring motion and a smooth immersion into the gateway."
-        },
-        {
-          "cs": "Na podporovaných počítačových prohlížečích se vpravo dole zobrazí nenápadná nabídka Nainstalovat AI Studio; po instalaci nebo dočasném skrytí sama zmizí a v nainstalované PWA se nezobrazuje.",
-          "en": "Supported desktop browsers now show a discreet Install AI Studio prompt in the bottom-right; it disappears after installation or temporary dismissal and is not shown inside the installed PWA."
-        },
-        {
-          "cs": "Ze zaslané nenahrané verze 0.15.0 byly převzaty stále relevantní bezpečnostní a provozní opravy: přesná verze školení, překryvná rotace ověřovacích klíčů, limit oprávnění 400 dní a automatické zapomenutí soukromého klíče.",
-          "en": "Still-relevant security and operational fixes were adopted from the supplied unpublished 0.15.0 build: exact training-version enforcement, overlapping verification-key rotation, a 400-day permit limit and automatic private-key forgetting."
-        },
-        {
-          "cs": "Převzato bylo také procesní zpevnění: jediný zdroj changelogu a aplikačních pravidel, generovaný PWA precache, bezpečnější strategie service workeru, stabilní identita PWA, denní pojistná synchronizace a odolnější načítání ochranného modulu.",
-          "en": "Process hardening was also adopted: single sources of truth for changelog and application rules, generated PWA precache, safer service-worker strategies, stable PWA identity, daily fallback synchronisation and more robust guard-module loading."
-        },
-        {
-          "cs": "Výrazné prostorové efekty zůstávají pouze při spuštění aplikace; správa, evidence, formuláře a běžné pracovní části zůstávají rychlé a bez zdržujících animací.",
-          "en": "Strong spatial effects remain limited to application launch; administration, registry, forms and normal work areas stay fast and free of delaying animations."
+          "cs": "Synchronizace registru v GitHub Actions automaticky formátuje generované JSON soubory a instalace používá veřejný npm registr, aby nasazení nezamrzalo ani nepadalo na Prettieru.",
+          "en": "GitHub Actions automatically formats generated registry JSON files and uses the public npm registry so deployment does not hang or fail on Prettier."
         }
       ]
     },

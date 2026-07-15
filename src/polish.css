@@ -2325,3 +2325,64 @@ html[data-motion="off"]
     opacity: 0;
   }
 }
+
+/* v0.17.0 — dvoufázové spuštění: 2 s mechanická brána */
+html[data-motion="full"] .portal-core-zone.is-launching .portal-ring-assembly,
+html[data-motion="full"] .portal-core-zone.is-launching .ring-outer,
+html[data-motion="full"] .portal-core-zone.is-launching .ring-middle,
+html[data-motion="full"] .portal-core-zone.is-launching .ring-inner,
+html[data-motion="full"] .portal-core-zone.is-launching::before,
+html[data-motion="full"] .portal-core-zone.is-launching::after,
+html[data-motion="full"] .portal-core-zone.is-launching .portal-core-image,
+html[data-motion="full"] .portal-core-zone.is-launching .portal-beam,
+html[data-motion="full"] .portal-core-zone.is-launching .portal-platform {
+  animation-duration: 2s !important;
+}
+html[data-motion="full"]
+  .portal-core-zone.is-launching
+  .portal-lock-sequence
+  span {
+  animation-duration: 0.3s !important;
+}
+html[data-motion="full"]
+  .portal-core-zone.is-launching
+  .portal-lock-sequence
+  span:nth-child(1) {
+  animation-delay: 0.16s;
+}
+html[data-motion="full"]
+  .portal-core-zone.is-launching
+  .portal-lock-sequence
+  span:nth-child(2) {
+  animation-delay: 0.38s;
+}
+html[data-motion="full"]
+  .portal-core-zone.is-launching
+  .portal-lock-sequence
+  span:nth-child(3) {
+  animation-delay: 0.6s;
+}
+html[data-motion="full"]
+  .portal-core-zone.is-launching
+  .portal-lock-sequence
+  span:nth-child(4) {
+  animation-delay: 0.82s;
+}
+html[data-motion="full"]
+  .portal-core-zone.is-launching
+  .portal-lock-sequence
+  span:nth-child(5) {
+  animation-delay: 1.04s;
+}
+html[data-motion="full"]
+  .portal-core-zone.is-launching
+  .portal-lock-sequence
+  span:nth-child(6) {
+  animation-delay: 1.26s;
+}
+html[data-motion="full"]
+  .portal-core-zone.is-launching
+  .portal-lock-sequence
+  span:nth-child(7) {
+  animation-delay: 1.48s;
+}

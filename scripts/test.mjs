@@ -629,9 +629,11 @@ if (/recordLaunch\(app\.id\)/.test(mainAppText))
 if (
   !mainAppText.includes("portalLaunchInProgress") ||
   !/zone\?\.classList\.add\(["\']is-launching["\']\)/.test(mainAppText) ||
-  !mainAppText.includes("portalLaunchDelay")
+  !mainAppText.includes("portalRingPreludeDelay") ||
+  !mainAppText.includes("portalAppCinematicDelay") ||
+  !mainAppText.includes("portalLaunchOverlay")
 )
-  fail("Spuštění aplikace nemá krátkou aktivační sekvenci centrální brány.");
+  fail("Spuštění aplikace nemá dvoufázovou sekvenci brány a cílové aplikace.");
 const portalHomeHtml = await readFile(path.join(src, "index.html"), "utf8");
 const portalPolishText = await readFile(path.join(src, "polish.css"), "utf8");
 if (
@@ -648,23 +650,27 @@ if (
 )
   fail("Chybí mechanické navolování prstenců nebo sekvenční zámky brány.");
 if (
-  !portalHomeHtml.includes("premium-launch-overlay") ||
-  !mainAppText.includes("portalLaunchOverlay(app, delay)") ||
-  !/schedulePhase\([\s\S]*?["\']align["\'][\s\S]*?PRSTENCE SE ZAROVNÁVAJÍ/.test(
-    mainAppText,
-  ) ||
-  !/root\.dataset\.motion === ["\']full["\'] \? 3000 : 1250/.test(mainAppText)
+  !/root\.dataset\.motion === ["\']full["\'] \? 2000 : 900/.test(mainAppText) ||
+  !portalHomeHtml.includes("portal-launch-overlay") ||
+  !mainAppText.includes("PRSTENCE SE OTÁČEJÍ") ||
+  !mainAppText.includes("BRÁNA OTEVŘENA — SPOUŠTÍM APLIKACI")
 )
   fail(
-    "Elegantní celoplošná launch sekvence nebo její časování není zapojeno.",
+    "Dvoufázové časování 2 s prstenců a samostatné animace aplikace není zapojeno.",
   );
 if (
   !mainAppText.includes("beforeinstallprompt") ||
-  !mainAppText.includes("appinstalled") ||
   !mainAppText.includes("pwa-install-card") ||
-  !mainAppText.includes("setupPwaInstallPrompt()")
+  !mainAppText.includes("Nainstalovat AI Studio")
 )
-  fail("Nabídka instalace AI Studia na PC není zapojena.");
+  fail("Domovská stránka nemá instalační nabídku PWA pro počítač.");
+if (
+  !deployWorkflow.includes("Format generated registry files") ||
+  !deployWorkflow.includes("registry.npmjs.org")
+)
+  fail(
+    "GitHub workflow neformátuje generovaný registr nebo nepoužívá veřejný npm registr.",
+  );
 if (
   !mainAppText.includes("refreshSharedAccessModuleCache") ||
   !mainAppText.includes("/AI-Studio-GHRAB/access/app-guard.js") ||

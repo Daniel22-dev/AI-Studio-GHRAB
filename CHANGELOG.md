@@ -2,31 +2,14 @@
 
 > Tento soubor se generuje ze `src/config/changelog.json`. Neupravujte jej ručně.
 
-## 0.16.7 — 2026-07-15
+## 0.17.0 — 2026-07-15
 
-**Oprava formátování živě synchronizovaného registru**
+**Čistý základ, dvoufázové spuštění a instalace na PC**
 
-- Po stažení aktuálních manifestů se generované soubory registru automaticky naformátují stejným Prettierem, který používá validační kontrola.
-- GitHub Actions už neselže jen proto, že vzdálený manifest vytvoří JSON s jiným zalomením řádků.
-- Oprava se vztahuje na online i offline synchronizaci a nemění vzhled ani funkce AI Studia.
-
-## 0.16.6 — 2026-07-15
-
-**Oprava zaseknutého GitHub buildu**
-
-- Soubor package-lock.json nyní odkazuje na veřejný registr npm namísto interní adresy vývojového prostředí, která nebyla dostupná na GitHub Actions.
-- Workflow výslovně nastavuje veřejný npm registr, používá cache závislostí a vypíná zbytečný audit a funding dotazy během instalace.
-- Krok instalace závislostí má časový limit, takže se při síťovém problému nemůže neomezeně točit.
-
-## 0.16.5 — 2026-07-15
-
-**Elegantní prémiové spuštění, instalace na PC a převzetí auditních oprav**
-
-- Spouštění aplikací bylo přepracováno do klidnější prémiové celoplošné sekvence s tmavou scénou, velkými skleněnými vrstvami, jemnými částicemi, pomalým přesným pohybem prstenců a plynulým ponořením do portálu.
-- Na podporovaných počítačových prohlížečích se vpravo dole zobrazí nenápadná nabídka Nainstalovat AI Studio; po instalaci nebo dočasném skrytí sama zmizí a v nainstalované PWA se nezobrazuje.
-- Ze zaslané nenahrané verze 0.15.0 byly převzaty stále relevantní bezpečnostní a provozní opravy: přesná verze školení, překryvná rotace ověřovacích klíčů, limit oprávnění 400 dní a automatické zapomenutí soukromého klíče.
-- Převzato bylo také procesní zpevnění: jediný zdroj changelogu a aplikačních pravidel, generovaný PWA precache, bezpečnější strategie service workeru, stabilní identita PWA, denní pojistná synchronizace a odolnější načítání ochranného modulu.
-- Výrazné prostorové efekty zůstávají pouze při spuštění aplikace; správa, evidence, formuláře a běžné pracovní části zůstávají rychlé a bez zdržujících animací.
+- Základem je aktualizovaná verze 0.15.0 před 3D experimenty; domovská obrazovka neobsahuje naklánění, holografické štítky ani rušivé prostorové dekorace.
+- Po kliknutí na aplikaci se nejprve dvě sekundy mechanicky otáčejí prstence centrální brány a teprve potom se otevře samostatná barevně přizpůsobená animace vybrané aplikace.
+- Na domovské stránce se vpravo dole na počítači zobrazuje nabídka Nainstalovat AI Studio; při dostupné systémové výzvě spustí instalaci přímo, jinak zobrazí přesný postup pro Chrome nebo Edge.
+- Synchronizace registru v GitHub Actions automaticky formátuje generované JSON soubory a instalace používá veřejný npm registr, aby nasazení nezamrzalo ani nepadalo na Prettieru.
 
 ## 0.15.0 — 2026-07-15
 

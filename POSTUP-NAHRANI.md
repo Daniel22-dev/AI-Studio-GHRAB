@@ -1,4 +1,6 @@
-# Přesný postup nahrání AI Studio GHRAB 0.16.7 na GitHub
+# Přesný postup nahrání AI Studio GHRAB 0.15.0 na GitHub
+
+**Aktuální verze: 0.17.0**
 
 ## Doporučené pořadí
 
@@ -8,7 +10,7 @@
    - Hodnotitel maturitních slohů 1.4.0,
    - Korespondenční asistent 5.1.0,
    - LUDUS 1.15.0.
-2. Potom nahrajte obsah balíku AI Studio GHRAB 0.16.7 do kořene repozitáře `AI-Studio-GHRAB`.
+2. Potom nahrajte obsah balíku AI Studio GHRAB 0.15.0 do kořene repozitáře `AI-Studio-GHRAB`.
 3. Zachovejte složky `.github`, `src`, `scripts` a soubory `package.json` a `package-lock.json`.
 4. Složku `dist` nenahrávejte. GitHub Actions ji vytvoří znovu při každém nasazení.
 5. Po commitu otevřete záložku **Actions** a ověřte zelený běh „Sync, validate and deploy AI Studio GHRAB“.
