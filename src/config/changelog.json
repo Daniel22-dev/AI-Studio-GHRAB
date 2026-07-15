@@ -1,7 +1,29 @@
 {
   "schema": "ai-studio-changelog-v1",
-  "current": "0.17.2",
+  "current": "0.17.3",
   "items": [
+    {
+      "version": "0.17.3",
+      "date": "2026-07-15",
+      "title": {
+        "cs": "Viditelná animace brány při spuštění každé aplikace",
+        "en": "Visible gateway animation when launching every application"
+      },
+      "changes": [
+        {
+          "cs": "Při spuštění aplikace z katalogu se stránka nejprve plynule vrátí a vycentruje hlavní hvězdnou bránu.",
+          "en": "When an application is launched from the catalogue, the page first scrolls smoothly back and centres the main stargate."
+        },
+        {
+          "cs": "Mechanické otáčení prstenců začne až po dokončení přesunu, takže uživatel vždy uvidí celou dvousekundovou sekvenci.",
+          "en": "Mechanical ring rotation starts only after the movement finishes, so the complete two-second sequence is always visible."
+        },
+        {
+          "cs": "Stejné pořadí spuštění nyní platí pro Top 4 kolem brány i pro všechny další aplikace v katalogu; omezený pohyb a vypnuté animace zůstávají respektovány.",
+          "en": "The same launch order now applies to the Top 4 around the gateway and every additional catalogue application, while reduced and disabled motion preferences remain respected."
+        }
+      ]
+    },
     {
       "version": "0.17.2",
       "date": "2026-07-15",

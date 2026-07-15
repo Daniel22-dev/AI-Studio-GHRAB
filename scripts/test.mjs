@@ -634,6 +634,14 @@ if (
   !mainAppText.includes("portalLaunchOverlay")
 )
   fail("Spuštění aplikace nemá dvoufázovou sekvenci brány a cílové aplikace.");
+if (
+  !mainAppText.includes("focusPortalGateway(zone).then") ||
+  !mainAppText.includes("portalGatewayScrollTarget") ||
+  !mainAppText.includes("ZAMĚŘUJI BRÁNU") ||
+  mainAppText.indexOf("focusPortalGateway(zone).then") >
+    mainAppText.indexOf("const startGatewaySequence") + 5000
+)
+  fail("Katalogové aplikace před animací nevracejí pohled k centrální bráně.");
 const portalHomeHtml = await readFile(path.join(src, "index.html"), "utf8");
 const portalPolishText = await readFile(path.join(src, "polish.css"), "utf8");
 if (

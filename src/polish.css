@@ -1838,6 +1838,19 @@ button.admin-command-card {
   }
 }
 
+/* v0.17.3 — zacílení na bránu před spuštěním odkudkoli v katalogu */
+.portal-core-zone.is-targeting {
+  filter: drop-shadow(0 38px 85px rgba(0, 0, 0, 0.62))
+    drop-shadow(0 0 26px rgba(89, 231, 255, 0.28));
+}
+.portal-core-zone.is-targeting .portal-state {
+  border-color: rgba(112, 241, 255, 0.58);
+  box-shadow:
+    0 12px 38px rgba(0, 0, 0, 0.4),
+    0 0 22px rgba(83, 230, 255, 0.18);
+  color: #e9fdff;
+}
+
 /* v0.11.0 — krátká aktivační sekvence před spuštěním aplikace */
 .portal-core-zone.is-launching {
   filter: drop-shadow(0 38px 85px rgba(0, 0, 0, 0.62))

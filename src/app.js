@@ -1222,6 +1222,56 @@ function embeddedApplicationUrl(app) {
   const params = new URLSearchParams({ app: app.id });
   return `${base}app/?${params.toString()}`;
 }
+function portalGatewayScrollTarget(zone) {
+  const rect = zone.getBoundingClientRect();
+  const headerHeight =
+    document.querySelector(".site-header")?.getBoundingClientRect().height || 0;
+  const visibleCenter = headerHeight + (window.innerHeight - headerHeight) / 2;
+  const unclamped = window.scrollY + rect.top + rect.height / 2 - visibleCenter;
+  const maximum = Math.max(
+    0,
+    document.documentElement.scrollHeight - window.innerHeight,
+  );
+  return Math.min(maximum, Math.max(0, unclamped));
+}
+function focusPortalGateway(zone) {
+  if (!zone) return Promise.resolve();
+  const target = portalGatewayScrollTarget(zone);
+  const distance = Math.abs(window.scrollY - target);
+  if (distance < 18) return Promise.resolve();
+
+  const reducedMotion = matchMedia("(prefers-reduced-motion: reduce)").matches;
+  const instant = reducedMotion || root.dataset.motion === "off";
+  window.scrollTo({ top: target, behavior: instant ? "auto" : "smooth" });
+
+  if (instant) {
+    return new Promise((resolve) =>
+      requestAnimationFrame(() => requestAnimationFrame(resolve)),
+    );
+  }
+
+  return new Promise((resolve) => {
+    const startedAt = performance.now();
+    let previousPosition = window.scrollY;
+    let stableFrames = 0;
+    const settle = () => {
+      const currentPosition = window.scrollY;
+      const nearTarget = Math.abs(currentPosition - target) < 3;
+      const barelyMoving = Math.abs(currentPosition - previousPosition) < 0.5;
+      stableFrames = barelyMoving ? stableFrames + 1 : 0;
+      previousPosition = currentPosition;
+      if (
+        (nearTarget && stableFrames >= 2) ||
+        performance.now() - startedAt > 1200
+      ) {
+        resolve();
+        return;
+      }
+      requestAnimationFrame(settle);
+    };
+    requestAnimationFrame(settle);
+  });
+}
 function launchApp(app, article) {
   const access = hasAppAccess(app.id);
   if (!access.enabled) {
@@ -1249,33 +1299,21 @@ function launchApp(app, article) {
     button.disabled = true;
   });
   article.classList.add("is-launch-selected");
-  stage?.classList.add("is-launching");
-  zone?.classList.add("is-launching");
+  zone?.classList.add("is-targeting");
   if (stateLabel)
-    stateLabel.textContent = t(`NAVOLUJI: ${appName}`, `DIALING: ${appName}`);
+    stateLabel.textContent = t(
+      `ZAMĚŘUJI BRÁNU: ${appName}`,
+      `TARGETING GATEWAY: ${appName}`,
+    );
 
   const schedule = (after, callback) => {
     timers.push(window.setTimeout(callback, after));
   };
-  if (ringDelay > 500) {
-    schedule(Math.round(ringDelay * 0.28), () => {
-      if (stateLabel)
-        stateLabel.textContent = t("PRSTENCE SE OTÁČEJÍ", "RINGS ARE ROTATING");
-    });
-    schedule(Math.round(ringDelay * 0.68), () => {
-      if (stateLabel)
-        stateLabel.textContent = t(
-          "PRSTENCE SE UZAMYKAJÍ",
-          "RINGS ARE LOCKING",
-        );
-    });
-  }
-
   const cleanup = () => {
     timers.forEach((timer) => window.clearTimeout(timer));
     cinematic.finish();
     stage?.classList.remove("is-launching");
-    zone?.classList.remove("is-launching");
+    zone?.classList.remove("is-targeting", "is-launching");
     article.classList.remove("is-launch-selected");
     launchButtons.forEach((button) => {
       button.disabled = false;
@@ -1294,28 +1332,55 @@ function launchApp(app, article) {
     window.location.assign(destination);
   };
 
-  schedule(ringDelay, () => {
-    zone?.classList.remove("is-launching");
+  const startGatewaySequence = () => {
+    zone?.classList.remove("is-targeting");
+    stage?.classList.add("is-launching");
+    zone?.classList.add("is-launching");
     if (stateLabel)
-      stateLabel.textContent = t(
-        "BRÁNA OTEVŘENA — SPOUŠTÍM APLIKACI",
-        "GATEWAY OPEN — LAUNCHING APPLICATION",
-      );
-    document.body.classList.add("portal-launch-active");
-    cinematic = portalLaunchOverlay(app, cinematicDelay);
-    if (cinematic.skip) cinematic.skip.onclick = navigate;
+      stateLabel.textContent = t(`NAVOLUJI: ${appName}`, `DIALING: ${appName}`);
 
-    const phase = (ratio, key) => {
-      schedule(Math.round(cinematicDelay * ratio), () =>
-        cinematic.setPhase(key),
-      );
-    };
-    phase(0.24, "align");
-    phase(0.5, "verify");
-    phase(0.76, "open");
-    phase(0.91, "transit");
-    schedule(cinematicDelay, navigate);
-  });
+    if (ringDelay > 500) {
+      schedule(Math.round(ringDelay * 0.28), () => {
+        if (stateLabel)
+          stateLabel.textContent = t(
+            "PRSTENCE SE OTÁČEJÍ",
+            "RINGS ARE ROTATING",
+          );
+      });
+      schedule(Math.round(ringDelay * 0.68), () => {
+        if (stateLabel)
+          stateLabel.textContent = t(
+            "PRSTENCE SE UZAMYKAJÍ",
+            "RINGS ARE LOCKING",
+          );
+      });
+    }
+
+    schedule(ringDelay, () => {
+      zone?.classList.remove("is-launching");
+      if (stateLabel)
+        stateLabel.textContent = t(
+          "BRÁNA OTEVŘENA — SPOUŠTÍM APLIKACI",
+          "GATEWAY OPEN — LAUNCHING APPLICATION",
+        );
+      document.body.classList.add("portal-launch-active");
+      cinematic = portalLaunchOverlay(app, cinematicDelay);
+      if (cinematic.skip) cinematic.skip.onclick = navigate;
+
+      const phase = (ratio, key) => {
+        schedule(Math.round(cinematicDelay * ratio), () =>
+          cinematic.setPhase(key),
+        );
+      };
+      phase(0.24, "align");
+      phase(0.5, "verify");
+      phase(0.76, "open");
+      phase(0.91, "transit");
+      schedule(cinematicDelay, navigate);
+    });
+  };
+
+  focusPortalGateway(zone).then(startGatewaySequence, startGatewaySequence);
   return true;
 }
 

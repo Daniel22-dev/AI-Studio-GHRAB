@@ -2,6 +2,14 @@
 
 > Tento soubor se generuje ze `src/config/changelog.json`. Neupravujte jej ručně.
 
+## 0.17.3 — 2026-07-15
+
+**Viditelná animace brány při spuštění každé aplikace**
+
+- Při spuštění aplikace z katalogu se stránka nejprve plynule vrátí a vycentruje hlavní hvězdnou bránu.
+- Mechanické otáčení prstenců začne až po dokončení přesunu, takže uživatel vždy uvidí celou dvousekundovou sekvenci.
+- Stejné pořadí spuštění nyní platí pro Top 4 kolem brány i pro všechny další aplikace v katalogu; omezený pohyb a vypnuté animace zůstávají respektovány.
+
 ## 0.17.2 — 2026-07-15
 
 **Kompaktní logo Hodnotitele v pracovním prostoru Studia**
