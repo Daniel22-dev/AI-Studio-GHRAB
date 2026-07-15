@@ -666,6 +666,10 @@ const embeddedViewerScript = await readFile(
   path.join(src, "app/viewer.js"),
   "utf8",
 );
+const embeddedOverrideCss = await readFile(
+  path.join(src, "app/embed-overrides.css"),
+  "utf8",
+);
 if (
   mainAppText.includes('window.open("about:blank"') ||
   mainAppText.includes("window.open('about:blank'") ||
@@ -673,7 +677,11 @@ if (
   !mainAppText.includes("window.location.assign(destination)") ||
   !embeddedViewerHtml.includes("embedded-app-frame") ||
   !embeddedViewerScript.includes("frame.src = appUrl.href") ||
-  !embeddedViewerScript.includes("appUrl.origin !== location.origin")
+  !embeddedViewerScript.includes("appUrl.origin !== location.origin") ||
+  !embeddedViewerScript.includes("applyEvaluatorEmbeddedPolish") ||
+  !embeddedViewerScript.includes("ghrab-studio-compact-footer-logo") ||
+  !embeddedOverrideCss.includes("essay-evaluator") ||
+  !embeddedOverrideCss.includes("max-width: clamp(104px, 11vw, 152px)")
 )
   fail(
     "Aplikace se neotevírají uvnitř pracovního prostoru Studia nebo se stále vytváří prázdné popup okno.",
@@ -879,6 +887,7 @@ const required = [
   "app/index.html",
   "app/viewer.js",
   "app/viewer.css",
+  "app/embed-overrides.css",
   "workflow/index.html",
   "report/index.html",
   "demo/index.html",

@@ -40,6 +40,107 @@ const errorExternalButton = document.querySelector("#embedded-error-external");
 let currentApp = null;
 let loadTimeout = 0;
 
+let embeddedObserver = null;
+const embeddedOverridesUrl = new URL("./embed-overrides.css", import.meta.url)
+  .href;
+
+function stopEmbeddedPolishObserver() {
+  embeddedObserver?.disconnect();
+  embeddedObserver = null;
+}
+
+function applyEvaluatorEmbeddedPolish() {
+  stopEmbeddedPolishObserver();
+  if (currentApp?.id !== "essay-evaluator") return;
+  let doc;
+  try {
+    doc = frame.contentDocument;
+  } catch {
+    return;
+  }
+  if (!doc?.documentElement || !doc.head || !doc.body) return;
+
+  doc.documentElement.classList.add("ghrab-studio-embedded-app");
+  doc.documentElement.dataset.ghrabEmbeddedApp = currentApp.id;
+
+  if (!doc.querySelector('link[data-ghrab-embed-overrides="true"]')) {
+    const link = doc.createElement("link");
+    link.rel = "stylesheet";
+    link.href = embeddedOverridesUrl;
+    link.dataset.ghrabEmbedOverrides = "true";
+    doc.head.append(link);
+  }
+
+  const compactLargeFooterBrand = () => {
+    const documentHeight = Math.max(
+      doc.documentElement.scrollHeight,
+      doc.body.scrollHeight,
+      doc.documentElement.clientHeight,
+    );
+    const candidates = [...doc.images]
+      .map((image) => {
+        const rect = image.getBoundingClientRect();
+        const absoluteTop = rect.top + doc.defaultView.scrollY;
+        const context =
+          `${image.alt || ""} ${image.currentSrc || image.src || ""} ${image.className || ""}`.toLowerCase();
+        const inFooter = Boolean(
+          image.closest(
+            "footer, [class*='footer' i], [class*='credit' i], [class*='about' i], [class*='owner' i]",
+          ),
+        );
+        const logoLike = /logo|brand|ghrab|gymn|school|heart|owner/.test(
+          context,
+        );
+        const nearBottom = absoluteTop > documentHeight * 0.52;
+        const oversized = rect.width >= 230 || rect.height >= 210;
+        return {
+          image,
+          rect,
+          score:
+            rect.width * rect.height +
+            (inFooter ? 500000 : 0) +
+            (logoLike ? 250000 : 0) +
+            (nearBottom ? 120000 : 0),
+          eligible: oversized && (inFooter || logoLike || nearBottom),
+        };
+      })
+      .filter((item) => item.eligible)
+      .sort((a, b) => b.score - a.score);
+
+    const target = candidates[0]?.image;
+    if (!target) return;
+    target.classList.add("ghrab-studio-compact-footer-logo");
+
+    const wrapper = target.closest("picture") || target.parentElement;
+    wrapper?.classList.add("ghrab-studio-compact-footer-logo-wrap");
+
+    const cell = wrapper?.parentElement;
+    if (cell) {
+      const rect = cell.getBoundingClientRect();
+      if (rect.height >= 220 || rect.width >= 260) {
+        cell.classList.add("ghrab-studio-compact-footer-logo-cell");
+      }
+    }
+  };
+
+  compactLargeFooterBrand();
+  doc.querySelectorAll("img").forEach((image) => {
+    if (!image.complete)
+      image.addEventListener("load", compactLargeFooterBrand, { once: true });
+  });
+  [250, 900, 1800].forEach((delay) =>
+    window.setTimeout(compactLargeFooterBrand, delay),
+  );
+
+  embeddedObserver = new MutationObserver(compactLargeFooterBrand);
+  embeddedObserver.observe(doc.body, {
+    childList: true,
+    subtree: true,
+    attributes: true,
+    attributeFilter: ["src", "class"],
+  });
+}
+
 async function fetchApps() {
   for (const path of [
     "../config/apps.generated.json",
@@ -109,6 +210,7 @@ function setApp(app) {
 
 frame.addEventListener("load", () => {
   window.clearTimeout(loadTimeout);
+  applyEvaluatorEmbeddedPolish();
   loading.hidden = true;
   frame.hidden = false;
   frame.classList.add("is-ready");

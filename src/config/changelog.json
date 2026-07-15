@@ -1,7 +1,29 @@
 {
   "schema": "ai-studio-changelog-v1",
-  "current": "0.17.1",
+  "current": "0.17.2",
   "items": [
+    {
+      "version": "0.17.2",
+      "date": "2026-07-15",
+      "title": {
+        "cs": "Kompaktní logo Hodnotitele v pracovním prostoru Studia",
+        "en": "Compact Evaluator logo inside the Studio workspace"
+      },
+      "changes": [
+        {
+          "cs": "Při otevření Hodnotitele uvnitř AI Studia se jeho nadměrně velké logo v dolní informační části automaticky zmenší na přiměřený rozměr.",
+          "en": "When the Evaluator is opened inside AI Studio, its oversized logo in the lower information area is automatically reduced to a proportionate size."
+        },
+        {
+          "cs": "Úprava se aplikuje pouze na Hodnotitel ve vloženém pracovním prostoru a nemění vzhled ostatních aplikací ani jejich samostatné otevření.",
+          "en": "The correction applies only to the Evaluator inside the embedded workspace and does not change other applications or standalone opening."
+        },
+        {
+          "cs": "Logo je rozpoznáno i po pozdějším vykreslení aplikace; úprava proto funguje také u dynamicky načítaného obsahu.",
+          "en": "The logo is detected even when the application renders later, so the correction also works with dynamically loaded content."
+        }
+      ]
+    },
     {
       "version": "0.17.1",
       "date": "2026-07-15",

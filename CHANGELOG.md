@@ -2,6 +2,14 @@
 
 > Tento soubor se generuje ze `src/config/changelog.json`. Neupravujte jej ručně.
 
+## 0.17.2 — 2026-07-15
+
+**Kompaktní logo Hodnotitele v pracovním prostoru Studia**
+
+- Při otevření Hodnotitele uvnitř AI Studia se jeho nadměrně velké logo v dolní informační části automaticky zmenší na přiměřený rozměr.
+- Úprava se aplikuje pouze na Hodnotitel ve vloženém pracovním prostoru a nemění vzhled ostatních aplikací ani jejich samostatné otevření.
+- Logo je rozpoznáno i po pozdějším vykreslení aplikace; úprava proto funguje také u dynamicky načítaného obsahu.
+
 ## 0.17.1 — 2026-07-15
 
 **Aplikace se otevírají uvnitř Studia bez bílého popup okna**
