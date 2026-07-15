@@ -1,0 +1,154 @@
+<!doctype html>
+<html lang="cs" data-theme="dark">
+  <head>
+    <meta charset="utf-8" />
+    <meta
+      name="viewport"
+      content="width=device-width,initial-scale=1,viewport-fit=cover"
+    />
+    <meta name="theme-color" content="#030915" />
+    <meta
+      name="description"
+      content="Pracovní prostor aplikací AI Studia GHRAB."
+    />
+    <meta
+      http-equiv="Content-Security-Policy"
+      content="default-src 'self'; script-src 'self'; style-src 'self'; img-src 'self' data:; connect-src 'self'; frame-src 'self'; object-src 'none'; base-uri 'self'; form-action 'self'"
+    />
+    <title>Aplikace · AI Studio GHRAB</title>
+    <link rel="manifest" href="../manifest.webmanifest" />
+    <link rel="icon" href="../assets/brand/icon-32.png" sizes="32x32" />
+    <link rel="apple-touch-icon" href="../assets/brand/apple-touch-icon.png" />
+    <link rel="stylesheet" href="../styles.css" />
+    <link rel="stylesheet" href="../polish.css" />
+    <link rel="stylesheet" href="./viewer.css" />
+  </head>
+  <body class="embedded-app-page">
+    <a
+      class="skip-link"
+      href="#embedded-app-frame"
+      data-cs="Přejít do aplikace"
+      data-en="Skip to application"
+      >Přejít do aplikace</a
+    >
+    <header class="embedded-app-header">
+      <a
+        class="embedded-back"
+        href="../#applications"
+        aria-label="Zpět do AI Studia"
+      >
+        <span aria-hidden="true">←</span>
+        <span data-cs="AI Studio" data-en="AI Studio">AI Studio</span>
+      </a>
+      <div class="embedded-app-identity">
+        <img
+          id="embedded-app-icon"
+          src="../assets/brand/brand-mark.svg"
+          alt=""
+        />
+        <div>
+          <small
+            data-cs="APLIKACE OTEVŘENÁ V AI STUDIU"
+            data-en="APPLICATION OPEN IN AI STUDIO"
+            >APLIKACE OTEVŘENÁ V AI STUDIU</small
+          >
+          <strong id="embedded-app-name">Načítám aplikaci…</strong>
+        </div>
+      </div>
+      <div class="embedded-app-actions">
+        <button
+          id="embedded-reload"
+          type="button"
+          data-cs-aria="Znovu načíst aplikaci"
+          data-en-aria="Reload application"
+          title="Znovu načíst"
+        >
+          ↻
+        </button>
+        <button
+          id="embedded-fullscreen"
+          type="button"
+          data-cs-aria="Celá obrazovka"
+          data-en-aria="Full screen"
+          title="Celá obrazovka"
+        >
+          ⛶
+        </button>
+        <button
+          id="embedded-external"
+          type="button"
+          class="embedded-external"
+          data-cs="Otevřít samostatně"
+          data-en="Open separately"
+        >
+          Otevřít samostatně
+        </button>
+      </div>
+    </header>
+
+    <main class="embedded-app-workspace">
+      <div
+        id="embedded-loading"
+        class="embedded-loading"
+        role="status"
+        aria-live="polite"
+      >
+        <div class="embedded-loader-rings" aria-hidden="true">
+          <span></span><span></span><span></span>
+        </div>
+        <strong
+          data-cs="Načítám aplikaci v pracovním prostoru Studia…"
+          data-en="Loading the application inside the Studio workspace…"
+          >Načítám aplikaci v pracovním prostoru Studia…</strong
+        >
+        <small
+          data-cs="Aplikace zůstane v jednom okně bez otevírání dalších záložek."
+          data-en="The application stays in one window without opening extra tabs."
+          >Aplikace zůstane v jednom okně bez otevírání dalších záložek.</small
+        >
+      </div>
+      <section id="embedded-error" class="embedded-error panel" hidden>
+        <p
+          class="eyebrow"
+          data-cs="APLIKACI SE NEPODAŘILO OTEVŘÍT"
+          data-en="APPLICATION COULD NOT BE OPENED"
+        >
+          APLIKACI SE NEPODAŘILO OTEVŘÍT
+        </p>
+        <h1
+          id="embedded-error-title"
+          data-cs="Pracovní prostor není dostupný."
+          data-en="The workspace is unavailable."
+        >
+          Pracovní prostor není dostupný.
+        </h1>
+        <p id="embedded-error-copy"></p>
+        <div class="app-actions">
+          <a
+            class="button primary"
+            href="../#applications"
+            data-cs="Zpět do Studia"
+            data-en="Back to Studio"
+            >Zpět do Studia</a
+          >
+          <button
+            id="embedded-error-external"
+            type="button"
+            class="button secondary"
+            data-cs="Otevřít aplikaci samostatně"
+            data-en="Open application separately"
+          >
+            Otevřít aplikaci samostatně
+          </button>
+        </div>
+      </section>
+      <iframe
+        id="embedded-app-frame"
+        title="Aplikace AI Studia"
+        allow="clipboard-read; clipboard-write; fullscreen; camera; microphone"
+        allowfullscreen
+      ></iframe>
+    </main>
+    <script src="./viewer.js" type="module"></script>
+  </body>
+</html>

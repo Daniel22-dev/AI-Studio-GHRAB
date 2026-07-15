@@ -2,6 +2,17 @@
 
 > Tento soubor se generuje ze `src/config/changelog.json`. Neupravujte jej ručně.
 
+## 0.17.1 — 2026-07-15
+
+**Aplikace se otevírají uvnitř Studia bez bílého popup okna**
+
+- Odstraněno předčasné otevírání prázdného okna about:blank, které přebíralo pozornost a skrývalo animaci probíhající ve Studiu.
+- Po kliknutí zůstane uživatel ve Studiu: nejprve dvě sekundy vidí mechanické otáčení prstenců hlavní brány, poté samostatnou animaci vybrané aplikace.
+- Cílová aplikace se následně otevře v novém interním pracovním prostoru Studia pomocí vloženého rámce, nikoli v další kartě prohlížeče.
+- Pracovní prostor obsahuje návrat do Studia, obnovení aplikace, celou obrazovku a pouze volitelnou možnost otevřít aplikaci samostatně.
+- Automatický režim pohybu na počítači již nesnižuje animaci jen kvůli čtyřjádrovému procesoru nebo 4 GB hlášené paměti, takže dvousekundové prstence zůstávají viditelné.
+- Nabídka Nainstalovat AI Studio vpravo dole zůstala zachována a byla znovu zahrnuta do regresních kontrol.
+
 ## 0.17.0 — 2026-07-15
 
 **Čistý základ, dvoufázové spuštění a instalace na PC**

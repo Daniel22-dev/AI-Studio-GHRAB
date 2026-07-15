@@ -90,10 +90,10 @@ function detectedMotionMode() {
     matchMedia("(max-width: 700px)").matches ||
     matchMedia("(pointer: coarse)").matches;
   const saveData = Boolean(navigator.connection?.saveData);
-  const lowMemory = Number(navigator.deviceMemory || 8) <= 4;
-  const lowCpu = Number(navigator.hardwareConcurrency || 8) <= 4;
   if (reduced) return "off";
-  if (compact || saveData || lowMemory || lowCpu) return "lite";
+  // On desktop the gateway animation remains fully visible even on ordinary school PCs.
+  // The economy mode is reserved for mobile/coarse-pointer devices or explicit data saving.
+  if (compact || saveData) return "lite";
   return "full";
 }
 
@@ -1106,13 +1106,13 @@ function selectCoreApps(apps) {
 let portalLaunchInProgress = false;
 function portalRingPreludeDelay() {
   if (matchMedia("(prefers-reduced-motion: reduce)").matches) return 320;
-  if (root.dataset.motion === "off") return 220;
-  return root.dataset.motion === "full" ? 2000 : 900;
+  if (root.dataset.motion === "off") return 240;
+  return 2000;
 }
 function portalAppCinematicDelay() {
-  if (matchMedia("(prefers-reduced-motion: reduce)").matches) return 360;
-  if (root.dataset.motion === "off") return 240;
-  return root.dataset.motion === "full" ? 2800 : 1250;
+  if (matchMedia("(prefers-reduced-motion: reduce)").matches) return 380;
+  if (root.dataset.motion === "off") return 260;
+  return root.dataset.motion === "full" ? 2800 : 1350;
 }
 function portalLaunchOverlay(app, delay) {
   const overlay = document.querySelector("#portal-launch-overlay");
@@ -1134,16 +1134,16 @@ function portalLaunchOverlay(app, delay) {
     prepare: {
       kicker: t("APLIKACE ZAMĚŘENA", "APPLICATION TARGETED"),
       phase: t(
-        "Brána dokončila navolení. Připravuji samostatný přechod do aplikace.",
-        "The gateway has completed dialling. Preparing the dedicated application transition.",
+        "Brána dokončila dvousekundové navolení. Připravuji samostatnou animaci aplikace.",
+        "The gateway has completed its two-second dialling sequence. Preparing the dedicated application animation.",
       ),
       progress: "16%",
     },
     align: {
       kicker: t("PŘESNÉ ZAROVNÁNÍ", "PRECISE ALIGNMENT"),
       phase: t(
-        "Světelné vrstvy a prstence aplikace se synchronizují.",
-        "The application light layers and rings are synchronising.",
+        "Světelné vrstvy a prstence vybrané aplikace se synchronizují.",
+        "The selected application's light layers and rings are synchronising.",
       ),
       progress: "44%",
     },
@@ -1166,8 +1166,8 @@ function portalLaunchOverlay(app, delay) {
     transit: {
       kicker: t("PŘECHOD AKTIVNÍ", "TRANSIT ACTIVE"),
       phase: t(
-        "Předávám řízení cílové aplikaci.",
-        "Handing control over to the target application.",
+        "Předávám aplikaci do pracovního prostoru AI Studia.",
+        "Handing the application over to the AI Studio workspace.",
       ),
       progress: "100%",
     },
@@ -1218,6 +1218,10 @@ function portalLaunchOverlay(app, delay) {
   };
   return { skip, setPhase: applyPhase, finish };
 }
+function embeddedApplicationUrl(app) {
+  const params = new URLSearchParams({ app: app.id });
+  return `${base}app/?${params.toString()}`;
+}
 function launchApp(app, article) {
   const access = hasAppAccess(app.id);
   if (!access.enabled) {
@@ -1241,17 +1245,6 @@ function launchApp(app, article) {
   let completed = false;
   let cinematic = { setPhase: () => {}, finish: () => {}, skip: null };
 
-  const popup = window.open("about:blank", "_blank");
-  if (popup) {
-    try {
-      popup.opener = null;
-      popup.blur();
-      window.focus();
-    } catch {
-      /* browser-specific */
-    }
-  }
-
   launchButtons.forEach((button) => {
     button.disabled = true;
   });
@@ -1265,7 +1258,7 @@ function launchApp(app, article) {
     timers.push(window.setTimeout(callback, after));
   };
   if (ringDelay > 500) {
-    schedule(Math.round(ringDelay * 0.32), () => {
+    schedule(Math.round(ringDelay * 0.28), () => {
       if (stateLabel)
         stateLabel.textContent = t("PRSTENCE SE OTÁČEJÍ", "RINGS ARE ROTATING");
     });
@@ -1296,14 +1289,9 @@ function launchApp(app, article) {
     if (completed) return;
     completed = true;
     cinematic.setPhase("complete");
+    const destination = embeddedApplicationUrl(app);
     cleanup();
-    if (popup) {
-      try {
-        popup.location.replace(app.launchUrl);
-      } catch {
-        location.href = app.launchUrl;
-      }
-    } else location.href = app.launchUrl;
+    window.location.assign(destination);
   };
 
   schedule(ringDelay, () => {
@@ -1317,11 +1305,8 @@ function launchApp(app, article) {
     cinematic = portalLaunchOverlay(app, cinematicDelay);
     if (cinematic.skip) cinematic.skip.onclick = navigate;
 
-    const scheduleCinematic = (after, callback) => {
-      timers.push(window.setTimeout(callback, after));
-    };
     const phase = (ratio, key) => {
-      scheduleCinematic(Math.round(cinematicDelay * ratio), () =>
+      schedule(Math.round(cinematicDelay * ratio), () =>
         cinematic.setPhase(key),
       );
     };
@@ -1329,7 +1314,7 @@ function launchApp(app, article) {
     phase(0.5, "verify");
     phase(0.76, "open");
     phase(0.91, "transit");
-    scheduleCinematic(cinematicDelay, navigate);
+    schedule(cinematicDelay, navigate);
   });
   return true;
 }

@@ -650,13 +650,33 @@ if (
 )
   fail("Chybí mechanické navolování prstenců nebo sekvenční zámky brány.");
 if (
-  !/root\.dataset\.motion === ["\']full["\'] \? 2000 : 900/.test(mainAppText) ||
+  !mainAppText.includes("return 2000;") ||
   !portalHomeHtml.includes("portal-launch-overlay") ||
   !mainAppText.includes("PRSTENCE SE OTÁČEJÍ") ||
   !mainAppText.includes("BRÁNA OTEVŘENA — SPOUŠTÍM APLIKACI")
 )
   fail(
     "Dvoufázové časování 2 s prstenců a samostatné animace aplikace není zapojeno.",
+  );
+const embeddedViewerHtml = await readFile(
+  path.join(src, "app/index.html"),
+  "utf8",
+);
+const embeddedViewerScript = await readFile(
+  path.join(src, "app/viewer.js"),
+  "utf8",
+);
+if (
+  mainAppText.includes('window.open("about:blank"') ||
+  mainAppText.includes("window.open('about:blank'") ||
+  !mainAppText.includes("embeddedApplicationUrl(app)") ||
+  !mainAppText.includes("window.location.assign(destination)") ||
+  !embeddedViewerHtml.includes("embedded-app-frame") ||
+  !embeddedViewerScript.includes("frame.src = appUrl.href") ||
+  !embeddedViewerScript.includes("appUrl.origin !== location.origin")
+)
+  fail(
+    "Aplikace se neotevírají uvnitř pracovního prostoru Studia nebo se stále vytváří prázdné popup okno.",
   );
 if (
   !mainAppText.includes("beforeinstallprompt") ||
@@ -856,6 +876,9 @@ const required = [
   "tools/access-registry/registry.js",
   "tools/access-registry/registry.css",
   "automation/index.html",
+  "app/index.html",
+  "app/viewer.js",
+  "app/viewer.css",
   "workflow/index.html",
   "report/index.html",
   "demo/index.html",

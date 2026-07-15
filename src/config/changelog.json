@@ -1,7 +1,41 @@
 {
   "schema": "ai-studio-changelog-v1",
-  "current": "0.17.0",
+  "current": "0.17.1",
   "items": [
+    {
+      "version": "0.17.1",
+      "date": "2026-07-15",
+      "title": {
+        "cs": "Aplikace se otevírají uvnitř Studia bez bílého popup okna",
+        "en": "Applications open inside Studio without a blank popup window"
+      },
+      "changes": [
+        {
+          "cs": "Odstraněno předčasné otevírání prázdného okna about:blank, které přebíralo pozornost a skrývalo animaci probíhající ve Studiu.",
+          "en": "Removed the premature about:blank popup that stole focus and hid the animation running inside Studio."
+        },
+        {
+          "cs": "Po kliknutí zůstane uživatel ve Studiu: nejprve dvě sekundy vidí mechanické otáčení prstenců hlavní brány, poté samostatnou animaci vybrané aplikace.",
+          "en": "After clicking, the user remains in Studio: first seeing two seconds of mechanical gateway ring rotation, followed by the selected application animation."
+        },
+        {
+          "cs": "Cílová aplikace se následně otevře v novém interním pracovním prostoru Studia pomocí vloženého rámce, nikoli v další kartě prohlížeče.",
+          "en": "The target application then opens in a new internal Studio workspace using an embedded frame rather than another browser tab."
+        },
+        {
+          "cs": "Pracovní prostor obsahuje návrat do Studia, obnovení aplikace, celou obrazovku a pouze volitelnou možnost otevřít aplikaci samostatně.",
+          "en": "The workspace includes return to Studio, reload, full screen and an optional open-separately action."
+        },
+        {
+          "cs": "Automatický režim pohybu na počítači již nesnižuje animaci jen kvůli čtyřjádrovému procesoru nebo 4 GB hlášené paměti, takže dvousekundové prstence zůstávají viditelné.",
+          "en": "Automatic desktop motion no longer downgrades the animation solely because of a four-core CPU or 4 GB reported memory, keeping the two-second ring sequence visible."
+        },
+        {
+          "cs": "Nabídka Nainstalovat AI Studio vpravo dole zůstala zachována a byla znovu zahrnuta do regresních kontrol.",
+          "en": "The bottom-right Install AI Studio prompt remains in place and is covered by regression checks."
+        }
+      ]
+    },
     {
       "version": "0.17.0",
       "date": "2026-07-15",

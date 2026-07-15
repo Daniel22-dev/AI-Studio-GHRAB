@@ -2110,22 +2110,20 @@ button.admin-command-card {
 }
 .portal-core-zone.is-launching .portal-ring-assembly {
   opacity: 1;
-  animation: gateway-launch-image 2.85s ease-in-out both !important;
+  animation: gateway-launch-image 2s ease-in-out both !important;
 }
 .portal-core-zone.is-launching .ring-outer {
-  animation: gateway-ring-outer-dial 2.85s cubic-bezier(0.35, 0.02, 0.18, 1)
-    both !important;
+  animation: gateway-ring-outer-dial 2s cubic-bezier(0.35, 0.02, 0.18, 1) both !important;
   filter: contrast(1.08) saturate(1.18) brightness(1.08)
     drop-shadow(0 0 8px rgba(82, 230, 255, 0.42));
 }
 .portal-core-zone.is-launching .ring-middle {
-  animation: gateway-ring-middle-dial 2.85s cubic-bezier(0.36, 0.01, 0.16, 1)
-    both !important;
+  animation: gateway-ring-middle-dial 2s cubic-bezier(0.36, 0.01, 0.16, 1) both !important;
   filter: contrast(1.08) saturate(1.2) brightness(1.06)
     drop-shadow(0 0 8px rgba(255, 180, 76, 0.34));
 }
 .portal-core-zone.is-launching .ring-inner {
-  animation: gateway-ring-inner-dial 2.85s cubic-bezier(0.33, 0.02, 0.2, 1) both !important;
+  animation: gateway-ring-inner-dial 2s cubic-bezier(0.33, 0.02, 0.2, 1) both !important;
   filter: contrast(1.1) saturate(1.25) brightness(1.1)
     drop-shadow(0 0 10px rgba(255, 182, 78, 0.48));
 }
@@ -2133,32 +2131,32 @@ button.admin-command-card {
   animation: gateway-lock-node 0.42s cubic-bezier(0.2, 0.85, 0.2, 1) both;
 }
 .portal-core-zone.is-launching .portal-lock-sequence span:nth-child(1) {
-  animation-delay: 0.26s;
+  animation-delay: 0.18s;
 }
 .portal-core-zone.is-launching .portal-lock-sequence span:nth-child(2) {
-  animation-delay: 0.62s;
+  animation-delay: 0.45s;
 }
 .portal-core-zone.is-launching .portal-lock-sequence span:nth-child(3) {
-  animation-delay: 0.99s;
+  animation-delay: 0.72s;
 }
 .portal-core-zone.is-launching .portal-lock-sequence span:nth-child(4) {
-  animation-delay: 1.36s;
+  animation-delay: 0.99s;
 }
 .portal-core-zone.is-launching .portal-lock-sequence span:nth-child(5) {
-  animation-delay: 1.73s;
+  animation-delay: 1.26s;
 }
 .portal-core-zone.is-launching .portal-lock-sequence span:nth-child(6) {
-  animation-delay: 2.1s;
+  animation-delay: 1.53s;
 }
 .portal-core-zone.is-launching .portal-lock-sequence span:nth-child(7) {
-  animation-delay: 2.47s;
+  animation-delay: 1.8s;
 }
 .portal-core-zone.is-launching::before,
 .portal-core-zone.is-launching::after,
 .portal-core-zone.is-launching .portal-core-image,
 .portal-core-zone.is-launching .portal-beam,
 .portal-core-zone.is-launching .portal-platform {
-  animation-duration: 2.85s !important;
+  animation-duration: 2s !important;
 }
 @keyframes gateway-ring-outer-dial {
   0% {
@@ -2265,16 +2263,16 @@ button.admin-command-card {
   }
 }
 html[data-motion="lite"] .portal-core-zone.is-launching .portal-ring-assembly {
-  animation: gateway-launch-image 0.9s ease-in-out both !important;
+  animation: gateway-launch-image 2s ease-in-out both !important;
 }
 html[data-motion="lite"] .portal-core-zone.is-launching .ring-outer {
-  animation: gateway-ring-lite 0.9s ease-out both !important;
+  animation: gateway-ring-lite 2s ease-out both !important;
 }
 html[data-motion="lite"] .portal-core-zone.is-launching .ring-middle {
-  animation: gateway-ring-lite-reverse 0.9s ease-out both !important;
+  animation: gateway-ring-lite-reverse 2s ease-out both !important;
 }
 html[data-motion="lite"] .portal-core-zone.is-launching .ring-inner {
-  animation: gateway-ring-lite 0.9s ease-out both !important;
+  animation: gateway-ring-lite 2s ease-out both !important;
 }
 html[data-motion="lite"]
   .portal-core-zone.is-launching
