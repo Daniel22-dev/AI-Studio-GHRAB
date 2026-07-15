@@ -7,9 +7,7 @@
   "yearGroup": "B1",
   "level": "B1",
   "language": "cs",
-  "objectives": [
-    "Ukázat přenositelnost materiálu mezi nástroji."
-  ],
+  "objectives": ["Ukázat přenositelnost materiálu mezi nástroji."],
   "content": {
     "sourceText": "Materiál se třemi úrovněmi podpory a společným cílem.",
     "vocabulary": [],

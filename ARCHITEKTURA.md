@@ -1,4 +1,4 @@
-# Architektura AI Studio GHRAB 0.6.3
+# Architektura AI Studio GHRAB 0.16.5
 
 ## Federovaný portál
 
@@ -65,7 +65,6 @@ Přímý handoff používá `localStorage` a vyžaduje stejný origin. Mezi rozd
 ## Přechod na server
 
 Server nahradí import oprávnění školním přihlášením, místní úložiště databází, handoff API a místní reporty centrálními anonymními agregacemi. Uživatelské rozhraní a identifikátory aplikací mohou zůstat zachovány.
-
 
 ## Interaktivní manuály
 

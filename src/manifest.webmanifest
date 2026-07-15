@@ -2,17 +2,14 @@
   "name": "AI Studio GHRAB",
   "short_name": "AI Studio",
   "description": "Profesionální školní portál digitálních a AI nástrojů s řízeným přístupem po absolvovaných školeních.",
-  "version": "__APP_VERSION__",
+  "id": "/AI-Studio-GHRAB/",
   "lang": "cs",
   "start_url": "./",
   "scope": "./",
   "display": "standalone",
   "background_color": "#020711",
   "theme_color": "#030915",
-  "categories": [
-    "education",
-    "productivity"
-  ],
+  "categories": ["education", "productivity"],
   "icons": [
     {
       "src": "assets/brand/icon-32.png",

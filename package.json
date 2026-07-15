@@ -1,17 +1,23 @@
 {
   "name": "ai-studio-ghrab",
-  "version": "0.16.0",
+  "version": "0.16.5",
   "private": true,
-  "description": "Profesionální PWA rozcestník školních AI nástrojů s filmovým desktopovým portálem, projekčním režimem, řízeným přístupem a diagnostikou",
+  "description": "Profesionální PWA rozcestník školních AI nástrojů s elegantní filmovou animací spuštění, instalační výzvou pro PC, řízeným přístupem, měřením a diagnostikou",
   "type": "module",
   "scripts": {
     "sync": "node scripts/sync-registry.mjs",
     "sync:offline": "node scripts/sync-registry.mjs --offline",
-    "build": "node scripts/build.mjs",
-    "test": "node scripts/test.mjs",
-    "check": "node scripts/test.mjs"
+    "build": "npm run generate:changelog && node scripts/build.mjs",
+    "test": "npm run generate:changelog && npm run format:check && node scripts/test.mjs",
+    "check": "node scripts/test.mjs",
+    "generate:changelog": "node scripts/generate-changelog.mjs",
+    "format": "prettier --write \"src/**/*.{js,css,html,json,webmanifest,md}\" \"scripts/**/*.mjs\" \".github/**/*.yml\" \"*.md\" \"package.json\"",
+    "format:check": "prettier --check \"src/**/*.{js,css,html,json,webmanifest,md}\" \"scripts/**/*.mjs\" \".github/**/*.yml\" \"*.md\" \"package.json\""
   },
   "engines": {
     "node": ">=18"
+  },
+  "devDependencies": {
+    "prettier": "^3.9.5"
   }
 }

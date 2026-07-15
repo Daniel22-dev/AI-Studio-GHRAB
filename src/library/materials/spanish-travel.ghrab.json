@@ -7,9 +7,7 @@
   "yearGroup": "A2",
   "level": "A2",
   "language": "cs",
-  "objectives": [
-    "Ukázat přenositelnost materiálu mezi nástroji."
-  ],
+  "objectives": ["Ukázat přenositelnost materiálu mezi nástroji."],
   "content": {
     "sourceText": "Krátký jazykový balíček pro procvičení zkušeností a cestování.",
     "vocabulary": [],

@@ -1,18 +1,157 @@
 <!doctype html>
 <html lang="cs" data-theme="dark">
-<head>
-<meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><meta name="theme-color" content="#030915">
-<meta http-equiv="Content-Security-Policy" content="default-src 'self'; script-src 'self'; style-src 'self'; img-src 'self' data:; connect-src 'self'; object-src 'none'; base-uri 'self'; form-action 'self'">
-<title>Správa přístupů · AI Studio GHRAB</title><link rel="manifest" href="../manifest.webmanifest"><link rel="icon" href="../assets/brand/icon-32.png"><link rel="stylesheet" href="../styles.css"><link rel="stylesheet" href="../polish.css"><link rel="stylesheet" href="./manualy.css">
-</head>
-<body data-page="access-registry" data-base="../" data-title-cs="Správa přístupů · AI Studio GHRAB" data-title-en="Access management · AI Studio GHRAB">
-<a class="skip-link" href="#main">Přejít na obsah</a><header class="site-header cosmic-header"><a class="brand" href="../"><span class="brand-orbit"><img src="../assets/brand/brand-mark.svg" alt="" width="46" height="46"></span><span><strong>AI Studio <em>GHRAB</em></strong><small>Správcovský návod k přístupům</small></span></a><button class="nav-toggle" type="button" aria-expanded="false" aria-controls="main-nav">☰</button><nav id="main-nav" class="main-nav"><a href="../">Aplikace</a><a href="./">Manuály</a><a href="../access/">Můj přístup</a><a href="../automation/" data-admin-nav hidden>Správa</a></nav><div class="header-actions"><div class="segmented"><button type="button" data-lang="cs" aria-pressed="true">CZ</button><button type="button" data-lang="en" aria-pressed="false">EN</button></div></div></header>
-<main id="main"><section class="page-hero shell"><p class="breadcrumb"><a href="./">Manuály</a> / Správa přístupů</p><p class="eyebrow">SPRÁVCE AI STUDIA</p><h1>Vydávání a evidence přístupů bez ručního opisování JTI.</h1><p>Od verze 0.14.0 se každý vytvořený přístup zapisuje automaticky do místní evidence správce.</p></section>
-<section class="section shell issuer-layout">
-<article class="panel"><p class="eyebrow">1 · NOVÝ PŘÍSTUP</p><h2>Vydání kolegovi</h2><ol><li>Otevřete <strong>Správa → Vydat přístup</strong>.</li><li>Načtěte soukromý podpisový klíč.</li><li>Vyplňte uživatele, platnost a aplikace.</li><li>Klikněte na <strong>Vytvořit podepsaný přístup</strong>.</li><li>Záznam se automaticky uloží do Evidence přístupů. Kolegovi odešlete pouze stažený soubor.</li></ol><a class="button primary" href="../tools/access-issuer/">Vydat přístup</a></article>
-<article class="panel"><p class="eyebrow">2 · STARŠÍ PŘÍSTUP</p><h2>Dodatečný import</h2><p>Soubor vydaný před zavedením evidence není nutné ručně přepisovat. V Evidenci zvolte <strong>Načíst přístup nebo zálohu</strong>. Studio ověří podpis a samo převezme jméno, interní ID, aplikace, platnost i JTI.</p><a class="button secondary" href="../tools/access-registry/">Otevřít evidenci</a></article>
-<article class="panel"><p class="eyebrow">3 · DALŠÍ ŠKOLENÍ</p><h2>Nový kumulativní přístup</h2><p>V detailu uživatele zvolte <strong>Vydat nový přístup</strong>. Formulář se předvyplní. Přidejte nově proškolenou aplikaci a vytvořte nový soubor. Původní záznam se označí jako nahrazený, ale dokud jej nezneplatníte, může technicky dál fungovat.</p></article>
-<article class="panel"><p class="eyebrow">4 · ZNEPLATNĚNÍ</p><h2>Připravený revokační soubor</h2><ol><li>V detailu přístupu klikněte na <strong>Připravit zneplatnění</strong>.</li><li>V horní části Evidence stáhněte <strong>seznam zneplatnění</strong>.</li><li>Staženým souborem nahraďte <code>src/config/revoked-access.json</code>.</li><li>Proveďte commit, push a počkejte na zelené nasazení.</li></ol><p class="safe-export-note">Označení v místní evidenci samo přístup neblokuje. Rozhodující je až zveřejněný revokační soubor.</p></article>
-<article class="panel"><p class="eyebrow">5 · ZÁLOHA</p><h2>Evidence je místní</h2><p>Evidence se nepřenáší automaticky mezi počítači ani prohlížeči. Pravidelně používejte <strong>Záloha JSON</strong>. Na jiném správcovském zařízení ji načtete přes <strong>Načíst přístup nebo zálohu</strong>.</p><p>V evidenci není soukromý klíč ani celý přístupový kód, takže záloha slouží pouze jako administrativní přehled.</p></article>
-</section></main><footer class="site-footer"><div class="shell footer-inner"><div><strong>AI Studio GHRAB</strong><p>Správcovský návod · verze __APP_VERSION__</p></div></div></footer><script src="../app.js" type="module"></script>
-</body></html>
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width,initial-scale=1" />
+    <meta name="theme-color" content="#030915" />
+    <meta
+      http-equiv="Content-Security-Policy"
+      content="default-src 'self'; script-src 'self'; style-src 'self'; img-src 'self' data:; connect-src 'self'; object-src 'none'; base-uri 'self'; form-action 'self'"
+    />
+    <title>Správa přístupů · AI Studio GHRAB</title>
+    <link rel="manifest" href="../manifest.webmanifest" />
+    <link rel="icon" href="../assets/brand/icon-32.png" />
+    <link rel="stylesheet" href="../styles.css" />
+    <link rel="stylesheet" href="../polish.css" />
+    <link rel="stylesheet" href="./manualy.css" />
+  </head>
+  <body
+    data-page="access-registry"
+    data-base="../"
+    data-title-cs="Správa přístupů · AI Studio GHRAB"
+    data-title-en="Access management · AI Studio GHRAB"
+  >
+    <a class="skip-link" href="#main">Přejít na obsah</a>
+    <header class="site-header cosmic-header">
+      <a class="brand" href="../"
+        ><span class="brand-orbit"
+          ><img
+            src="../assets/brand/brand-mark.svg"
+            alt=""
+            width="46"
+            height="46" /></span
+        ><span
+          ><strong>AI Studio <em>GHRAB</em></strong
+          ><small>Správcovský návod k přístupům</small></span
+        ></a
+      ><button
+        class="nav-toggle"
+        type="button"
+        aria-expanded="false"
+        aria-controls="main-nav"
+      >
+        ☰
+      </button>
+      <nav id="main-nav" class="main-nav">
+        <a href="../">Aplikace</a><a href="./">Manuály</a
+        ><a href="../access/">Můj přístup</a
+        ><a href="../automation/" data-admin-nav hidden>Správa</a>
+      </nav>
+      <div class="header-actions">
+        <div class="segmented">
+          <button type="button" data-lang="cs" aria-pressed="true">CZ</button
+          ><button type="button" data-lang="en" aria-pressed="false">EN</button>
+        </div>
+      </div>
+    </header>
+    <main id="main">
+      <section class="page-hero shell">
+        <p class="breadcrumb"><a href="./">Manuály</a> / Správa přístupů</p>
+        <p class="eyebrow">SPRÁVCE AI STUDIA</p>
+        <h1>Vydávání a evidence přístupů bez ručního opisování JTI.</h1>
+        <p>
+          Od verze 0.14.0 se každý vytvořený přístup zapisuje automaticky do
+          místní evidence správce.
+        </p>
+      </section>
+      <section class="section shell issuer-layout">
+        <article class="panel">
+          <p class="eyebrow">1 · NOVÝ PŘÍSTUP</p>
+          <h2>Vydání kolegovi</h2>
+          <ol>
+            <li>Otevřete <strong>Správa → Vydat přístup</strong>.</li>
+            <li>Načtěte soukromý podpisový klíč.</li>
+            <li>Vyplňte uživatele, platnost a aplikace.</li>
+            <li>Klikněte na <strong>Vytvořit podepsaný přístup</strong>.</li>
+            <li>
+              Záznam se automaticky uloží do Evidence přístupů. Kolegovi
+              odešlete pouze stažený soubor.
+            </li>
+          </ol>
+          <a class="button primary" href="../tools/access-issuer/"
+            >Vydat přístup</a
+          >
+        </article>
+        <article class="panel">
+          <p class="eyebrow">2 · STARŠÍ PŘÍSTUP</p>
+          <h2>Dodatečný import</h2>
+          <p>
+            Soubor vydaný před zavedením evidence není nutné ručně přepisovat. V
+            Evidenci zvolte <strong>Načíst přístup nebo zálohu</strong>. Studio
+            ověří podpis a samo převezme jméno, interní ID, aplikace, platnost i
+            JTI.
+          </p>
+          <a class="button secondary" href="../tools/access-registry/"
+            >Otevřít evidenci</a
+          >
+        </article>
+        <article class="panel">
+          <p class="eyebrow">3 · DALŠÍ ŠKOLENÍ</p>
+          <h2>Nový kumulativní přístup</h2>
+          <p>
+            V detailu uživatele zvolte <strong>Vydat nový přístup</strong>.
+            Formulář se předvyplní. Přidejte nově proškolenou aplikaci a
+            vytvořte nový soubor. Původní záznam se označí jako nahrazený, ale
+            dokud jej nezneplatníte, může technicky dál fungovat.
+          </p>
+        </article>
+        <article class="panel">
+          <p class="eyebrow">4 · ZNEPLATNĚNÍ</p>
+          <h2>Připravený revokační soubor</h2>
+          <ol>
+            <li>
+              V detailu přístupu klikněte na
+              <strong>Připravit zneplatnění</strong>.
+            </li>
+            <li>
+              V horní části Evidence stáhněte
+              <strong>seznam zneplatnění</strong>.
+            </li>
+            <li>
+              Staženým souborem nahraďte
+              <code>src/config/revoked-access.json</code>.
+            </li>
+            <li>Proveďte commit, push a počkejte na zelené nasazení.</li>
+          </ol>
+          <p class="safe-export-note">
+            Označení v místní evidenci samo přístup neblokuje. Rozhodující je až
+            zveřejněný revokační soubor.
+          </p>
+        </article>
+        <article class="panel">
+          <p class="eyebrow">5 · ZÁLOHA</p>
+          <h2>Evidence je místní</h2>
+          <p>
+            Evidence se nepřenáší automaticky mezi počítači ani prohlížeči.
+            Pravidelně používejte <strong>Záloha JSON</strong>. Na jiném
+            správcovském zařízení ji načtete přes
+            <strong>Načíst přístup nebo zálohu</strong>.
+          </p>
+          <p>
+            V evidenci není soukromý klíč ani celý přístupový kód, takže záloha
+            slouží pouze jako administrativní přehled.
+          </p>
+        </article>
+      </section>
+    </main>
+    <footer class="site-footer">
+      <div class="shell footer-inner">
+        <div>
+          <strong>AI Studio GHRAB</strong>
+          <p>Správcovský návod · verze __APP_VERSION__</p>
+        </div>
+      </div>
+    </footer>
+    <script src="../app.js" type="module"></script>
+  </body>
+</html>

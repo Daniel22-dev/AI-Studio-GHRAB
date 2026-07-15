@@ -80,10 +80,7 @@
   "$defs": {
     "i18n": {
       "type": "object",
-      "required": [
-        "cs",
-        "en"
-      ],
+      "required": ["cs", "en"],
       "properties": {
         "cs": {
           "type": "string",

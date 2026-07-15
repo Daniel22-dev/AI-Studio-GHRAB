@@ -1,4 +1,4 @@
-# Bezpečnostní hranice AI Studio GHRAB 0.10.0
+# Bezpečnostní hranice AI Studio GHRAB 0.16.5
 
 ## Co serverless portál zajišťuje
 
@@ -22,13 +22,13 @@
 
 ## Stav ochrany přímých adres
 
-Ochranný bootstrap je integrován v Generátoru 7.1.0, Diferenciátoru 1.2.0, Hodnotiteli maturitních slohů 1.4.0, LUDUSu 1.15.0 a Korespondenčním asistentovi 5.1.0. Jejich aplikační skripty zůstávají inertní, dokud centrální modul neověří podpis, platnost, revokaci, roli a příslušné ID aplikace. Při nedostupnosti centrální konfigurace se aplikace bezpečně neotevře.
+Ochranný bootstrap je integrován v Generátoru 7.1.0, Diferenciátoru 1.2.0, Hodnotiteli maturitních slohů 1.4.0, LUDUSu 1.15.0 a Korespondenčním asistentovi 5.1.0. Běžný vstupní bod těchto aplikací nejprve načte centrální modul a ověří podpis, platnost, revokaci, roli, ID aplikace a aktuální verzi školení. Jde o praktickou ochranu proti běžnému sdílení přímé adresy, nikoli o serverovou ochranu zdrojového kódu: technicky zkušený uživatel může veřejný statický kód stáhnout nebo spustit mimo standardní bootstrap. Při nedostupnosti centrální konfigurace robustní bootstrap zobrazí srozumitelnou chybovou obrazovku a aplikaci nespustí.
 
 ## Klíče
 
 Soukromý klíč je nejcitlivější soubor celého systému. Patří pouze správci, ideálně na šifrované zařízení a do oddělené offline zálohy. Nesmí být v GitHubu, e-mailu, veřejném cloudu ani společné školní složce. Veřejný klíč je určen k publikaci.
 
-Při kompromitaci soukromého klíče je nutné vytvořit nový pár klíčů, aktualizovat veřejný klíč a vydat nová oprávnění.
+Veřejná konfigurace používá sadu klíčů. Při plánované rotaci se nejprve přidá nový veřejný klíč a označí jako aktivní pro vydávání; starý klíč zůstane po přechodnou dobu v sadě, aby již vydaná oprávnění nepřestala fungovat naráz. Po vypršení nebo nahrazení starých oprávnění lze starý klíč odstranit. Při kompromitaci se postupuje rychleji a podle potřeby se současně použije revokace podle data.
 
 ## Revokace
 

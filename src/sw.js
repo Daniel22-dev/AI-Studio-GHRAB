@@ -1,22 +1,69 @@
-const CACHE = 'ai-studio-ghrab-v__APP_VERSION__';
-const CORE = [
-  './','./index.html','./styles.css','./polish.css','./app.js','./manifest.webmanifest',
-  './config/apps.generated.json','./config/apps.fallback.json','./config/sources.json','./config/sync-report.json','./config/permissions.json','./config/changelog.json','./config/access-policy.json','./config/access-public-key.json','./config/revoked-access.json',
-  './assets/brand/brand-mark.svg','./assets/brand/school-logo.png','./assets/brand/portal-core.svg','./assets/brand/portal-gateway.png','./assets/brand/portal-ring-outer.svg','./assets/brand/portal-ring-middle.svg','./assets/brand/portal-ring-inner.svg','./assets/brand/icon-32.png','./assets/brand/icon-48.png','./assets/brand/icon-72.png','./assets/brand/icon-96.png','./assets/brand/icon-128.png','./assets/brand/icon-192.png','./assets/brand/icon-512.png','./assets/brand/icon-maskable-512.png','./assets/brand/apple-touch-icon.png',
-  './assets/apps/generator.png','./assets/apps/differentiator.png','./assets/apps/essay-evaluator-v2.png','./assets/apps/ludus.png','./assets/apps/correspondence.png',
-  './shared/safe-export.js','./shared/material-validator.js','./access/index.html','./access/access.js','./access/access-control.js','./access/app-guard.js','./access/error-reporter.js','./access/error-reporter.css','./access/access-gate.css',
-  './automation/index.html','./automation/automation.js','./workflow/index.html','./workflow/workflow.js','./report/index.html','./report/report.js','./bridge/studio-bridge.js','./demo/index.html','./demo/demo.js','./library/index.html','./library/library.js','./library/catalog.json','./manualy/index.html','./manualy/manualy.js','./manualy/manualy.css','./manualy/access-management.html','./manualy/viewer.html','./manualy/viewer.js','./manualy/viewer.css','./manualy/pilot-report.html','./manualy/pilot-report.js','./manualy/pilot-report.css','./manualy/error-report.html','./manualy/error-report.css',
-  './library/materials/past-simple.ghrab.json','./library/materials/spanish-travel.ghrab.json','./library/materials/czech-syntax.ghrab.json','./library/materials/school-email.ghrab.json',
-  './safety/index.html','./safety/safety.js','./pilot/index.html','./pilot/pilot.js','./changelog/index.html','./changelog/changelog.js','./tests/index.html','./tests/tests.js','./tools/access-issuer/index.html','./tools/access-issuer/issuer.js','./tools/access-registry/index.html','./tools/access-registry/registry.js','./tools/access-registry/registry.css',
-  './integration/README.md','./integration/VERIFY-INTEGRATION.md','./integration/app-guard-snippet.html','./integration/protected-bootstrap.example.js','./integration/generator-access-bootstrap.example.js','./integration/differentiator-access-bootstrap.example.js','./integration/essay-evaluator-access-bootstrap.example.js','./integration/ludus-access-bootstrap.example.js','./integration/correspondence-access-bootstrap.example.js',
-  './schemas/ghrab-material-v1.schema.json','./schemas/ghrab-handoff-v1.schema.json','./schemas/ludus-content-v2.schema.json'
-];
-self.addEventListener('install', event => { event.waitUntil(caches.open(CACHE).then(cache => cache.addAll(CORE)).then(() => self.skipWaiting())); });
-self.addEventListener('activate', event => { event.waitUntil(caches.keys().then(keys => Promise.all(keys.filter(key => key !== CACHE).map(key => caches.delete(key)))).then(() => self.clients.claim())); });
-self.addEventListener('fetch', event => {
-  if (event.request.method !== 'GET' || new URL(event.request.url).origin !== self.location.origin) return;
-  event.respondWith(fetch(event.request).then(response => {
-    if (response.ok) { const copy = response.clone(); caches.open(CACHE).then(cache => cache.put(event.request, copy)); }
+const CACHE = "ai-studio-ghrab-v__APP_VERSION__";
+const CORE = [/*__CORE_ASSETS__*/];
+
+function isConfigurationRequest(request) {
+  const url = new URL(request.url);
+  return (
+    url.pathname.includes("/config/") ||
+    url.pathname.endsWith("/build-info.json")
+  );
+}
+
+async function networkFirst(request) {
+  try {
+    const response = await fetch(request, { cache: "no-store" });
+    if (response.ok) {
+      const cache = await caches.open(CACHE);
+      await cache.put(request, response.clone());
+    }
     return response;
-  }).catch(() => caches.match(event.request).then(hit => hit || (event.request.mode === 'navigate' ? caches.match('./index.html') : Response.error()))));
+  } catch {
+    return (await caches.match(request)) || Response.error();
+  }
+}
+
+async function cacheFirst(request) {
+  const cached = await caches.match(request);
+  if (cached) return cached;
+  try {
+    const response = await fetch(request);
+    if (response.ok) {
+      const cache = await caches.open(CACHE);
+      await cache.put(request, response.clone());
+    }
+    return response;
+  } catch {
+    if (request.mode === "navigate")
+      return (await caches.match("./index.html")) || Response.error();
+    return Response.error();
+  }
+}
+
+self.addEventListener("install", (event) => {
+  event.waitUntil(caches.open(CACHE).then((cache) => cache.addAll(CORE)));
+});
+
+self.addEventListener("activate", (event) => {
+  event.waitUntil(
+    caches
+      .keys()
+      .then((keys) =>
+        Promise.all(
+          keys.filter((key) => key !== CACHE).map((key) => caches.delete(key)),
+        ),
+      ),
+  );
+});
+
+self.addEventListener("fetch", (event) => {
+  if (
+    event.request.method !== "GET" ||
+    new URL(event.request.url).origin !== self.location.origin
+  )
+    return;
+  event.respondWith(
+    isConfigurationRequest(event.request)
+      ? networkFirst(event.request)
+      : cacheFirst(event.request),
+  );
 });

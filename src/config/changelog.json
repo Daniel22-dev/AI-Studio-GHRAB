@@ -1,34 +1,34 @@
 {
   "schema": "ai-studio-changelog-v1",
-  "current": "0.16.0",
+  "current": "0.16.5",
   "items": [
     {
-      "version": "0.16.0",
+      "version": "0.16.5",
       "date": "2026-07-15",
       "title": {
-        "cs": "Filmové spuštění, holografické panely a režim projekce",
-        "en": "Cinematic launch, holographic panels and presentation mode"
+        "cs": "Elegantní prémiové spuštění, instalace na PC a převzetí auditních oprav",
+        "en": "Elegant premium launch, desktop installation and adopted audit fixes"
       },
       "changes": [
         {
-          "cs": "Spuštění aplikace nyní používá celoplošnou filmovou sekvenci s navolením cíle, uzamčením prstenců, otevřením horizontu událostí a průletem do aplikace.",
-          "en": "Application launch now uses a full-screen cinematic sequence with target acquisition, ring locking, event-horizon opening and transit into the application."
+          "cs": "Spouštění aplikací bylo přepracováno do klidnější prémiové celoplošné sekvence s tmavou scénou, velkými skleněnými vrstvami, jemnými částicemi, pomalým přesným pohybem prstenců a plynulým ponořením do portálu.",
+          "en": "Application launch was redesigned as a calmer premium full-screen sequence with a dark scene, large glass layers, subtle particles, slow precise ring motion and a smooth immersion into the gateway."
         },
         {
-          "cs": "Domovská scéna na počítači získala další lehké holografické panely s rychlým přístupem k ekosystému, materiálům, bezpečnosti, manuálům a projekčnímu režimu.",
-          "en": "The desktop home scene gained additional lightweight holographic panels with quick access to the ecosystem, resources, safety, manuals and presentation mode."
+          "cs": "Na podporovaných počítačových prohlížečích se vpravo dole zobrazí nenápadná nabídka Nainstalovat AI Studio; po instalaci nebo dočasném skrytí sama zmizí a v nainstalované PWA se nezobrazuje.",
+          "en": "Supported desktop browsers now show a discreet Install AI Studio prompt in the bottom-right; it disappears after installation or temporary dismissal and is not shown inside the installed PWA."
         },
         {
-          "cs": "Prezentační stránka má nový režim projekce na celou obrazovku s velkou typografií, čistým plátnem, ovládáním klávesami a přehledovým panelem.",
-          "en": "The presentation page now has a full-screen audience mode with large typography, a clean canvas, keyboard control and a compact status bar."
+          "cs": "Ze zaslané nenahrané verze 0.15.0 byly převzaty stále relevantní bezpečnostní a provozní opravy: přesná verze školení, překryvná rotace ověřovacích klíčů, limit oprávnění 400 dní a automatické zapomenutí soukromého klíče.",
+          "en": "Still-relevant security and operational fixes were adopted from the supplied unpublished 0.15.0 build: exact training-version enforcement, overlapping verification-key rotation, a 400-day permit limit and automatic private-key forgetting."
         },
         {
-          "cs": "Poznámky řečníka lze otevřít v samostatném okně na vlastním monitoru; automaticky sledují aktuální krok a nejsou viditelné publiku na projektoru.",
-          "en": "Speaker notes can be opened in a separate window on the presenter’s own screen; they follow the current step automatically and remain hidden from the projected audience."
+          "cs": "Převzato bylo také procesní zpevnění: jediný zdroj changelogu a aplikačních pravidel, generovaný PWA precache, bezpečnější strategie service workeru, stabilní identita PWA, denní pojistná synchronizace a odolnější načítání ochranného modulu.",
+          "en": "Process hardening was also adopted: single sources of truth for changelog and application rules, generated PWA precache, safer service-worker strategies, stable PWA identity, daily fallback synchronisation and more robust guard-module loading."
         },
         {
-          "cs": "Náročnější 3D efekty zůstávají pouze na domovské bráně a v prezentačním režimu. Správa, evidence, formuláře a pracovní stránky zůstávají rychlé a věcné.",
-          "en": "Heavier 3D effects remain limited to the home gateway and presentation mode. Administration, registries, forms and work pages remain fast and practical."
+          "cs": "Výrazné prostorové efekty zůstávají pouze při spuštění aplikace; správa, evidence, formuláře a běžné pracovní části zůstávají rychlé a bez zdržujících animací.",
+          "en": "Strong spatial effects remain limited to application launch; administration, registry, forms and normal work areas stay fast and free of delaying animations."
         }
       ]
     },
@@ -36,25 +36,33 @@
       "version": "0.15.0",
       "date": "2026-07-15",
       "title": {
-        "cs": "Desktopová filmová holografická brána",
-        "en": "Desktop cinematic holographic gateway"
+        "cs": "Procesní a bezpečnostní zpevnění po hloubkovém auditu",
+        "en": "Process and security hardening after deep audit"
       },
       "changes": [
         {
-          "cs": "Domovská obrazovka Studia byla přepracována do výrazně prostorovějšího 3D rozhraní s hloubkou scény, holografickým pozadím a výraznějším světelným prostředím kolem centrální brány.",
-          "en": "The home screen was redesigned into a more spatial 3D interface with scene depth, a holographic background and stronger ambient lighting around the central gateway."
+          "cs": "Přístup k aplikaci nyní skutečně vyžaduje přesnou aktuální verzi předepsaného školení; zastaralé nebo chybějící potvrzení aplikaci uzamkne.",
+          "en": "Application access now enforces the exact current required training version; missing or outdated confirmation locks the application."
         },
         {
-          "cs": "Na počítači nyní celá hlavní scéna reaguje na pohyb kurzoru jemným náklonem a paralaxou; jednotlivé karty aplikací dostaly vlastní mikro-pohyb a živější světelný odlesk.",
-          "en": "On desktop, the main scene now reacts to the cursor with subtle tilt and parallax; application cards gained their own micro-motion and more vivid light reflections."
+          "cs": "Veřejné ověřovací klíče používají sadu klíčů s aktivním kid, takže budoucí rotace může proběhnout s překryvem bez hromadného výpadku oprávnění.",
+          "en": "Public verification keys now use a key set with an active kid, allowing future overlapping rotation without invalidating all permits at once."
         },
         {
-          "cs": "Byla doplněna informační lišta zdůrazňující prémiový charakter rozhraní a jeho optimalizaci pro práci na PC.",
-          "en": "An information strip was added to emphasise the premium interface feel and its desktop-first optimisation."
+          "cs": "Maximální platnost oprávnění byla zkrácena ze tří let na 400 dní a vydavatel automaticky zapomíná soukromý klíč po 10 minutách nečinnosti.",
+          "en": "Maximum permit validity was reduced from three years to 400 days and the issuer automatically forgets the private key after 10 minutes of inactivity."
         },
         {
-          "cs": "Mobilní a úsporné režimy zůstaly zachovány; nové prostorové efekty se automaticky zjednoduší na menších zařízeních nebo při omezeném pohybu.",
-          "en": "Mobile and reduced-motion modes remain intact; the new spatial effects automatically simplify on smaller devices or when motion is reduced."
+          "cs": "Odstraněny duplicitní zdroje pravdy pro aplikace a školení; changelog, PWA cache a kontrolní testy se nyní generují nebo ověřují automaticky.",
+          "en": "Duplicate sources of truth for applications and training were removed; changelog, PWA cache and regression checks are now generated or enforced automatically."
+        },
+        {
+          "cs": "Service worker používá cache-first pro statické soubory, network-first pro konfiguraci a neprovádí okamžité převzetí otevřených karet.",
+          "en": "The service worker uses cache-first for static assets, network-first for configuration and no longer takes over open tabs immediately."
+        },
+        {
+          "cs": "PWA manifest má stabilní identitu, synchronizační report ve zdrojích už nepředstírá síťové ověření a automatická pojistná synchronizace běží jednou denně.",
+          "en": "The PWA manifest has a stable identity, the committed sync report no longer pretends network verification, and the fallback sync runs daily."
         }
       ]
     },

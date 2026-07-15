@@ -34,13 +34,13 @@
 
 ## Převod prvků
 
-| Bez serveru | Školní server |
-|---|---|
-| podepsaný soubor | školní identita a serverové claims |
-| veřejný revokační JSON | okamžitá správa účtů a oprávnění |
-| místní workspace | osobní databázový prostor |
-| lokální handoff | jednorázové API |
-| ruční anonymní export | centrální anonymní agregace |
+| Bez serveru                | Školní server                          |
+| -------------------------- | -------------------------------------- |
+| podepsaný soubor           | školní identita a serverové claims     |
+| veřejný revokační JSON     | okamžitá správa účtů a oprávnění       |
+| místní workspace           | osobní databázový prostor              |
+| lokální handoff            | jednorázové API                        |
+| ruční anonymní export      | centrální anonymní agregace            |
 | soukromý vydavatelský klíč | správa identit a serverových tajemství |
 
 ## Otázky pro IT

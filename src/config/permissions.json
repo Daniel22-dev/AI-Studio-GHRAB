@@ -27,53 +27,8 @@
       "canViewInternalStats": false
     }
   ],
-  "apps": {
-    "generator": {
-      "trainingRequired": true,
-      "trainingCode": "GEN-01",
-      "trainingVersion": "2026-09",
-      "defaultState": "locked",
-      "riskLevel": "medium",
-      "serverClaim": "app.generator.use"
-    },
-    "differentiator": {
-      "trainingRequired": true,
-      "trainingCode": "DIF-01",
-      "trainingVersion": "2026-09",
-      "defaultState": "locked",
-      "riskLevel": "medium",
-      "serverClaim": "app.differentiator.use"
-    },
-    "essay-evaluator": {
-      "trainingRequired": true,
-      "trainingCode": "HOD-01",
-      "trainingVersion": "2026-09",
-      "defaultState": "locked",
-      "riskLevel": "high",
-      "serverClaim": "app.essay-evaluator.use"
-    },
-    "correspondence": {
-      "trainingRequired": true,
-      "trainingCode": "KOR-01",
-      "trainingVersion": "2026-09",
-      "defaultState": "locked",
-      "riskLevel": "medium-high",
-      "serverClaim": "app.correspondence.use"
-    },
-    "ludus": {
-      "trainingRequired": true,
-      "trainingCode": "LUD-01",
-      "trainingVersion": "2026-09",
-      "defaultState": "locked",
-      "riskLevel": "medium-high",
-      "serverClaim": "app.ludus.use"
-    }
-  },
   "serverlessEnforcement": {
-    "requiredLayers": [
-      "studio_gate",
-      "target_app_bootstrap"
-    ],
+    "requiredLayers": ["studio_gate", "target_app_bootstrap"],
     "limitations": {
       "cs": "Bez serveru nelze spolehlivě ověřit totožnost uživatele ani zabránit předání platného souboru. Přímé adresy současných pěti aplikací jsou chráněny integračním bootstrapem; stejnou vrstvu musí dostat každá budoucí aplikace.",
       "en": "Without a server, user identity cannot be reliably verified and a valid permit file can be shared. Direct URLs of the current five applications are protected by the integration bootstrap; every future application must receive the same layer."
@@ -100,5 +55,6 @@
       "cs": "Centrálně se ukládají pouze schválené anonymní agregace.",
       "en": "Only approved anonymous aggregates are stored centrally."
     }
-  ]
+  ],
+  "applicationPolicySource": "access-policy.json"
 }

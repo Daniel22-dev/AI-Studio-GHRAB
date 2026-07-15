@@ -4,10 +4,8 @@
   "audience": "ai-studio-ghrab",
   "defaultState": "locked",
   "clockSkewSeconds": 300,
-  "maximumPermitDays": 1095,
-  "administratorRoles": [
-    "admin"
-  ],
+  "maximumPermitDays": 400,
+  "administratorRoles": ["admin"],
   "applications": {
     "generator": {
       "trainingRequired": true,
@@ -64,5 +62,7 @@
     "changelog",
     "issuer",
     "access-registry"
-  ]
+  ],
+  "legacyMaximumPermitDays": 1095,
+  "maximumPermitDaysEnforcedAfter": "2026-07-15T00:00:00.000Z"
 }

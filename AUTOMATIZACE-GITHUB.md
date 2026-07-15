@@ -1,8 +1,8 @@
-# Automatizace aktualizací AI Studio GHRAB 0.6.0
+# Automatizace aktualizací AI Studio GHRAB 0.16.5
 
 ## Pravidelná synchronizace
 
-Workflow Studia se jako pojistka spouští každou hodinu v 17. minutě. Načte veřejné manifesty, ověří jejich schema, verzi, HTTPS adresy a pilotní status, provede testy a nasadí pouze ověřený build.
+Workflow Studia se jako pojistka spouští jednou denně ve 3:17 UTC. Načte veřejné manifesty, ověří jejich schema, verzi, HTTPS adresy a pilotní status, provede testy a nasadí pouze ověřený build.
 
 GitHub může plánované workflow v dlouhodobě neaktivním veřejném repozitáři vypnout. Po prázdninové pauze proto zkontrolujte kartu Actions a případně použijte `Run workflow`.
 
