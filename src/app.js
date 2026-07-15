@@ -734,9 +734,50 @@ function selectCoreApps(apps){
 
 let portalLaunchInProgress = false;
 function portalLaunchDelay(){
-  if (matchMedia('(prefers-reduced-motion: reduce)').matches) return 420;
-  if (root.dataset.motion === 'off') return 260;
-  return root.dataset.motion === 'full' ? 2850 : 900;
+  if (matchMedia('(prefers-reduced-motion: reduce)').matches) return 480;
+  if (root.dataset.motion === 'off') return 280;
+  return root.dataset.motion === 'full' ? 3800 : 1100;
+}
+function portalLaunchOverlay(app, delay){
+  const overlay = document.querySelector('#portal-launch-overlay');
+  if (!overlay) return { setPhase: () => {}, finish: () => {} };
+  const icon = overlay.querySelector('#portal-launch-icon');
+  const name = overlay.querySelector('#portal-launch-name');
+  const phase = overlay.querySelector('#portal-launch-phase');
+  const progress = overlay.querySelector('#portal-launch-progress');
+  const skip = overlay.querySelector('#portal-launch-skip');
+  const previousFocus = document.activeElement instanceof HTMLElement ? document.activeElement : null;
+  const escapeHandler = event => { if (event.key === 'Escape' && skip?.onclick) skip.click(); };
+  const accent = app.accent || '#50e8ff';
+  overlay.style.setProperty('--launch-accent', accent);
+  overlay.style.setProperty('--launch-duration', `${delay}ms`);
+  if (icon) { icon.src = app.icon?.startsWith('http') ? app.icon : `${base}${app.icon}`; icon.alt = ''; }
+  if (name) name.textContent = localised(app.name);
+  if (phase) phase.textContent = t('Navoluji souřadnice…', 'Dialling coordinates…');
+  if (progress) { progress.style.transitionDuration = `${Math.max(250, delay - 120)}ms`; progress.style.width = '0%'; }
+  overlay.hidden = false;
+  overlay.setAttribute('aria-hidden', 'false');
+  overlay.dataset.phase = 'dial';
+  document.addEventListener('keydown', escapeHandler);
+  requestAnimationFrame(() => requestAnimationFrame(() => {
+    overlay.classList.add('is-active');
+    if (progress) progress.style.width = '100%';
+    if (delay > 600) skip?.focus({ preventScroll: true });
+  }));
+  const setPhase = (key, cs, en) => {
+    overlay.dataset.phase = key;
+    if (phase) phase.textContent = t(cs, en);
+  };
+  const finish = () => {
+    overlay.classList.remove('is-active');
+    overlay.dataset.phase = 'complete';
+    overlay.setAttribute('aria-hidden', 'true');
+    document.removeEventListener('keydown', escapeHandler);
+    if (skip) skip.onclick = null;
+    previousFocus?.focus?.({ preventScroll: true });
+    window.setTimeout(() => { overlay.hidden = true; }, 520);
+  };
+  return { overlay, skip, setPhase, finish };
 }
 function launchApp(app, article){
   const access = hasAppAccess(app.id);
@@ -748,39 +789,60 @@ function launchApp(app, article){
   }
   if (portalLaunchInProgress) return false;
   portalLaunchInProgress = true;
+  const stage = document.querySelector('.portal-stage');
   const zone = document.querySelector('.portal-core-zone');
   const stateLabel = zone?.querySelector('.portal-state strong');
   const originalLabel = stateLabel?.textContent || '';
   const launchButtons = [...document.querySelectorAll('.portal-launch-button')];
   launchButtons.forEach(button => { button.disabled = true; });
   article.classList.add('is-launch-selected');
+  stage?.classList.add('is-launching');
   zone?.classList.add('is-launching');
+  document.body.classList.add('portal-launch-active');
   const appName = localised(app.name).toUpperCase();
   if (stateLabel) stateLabel.textContent = t(`NAVOLUJI: ${appName}`, `DIALING: ${appName}`);
   const delay = portalLaunchDelay();
+  const cinematic = portalLaunchOverlay(app, delay);
   const phaseTimers = [];
-  const schedulePhase = (after, cs, en) => {
-    if (!stateLabel || after >= delay) return;
-    phaseTimers.push(window.setTimeout(() => { stateLabel.textContent = t(cs, en); }, after));
+  let launchTimer = 0;
+  let completed = false;
+  const schedulePhase = (after, key, cs, en) => {
+    if (after >= delay) return;
+    phaseTimers.push(window.setTimeout(() => {
+      if (stateLabel) stateLabel.textContent = t(cs, en);
+      cinematic.setPhase(key, cs, en);
+    }, after));
   };
-  schedulePhase(720, 'ZAMĚŘUJI SOUŘADNICE', 'CALCULATING COORDINATES');
-  schedulePhase(1550, 'PRSTENCE SE UZAMYKAJÍ', 'RINGS LOCKING');
-  schedulePhase(2380, 'BRÁNA OTEVŘENA', 'GATEWAY OPEN');
-  window.setTimeout(() => {
+  schedulePhase(720, 'target', 'ZAMĚŘUJI CÍLOVOU APLIKACI', 'CALCULATING TARGET');
+  schedulePhase(1580, 'lock', 'PRSTENCE SE UZAMYKAJÍ', 'RINGS LOCKING');
+  schedulePhase(2540, 'open', 'OTEVÍRÁM HORIZONT UDÁLOSTÍ', 'OPENING EVENT HORIZON');
+  schedulePhase(3260, 'transit', 'PŘECHOD DO APLIKACE', 'ENTERING APPLICATION');
+  const cleanup = () => {
     phaseTimers.forEach(timer => window.clearTimeout(timer));
+    window.clearTimeout(launchTimer);
+    cinematic.finish();
+    stage?.classList.remove('is-launching');
+    zone?.classList.remove('is-launching');
+    article.classList.remove('is-launch-selected');
+    launchButtons.forEach(button => { button.disabled = false; });
+    if (stateLabel) stateLabel.textContent = originalLabel;
+    document.body.classList.remove('portal-launch-active');
+    portalLaunchInProgress = false;
+  };
+  const navigate = () => {
+    if (completed) return;
+    completed = true;
+    cinematic.setPhase('complete', 'BRÁNA OTEVŘENA', 'GATEWAY OPEN');
+    if (stateLabel) stateLabel.textContent = t('BRÁNA OTEVŘENA', 'GATEWAY OPEN');
     const opened = window.open('about:blank', '_blank');
     if (opened) {
       try { opened.opener = null; opened.location.replace(app.launchUrl); }
       catch { location.href = app.launchUrl; }
     } else location.href = app.launchUrl;
-    window.setTimeout(() => {
-      zone?.classList.remove('is-launching');
-      article.classList.remove('is-launch-selected');
-      launchButtons.forEach(button => { button.disabled = false; });
-      if (stateLabel) stateLabel.textContent = originalLabel;
-      portalLaunchInProgress = false;
-    }, 650);
-  }, delay);
+    window.setTimeout(cleanup, 720);
+  };
+  if (cinematic.skip) cinematic.skip.onclick = navigate;
+  launchTimer = window.setTimeout(navigate, delay);
   return true;
 }
 function portalAppCard(app, index, permissions){
@@ -791,6 +853,8 @@ function portalAppCard(app, index, permissions){
   article.dataset.position = String(index);
   article.dataset.appId = app.id;
   article.classList.add(`accent-${app.id}`);
+  if (app.accent) article.style.setProperty("--app-accent", app.accent);
+  article.style.setProperty("--card-seed", String(index + 1));
   if (!access.enabled) article.classList.add('is-locked');
   if (favorites.includes(app.id)) article.classList.add('is-favorite');
 
@@ -864,6 +928,8 @@ function renderHomeCards(){
   if (!homeContext) return;
   const { grid, apps, permissions } = homeContext;
   const selection = selectCoreApps(apps);
+  const toolCount = document.querySelector('#portal-tool-count');
+  if (toolCount) toolCount.textContent = String(apps.length);
   grid.replaceChildren(...selection.core.map((app, index) => portalAppCard(app, index, permissions)));
   renderExtraApps(selection.extra);
   renderHomeAccessSummary();
@@ -873,6 +939,8 @@ function renderHomeAccessSummary(){
   if (!host) return;
   const snapshot = getAccessSnapshot();
   const valid = snapshot.valid;
+  const panelValue = document.querySelector('#portal-access-panel-value');
+  if (panelValue) panelValue.textContent = valid ? (isAdmin() ? t('Správce aktivní', 'Admin active') : t('Přístup aktivní', 'Access active')) : t('Uzamčeno', 'Locked');
   host.className = `access-summary ${valid ? 'active' : 'inactive'}`;
   host.replaceChildren();
   const icon = el('span', 'access-summary-icon', valid ? (isAdmin() ? '◆' : '✓') : '🔒');
@@ -928,16 +996,75 @@ function setupPortalMotion(){
   const stage = document.querySelector('.portal-stage');
   if (!stage || stage.dataset.portalMotionReady === 'true') return;
   stage.dataset.portalMotionReady = 'true';
+
+  const cards = () => [...stage.querySelectorAll('.portal-app-card')];
+  const interactive = () => root.dataset.motion === 'full'
+    && matchMedia('(min-width: 901px)').matches
+    && matchMedia('(pointer: fine)').matches;
+
+  const resetCard = card => {
+    card?.style.setProperty('--card-tilt-x', '0deg');
+    card?.style.setProperty('--card-tilt-y', '0deg');
+    card?.style.setProperty('--card-shift-x', '0px');
+    card?.style.setProperty('--card-shift-y', '0px');
+    card?.style.setProperty('--card-glow-x', '50%');
+    card?.style.setProperty('--card-glow-y', '50%');
+    card?.classList.remove('is-cinematic-active');
+  };
+
   const reset = () => {
     stage.style.setProperty('--portal-tilt-x', '0deg');
     stage.style.setProperty('--portal-tilt-y', '0deg');
     stage.style.setProperty('--portal-shift-x', '0px');
     stage.style.setProperty('--portal-shift-y', '0px');
+    stage.style.setProperty('--portal-glow-x', '50%');
+    stage.style.setProperty('--portal-glow-y', '42%');
+    cards().forEach(resetCard);
   };
-  reset();
-  document.addEventListener('ghrab:motion', reset);
-}
 
+  const updateCard = (card, clientX, clientY) => {
+    const rect = card.getBoundingClientRect();
+    if (!rect.width || !rect.height) return;
+    const px = (clientX - rect.left) / rect.width;
+    const py = (clientY - rect.top) / rect.height;
+    const rx = (0.5 - py) * 12;
+    const ry = (px - 0.5) * 16;
+    card.style.setProperty('--card-tilt-x', `${rx.toFixed(2)}deg`);
+    card.style.setProperty('--card-tilt-y', `${ry.toFixed(2)}deg`);
+    card.style.setProperty('--card-shift-x', `${((px - 0.5) * 10).toFixed(2)}px`);
+    card.style.setProperty('--card-shift-y', `${((py - 0.5) * 6).toFixed(2)}px`);
+    card.style.setProperty('--card-glow-x', `${(px * 100).toFixed(2)}%`);
+    card.style.setProperty('--card-glow-y', `${(py * 100).toFixed(2)}%`);
+    card.classList.add('is-cinematic-active');
+  };
+
+  const handleMove = event => {
+    if (!interactive()) { reset(); return; }
+    const rect = stage.getBoundingClientRect();
+    if (!rect.width || !rect.height) return;
+    const px = (event.clientX - rect.left) / rect.width;
+    const py = (event.clientY - rect.top) / rect.height;
+    const tiltX = (0.5 - py) * 7.5;
+    const tiltY = (px - 0.5) * 11;
+    stage.style.setProperty('--portal-tilt-x', `${tiltX.toFixed(2)}deg`);
+    stage.style.setProperty('--portal-tilt-y', `${tiltY.toFixed(2)}deg`);
+    stage.style.setProperty('--portal-shift-x', `${((px - 0.5) * 18).toFixed(2)}px`);
+    stage.style.setProperty('--portal-shift-y', `${((py - 0.5) * 12).toFixed(2)}px`);
+    stage.style.setProperty('--portal-glow-x', `${(px * 100).toFixed(2)}%`);
+    stage.style.setProperty('--portal-glow-y', `${(py * 100).toFixed(2)}%`);
+    cards().forEach(card => updateCard(card, event.clientX, event.clientY));
+  };
+
+  stage.addEventListener('pointermove', handleMove, { passive: true });
+  stage.addEventListener('pointerdown', handleMove, { passive: true });
+  stage.addEventListener('pointerleave', reset);
+  addEventListener('resize', reset, { passive: true });
+  document.addEventListener('ghrab:motion', reset);
+  document.addEventListener('ghrab:favorites', () => requestAnimationFrame(reset));
+  document.addEventListener('ghrab:access-changed', () => requestAnimationFrame(reset));
+  document.addEventListener('ghrab:language', () => requestAnimationFrame(reset));
+  reset();
+}
 function setupStarfield(){
   const canvas = document.querySelector('#starfield');
   if (!canvas) return;

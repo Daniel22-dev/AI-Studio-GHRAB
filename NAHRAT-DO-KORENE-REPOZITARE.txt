@@ -1,5 +1,10 @@
-AI Studio GHRAB 0.8.0
+AI Studio GHRAB 0.16.0
 
 Rozbalte ZIP a nahrajte VEŠKERÝ OBSAH této složky přímo do kořene repozitáře AI-Studio-GHRAB.
 Nenahrávejte nadřazenou složku jako další vnořenou složku.
-Po nasazení proveďte tvrdé obnovení stránky nebo ukončete a znovu spusťte nainstalovanou PWA, aby se načetla nová brána.
+
+Doporučená zpráva commitu:
+v0.16.0 – filmové spuštění, holografické panely a režim projekce
+
+Po zeleném dokončení GitHub Actions proveďte Ctrl + F5 nebo úplně ukončete a znovu spusťte nainstalovanou PWA.
+Původní balíček 0.14.4 ponechte jako nedotčenou zálohu pro případný návrat.

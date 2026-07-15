@@ -1,5 +1,18 @@
 # Changelog
 
+## 0.16.0 — filmové spuštění, holografické panely a režim projekce
+- celoplošná aktivační sekvence při spuštění aplikace se čtyřmi fázemi a možností přeskočení,
+- další lehké holografické panely pouze na domovské scéně pro PC,
+- režim projekce na celou obrazovku s velkou typografií a klávesovým ovládáním,
+- poznámky řečníka v samostatném okně, které sleduje právě promítaný krok,
+- náročnější efekty zůstávají omezené na domovskou bránu a prezentaci; administrativní a pracovní stránky se nezpomalují,
+- zachovány úsporné a vypnuté varianty animací.
+
+## 0.15.0 — desktopová filmová holografická brána
+- prostorové pozadí, digitální podlaha a světelné vrstvy domovské scény,
+- jemná paralaxa centrální brány a karet podle pohybu kurzoru na PC,
+- automatické zjednodušení na mobilu a při omezeném pohybu.
+
 ## 0.14.4 — jednotná navigace správcovských nástrojů
 - Evidence přístupů a Vydání přístupu mají opět kompletní horní menu AI Studia,
 - při práci v těchto nástrojích zůstává zvýrazněná záložka **Správa**,

@@ -138,8 +138,9 @@ if(!mainAppText.includes('portalLaunchInProgress')||!mainAppText.includes("zone?
 const portalHomeHtml=await readFile(path.join(src,'index.html'),'utf8');
 const portalPolishText=await readFile(path.join(src,'polish.css'),'utf8');
 if(!portalHomeHtml.includes('portal-ring-assembly')||!portalHomeHtml.includes('portal-mechanical-ring ring-outer')||!portalHomeHtml.includes('portal-lock-sequence'))fail('Brána nemá samostatné obrazové vrstvy mechanických prstenců a zámků.');
+if(!portalHomeHtml.includes('portal-launch-overlay')||!portalHomeHtml.includes('portal-floating-panels')||!portalHomeHtml.includes('portal-tool-count'))fail('Domovská stránka nemá filmovou spouštěcí vrstvu nebo holografické panely.');
 if(!portalPolishText.includes('@keyframes gateway-ring-outer-dial')||!portalPolishText.includes('@keyframes gateway-ring-middle-dial')||!portalPolishText.includes('@keyframes gateway-ring-inner-dial')||!portalPolishText.includes('@keyframes gateway-lock-node'))fail('Chybí mechanické navolování prstenců nebo sekvenční zámky brány.');
-if(!mainAppText.includes("schedulePhase(1550, 'PRSTENCE SE UZAMYKAJÍ'")||!mainAppText.includes("root.dataset.motion === 'full' ? 2850 : 900"))fail('Stavový průběh nebo časování nové brány není zapojeno.');
+if(!mainAppText.includes("schedulePhase(1580, 'lock', 'PRSTENCE SE UZAMYKAJÍ'")||!mainAppText.includes("root.dataset.motion === 'full' ? 3800 : 1100")||!mainAppText.includes('portalLaunchOverlay(app, delay)'))fail('Filmový stavový průběh nebo časování nové brány není zapojeno.');
 if(!mainAppText.includes('refreshSharedAccessModuleCache')||!mainAppText.includes('/AI-Studio-GHRAB/access/app-guard.js')||!mainAppText.includes('/AI-Studio-GHRAB/access/error-reporter.js')||!mainAppText.includes('cache.delete(request)'))fail('Studio nema jednorazove odstraneni starych kopii sdilenych modulu z PWA cache.');
 const errorReporterText=await readFile(path.join(src,'access/error-reporter.js'),'utf8');
 const errorReporterCss=await readFile(path.join(src,'access/error-reporter.css'),'utf8');
@@ -147,6 +148,9 @@ const errorGuideHtml=await readFile(path.join(src,'manualy/error-report.html'),'
 if(!errorReporterText.includes('getDisplayMedia')||!errorReporterText.includes('MAX_SCREENSHOTS = 5')||!errorReporterText.includes('makeZip(entries)')||!errorReporterText.includes('Začernit údaje')||!errorReporterText.includes('balaz@ghrabuvka.cz'))fail('Jednotné hlášení chyb nemá snímání, více snímků, ZIP, redakci nebo e-mail správce.');
 if(!errorReporterText.includes('safePageUrl')||!errorReporterText.includes('location.pathname')||errorReporterText.includes('location.href, language'))fail('Technické údaje hlášení mohou obsahovat citlivé query parametry URL.');
 if(!errorReporterCss.includes('.ghrab-report-button.launcher')||!errorGuideHtml.includes('Jak poslat správci srozumitelné hlášení')||!errorGuideHtml.includes('Začerněte citlivé údaje'))fail('Chybí vzhled reporteru nebo úplný interaktivní návod k hlášení chyby.');
+const demoPageText=await readFile(path.join(src,'demo/index.html'),'utf8');
+const demoScriptText=await readFile(path.join(src,'demo/demo.js'),'utf8');
+if(!demoPageText.includes('demo-presentation')||!demoPageText.includes('demo-notes-window')||!demoPageText.includes('presentation-hud')||!demoScriptText.includes('buildNotesWindow')||!demoScriptText.includes("root.dataset.presentationMode")||!demoScriptText.includes('requestFullscreen'))fail('Prezentační stránka nemá režim projekce nebo oddělené poznámky řečníka.');
 const pilotPageText=await readFile(path.join(src,'pilot/index.html'),'utf8');
 const pilotScriptText=await readFile(path.join(src,'pilot/pilot.js'),'utf8');
 if(/reportedMinutes|rating|učitelem vykázan/i.test(pilotPageText+pilotScriptText))fail('Pilot stále obsahuje ruční vykazování času nebo užitečnosti.');

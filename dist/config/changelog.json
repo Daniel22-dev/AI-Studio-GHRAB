@@ -1,7 +1,63 @@
 {
   "schema": "ai-studio-changelog-v1",
-  "current": "0.14.4",
+  "current": "0.16.0",
   "items": [
+    {
+      "version": "0.16.0",
+      "date": "2026-07-15",
+      "title": {
+        "cs": "Filmové spuštění, holografické panely a režim projekce",
+        "en": "Cinematic launch, holographic panels and presentation mode"
+      },
+      "changes": [
+        {
+          "cs": "Spuštění aplikace nyní používá celoplošnou filmovou sekvenci s navolením cíle, uzamčením prstenců, otevřením horizontu událostí a průletem do aplikace.",
+          "en": "Application launch now uses a full-screen cinematic sequence with target acquisition, ring locking, event-horizon opening and transit into the application."
+        },
+        {
+          "cs": "Domovská scéna na počítači získala další lehké holografické panely s rychlým přístupem k ekosystému, materiálům, bezpečnosti, manuálům a projekčnímu režimu.",
+          "en": "The desktop home scene gained additional lightweight holographic panels with quick access to the ecosystem, resources, safety, manuals and presentation mode."
+        },
+        {
+          "cs": "Prezentační stránka má nový režim projekce na celou obrazovku s velkou typografií, čistým plátnem, ovládáním klávesami a přehledovým panelem.",
+          "en": "The presentation page now has a full-screen audience mode with large typography, a clean canvas, keyboard control and a compact status bar."
+        },
+        {
+          "cs": "Poznámky řečníka lze otevřít v samostatném okně na vlastním monitoru; automaticky sledují aktuální krok a nejsou viditelné publiku na projektoru.",
+          "en": "Speaker notes can be opened in a separate window on the presenter’s own screen; they follow the current step automatically and remain hidden from the projected audience."
+        },
+        {
+          "cs": "Náročnější 3D efekty zůstávají pouze na domovské bráně a v prezentačním režimu. Správa, evidence, formuláře a pracovní stránky zůstávají rychlé a věcné.",
+          "en": "Heavier 3D effects remain limited to the home gateway and presentation mode. Administration, registries, forms and work pages remain fast and practical."
+        }
+      ]
+    },
+    {
+      "version": "0.15.0",
+      "date": "2026-07-15",
+      "title": {
+        "cs": "Desktopová filmová holografická brána",
+        "en": "Desktop cinematic holographic gateway"
+      },
+      "changes": [
+        {
+          "cs": "Domovská obrazovka Studia byla přepracována do výrazně prostorovějšího 3D rozhraní s hloubkou scény, holografickým pozadím a výraznějším světelným prostředím kolem centrální brány.",
+          "en": "The home screen was redesigned into a more spatial 3D interface with scene depth, a holographic background and stronger ambient lighting around the central gateway."
+        },
+        {
+          "cs": "Na počítači nyní celá hlavní scéna reaguje na pohyb kurzoru jemným náklonem a paralaxou; jednotlivé karty aplikací dostaly vlastní mikro-pohyb a živější světelný odlesk.",
+          "en": "On desktop, the main scene now reacts to the cursor with subtle tilt and parallax; application cards gained their own micro-motion and more vivid light reflections."
+        },
+        {
+          "cs": "Byla doplněna informační lišta zdůrazňující prémiový charakter rozhraní a jeho optimalizaci pro práci na PC.",
+          "en": "An information strip was added to emphasise the premium interface feel and its desktop-first optimisation."
+        },
+        {
+          "cs": "Mobilní a úsporné režimy zůstaly zachovány; nové prostorové efekty se automaticky zjednoduší na menších zařízeních nebo při omezeném pohybu.",
+          "en": "Mobile and reduced-motion modes remain intact; the new spatial effects automatically simplify on smaller devices or when motion is reduced."
+        }
+      ]
+    },
     {
       "version": "0.14.4",
       "date": "2026-07-14",
