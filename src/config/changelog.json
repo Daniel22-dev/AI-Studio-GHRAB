@@ -1,7 +1,29 @@
 {
   "schema": "ai-studio-changelog-v1",
-  "current": "0.16.5",
+  "current": "0.16.6",
   "items": [
+    {
+      "version": "0.16.6",
+      "date": "2026-07-15",
+      "title": {
+        "cs": "Oprava zaseknutého GitHub buildu",
+        "en": "Fixed stalled GitHub build"
+      },
+      "changes": [
+        {
+          "cs": "Soubor package-lock.json nyní odkazuje na veřejný registr npm namísto interní adresy vývojového prostředí, která nebyla dostupná na GitHub Actions.",
+          "en": "package-lock.json now points to the public npm registry instead of an internal development-environment address unavailable to GitHub Actions."
+        },
+        {
+          "cs": "Workflow výslovně nastavuje veřejný npm registr, používá cache závislostí a vypíná zbytečný audit a funding dotazy během instalace.",
+          "en": "The workflow explicitly sets the public npm registry, caches dependencies and disables unnecessary audit and funding requests during installation."
+        },
+        {
+          "cs": "Krok instalace závislostí má časový limit, takže se při síťovém problému nemůže neomezeně točit.",
+          "en": "The dependency installation step now has a timeout so it cannot spin indefinitely during a network problem."
+        }
+      ]
+    },
     {
       "version": "0.16.5",
       "date": "2026-07-15",

@@ -1,13 +1,11 @@
 # AI Studio GHRAB
 
-**Verze 0.16.5 – federovaný serverless portál pěti chráněných školních aplikací s mechanicky animovanou hvězdnou bránou, řízeným přístupem, pilotním měřením a diagnostickým hlášením chyb.**
+**Verze 0.16.6 – federovaný serverless portál pěti chráněných školních aplikací s mechanicky animovanou hvězdnou bránou, řízeným přístupem, pilotním měřením a diagnostickým hlášením chyb.**
 
 AI Studio GHRAB je centrální brána školních digitálních a AI nástrojů. Jednotlivé aplikace zůstávají v samostatných repozitářích; Studio zajišťuje společnou navigaci, Top 4, synchronizaci verzí, bezpečnostní rámec, pracovní materiály, pilotní měření a správu podepsaných přístupů.
 
-## Hlavní novinky 0.16.5
+## Hlavní novinky 0.16.6
 
-- spouštění aplikací používá elegantní prémiovou celoplošnou sekvenci, ale běžné pracovní části zůstávají bez zdržujících efektů,
-- podporované prohlížeče na PC nabízejí instalaci AI Studia jako samostatné aplikace vpravo dole,
 - povinné školení se nyní kontroluje technicky včetně přesné verze,
 - veřejné klíče používají sadu klíčů pro bezpečnou rotaci s překryvem,
 - platnost oprávnění je omezena na 400 dní,
@@ -45,7 +43,7 @@ Ochranný bootstrap je integrován v Generátoru 7.1.0, Diferenciátoru 1.2.0, H
 2. LUDUS 1.15.0.
 3. Školní aplikace: Diferenciátor 1.2.0 a Korespondenční asistent 5.1.0.
 4. Hodnotitel maturitních slohů 1.4.0.
-5. AI Studio GHRAB 0.16.5 jako poslední.
+5. AI Studio GHRAB 0.16.6 jako poslední.
 
 Po zeleném nasazení zavřete staré otevřené karty Studia a znovu je otevřete. Nová verze service workeru se aktivuje až po bezpečném ukončení staré relace; rutinní `Ctrl + F5` už není součástí standardního postupu.
 

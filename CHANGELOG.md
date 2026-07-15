@@ -2,6 +2,14 @@
 
 > Tento soubor se generuje ze `src/config/changelog.json`. Neupravujte jej ručně.
 
+## 0.16.6 — 2026-07-15
+
+**Oprava zaseknutého GitHub buildu**
+
+- Soubor package-lock.json nyní odkazuje na veřejný registr npm namísto interní adresy vývojového prostředí, která nebyla dostupná na GitHub Actions.
+- Workflow výslovně nastavuje veřejný npm registr, používá cache závislostí a vypíná zbytečný audit a funding dotazy během instalace.
+- Krok instalace závislostí má časový limit, takže se při síťovém problému nemůže neomezeně točit.
+
 ## 0.16.5 — 2026-07-15
 
 **Elegantní prémiové spuštění, instalace na PC a převzetí auditních oprav**
