@@ -2,6 +2,16 @@
 
 > Tento soubor se generuje ze `src/config/changelog.json`. Neupravujte jej ručně.
 
+## 0.18.0 — 2026-07-17
+
+**Prezentační režim, interní manuály a prémiový start**
+
+- Úvodní portál se při desktopové prezentaci a F11 automaticky přizpůsobí tak, aby název, brána a čtyři hlavní aplikace zůstaly současně viditelné.
+- V prezentačním režimu se dočasně skryje instalační nabídka PWA, aby nepřekrývala pravou dolní aplikační kartu.
+- Interaktivní manuály aplikací se ve vestavěném pracovním prostoru otevírají ve stejném rámci místo nové internetové karty.
+- Desktopový start AI Studia dostal krátké prémiové intro s možností okamžitého přeskočení.
+- Registry aplikací byly sjednoceny s opravnými verzemi Generátor 7.1.4, Diferenciátor 1.3.2, Hodnotitel 1.5.2, Korespondenční asistent 5.2.2 a LUDUS 1.16.3.
+
 ## 0.17.5 — 2026-07-17
 
 **Hodnotitel 1.5.1 a GHRAB QA Standard 1.0.2**

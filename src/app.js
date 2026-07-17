@@ -1877,6 +1877,54 @@ function setupPwaInstallPrompt() {
   });
 }
 
+function updatePresentationFit() {
+  if (page !== "home") return;
+  const compactPresentation = innerWidth >= 1024 && innerHeight <= 980;
+  root.classList.toggle("presentation-fit", compactPresentation);
+}
+
+function setupStartupIntro() {
+  if (page !== "home") return;
+  const intro = document.querySelector("#studio-startup-intro");
+  const skip = document.querySelector("#studio-startup-skip");
+  if (
+    !intro ||
+    !skip ||
+    matchMedia("(max-width: 899px)").matches ||
+    detectedMotionMode() === "off"
+  )
+    return;
+  const key = `ghrab.startup-intro.${VERSION}`;
+  try {
+    if (sessionStorage.getItem(key) === "seen") return;
+  } catch {
+    /* continue */
+  }
+  let closed = false;
+  let timer = 0;
+  const close = () => {
+    if (closed) return;
+    closed = true;
+    clearTimeout(timer);
+    intro.classList.add("is-leaving");
+    try {
+      sessionStorage.setItem(key, "seen");
+    } catch {
+      /* optional */
+    }
+    setTimeout(() => {
+      intro.hidden = true;
+      intro.setAttribute("aria-hidden", "true");
+      intro.classList.remove("is-active", "is-leaving");
+    }, 520);
+  };
+  intro.hidden = false;
+  intro.setAttribute("aria-hidden", "false");
+  requestAnimationFrame(() => intro.classList.add("is-active"));
+  skip.addEventListener("click", close, { once: true });
+  timer = setTimeout(close, 3300);
+}
+
 async function registerPwa() {
   if ("serviceWorker" in navigator) {
     try {
@@ -2001,12 +2049,15 @@ window.GHRAB = {
   accessReady,
 };
 setupChrome();
+updatePresentationFit();
+addEventListener("resize", updatePresentationFit);
 applyTheme();
 applyLanguage();
 applyMotion();
 renderHome();
 setupPortalMotion();
 setupStarfield();
+setupStartupIntro();
 refreshSharedAccessModuleCache();
 setupPwaInstallPrompt();
 registerPwa();

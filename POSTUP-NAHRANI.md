@@ -1,6 +1,7 @@
 # Přesný postup nahrání AI Studio GHRAB 0.15.0 na GitHub
 
-**Aktuální verze: 0.17.5**
+**Aktuální verze: 0.18.0**
+**Aktuální verze: 0.18.0**
 
 ## Doporučené pořadí
 

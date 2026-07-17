@@ -49,6 +49,56 @@ function stopEmbeddedPolishObserver() {
   embeddedObserver = null;
 }
 
+function keepManualsInsideWorkspace() {
+  let doc;
+  try {
+    doc = frame.contentDocument;
+  } catch {
+    return;
+  }
+  if (!doc?.documentElement) return;
+  const updateLinks = (rootNode = doc) => {
+    rootNode
+      .querySelectorAll?.(
+        'a[href*="/manual/"], a[href$="/manual"], a.manual-launch-btn',
+      )
+      .forEach((link) => {
+        link.setAttribute("target", "_self");
+        link.removeAttribute("rel");
+        link.dataset.ghrabManualInternal = "true";
+      });
+  };
+  updateLinks();
+  if (!doc.documentElement.dataset.ghrabManualGuard) {
+    doc.documentElement.dataset.ghrabManualGuard = "true";
+    doc.addEventListener(
+      "click",
+      (event) => {
+        const link = event.target.closest?.(
+          'a[href*="/manual/"], a[href$="/manual"], a.manual-launch-btn',
+        );
+        if (!link) return;
+        const url = new URL(
+          link.getAttribute("href") || "./manual/",
+          doc.baseURI,
+        );
+        if (url.origin !== location.origin) return;
+        event.preventDefault();
+        doc.defaultView.location.assign(url.href);
+      },
+      true,
+    );
+    const observer = new MutationObserver((records) => {
+      records.forEach((record) =>
+        record.addedNodes.forEach((node) => {
+          if (node.nodeType === Node.ELEMENT_NODE) updateLinks(node);
+        }),
+      );
+    });
+    observer.observe(doc.documentElement, { childList: true, subtree: true });
+  }
+}
+
 function applyEvaluatorEmbeddedPolish() {
   stopEmbeddedPolishObserver();
   if (currentApp?.id !== "essay-evaluator") return;
@@ -211,6 +261,7 @@ function setApp(app) {
 frame.addEventListener("load", () => {
   window.clearTimeout(loadTimeout);
   applyEvaluatorEmbeddedPolish();
+  keepManualsInsideWorkspace();
   loading.hidden = true;
   frame.hidden = false;
   frame.classList.add("is-ready");

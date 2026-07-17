@@ -22,6 +22,52 @@
   <body data-page="home">
     <canvas id="starfield" class="starfield" aria-hidden="true"></canvas>
     <div
+      id="studio-startup-intro"
+      class="studio-startup-intro"
+      hidden
+      aria-hidden="true"
+      role="dialog"
+      aria-modal="true"
+      aria-labelledby="studio-startup-title"
+    >
+      <div class="studio-startup-grid" aria-hidden="true"></div>
+      <div class="studio-startup-core">
+        <div class="studio-startup-gateway" aria-hidden="true">
+          <span class="startup-ring startup-ring-a"></span
+          ><span class="startup-ring startup-ring-b"></span
+          ><span class="startup-ring startup-ring-c"></span>
+          <span class="startup-beam"></span>
+          <img src="./assets/brand/brand-mark.svg" alt="" />
+        </div>
+        <p
+          class="eyebrow"
+          data-cs="ŠKOLNÍ AI EKOSYSTÉM"
+          data-en="SCHOOL AI ECOSYSTEM"
+        >
+          ŠKOLNÍ AI EKOSYSTÉM
+        </p>
+        <h1 id="studio-startup-title">AI Studio <span>GHRAB</span></h1>
+        <p
+          class="studio-startup-copy"
+          data-cs="Inicializuji bezpečný pracovní prostor a připravuji aplikace…"
+          data-en="Initialising the secure workspace and preparing applications…"
+        >
+          Inicializuji bezpečný pracovní prostor a připravuji aplikace…
+        </p>
+        <div class="studio-startup-progress" aria-hidden="true">
+          <span></span>
+        </div>
+        <button
+          id="studio-startup-skip"
+          type="button"
+          data-cs="Přejít do Studia"
+          data-en="Enter Studio"
+        >
+          Přejít do Studia
+        </button>
+      </div>
+    </div>
+    <div
       id="portal-launch-overlay"
       class="portal-launch-overlay premium-launch-overlay"
       hidden

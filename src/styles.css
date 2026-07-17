@@ -3409,3 +3409,291 @@ html[data-motion="off"] .premium-launch-content {
     transition-duration: 0.01ms !important;
   }
 }
+
+/* Desktop startup sequence */
+.studio-startup-intro {
+  position: fixed;
+  inset: 0;
+  z-index: 500;
+  display: grid;
+  place-items: center;
+  overflow: hidden;
+  background:
+    radial-gradient(
+      circle at 50% 48%,
+      rgba(27, 118, 169, 0.24),
+      transparent 27%
+    ),
+    radial-gradient(circle at 50% 50%, #06172a 0, #020814 55%, #01040a 100%);
+  opacity: 0;
+  transition: opacity 0.45s ease;
+}
+.studio-startup-intro[hidden] {
+  display: none;
+}
+.studio-startup-intro.is-active {
+  opacity: 1;
+}
+.studio-startup-intro.is-leaving {
+  opacity: 0;
+  pointer-events: none;
+}
+.studio-startup-grid {
+  position: absolute;
+  inset: -20%;
+  background-image:
+    linear-gradient(rgba(80, 232, 255, 0.06) 1px, transparent 1px),
+    linear-gradient(90deg, rgba(80, 232, 255, 0.06) 1px, transparent 1px);
+  background-size: 54px 54px;
+  transform: perspective(700px) rotateX(64deg) translateY(33%);
+  mask-image: radial-gradient(circle, #000 0, transparent 69%);
+  animation: startup-grid 3.2s ease-out both;
+}
+.studio-startup-core {
+  position: relative;
+  z-index: 2;
+  width: min(760px, 88vw);
+  text-align: center;
+  display: grid;
+  justify-items: center;
+}
+.studio-startup-gateway {
+  position: relative;
+  width: min(330px, 34vh);
+  aspect-ratio: 1;
+  display: grid;
+  place-items: center;
+  margin-bottom: -2px;
+  filter: drop-shadow(0 0 42px rgba(80, 232, 255, 0.24));
+}
+.studio-startup-gateway img {
+  width: 33%;
+  position: relative;
+  z-index: 5;
+  opacity: 0;
+  transform: scale(0.5);
+  animation: startup-mark 1.1s 0.85s cubic-bezier(0.16, 1, 0.3, 1) forwards;
+}
+.startup-ring {
+  position: absolute;
+  border-radius: 50%;
+  border: 1px solid rgba(94, 235, 255, 0.5);
+  box-shadow:
+    0 0 22px rgba(80, 232, 255, 0.17),
+    inset 0 0 22px rgba(80, 232, 255, 0.1);
+}
+.startup-ring-a {
+  inset: 2%;
+  border-width: 2px;
+  animation: spin 8s linear infinite;
+}
+.startup-ring-b {
+  inset: 15%;
+  border-color: rgba(169, 117, 255, 0.6);
+  animation: spin-reverse 5.8s linear infinite;
+}
+.startup-ring-c {
+  inset: 29%;
+  border-style: dashed;
+  animation: spin 3.8s linear infinite;
+}
+.startup-beam {
+  position: absolute;
+  inset: 44% -65%;
+  height: 12%;
+  background: linear-gradient(
+    90deg,
+    transparent,
+    rgba(80, 232, 255, 0.07),
+    rgba(255, 255, 255, 0.48),
+    rgba(80, 232, 255, 0.07),
+    transparent
+  );
+  filter: blur(9px);
+  opacity: 0;
+  animation: startup-beam 1.4s 0.55s ease-out forwards;
+}
+.studio-startup-core .eyebrow {
+  margin-top: 4px;
+  opacity: 0;
+  animation: startup-rise 0.7s 1.15s ease-out forwards;
+}
+.studio-startup-core h1 {
+  font-size: clamp(2.6rem, 6vw, 5.4rem);
+  line-height: 0.95;
+  margin: 4px 0 10px;
+  letter-spacing: -0.055em;
+  opacity: 0;
+  transform: translateY(18px);
+  animation: startup-rise 0.8s 1.3s ease-out forwards;
+}
+.studio-startup-core h1 span {
+  background: linear-gradient(110deg, #7df5ff, #29bff0 48%, #b985ff);
+  background-clip: text;
+  -webkit-background-clip: text;
+  color: transparent;
+}
+.studio-startup-copy {
+  color: #cce2ed;
+  margin: 0;
+  letter-spacing: 0.035em;
+  opacity: 0;
+  animation: startup-rise 0.7s 1.48s ease-out forwards;
+}
+.studio-startup-progress {
+  width: min(440px, 68vw);
+  height: 3px;
+  margin-top: 24px;
+  border-radius: 999px;
+  overflow: hidden;
+  background: rgba(255, 255, 255, 0.1);
+  opacity: 0;
+  animation: startup-rise 0.5s 1.55s ease-out forwards;
+}
+.studio-startup-progress span {
+  display: block;
+  height: 100%;
+  width: 100%;
+  transform-origin: left;
+  transform: scaleX(0);
+  background: linear-gradient(90deg, #50e8ff, #8c6fff, #fff);
+  box-shadow: 0 0 18px #50e8ff;
+  animation: startup-progress 1.65s 1.45s cubic-bezier(0.25, 0.8, 0.25, 1)
+    forwards;
+}
+.studio-startup-core button {
+  margin-top: 18px;
+  padding: 9px 18px;
+  border: 1px solid rgba(116, 245, 255, 0.32);
+  border-radius: 999px;
+  color: #bfeaf2;
+  background: rgba(4, 19, 34, 0.62);
+  opacity: 0;
+  animation: startup-rise 0.6s 1.7s ease-out forwards;
+}
+@keyframes startup-grid {
+  from {
+    opacity: 0;
+    transform: perspective(700px) rotateX(64deg) translateY(45%) scale(1.15);
+  }
+  to {
+    opacity: 1;
+    transform: perspective(700px) rotateX(64deg) translateY(33%) scale(1);
+  }
+}
+@keyframes startup-mark {
+  to {
+    opacity: 1;
+    transform: scale(1);
+  }
+}
+@keyframes startup-beam {
+  0% {
+    opacity: 0;
+    transform: scaleX(0.1);
+  }
+  45% {
+    opacity: 1;
+  }
+  100% {
+    opacity: 0.25;
+    transform: scaleX(1);
+  }
+}
+@keyframes startup-rise {
+  to {
+    opacity: 1;
+    transform: none;
+  }
+}
+@keyframes startup-progress {
+  to {
+    transform: scaleX(1);
+  }
+}
+
+/* Presentation fit: browser F11 does not always expose Fullscreen API, therefore viewport height is also used. */
+@media (min-width: 1024px) and (max-height: 980px) {
+  html.presentation-fit .portal-hero {
+    padding: 18px 0 12px;
+  }
+  html.presentation-fit .portal-title .eyebrow {
+    margin-bottom: 4px;
+    font-size: 0.65rem;
+  }
+  html.presentation-fit .portal-title h1 {
+    font-size: clamp(2.7rem, 7vh, 4.75rem);
+    line-height: 0.9;
+  }
+  html.presentation-fit .portal-subtitle {
+    margin-top: 9px;
+    font-size: 0.96rem;
+    max-width: 720px;
+  }
+  html.presentation-fit .portal-stage {
+    min-height: min(600px, calc(100vh - 228px));
+    height: calc(100vh - 228px);
+    margin-top: 10px;
+    grid-template-columns: minmax(250px, 1fr) minmax(330px, 410px) minmax(
+        250px,
+        1fr
+      );
+    grid-template-rows: repeat(2, minmax(0, 1fr));
+    gap: 14px 28px;
+  }
+  html.presentation-fit .portal-core-zone {
+    width: min(100%, 410px);
+  }
+  html.presentation-fit .portal-app-card {
+    min-height: 0;
+    height: 100%;
+    padding: 14px 16px;
+    border-radius: 21px;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+  }
+  html.presentation-fit .portal-app-icon {
+    width: 46px;
+    height: 46px;
+    border-radius: 13px;
+  }
+  html.presentation-fit .portal-app-card h2 {
+    font-size: 1.06rem;
+    margin: 9px 0 3px;
+  }
+  html.presentation-fit .portal-app-card p {
+    font-size: 0.79rem;
+    line-height: 1.32;
+    display: -webkit-box;
+    -webkit-line-clamp: 2;
+    -webkit-box-orient: vertical;
+    overflow: hidden;
+  }
+  html.presentation-fit .portal-card-meta {
+    margin-top: 8px;
+    gap: 5px;
+  }
+  html.presentation-fit .portal-card-meta .chip {
+    font-size: 0.62rem;
+    padding: 4px 7px;
+  }
+  html.presentation-fit .portal-card-actions {
+    margin-top: 8px;
+  }
+  html.presentation-fit .portal-state {
+    padding: 6px 10px;
+    font-size: 0.58rem;
+  }
+  html.presentation-fit .pwa-install-card {
+    display: none !important;
+  }
+}
+@media (prefers-reduced-motion: reduce) {
+  .studio-startup-intro * {
+    animation: none !important;
+  }
+  .studio-startup-intro {
+    display: none !important;
+  }
+}
