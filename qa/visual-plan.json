@@ -5,7 +5,10 @@
       "name": "Hlavní hvězdná brána a katalog",
       "url": "/index.html",
       "expectedText": "AI Studio GHRAB",
-      "mustVisible": ["main#main", "h1"],
+      "mustVisible": [
+        "main#main",
+        ".portal-title h1"
+      ],
       "viewports": [
         {
           "width": 360,
@@ -27,6 +30,17 @@
           "width": 1920,
           "height": 1080
         }
+      ],
+      "steps": [
+        {
+          "action": "clickIfVisible",
+          "selector": "#studio-startup-skip",
+          "timeout": 5000
+        },
+        {
+          "action": "wait",
+          "ms": 650
+        }
       ]
     },
     {
@@ -34,7 +48,9 @@
       "name": "Správa přístupu",
       "url": "/access/index.html",
       "expectedText": "AI Studio GHRAB",
-      "mustVisible": ["body"],
+      "mustVisible": [
+        "body"
+      ],
       "viewports": [
         {
           "width": 360,
@@ -51,7 +67,9 @@
       "name": "Automatizace a synchronizace",
       "url": "/automation/index.html",
       "expectedText": "pouze správci AI Studia",
-      "mustVisible": ["body"],
+      "mustVisible": [
+        "body"
+      ],
       "viewports": [
         {
           "width": 412,
