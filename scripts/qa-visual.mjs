@@ -280,7 +280,7 @@ async function inspectPage(page, scenario) {
 
 let browser;
 let runsInBrowser = 0;
-const maxRunsPerBrowser = Number(process.env.GHRAB_VISUAL_BROWSER_BATCH || 4);
+const maxRunsPerBrowser = Number(process.env.GHRAB_VISUAL_BROWSER_BATCH || 1);
 
 function isTransientBrowserError(error) {
   return /Target (?:page|context|browser).*closed|has been closed|browserContext\.newPage|browser.*disconnected|Browser closed|crash/i.test(
@@ -367,6 +367,16 @@ async function runVisualCase(scenario, viewport) {
         route.fulfill({ status: 200, contentType: "text/css", body: "" }),
       );
 
+      if (scenario.id === "studio-home") {
+        await page.addInitScript(
+          ({ version }) => {
+            try {
+              sessionStorage.setItem(`ghrab.startup-intro.${version}`, "seen");
+            } catch {}
+          },
+          { version: manifest.version },
+        );
+      }
       await setLocalDocument(page, serveRoot, scenario.url, baseUrl);
       for (const step of scenario.steps || []) {
         if (step.action === "wait") await page.waitForTimeout(step.ms || 500);
@@ -448,6 +458,15 @@ async function runVisualCase(scenario, viewport) {
       if (badResponses.length)
         problems.push(`lokální HTTP chyba (${badResponses.length})`);
 
+      if (problems.length && attempt < 2) {
+        transientErrors.push(
+          `Vizuální kontrola zopakována: ${problems.join("; ")}`,
+        );
+        await closeWithLimit(context, 2500);
+        context = undefined;
+        await resetBrowser(true);
+        continue;
+      }
       if (problems.length) {
         return {
           matrix: {
@@ -560,4 +579,7 @@ await writeFile(
 console.log(
   `VISUAL ${result.status}: ${findings.length} nálezů, ${matrix.length} běhů`,
 );
+for (const item of findings) {
+  console.log(`VISUAL FINDING [${item.code}]: ${item.summary}`);
+}
 process.exit(result.status === "FAIL" ? 1 : 0);
