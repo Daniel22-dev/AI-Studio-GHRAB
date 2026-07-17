@@ -49,7 +49,11 @@ self.addEventListener("activate", (event) => {
       .keys()
       .then((keys) =>
         Promise.all(
-          keys.filter((key) => key !== CACHE).map((key) => caches.delete(key)),
+          keys
+            .filter(
+              (key) => key.startsWith("ai-studio-ghrab-v") && key !== CACHE,
+            )
+            .map((key) => caches.delete(key)),
         ),
       ),
   );

@@ -1,6 +1,6 @@
 # Release checklist AI Studio GHRAB 0.15.0
 
-**Aktuální verze: 0.17.3**
+**Aktuální verze: 0.17.5**
 
 ## Veřejný balík
 

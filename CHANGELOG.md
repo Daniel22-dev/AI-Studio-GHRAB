@@ -2,6 +2,22 @@
 
 > Tento soubor se generuje ze `src/config/changelog.json`. Neupravujte jej ručně.
 
+## 0.17.5 — 2026-07-17
+
+**Hodnotitel 1.5.1 a GHRAB QA Standard 1.0.2**
+
+- Centrální registr a fallback konfigurace byly aktualizovány na Hodnotitel maturitních slohů 1.5.1 s auditními opravami.
+- Společná certifikační vrstva používá GHRAB QA 1.0.2 s kontrolou atomického PWA precache, runtime regex lookbehind a projektových bezpečnostních validátorů.
+- Stav READY zůstává vázán na konkrétní build, ruční galerii a deployed smoke test; aktualizace registru sama žádnou aplikaci automaticky neschvaluje.
+
+## 0.17.4 — 2026-07-16
+
+**Jednotná GHRAB QA brána a izolace PWA cache**
+
+- Přidána jednotná certifikační brána GHRAB QA 1.0.1 s technickými, bezpečnostními, PWA, kritickými a skutečnými Chromium vizuálními kontrolami.
+- Service worker při aktivaci maže pouze starší cache AI Studia se stejným prefixem a nemůže odstranit offline cache ostatních aplikací na stejném původu.
+- Výsledek READY je vázán na verzi a SHA-256 buildu a vyžaduje ruční kontrolu galerie i deployed smoke test.
+
 ## 0.17.3 — 2026-07-15
 
 **Viditelná animace brány při spuštění každé aplikace**

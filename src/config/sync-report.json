@@ -15,28 +15,28 @@
       "id": "differentiator",
       "url": "https://daniel22-dev.github.io/Skolni-aplikace/diferenciator/studio-manifest.json",
       "ok": false,
-      "version": "1.2.0",
+      "version": "1.3.1",
       "error": "offline režim"
     },
     {
       "id": "essay-evaluator",
       "url": "https://daniel22-dev.github.io/Hodnotitel-maturitnich-slohu/studio-manifest.json",
       "ok": false,
-      "version": "1.4.0",
+      "version": "1.5.1",
       "error": "offline režim"
     },
     {
       "id": "correspondence",
       "url": "https://daniel22-dev.github.io/Skolni-aplikace/korespondencni-asistent/studio-manifest.json",
       "ok": false,
-      "version": "5.1.0",
+      "version": "5.2.1",
       "error": "offline režim"
     },
     {
       "id": "ludus",
       "url": "https://daniel22-dev.github.io/Ludus/studio-manifest.json",
       "ok": false,
-      "version": "1.15.0",
+      "version": "1.16.2",
       "error": "offline režim"
     }
   ]

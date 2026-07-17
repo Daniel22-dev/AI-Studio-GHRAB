@@ -1,7 +1,51 @@
 {
   "schema": "ai-studio-changelog-v1",
-  "current": "0.17.3",
+  "current": "0.17.5",
   "items": [
+    {
+      "version": "0.17.5",
+      "date": "2026-07-17",
+      "title": {
+        "cs": "Hodnotitel 1.5.1 a GHRAB QA Standard 1.0.2",
+        "en": "Evaluator 1.5.1 and GHRAB QA Standard 1.0.2"
+      },
+      "changes": [
+        {
+          "cs": "Centrální registr a fallback konfigurace byly aktualizovány na Hodnotitel maturitních slohů 1.5.1 s auditními opravami.",
+          "en": "The central registry and fallback configuration now reference Matura Essay Evaluator 1.5.1 with the audit fixes."
+        },
+        {
+          "cs": "Společná certifikační vrstva používá GHRAB QA 1.0.2 s kontrolou atomického PWA precache, runtime regex lookbehind a projektových bezpečnostních validátorů.",
+          "en": "The shared certification layer now uses GHRAB QA 1.0.2 with atomic PWA precache, runtime regex lookbehind and project security-validator checks."
+        },
+        {
+          "cs": "Stav READY zůstává vázán na konkrétní build, ruční galerii a deployed smoke test; aktualizace registru sama žádnou aplikaci automaticky neschvaluje.",
+          "en": "READY remains bound to a specific build, manual gallery review and deployed smoke test; a registry update never auto-approves an application."
+        }
+      ]
+    },
+    {
+      "version": "0.17.4",
+      "date": "2026-07-16",
+      "title": {
+        "cs": "Jednotná GHRAB QA brána a izolace PWA cache",
+        "en": "Unified GHRAB QA gate and isolated PWA cache"
+      },
+      "changes": [
+        {
+          "cs": "Přidána jednotná certifikační brána GHRAB QA 1.0.1 s technickými, bezpečnostními, PWA, kritickými a skutečnými Chromium vizuálními kontrolami.",
+          "en": "Added the unified GHRAB QA 1.0.1 certification gate with technical, security, PWA, critical and real Chromium visual checks."
+        },
+        {
+          "cs": "Service worker při aktivaci maže pouze starší cache AI Studia se stejným prefixem a nemůže odstranit offline cache ostatních aplikací na stejném původu.",
+          "en": "The service worker now deletes only older AI Studio caches with the same prefix and cannot remove offline caches belonging to other applications on the same origin."
+        },
+        {
+          "cs": "Výsledek READY je vázán na verzi a SHA-256 buildu a vyžaduje ruční kontrolu galerie i deployed smoke test.",
+          "en": "READY is tied to the version and build SHA-256 and requires manual gallery review plus a deployed smoke test."
+        }
+      ]
+    },
     {
       "version": "0.17.3",
       "date": "2026-07-15",

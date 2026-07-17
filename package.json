@@ -1,6 +1,6 @@
 {
   "name": "ai-studio-ghrab",
-  "version": "0.17.3",
+  "version": "0.17.5",
   "private": true,
   "description": "Profesionální PWA rozcestník školních AI nástrojů s dvoufázovým spuštěním, interním pracovním prostorem a kompaktním zobrazením vložených aplikací",
   "type": "module",
@@ -12,12 +12,23 @@
     "check": "node scripts/test.mjs",
     "generate:changelog": "node scripts/generate-changelog.mjs",
     "format": "prettier --write \"src/**/*.{js,css,html,json,webmanifest,md}\" \"scripts/**/*.mjs\" \".github/**/*.yml\" \"*.md\" \"package.json\"",
-    "format:check": "prettier --check \"src/**/*.{js,css,html,json,webmanifest,md}\" \"scripts/**/*.mjs\" \".github/**/*.yml\" \"*.md\" \"package.json\""
+    "format:check": "prettier --check \"src/**/*.{js,css,html,json,webmanifest,md}\" \"scripts/**/*.mjs\" \".github/**/*.yml\" \"*.md\" \"package.json\"",
+    "qa:technical": "node scripts/qa-technical.mjs",
+    "qa:security": "node scripts/qa-security.mjs",
+    "qa:pwa": "node scripts/qa-pwa.mjs",
+    "qa:critical": "node scripts/qa-critical.mjs",
+    "qa:visual": "node scripts/qa-visual.mjs",
+    "qa:report": "node scripts/qa-report.mjs",
+    "qa:approve": "node scripts/qa-approve.mjs",
+    "qa:release": "node scripts/qa-release.mjs",
+    "qa:combinatorial": "node scripts/qa-combinatorial.mjs"
   },
   "engines": {
     "node": ">=18"
   },
   "devDependencies": {
+    "playwright": "^1.61.1",
+    "pngjs": "^7.0.0",
     "prettier": "^3.9.5"
   }
 }

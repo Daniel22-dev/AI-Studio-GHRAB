@@ -1,6 +1,6 @@
 # AI Studio GHRAB
 
-**Aktuální verze: 0.17.3**
+**Aktuální verze: 0.17.5**
 
 **Verze 0.15.0 – federovaný serverless portál pěti chráněných školních aplikací s mechanicky animovanou hvězdnou bránou, řízeným přístupem, pilotním měřením a diagnostickým hlášením chyb.**
 

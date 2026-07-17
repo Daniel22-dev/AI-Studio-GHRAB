@@ -1,0 +1,15 @@
+{
+  "parameters": {
+    "role": ["admin", "teacher"],
+    "permit": ["valid", "revoked", "offline"],
+    "application": ["enabled", "blocked", "unavailable"],
+    "device": ["mobile", "desktop"]
+  },
+  "criticalTriples": [
+    {"role":"teacher","permit":"revoked","application":"enabled"},
+    {"role":"admin","permit":"offline","application":"unavailable"}
+  ],
+  "fixedScenarios": [{"role":"admin","permit":"valid","application":"enabled","device":"desktop"}],
+  "validator": "qa/combinatorial-validator.mjs",
+  "limitations": ["Deployed síťové chování je potvrzováno až samostatným smoke testem stejného buildu."]
+}

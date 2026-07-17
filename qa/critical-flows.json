@@ -1,0 +1,29 @@
+{
+  "flows": [
+    {
+      "id": "STUDIO-OPEN",
+      "name": "Otevření centrálního rozcestníku",
+      "type": "browser",
+      "url": "/index.html",
+      "expectedText": "AI Studio GHRAB",
+      "steps": [
+        {
+          "action": "assertVisible",
+          "selector": "main#main"
+        }
+      ]
+    },
+    {
+      "id": "STUDIO-CACHE-ISOLATION",
+      "name": "Service worker nemaže cizí cache",
+      "type": "static",
+      "assertions": [
+        {
+          "file": "src/sw.js",
+          "regex": "startsWith\\(\"ai-studio-ghrab-v\"\\)",
+          "message": "Aktivace service workeru není omezena na vlastní prefix."
+        }
+      ]
+    }
+  ]
+}
