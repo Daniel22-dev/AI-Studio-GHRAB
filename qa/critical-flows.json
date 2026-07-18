@@ -8,6 +8,15 @@
       "expectedText": "AI Studio GHRAB",
       "steps": [
         {
+          "action": "clickIfVisible",
+          "selector": "#studio-startup-skip",
+          "timeout": 5000
+        },
+        {
+          "action": "wait",
+          "ms": 650
+        },
+        {
           "action": "assertVisible",
           "selector": "main#main"
         }

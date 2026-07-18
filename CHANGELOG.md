@@ -2,6 +2,21 @@
 
 > Tento soubor se generuje ze `src/config/changelog.json`. Neupravujte jej ručně.
 
+## 0.18.2 — 2026-07-17
+
+**Správný návrat z manuálu do otevřené aplikace**
+
+- Po otevření interaktivního manuálu z aplikace se horní návratové tlačítko změní na Zpět do aplikace a vrátí uživatele do té konkrétní aplikace, nikoli na domovskou stránku AI Studia.
+- Návrat nejprve využije historii vloženého pracovního rámce, aby mohl obnovit předchozí stav aplikace; při nedostupné historii bezpečně použije její výchozí adresu.
+- Horní lišta při otevřeném manuálu jasně označí režim manuálu a samostatné otevření míří na právě zobrazený manuál.
+
+## 0.18.1 — 2026-07-17
+
+**Čistý přechod do prémiového intra**
+
+- Hlavní portál je skryt už při prvním vykreslení stránky, takže před úvodním intrem neproblikne brána ani prostředí Studia.
+- Po dokončení nebo přeskočení intra se pracovní prostředí plynule odkryje pod jeho závěrečným přechodem.
+
 ## 0.18.0 — 2026-07-17
 
 **Prezentační režim, interní manuály a prémiový start**

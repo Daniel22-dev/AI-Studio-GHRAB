@@ -1,7 +1,47 @@
 {
   "schema": "ai-studio-changelog-v1",
-  "current": "0.18.0",
+  "current": "0.18.2",
   "items": [
+    {
+      "version": "0.18.2",
+      "date": "2026-07-17",
+      "title": {
+        "cs": "Správný návrat z manuálu do otevřené aplikace",
+        "en": "Correct return from a manual to the open application"
+      },
+      "changes": [
+        {
+          "cs": "Po otevření interaktivního manuálu z aplikace se horní návratové tlačítko změní na Zpět do aplikace a vrátí uživatele do té konkrétní aplikace, nikoli na domovskou stránku AI Studia.",
+          "en": "After opening an interactive manual from an application, the top back control changes to Back to application and returns to that specific application rather than the AI Studio home page."
+        },
+        {
+          "cs": "Návrat nejprve využije historii vloženého pracovního rámce, aby mohl obnovit předchozí stav aplikace; při nedostupné historii bezpečně použije její výchozí adresu.",
+          "en": "The return action first uses the embedded workspace history so the previous application state can be restored, with a safe fallback to its launch URL when history is unavailable."
+        },
+        {
+          "cs": "Horní lišta při otevřeném manuálu jasně označí režim manuálu a samostatné otevření míří na právě zobrazený manuál.",
+          "en": "The header now clearly identifies manual mode and the standalone action targets the currently displayed manual."
+        }
+      ]
+    },
+    {
+      "version": "0.18.1",
+      "date": "2026-07-17",
+      "title": {
+        "cs": "Čistý přechod do prémiového intra",
+        "en": "Clean transition into the premium intro"
+      },
+      "changes": [
+        {
+          "cs": "Hlavní portál je skryt už při prvním vykreslení stránky, takže před úvodním intrem neproblikne brána ani prostředí Studia.",
+          "en": "The main portal is hidden from the first browser paint, preventing the gateway or Studio interface from flashing before the startup intro."
+        },
+        {
+          "cs": "Po dokončení nebo přeskočení intra se pracovní prostředí plynule odkryje pod jeho závěrečným přechodem.",
+          "en": "When the intro finishes or is skipped, the workspace is revealed smoothly beneath the closing transition."
+        }
+      ]
+    },
     {
       "version": "0.18.0",
       "date": "2026-07-17",

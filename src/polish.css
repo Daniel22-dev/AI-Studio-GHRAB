@@ -17,6 +17,27 @@ html[data-theme="light"] {
 [hidden] {
   display: none !important;
 }
+
+/* First-paint gate: the portal must never render before the desktop intro. */
+html.startup-prepaint body[data-page="home"],
+html.startup-intro-pending body[data-page="home"] {
+  overflow: hidden;
+}
+html.startup-prepaint body[data-page="home"] > :not(#studio-startup-intro),
+html.startup-intro-pending
+  body[data-page="home"]
+  > :not(#studio-startup-intro) {
+  visibility: hidden !important;
+}
+html.startup-prepaint .studio-startup-intro[hidden],
+html.startup-intro-pending .studio-startup-intro[hidden] {
+  display: grid !important;
+}
+html.startup-prepaint .studio-startup-intro,
+html.startup-intro-pending .studio-startup-intro {
+  visibility: visible !important;
+  opacity: 1;
+}
 html:not(.access-admin) [data-admin-nav],
 html:not(.access-admin) [data-admin-link],
 html:not(.access-admin) [data-admin-only] {

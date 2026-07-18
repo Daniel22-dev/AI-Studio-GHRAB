@@ -36,9 +36,14 @@ const reloadButton = document.querySelector("#embedded-reload");
 const fullscreenButton = document.querySelector("#embedded-fullscreen");
 const externalButton = document.querySelector("#embedded-external");
 const errorExternalButton = document.querySelector("#embedded-error-external");
+const backLink = document.querySelector("#embedded-back");
+const backLabel = document.querySelector("#embedded-back-label");
+const contextNode = document.querySelector("#embedded-app-context");
 
 let currentApp = null;
 let loadTimeout = 0;
+let lastApplicationUrl = "";
+let manualReturnTimer = 0;
 
 let embeddedObserver = null;
 const embeddedOverridesUrl = new URL("./embed-overrides.css", import.meta.url)
@@ -47,6 +52,69 @@ const embeddedOverridesUrl = new URL("./embed-overrides.css", import.meta.url)
 function stopEmbeddedPolishObserver() {
   embeddedObserver?.disconnect();
   embeddedObserver = null;
+}
+
+function frameUrl() {
+  try {
+    const value = frame.contentWindow?.location?.href;
+    if (!value) return null;
+    const url = new URL(value, location.href);
+    return url.origin === location.origin ? url : null;
+  } catch {
+    return null;
+  }
+}
+
+function isManualUrl(url) {
+  return Boolean(url && /\/manual(?:\/|$)/i.test(url.pathname));
+}
+
+function setWorkspaceMode() {
+  if (!currentApp) return;
+  const appName = localised(currentApp.name);
+  const url = frameUrl();
+  const manualOpen = isManualUrl(url);
+
+  if (!manualOpen && url) lastApplicationUrl = url.href;
+
+  backLink.dataset.destination = manualOpen ? "application" : "studio";
+  backLink.href = manualOpen
+    ? lastApplicationUrl || currentApp.launchUrl
+    : "../#applications";
+  backLabel.textContent = manualOpen
+    ? t("Zpět do aplikace", "Back to application")
+    : "AI Studio";
+  backLink.setAttribute(
+    "aria-label",
+    manualOpen
+      ? t(`Zpět do aplikace ${appName}`, `Back to ${appName}`)
+      : t("Zpět do AI Studia", "Back to AI Studio"),
+  );
+  contextNode.textContent = manualOpen
+    ? t("MANUÁL OTEVŘENÝ V APLIKACI", "MANUAL OPENED FROM APPLICATION")
+    : t("APLIKACE OTEVŘENÁ V AI STUDIU", "APPLICATION OPEN IN AI STUDIO");
+  nameNode.textContent = manualOpen
+    ? `${appName} · ${t("manuál", "manual")}`
+    : appName;
+  externalButton.textContent = manualOpen
+    ? t("Otevřít manuál samostatně", "Open manual separately")
+    : t("Otevřít samostatně", "Open separately");
+}
+
+function returnToApplication() {
+  if (!currentApp) return;
+  window.clearTimeout(manualReturnTimer);
+  const fallbackUrl = lastApplicationUrl || currentApp.launchUrl;
+
+  try {
+    frame.contentWindow.history.back();
+    manualReturnTimer = window.setTimeout(() => {
+      const url = frameUrl();
+      if (!url || isManualUrl(url)) frame.src = fallbackUrl;
+    }, 900);
+  } catch {
+    frame.src = fallbackUrl;
+  }
 }
 
 function keepManualsInsideWorkspace() {
@@ -222,7 +290,8 @@ function showError(title, copy) {
 
 function openSeparately() {
   if (!currentApp?.launchUrl) return;
-  window.open(currentApp.launchUrl, "_blank", "noopener,noreferrer");
+  const url = frameUrl()?.href || currentApp.launchUrl;
+  window.open(url, "_blank", "noopener,noreferrer");
 }
 
 function setApp(app) {
@@ -247,6 +316,7 @@ function setApp(app) {
   iconNode.src = app.icon?.startsWith("http") ? app.icon : `../${app.icon}`;
   iconNode.alt = "";
   frame.title = appName;
+  lastApplicationUrl = appUrl.href;
   frame.src = appUrl.href;
   loadTimeout = window.setTimeout(() => {
     if (!frame.classList.contains("is-ready")) {
@@ -260,8 +330,10 @@ function setApp(app) {
 
 frame.addEventListener("load", () => {
   window.clearTimeout(loadTimeout);
+  window.clearTimeout(manualReturnTimer);
   applyEvaluatorEmbeddedPolish();
   keepManualsInsideWorkspace();
+  setWorkspaceMode();
   loading.hidden = true;
   frame.hidden = false;
   frame.classList.add("is-ready");
@@ -284,6 +356,11 @@ fullscreenButton.addEventListener("click", async () => {
   } catch {
     /* browser may deny */
   }
+});
+backLink.addEventListener("click", (event) => {
+  if (backLink.dataset.destination !== "application") return;
+  event.preventDefault();
+  returnToApplication();
 });
 externalButton.addEventListener("click", openSeparately);
 errorExternalButton.addEventListener("click", openSeparately);

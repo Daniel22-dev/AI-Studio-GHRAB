@@ -1883,44 +1883,73 @@ function updatePresentationFit() {
   root.classList.toggle("presentation-fit", compactPresentation);
 }
 
+function releaseStartupPrepaint(intro) {
+  root.classList.remove(
+    "startup-prepaint",
+    "startup-intro-pending",
+    "startup-intro-revealing",
+  );
+  root.classList.add("startup-intro-skip");
+  if (!intro) return;
+  intro.hidden = true;
+  intro.setAttribute("aria-hidden", "true");
+  intro.classList.remove("is-active", "is-leaving");
+}
+
 function setupStartupIntro() {
-  if (page !== "home") return;
+  if (page !== "home") {
+    releaseStartupPrepaint();
+    return;
+  }
   const intro = document.querySelector("#studio-startup-intro");
   const skip = document.querySelector("#studio-startup-skip");
-  if (
-    !intro ||
-    !skip ||
-    matchMedia("(max-width: 899px)").matches ||
-    detectedMotionMode() === "off"
-  )
-    return;
   const key = `ghrab.startup-intro.${VERSION}`;
+  let alreadySeen = false;
   try {
-    if (sessionStorage.getItem(key) === "seen") return;
+    alreadySeen = sessionStorage.getItem(key) === "seen";
   } catch {
     /* continue */
   }
+  const shouldSkip =
+    !intro ||
+    !skip ||
+    alreadySeen ||
+    matchMedia("(max-width: 899px)").matches ||
+    detectedMotionMode() === "off";
+  if (shouldSkip) {
+    releaseStartupPrepaint(intro);
+    return;
+  }
+
+  root.classList.remove("startup-prepaint", "startup-intro-skip");
+  root.classList.add("startup-intro-pending");
+  intro.hidden = false;
+  intro.setAttribute("aria-hidden", "false");
+  intro.classList.add("is-active");
+
   let closed = false;
   let timer = 0;
   const close = () => {
     if (closed) return;
     closed = true;
     clearTimeout(timer);
-    intro.classList.add("is-leaving");
     try {
       sessionStorage.setItem(key, "seen");
     } catch {
       /* optional */
     }
+    root.classList.remove("startup-intro-pending");
+    root.classList.add("startup-intro-revealing");
+    intro.classList.add("is-leaving");
     setTimeout(() => {
       intro.hidden = true;
       intro.setAttribute("aria-hidden", "true");
       intro.classList.remove("is-active", "is-leaving");
+      root.classList.remove("startup-intro-revealing");
+      root.classList.add("startup-intro-skip");
     }, 520);
   };
-  intro.hidden = false;
-  intro.setAttribute("aria-hidden", "false");
-  requestAnimationFrame(() => intro.classList.add("is-active"));
+
   skip.addEventListener("click", close, { once: true });
   timer = setTimeout(close, 3300);
 }

@@ -687,6 +687,17 @@ if (
   !embeddedViewerScript.includes("frame.src = appUrl.href") ||
   !embeddedViewerScript.includes("appUrl.origin !== location.origin") ||
   !embeddedViewerScript.includes("applyEvaluatorEmbeddedPolish") ||
+  !embeddedViewerScript.includes("keepManualsInsideWorkspace") ||
+  !embeddedViewerScript.includes("setWorkspaceMode") ||
+  !embeddedViewerScript.includes("returnToApplication") ||
+  !embeddedViewerScript.includes(
+    'backLink.dataset.destination = manualOpen ? "application" : "studio"',
+  ) ||
+  !embeddedViewerScript.includes(
+    't("Zpět do aplikace", "Back to application")',
+  ) ||
+  !embeddedViewerHtml.includes('id="embedded-back-label"') ||
+  !embeddedViewerHtml.includes('id="embedded-app-context"') ||
   !embeddedViewerScript.includes("ghrab-studio-compact-footer-logo") ||
   !embeddedOverrideCss.includes("essay-evaluator") ||
   !embeddedOverrideCss.includes("max-width: clamp(104px, 11vw, 152px)")
