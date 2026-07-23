@@ -86,6 +86,12 @@ jobs:
           for (const item of report.blockerAndMajor || []) {
             console.log(`FINDING ${item.severity} ${item.gate} ${item.code}: ${item.message} | evidence=${item.evidence || ''}`);
           }
+          const projectTestLog = 'qa-results/qa-logs/project-tests.log';
+          if (fs.existsSync(projectTestLog)) {
+            console.log('--- PROJECT TEST LOG START ---');
+            console.log(fs.readFileSync(projectTestLog, 'utf8'));
+            console.log('--- PROJECT TEST LOG END ---');
+          }
           NODE
 
   deploy:
