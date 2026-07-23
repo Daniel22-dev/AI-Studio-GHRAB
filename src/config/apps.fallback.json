@@ -266,8 +266,8 @@
     },
     "version": "0.5.0",
     "status": {
-      "cs": "Produkční kandidát · bezserverový provoz",
-      "en": "Production candidate · serverless operation"
+      "cs": "Připraveno k řízenému pilotu",
+      "en": "Ready for controlled pilot"
     },
     "description": {
       "cs": "Originální prémiové redakční studio pro tvorbu pracovních listů a výukových aktivit ve všech předmětech. Nabízí 39 formátů, diferenciaci, varianty A/B/C, tiskové PDF, projekci bez telefonů, lokální knihovnu, přenosné sdílení, úplný manuál, interní testovací centrum a architekturu připravenou na budoucí školní server.",
