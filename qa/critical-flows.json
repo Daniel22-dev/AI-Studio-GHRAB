@@ -55,6 +55,39 @@
           "message": "Centrum manuálů nemá obsah ACTIVA."
         }
       ]
+    },
+    {
+      "id": "STUDIO-SORTIO-INTEGRATION",
+      "name": "SORTIO je v registru, politice a manuálech",
+      "type": "static",
+      "assertions": [
+        {
+          "file": "src/config/apps.fallback.json",
+          "regex": "\\\"id\\\"\\s*:\\s*\\\"sortio\\\"",
+          "message": "Fallback registr neobsahuje SORTIO."
+        },
+        {
+          "file": "src/config/sources.json",
+          "regex": "SORTIO/studio-manifest\\.json",
+          "message": "Zdroje neobsahují manifest SORTIO."
+        },
+        {
+          "file": "src/config/access-policy.json",
+          "regex": "\\\"trainingCode\\\"\\s*:\\s*\\\"SOR-01\\\"",
+          "message": "SORTIO nemá školení SOR-01."
+        },
+        {
+          "file": "src/manualy/manualy.js",
+          "regex": "sortio",
+          "message": "Centrum manuálů nemá obsah SORTIO."
+        },
+        {
+          "file": "src/assets/apps/sortio.svg",
+          "regex": ".",
+          "flags": "s",
+          "message": "Chybí ikona SORTIO."
+        }
+      ]
     }
   ]
 }

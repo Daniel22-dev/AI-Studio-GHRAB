@@ -1,7 +1,29 @@
 {
   "schema": "ai-studio-changelog-v1",
-  "current": "0.18.3",
+  "current": "0.18.4",
   "items": [
+    {
+      "version": "0.18.4",
+      "date": "2026-07-23",
+      "title": {
+        "cs": "SORTIO jako sedmá aplikace AI Studia",
+        "en": "SORTIO as the seventh AI Studio application"
+      },
+      "changes": [
+        {
+          "cs": "Do registru aplikací, přístupové politiky a synchronizace bylo přidáno SORTIO 1.0.1 s povinným školením SOR-01.",
+          "en": "SORTIO 1.0.1 was added to the app registry, access policy and synchronisation with required SOR-01 training."
+        },
+        {
+          "cs": "Centrum manuálů nyní nabízí průvodce importem tříd, losováním, chytrými skupinami, rolemi, zasedacím pořádkem, projekcí a zálohami SORTIO.",
+          "en": "The Manuals centre now offers guidance for SORTIO class import, random selection, smart groups, roles, seating, projection and backups."
+        },
+        {
+          "cs": "Integrační a QA kontroly ověřují sedm aplikací, zdroj SORTIO, ikonu, manuál, školení a kompatibilitu se Studio Bridge 1.1.",
+          "en": "Integration and QA checks now verify seven applications, the SORTIO source, icon, manual, training and Studio Bridge 1.1 compatibility."
+        }
+      ]
+    },
     {
       "version": "0.18.3",
       "date": "2026-07-22",

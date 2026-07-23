@@ -22,5 +22,9 @@
   {
     "id": "activity-builder",
     "url": "https://daniel22-dev.github.io/Sestavovac-aktivit/studio-manifest.json"
+  },
+  {
+    "id": "sortio",
+    "url": "https://daniel22-dev.github.io/SORTIO/studio-manifest.json"
   }
 ]

@@ -62,6 +62,15 @@
         "cs": "ACTIVA – Sestavovač aktivit",
         "en": "ACTIVA – Activity Builder"
       }
+    },
+    "sortio": {
+      "trainingRequired": true,
+      "trainingCode": "SOR-01",
+      "trainingVersion": "2026-09",
+      "label": {
+        "cs": "SORTIO – Organizátor třídy",
+        "en": "SORTIO – Classroom Organiser"
+      }
     }
   },
   "administratorPages": [

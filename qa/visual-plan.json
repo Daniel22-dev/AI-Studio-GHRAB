@@ -5,13 +5,31 @@
       "name": "Hlavní hvězdná brána a katalog",
       "url": "/index.html",
       "expectedText": "AI Studio GHRAB",
-      "mustVisible": ["main#main", ".portal-title h1"],
+      "mustVisible": [
+        "main#main",
+        ".portal-title h1"
+      ],
       "viewports": [
-        { "width": 360, "height": 800 },
-        { "width": 412, "height": 915 },
-        { "width": 768, "height": 1024 },
-        { "width": 1366, "height": 768 },
-        { "width": 1920, "height": 1080 }
+        {
+          "width": 360,
+          "height": 800
+        },
+        {
+          "width": 412,
+          "height": 915
+        },
+        {
+          "width": 768,
+          "height": 1024
+        },
+        {
+          "width": 1366,
+          "height": 768
+        },
+        {
+          "width": 1920,
+          "height": 1080
+        }
       ],
       "steps": [
         {
@@ -19,7 +37,10 @@
           "selector": "#studio-startup-skip",
           "timeout": 5000
         },
-        { "action": "wait", "ms": 650 }
+        {
+          "action": "wait",
+          "ms": 650
+        }
       ]
     },
     {
@@ -27,10 +48,18 @@
       "name": "Správa přístupu",
       "url": "/access/index.html",
       "expectedText": "AI Studio GHRAB",
-      "mustVisible": ["body"],
+      "mustVisible": [
+        "body"
+      ],
       "viewports": [
-        { "width": 360, "height": 800 },
-        { "width": 1366, "height": 768 }
+        {
+          "width": 360,
+          "height": 800
+        },
+        {
+          "width": 1366,
+          "height": 768
+        }
       ]
     },
     {
@@ -38,48 +67,84 @@
       "name": "Automatizace a synchronizace",
       "url": "/automation/index.html",
       "expectedText": "pouze správci AI Studia",
-      "mustVisible": ["body"],
+      "mustVisible": [
+        "body"
+      ],
       "viewports": [
-        { "width": 412, "height": 915 },
-        { "width": 1920, "height": 1080 }
+        {
+          "width": 412,
+          "height": 915
+        },
+        {
+          "width": 1920,
+          "height": 1080
+        }
       ]
     },
     {
       "id": "studio-manuals-support",
       "name": "Společná podpora ekosystému v Centru manuálů",
       "url": "/manualy/index.html",
-      "expectedText": "Jednotné postupy pro všech šest aplikací",
-      "mustVisible": ["#ecosystem-support"],
+      "expectedText": "Jednotné postupy pro všech sedm aplikací",
+      "mustVisible": [
+        "#ecosystem-support"
+      ],
       "viewports": [
-        { "width": 360, "height": 800 },
-        { "width": 1366, "height": 768 }
+        {
+          "width": 360,
+          "height": 800
+        },
+        {
+          "width": 1366,
+          "height": 768
+        }
       ],
       "steps": [
-        { "action": "wait", "ms": 850 },
+        {
+          "action": "wait",
+          "ms": 850
+        },
         {
           "action": "evaluate",
           "script": "document.querySelector('#ecosystem-support')?.scrollIntoView({ block: 'center' })"
         },
-        { "action": "wait", "ms": 350 }
+        {
+          "action": "wait",
+          "ms": 350
+        }
       ]
     },
     {
       "id": "studio-manuals-catalog",
-      "name": "Katalog šesti aplikací v Centru manuálů",
+      "name": "Katalog sedmi aplikací v Centru manuálů",
       "url": "/manualy/index.html",
       "expectedText": "Vyberte aplikaci",
-      "mustVisible": ["#manual-grid"],
+      "mustVisible": [
+        "#manual-grid"
+      ],
       "viewports": [
-        { "width": 360, "height": 800 },
-        { "width": 1366, "height": 768 }
+        {
+          "width": 360,
+          "height": 800
+        },
+        {
+          "width": 1366,
+          "height": 768
+        }
       ],
       "steps": [
-        { "action": "wait", "ms": 850 },
+        {
+          "action": "wait",
+          "ms": 850
+        },
         {
           "action": "evaluate",
           "script": "document.querySelector('#manual-grid')?.scrollIntoView({ block: 'start' })"
         },
-        { "action": "wait", "ms": 350 }
+        {
+          "action": "wait",
+          "ms": 350
+        }
       ]
     }
   ]

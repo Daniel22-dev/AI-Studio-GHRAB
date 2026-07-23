@@ -2,8 +2,14 @@
 
 > Tento soubor se generuje ze `src/config/changelog.json`. Neupravujte jej ručně.
 
-## 0.18.3 — 2026-07-22
+## 0.18.4 — 2026-07-23
+**SORTIO jako sedmá aplikace AI Studia**
 
+- Do registru aplikací, přístupové politiky a synchronizace bylo přidáno SORTIO 1.0.1 s povinným školením SOR-01.
+- Centrum manuálů nyní nabízí průvodce importem tříd, losováním, chytrými skupinami, rolemi, zasedacím pořádkem, projekcí a zálohami SORTIO.
+- Integrační a QA kontroly ověřují sedm aplikací, zdroj SORTIO, ikonu, manuál, školení a kompatibilitu se Studio Bridge 1.1.
+
+## 0.18.3 — 2026-07-22
 **ACTIVA, rozšířené manuály a šestá aplikace ekosystému**
 
 - Do aktuálního registru, přístupové politiky, synchronizace a pracovního prostoru byla přidána ACTIVA 0.5.0 s povinným školením ACT-01.
@@ -11,7 +17,6 @@
 - Integrační a QA kontroly ověřují šest aplikací, zdroj ACTIVA, manuál, ikonu, školení a kompatibilitu s bezserverovým přístupem.
 
 ## 0.18.2 — 2026-07-17
-
 **Správný návrat z manuálu do otevřené aplikace**
 
 - Po otevření interaktivního manuálu z aplikace se horní návratové tlačítko změní na Zpět do aplikace a vrátí uživatele do té konkrétní aplikace, nikoli na domovskou stránku AI Studia.
@@ -19,14 +24,12 @@
 - Horní lišta při otevřeném manuálu jasně označí režim manuálu a samostatné otevření míří na právě zobrazený manuál.
 
 ## 0.18.1 — 2026-07-17
-
 **Čistý přechod do prémiového intra**
 
 - Hlavní portál je skryt už při prvním vykreslení stránky, takže před úvodním intrem neproblikne brána ani prostředí Studia.
 - Po dokončení nebo přeskočení intra se pracovní prostředí plynule odkryje pod jeho závěrečným přechodem.
 
 ## 0.18.0 — 2026-07-17
-
 **Prezentační režim, interní manuály a prémiový start**
 
 - Úvodní portál se při desktopové prezentaci a F11 automaticky přizpůsobí tak, aby název, brána a čtyři hlavní aplikace zůstaly současně viditelné.
@@ -36,7 +39,6 @@
 - Registry aplikací byly sjednoceny s opravnými verzemi Generátor 7.1.4, Diferenciátor 1.3.2, Hodnotitel 1.5.2, Korespondenční asistent 5.2.2 a LUDUS 1.16.3.
 
 ## 0.17.5 — 2026-07-17
-
 **Hodnotitel 1.5.1 a GHRAB QA Standard 1.0.2**
 
 - Centrální registr a fallback konfigurace byly aktualizovány na Hodnotitel maturitních slohů 1.5.1 s auditními opravami.
@@ -44,7 +46,6 @@
 - Stav READY zůstává vázán na konkrétní build, ruční galerii a deployed smoke test; aktualizace registru sama žádnou aplikaci automaticky neschvaluje.
 
 ## 0.17.4 — 2026-07-16
-
 **Jednotná GHRAB QA brána a izolace PWA cache**
 
 - Přidána jednotná certifikační brána GHRAB QA 1.0.1 s technickými, bezpečnostními, PWA, kritickými a skutečnými Chromium vizuálními kontrolami.
@@ -52,7 +53,6 @@
 - Výsledek READY je vázán na verzi a SHA-256 buildu a vyžaduje ruční kontrolu galerie i deployed smoke test.
 
 ## 0.17.3 — 2026-07-15
-
 **Viditelná animace brány při spuštění každé aplikace**
 
 - Při spuštění aplikace z katalogu se stránka nejprve plynule vrátí a vycentruje hlavní hvězdnou bránu.
@@ -60,7 +60,6 @@
 - Stejné pořadí spuštění nyní platí pro Top 4 kolem brány i pro všechny další aplikace v katalogu; omezený pohyb a vypnuté animace zůstávají respektovány.
 
 ## 0.17.2 — 2026-07-15
-
 **Kompaktní logo Hodnotitele v pracovním prostoru Studia**
 
 - Při otevření Hodnotitele uvnitř AI Studia se jeho nadměrně velké logo v dolní informační části automaticky zmenší na přiměřený rozměr.
@@ -68,7 +67,6 @@
 - Logo je rozpoznáno i po pozdějším vykreslení aplikace; úprava proto funguje také u dynamicky načítaného obsahu.
 
 ## 0.17.1 — 2026-07-15
-
 **Aplikace se otevírají uvnitř Studia bez bílého popup okna**
 
 - Odstraněno předčasné otevírání prázdného okna about:blank, které přebíralo pozornost a skrývalo animaci probíhající ve Studiu.
@@ -79,7 +77,6 @@
 - Nabídka Nainstalovat AI Studio vpravo dole zůstala zachována a byla znovu zahrnuta do regresních kontrol.
 
 ## 0.17.0 — 2026-07-15
-
 **Čistý základ, dvoufázové spuštění a instalace na PC**
 
 - Základem je aktualizovaná verze 0.15.0 před 3D experimenty; domovská obrazovka neobsahuje naklánění, holografické štítky ani rušivé prostorové dekorace.
@@ -88,7 +85,6 @@
 - Synchronizace registru v GitHub Actions automaticky formátuje generované JSON soubory a instalace používá veřejný npm registr, aby nasazení nezamrzalo ani nepadalo na Prettieru.
 
 ## 0.15.0 — 2026-07-15
-
 **Procesní a bezpečnostní zpevnění po hloubkovém auditu**
 
 - Přístup k aplikaci nyní skutečně vyžaduje přesnou aktuální verzi předepsaného školení; zastaralé nebo chybějící potvrzení aplikaci uzamkne.
@@ -99,7 +95,6 @@
 - PWA manifest má stabilní identitu, synchronizační report ve zdrojích už nepředstírá síťové ověření a automatická pojistná synchronizace běží jednou denně.
 
 ## 0.14.4 — 2026-07-14
-
 **Jednotná navigace správcovských nástrojů**
 
 - Evidence přístupů a Vydání přístupu nyní zobrazují stejné hlavní záložky jako ostatní části AI Studia.
@@ -108,7 +103,6 @@
 - Soubory stránky Vydání přístupu používají verzované adresy, aby se po aktualizaci nenačetla stará kopie z mezipaměti.
 
 ## 0.14.3 — 2026-07-14
-
 **Spolehlivá oprava neúplného importu přístupu**
 
 - Import přístupového souboru nyní výslovně sestaví kompletní záznam a přepíše starý neúplný záznam se stejným JTI.
@@ -117,7 +111,6 @@
 - Skripty evidence používají verzované adresy, aby se po aktualizaci nenačetla stará kopie z mezipaměti prohlížeče nebo PWA.
 
 ## 0.14.2 — 2026-07-14
-
 **Oprava načítání platnosti ze starších přístupových souborů**
 
 - Při importu původního souboru .ghrab-access.json má nyní podepsaný token přednost před pomocným permitId, takže Studio správně načte interní ID, aplikace, školení a konec platnosti.
@@ -125,7 +118,6 @@
 - Doplněna regresní kontrola pořadí rozpoznávání přístupového souboru a zálohy evidence.
 
 ## 0.14.1 — 2026-07-14
-
 **Spolehlivý import evidence a soukromý jednorázový odkaz**
 
 - Nahrazeno programové otevírání skrytého výběru souboru nativním ovládáním, které funguje spolehlivěji v běžném prohlížeči i nainstalované PWA.
@@ -134,7 +126,6 @@
 - Import po úspěchu viditelně potvrdí počet záznamů a přesune správce k aktualizovanému seznamu.
 
 ## 0.14.0 — 2026-07-14
-
 **Automatická evidence vydaných přístupů**
 
 - Každý nově podepsaný přístup se po vytvoření automaticky uloží do místní správcovské evidence včetně uživatele, aplikací, platnosti a JTI.
@@ -143,7 +134,6 @@
 - Evidence zůstává pouze v prohlížeči správce a neukládá soukromý podpisový klíč ani dlouhé přístupové kódy kolegů.
 
 ## 0.13.0 — 2026-07-13
-
 **Mechanicky se pohybující prstence hvězdné brány**
 
 - Po kliknutí na aplikaci se tři samostatné grafické vrstvy prstenců roztočí různými směry, několikrát se mechanicky zastaví a na konci se přesně zarovnají.
@@ -152,7 +142,6 @@
 - Plný režim používá filmovou sekvenci dlouhou 2,85 sekundy; lehký, vypnutý a systémově omezený pohyb mají samostatné šetrné varianty.
 
 ## 0.12.0 — 2026-07-13
-
 **Diagnostické hlášení chyby připravené pro správce a vývojáře**
 
 - Hlášení už nevyžaduje začerňování; screenshot má ponechat chybu, nastavení a diagnostický kontext viditelné. Volitelně lze skrýt pouze nesouvisející osobní údaje.
@@ -161,7 +150,6 @@
 - Nástroj se pokusí zkopírovat hlavní screenshot do schránky, aby jej učitel mohl vložit přímo do e-mailu pomocí Ctrl+V.
 
 ## 0.11.0 — 2026-07-13
-
 **Aktivační animace brány a bezpečné hlášení chyb**
 
 - Po spuštění aplikace se centrální prstence brány na krátkou dobu zrychlí, brána se energeticky aktivuje a teprve poté se otevře vybraný nástroj.
@@ -171,7 +159,6 @@
 - Přidán interaktivní návod k hlášení chyb a progresivní systémové sdílení souboru na podporovaných zařízeních.
 
 ## 0.10.0 — 2026-07-13
-
 **Kompletní telemetrie výstupů a prémiový PDF report**
 
 - Všech pět aplikací zapisuje jednotné anonymní technické metriky výstupů: požadovaný, úspěšný, chybný a zrušený počet podle typu aplikace.
@@ -182,7 +169,6 @@
 - Čtení interaktivních manuálů se nezapočítává jako používání dílčích aplikací.
 
 ## 0.9.0 — 2026-07-13
-
 **Aktivní čas, výsledky generování a měsíční souhrny**
 
 - Spuštění se zapíše až po skutečném načtení aplikace a ověření přístupu, včetně otevření z ikony PWA nebo přímé adresy.
@@ -196,7 +182,6 @@
 - Studio při prvním otevření nové verze jednorázově odstraní staré kopie sdíleného ochranného modulu z PWA cache.
 
 ## 0.8.3 — 2026-07-13
-
 **Anonymní souhrny a sjednocení pilotu**
 
 - Kolega si může ze stránky Můj přístup stáhnout bezpečný anonymní souhrn pro správce pilotu.
@@ -206,7 +191,6 @@
 - Patičkové duplicitní odkazy jsou skryté a prezentační lišta již nepřekrývá úvodní text.
 
 ## 0.8.2 — 2026-07-13
-
 **Oprava posunuté brány**
 
 - Opravena animace hlavního obrazu brány, která při plném režimu přepisovala středové zarovnání a posouvala portál doprava dolů.
@@ -214,7 +198,6 @@
 - Brána, prstence, paprsek a platforma nyní tvoří jeden soustředný celek bez překrytí karet aplikací.
 
 ## 0.8.1 — 2026-07-12
-
 **Vycentrovaná hvězdná brána**
 
 - Odstraněno prostorové naklánění podle pohybu ukazatele, aby centrální prstenec a světelné kruhy zůstaly vždy opticky souměrné.
@@ -222,7 +205,6 @@
 - Ostatní animace, světelné efekty a funkce AI Studia zůstaly zachovány beze změny.
 
 ## 0.8.0 — 2026-07-12
-
 **Prémiová animovaná hvězdná brána**
 
 - Úvodní rozcestník získal novou centrální bránu vycházející z původního vizuálního konceptu AI Studia.
@@ -231,7 +213,6 @@
 - Funkčnost karet, podepsaná oprávnění, Top 4, PWA a přímé spouštění aplikací zůstaly beze změny.
 
 ## 0.7.3 — 2026-07-12
-
 **Oprava čísla verze na mobilních kartách**
 
 - Číslo verze aplikace se na úzkých displejích již neořezává mimo pravý okraj karty.
@@ -239,7 +220,6 @@
 - Stavový štítek se může zalomit bez přetečení; desktopové rozložení zůstává beze změny.
 
 ## 0.7.2 — 2026-07-12
-
 **Manuály otevřené přímo v nainstalovaném AI Studiu**
 
 - Kliknutí na odemčený manuál nyní otevře interní prohlížeč v rámci AI Studia místo nové karty běžného prohlížeče.
@@ -248,7 +228,6 @@
 - Vložený manuál zachovává své interaktivní prvky a tlačítko celé obrazovky; prohlížeč manuálu je součástí PWA cache a release testů.
 
 ## 0.7.1 — 2026-07-12
-
 **Oprava navigace po přidání manuálů**
 
 - Opravena poškozená HTML značka položky Bezpečnost, která se na stránkách zobrazovala jako zdrojový text.
@@ -256,7 +235,6 @@
 - Automatické testy nyní kontrolují přítomnost platné položky Bezpečnost a odmítnou obdobně poškozenou navigaci.
 
 ## 0.7.0 — 2026-07-12
-
 **Interaktivní manuály přímo v AI Studiu**
 
 - Přidána samostatná záložka Manuály se všemi pěti interaktivními průvodci.
@@ -266,7 +244,6 @@
 - Rozšířena PWA cache, manifestový kontrakt, interní odkazy a automatické release testy.
 
 ## 0.6.3 — 2026-07-11
-
 **Hodnotitel maturitních slohů připojen do ekosystému**
 
 - Přidán Hodnotitel maturitních slohů 1.3.2 jako pátá chráněná aplikace s ID essay-evaluator, školením HOD-01 a rizikovou úrovní high.
@@ -276,7 +253,6 @@
 - Sjednocen repository dispatch Hodnotitele s událostí app-updated, kterou AI Studio přijímá.
 
 ## 0.6.1 — 2026-07-11
-
 **Dokončené uzamykání přímých adres aplikací**
 
 - Opravena tvorba odkazů na AI Studio v zamykací obrazovce; relativní cesta se nyní vždy bezpečně převede na úplnou adresu.
@@ -286,7 +262,6 @@
 - LUDUS chrání dílnu i veřejné enginy, ale z exportovaných studentských her ochranu záměrně odstraňuje.
 
 ## 0.6.0 — 2026-07-10
-
 **Profesionální rozcestník a podepsaný přístup po školení**
 
 - Nahrazen veřejný lokální demonstrační zámek kryptograficky podepsanými oprávněními s výchozím stavem všech aplikací uzamčeno.
@@ -300,7 +275,6 @@
 - Rozšířena diagnostika, PWA cache, testy soukromých klíčů, validace interních odkazů a kontrola celého distribučního balíku.
 
 ## 0.5.1 — 2026-07-10
-
 **Zpevnění před pilotem podle nezávislého hloubkového auditu**
 
 - Sjednoceny pilotní statusy ve Studiu i ve zdrojových manifestech; automatická validace nyní odmítne předčasné označení produkčního školního provozu.
@@ -313,7 +287,6 @@
 - Aktualizována bezpečnostní, serverová a provozní dokumentace včetně sdíleného originu, GitHub synchronizace a kontinuity vlastnictví repozitářů.
 
 ## 0.5.0 — 2026-07-10
-
 **Bezpečné exporty, lokální proškolení a rozšířená diagnostika**
 
 - Opraveny anonymní exporty: neexportují obsah pracovního prostoru, prompty, texty materiálů, názvy materiálů ani volné poznámky.
@@ -324,7 +297,6 @@
 - Sjednoceno zápatí podle dohodnuté formulace Autor a vývojový garant / Školní projekt.
 
 ## 0.4.0 — 2026-07-10
-
 **Profesionální audit, diagnostika a serverová připravenost**
 
 - Přidána samostatná stránka Změny s přehledným changelogem přímo v aplikaci.
@@ -335,7 +307,6 @@
 - Rozšířeny automatické testy o kontrolu nových stránek, zápatí, PWA cache, oprávnění a duplicitních JavaScriptových polí.
 
 ## 0.3.0 — 2026-07-10
-
 **Serverless pracovní tok a pilotní měření**
 
 - Přidán společný formát GHRAB Material a krátkodobý handoff do dílčích aplikací.
@@ -343,20 +314,17 @@
 - Doplněna automatizovaná synchronizace manifestů aplikací.
 
 ## 0.2.1 — 2026-07-10
-
 **Výkon, animace a celá obrazovka**
 
 - Doplněny režimy animací: automatické, plné, úsporné a vypnuté.
 - Doplněno tlačítko celé obrazovky a úspornější mobilní režim.
 
 ## 0.2.0 — 2026-07-10
-
 **Portál a automatizace**
 
 - Přidán sci-fi portál, automatizace a manifesty dílčích aplikací.
 
 ## 0.1.0 — 2026-07-10
-
 **První serverless portál**
 
 - Vznikl první společný rozcestník aplikací s PWA jádrem.

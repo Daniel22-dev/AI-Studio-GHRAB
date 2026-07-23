@@ -266,8 +266,8 @@
     },
     "version": "0.5.0",
     "status": {
-      "cs": "Produkční kandidát · bezserverový provoz",
-      "en": "Production candidate · serverless operation"
+      "cs": "Připraveno k řízenému pilotu",
+      "en": "Ready for controlled pilot"
     },
     "description": {
       "cs": "Originální prémiové redakční studio pro tvorbu pracovních listů a výukových aktivit ve všech předmětech. Nabízí 39 formátů, diferenciaci, varianty A/B/C, tiskové PDF, projekci bez telefonů, lokální knihovnu, přenosné sdílení, úplný manuál, interní testovací centrum a architekturu připravenou na budoucí školní server.",
@@ -344,5 +344,108 @@
       "studioBridge": "1.1"
     },
     "publishedAt": "2026-07-22T13:00:00.000Z"
+  },
+  {
+    "schema": "ai-studio-app-manifest-v1",
+    "id": "sortio",
+    "name": {
+      "cs": "SORTIO – Organizátor třídy",
+      "en": "SORTIO – Classroom Organiser"
+    },
+    "version": "1.0.1",
+    "status": {
+      "cs": "Připraveno k řízenému pilotu",
+      "en": "Ready for controlled pilot"
+    },
+    "description": {
+      "cs": "Prémiový local-first organizátor třídy pro import seznamů z IS, docházku, losování, chytré skupiny, role, zasedací pořádek, bezpečnou projekci, spravedlivou historii zapojování, tisk/PDF, odolné zálohy a diagnostiku bez osobních údajů.",
+      "en": "A premium local-first classroom organiser for school-system import, attendance, random selection, smart groups, roles, seating, safe projection, fair engagement history, print/PDF, resilient backups and privacy-safe diagnostics."
+    },
+    "launchUrl": "https://daniel22-dev.github.io/SORTIO/",
+    "manualUrl": "https://daniel22-dev.github.io/SORTIO/manual/",
+    "repository": "daniel22-dev/SORTIO",
+    "icon": "assets/apps/sortio.svg",
+    "accent": "#5EE7FF",
+    "tags": [
+      {
+        "cs": "Organizace třídy",
+        "en": "Classroom organisation"
+      },
+      {
+        "cs": "Chytré skupiny",
+        "en": "Smart groups"
+      },
+      {
+        "cs": "Role a zasedací pořádek",
+        "en": "Roles and seating"
+      },
+      {
+        "cs": "Local-first",
+        "en": "Local-first"
+      }
+    ],
+    "capabilities": [
+      "modular-core",
+      "class-roster-management",
+      "school-email-name-import",
+      "attendance-filter",
+      "non-repeating-random-selection",
+      "multi-selection-and-order",
+      "balanced-group-generation",
+      "locked-group-reroll",
+      "manual-group-moves",
+      "random-spokesperson",
+      "local-backup",
+      "anonymous-output-telemetry",
+      "premium-design-system",
+      "dark-light-theme",
+      "reduced-motion",
+      "pwa",
+      "complete-in-app-manual",
+      "internal-self-tests",
+      "ghrab-qa-1.0.2",
+      "studio-access-guard",
+      "constraint-aware-group-generation",
+      "balanced-level-groups",
+      "homogeneous-level-groups",
+      "history-aware-groups",
+      "must-together-rules",
+      "must-separate-rules",
+      "group-pinning",
+      "fair-role-rotation",
+      "topic-assignment",
+      "seating-layouts",
+      "front-seat-preferences",
+      "locked-seats",
+      "safe-projection-mode",
+      "classroom-timer",
+      "stopwatch",
+      "team-scoreboard",
+      "fair-engagement-tracking",
+      "decision-tools",
+      "print-and-pdf-exports",
+      "resilient-local-storage",
+      "last-known-good-recovery",
+      "validated-backup-import",
+      "backup-integrity-checksum",
+      "production-diagnostics",
+      "anonymous-demo-class",
+      "keyboard-shortcuts",
+      "accessibility-audit",
+      "large-class-performance-tested"
+    ],
+    "privacy": {
+      "storage": "local-only",
+      "storesEmailAddresses": false,
+      "externalStudentDataTransfer": false,
+      "diagnosticsContainStudentNames": false
+    },
+    "compatibility": {
+      "studioMinVersion": "0.18.4",
+      "materialSchema": "ghrab-material-v1",
+      "studioBridge": "1.1",
+      "dataSchema": "sortio-data-v5"
+    },
+    "publishedAt": "2026-07-23T13:55:00.000Z"
   }
 ]

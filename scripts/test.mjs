@@ -67,8 +67,8 @@ for (const [label, list] of [
   ["generated registry", apps],
   ["fallback registry", fallback],
 ]) {
-  if (!Array.isArray(list) || list.length < 6) {
-    fail(`${label} musí obsahovat alespoň šest aplikací.`);
+  if (!Array.isArray(list) || list.length < 7) {
+    fail(`${label} musí obsahovat alespoň sedm aplikací.`);
     continue;
   }
   const ids = new Set();
@@ -97,8 +97,8 @@ for (const [label, list] of [
       fail(`Chybí ikona ${app.id}: ${app.icon}`);
   }
 }
-if (!Array.isArray(sources) || sources.length < 6)
-  fail("sources.json musí obsahovat alespoň šest zdrojů.");
+if (!Array.isArray(sources) || sources.length < 7)
+  fail("sources.json musí obsahovat alespoň sedm zdrojů.");
 if (!apps?.some((app) => app.id === "essay-evaluator"))
   fail("Generovaný registr neobsahuje essay-evaluator.");
 if (!fallback?.some((app) => app.id === "essay-evaluator"))
@@ -109,6 +109,12 @@ if (!fallback?.some((app) => app.id === "activity-builder"))
   fail("Fallback registr neobsahuje ACTIVA.");
 if (!sources?.some((source) => source.id === "activity-builder"))
   fail("sources.json neobsahuje zdroj ACTIVA.");
+if (!apps?.some((app) => app.id === "sortio" && app.version === "1.0.1"))
+  fail("Generovaný registr neobsahuje SORTIO 1.0.1.");
+if (!fallback?.some((app) => app.id === "sortio"))
+  fail("Fallback registr neobsahuje SORTIO.");
+if (!sources?.some((source) => source.id === "sortio"))
+  fail("sources.json neobsahuje zdroj SORTIO.");
 if (apps?.slice(0, 4).every((app) => app.id !== "essay-evaluator"))
   fail("Hodnotitel musí být ve výchozím Top 4.");
 if (apps?.slice(4).every((app) => app.id !== "ludus"))
@@ -136,6 +142,8 @@ if (policy?.applications?.["essay-evaluator"]?.trainingCode !== "HOD-01")
   fail("Hodnotitel nemá školení HOD-01.");
 if (policy?.applications?.["activity-builder"]?.trainingCode !== "ACT-01")
   fail("ACTIVA nemá školení ACT-01.");
+if (policy?.applications?.sortio?.trainingCode !== "SOR-01")
+  fail("SORTIO nemá školení SOR-01.");
 if (syncReport?.schema !== "ai-studio-sync-report-v1")
   fail("sync-report.json má neplatné schema.");
 if (
@@ -308,7 +316,7 @@ if (manifest?.id !== "/AI-Studio-GHRAB/")
 const manualsHtml = await readFile(path.join(src, "manualy/index.html"), "utf8");
 const manualsJs = await readFile(path.join(src, "manualy/manualy.js"), "utf8");
 if (!manualsHtml.includes('id="ecosystem-support"')) fail("Centrum manuálů nemá společnou podporu ekosystému.");
-if (!manualsJs.includes('activity-builder') || !manualsJs.includes('MANUAL_TOPICS')) fail("Centrum manuálů nepopisuje ACTIVA a obsah jednotlivých průvodců.");
+if (!manualsJs.includes('activity-builder') || !manualsJs.includes('sortio') || !manualsJs.includes('MANUAL_TOPICS')) fail("Centrum manuálů nepopisuje ACTIVA, SORTIO a obsah jednotlivých průvodců.");
 if (!(await exists(path.join(src, "manualy/ecosystem-guide.html")))) fail("Chybí společná provozní příručka ekosystému.");
 
 if (Object.hasOwn(manifest || {}, "version"))

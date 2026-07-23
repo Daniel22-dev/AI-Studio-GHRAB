@@ -1391,6 +1391,7 @@ function portalAppCard(app, index, permissions) {
   const article = el("article", "portal-app-card");
   article.dataset.position = String(index);
   article.dataset.appId = app.id;
+  article.style.setProperty("--app-accent", app.accent || "#50e8ff");
   article.classList.add(`accent-${app.id}`);
   if (!access.enabled) article.classList.add("is-locked");
   if (favorites.includes(app.id)) article.classList.add("is-favorite");

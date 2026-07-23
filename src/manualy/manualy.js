@@ -10,7 +10,8 @@ const MANUAL_TOPICS = {
   "essay-evaluator": ["Anonymizace a import slohů", "Rubrika, důkazy a schválení", "Reporty a bezpečná distribuce"],
   correspondence: ["Rozbor příchozí zprávy", "Anonymizace a tři varianty", "Kontrola před odesláním"],
   ludus: ["Výběr herního světa", "Tvorba a vedení hry", "Týmový režim a offline export"],
-  "activity-builder": ["39 typů aktivit a předmětové balíčky", "Diferenciace, varianty a prémiové PDF", "Projekce, knihovna a interní testy"]
+  "activity-builder": ["39 typů aktivit a předmětové balíčky", "Diferenciace, varianty a prémiové PDF", "Projekce, knihovna a interní testy"],
+  sortio: ["Import tříd a docházka", "Losování, chytré skupiny, role a místa", "Projekce, historie zapojování, tisk a zálohy"]
 };
 
 
