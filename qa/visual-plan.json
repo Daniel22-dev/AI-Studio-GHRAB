@@ -80,6 +80,32 @@
           "height": 1080
         }
       ]
+    },
+    {
+      "id": "studio-manuals",
+      "name": "Centrum manuálů šesti aplikací",
+      "url": "/manualy/index.html",
+      "expectedText": "Vyberte aplikaci",
+      "mustVisible": [
+        "#manual-grid",
+        "#ecosystem-support"
+      ],
+      "viewports": [
+        {
+          "width": 360,
+          "height": 800
+        },
+        {
+          "width": 1366,
+          "height": 768
+        }
+      ],
+      "steps": [
+        {
+          "action": "wait",
+          "ms": 650
+        }
+      ]
     }
   ]
 }

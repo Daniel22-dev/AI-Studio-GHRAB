@@ -18,5 +18,9 @@
   {
     "id": "ludus",
     "url": "https://daniel22-dev.github.io/Ludus/studio-manifest.json"
+  },
+  {
+    "id": "activity-builder",
+    "url": "https://daniel22-dev.github.io/Sestavovac-aktivit/studio-manifest.json"
   }
 ]

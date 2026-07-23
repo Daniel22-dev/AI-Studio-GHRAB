@@ -4,6 +4,15 @@ const accessSummary = document.querySelector("#manual-access-summary");
 const syncState = document.querySelector("#manual-sync-state");
 let apps = [];
 let syncReport = null;
+const MANUAL_TOPICS = {
+  generator: ["Tvorba testu a procvičování", "Varianty, kódy a offline odevzdání", "Vyhodnocení a export"],
+  differentiator: ["Tři pedagogické úrovně", "Úprava pracovního listu", "Kontrola kvality a PDF"],
+  "essay-evaluator": ["Anonymizace a import slohů", "Rubrika, důkazy a schválení", "Reporty a bezpečná distribuce"],
+  correspondence: ["Rozbor příchozí zprávy", "Anonymizace a tři varianty", "Kontrola před odesláním"],
+  ludus: ["Výběr herního světa", "Tvorba a vedení hry", "Týmový režim a offline export"],
+  "activity-builder": ["39 typů aktivit a předmětové balíčky", "Diferenciace, varianty a prémiové PDF", "Projekce, knihovna a interní testy"]
+};
+
 
 function make(tag, className, text) {
   const node = document.createElement(tag);
@@ -64,6 +73,10 @@ function manualCard(app) {
     "manual-description",
     G.localised(app.description),
   );
+  const topics = make("ul", "manual-topics");
+  for (const topic of MANUAL_TOPICS[app.id] || [G.t("Úvod, pracovní postup a řešení problémů", "Introduction, workflow and troubleshooting")]) {
+    topics.append(make("li", "", topic));
+  }
   const note = make(
     "p",
     "manual-access-note",
@@ -102,7 +115,7 @@ function manualCard(app) {
     actions.append(accessLink);
   }
 
-  article.append(head, title, version, description, note, actions);
+  article.append(head, title, version, description, topics, note, actions);
   return article;
 }
 

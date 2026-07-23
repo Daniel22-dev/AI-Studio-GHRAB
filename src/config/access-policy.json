@@ -5,7 +5,9 @@
   "defaultState": "locked",
   "clockSkewSeconds": 300,
   "maximumPermitDays": 400,
-  "administratorRoles": ["admin"],
+  "administratorRoles": [
+    "admin"
+  ],
   "applications": {
     "generator": {
       "trainingRequired": true,
@@ -50,6 +52,15 @@
       "label": {
         "cs": "LUDUS",
         "en": "LUDUS"
+      }
+    },
+    "activity-builder": {
+      "trainingRequired": true,
+      "trainingCode": "ACT-01",
+      "trainingVersion": "2026-09",
+      "label": {
+        "cs": "ACTIVA – Sestavovač aktivit",
+        "en": "ACTIVA – Activity Builder"
       }
     }
   },

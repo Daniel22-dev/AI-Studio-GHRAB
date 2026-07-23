@@ -38,6 +38,13 @@
       "ok": false,
       "version": "1.16.3",
       "error": "offline režim"
+    },
+    {
+      "id": "activity-builder",
+      "url": "https://daniel22-dev.github.io/Sestavovac-aktivit/studio-manifest.json",
+      "ok": false,
+      "version": "0.5.0",
+      "error": "offline režim"
     }
   ]
 }

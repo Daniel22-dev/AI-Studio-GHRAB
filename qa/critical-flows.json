@@ -33,6 +33,28 @@
           "message": "Aktivace service workeru není omezena na vlastní prefix."
         }
       ]
+    },
+    {
+      "id": "STUDIO-ACTIVA-INTEGRATION",
+      "name": "ACTIVA je v registru, politice a manuálech",
+      "type": "static",
+      "assertions": [
+        {
+          "file": "src/config/apps.fallback.json",
+          "regex": "\\\"id\\\"\\s*:\\s*\\\"activity-builder\\\"",
+          "message": "Fallback registr neobsahuje ACTIVA."
+        },
+        {
+          "file": "src/config/access-policy.json",
+          "regex": "\\\"trainingCode\\\"\\s*:\\s*\\\"ACT-01\\\"",
+          "message": "ACTIVA nemá školení ACT-01."
+        },
+        {
+          "file": "src/manualy/manualy.js",
+          "regex": "activity-builder",
+          "message": "Centrum manuálů nemá obsah ACTIVA."
+        }
+      ]
     }
   ]
 }

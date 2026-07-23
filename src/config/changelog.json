@@ -1,7 +1,29 @@
 {
   "schema": "ai-studio-changelog-v1",
-  "current": "0.18.2",
+  "current": "0.18.3",
   "items": [
+    {
+      "version": "0.18.3",
+      "date": "2026-07-22",
+      "title": {
+        "cs": "ACTIVA, rozšířené manuály a šestá aplikace ekosystému",
+        "en": "ACTIVA, expanded manuals and the sixth ecosystem application"
+      },
+      "changes": [
+        {
+          "cs": "Do aktuálního registru, přístupové politiky, synchronizace a pracovního prostoru byla přidána ACTIVA 0.5.0 s povinným školením ACT-01.",
+          "en": "ACTIVA 0.5.0 was added to the current registry, access policy, synchronisation and workspace with required ACT-01 training."
+        },
+        {
+          "cs": "Centrum Manuály nově ukazuje konkrétní obsah průvodce každé aplikace a společnou provozní příručku pro API klíče, soukromí, PDF, zálohy, PWA a diagnostiku.",
+          "en": "The Manuals centre now shows the concrete coverage of every application guide and a shared operations guide for API keys, privacy, PDF, backups, PWA and diagnostics."
+        },
+        {
+          "cs": "Integrační a QA kontroly ověřují šest aplikací, zdroj ACTIVA, manuál, ikonu, školení a kompatibilitu s bezserverovým přístupem.",
+          "en": "Integration and QA checks now verify six applications, the ACTIVA source, manual, icon, training and compatibility with serverless access."
+        }
+      ]
+    },
     {
       "version": "0.18.2",
       "date": "2026-07-17",

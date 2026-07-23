@@ -256,5 +256,93 @@
       "studioBridge": "1.1"
     },
     "publishedAt": "2026-07-13T12:00:00.000Z"
+  },
+  {
+    "schema": "ai-studio-app-manifest-v1",
+    "id": "activity-builder",
+    "name": {
+      "cs": "Sestavovač aktivit",
+      "en": "Activity Builder"
+    },
+    "version": "0.5.0",
+    "status": {
+      "cs": "Produkční kandidát · bezserverový provoz",
+      "en": "Production candidate · serverless operation"
+    },
+    "description": {
+      "cs": "Originální prémiové redakční studio pro tvorbu pracovních listů a výukových aktivit ve všech předmětech. Nabízí 39 formátů, diferenciaci, varianty A/B/C, tiskové PDF, projekci bez telefonů, lokální knihovnu, přenosné sdílení, úplný manuál, interní testovací centrum a architekturu připravenou na budoucí školní server.",
+      "en": "Original premium editorial studio for creating worksheets and learning activities across all subjects. It offers 39 formats, differentiation, A/B/C variants, print-ready PDF, phone-free projection, a local library, portable sharing, a complete manual, an internal test centre and architecture ready for a future school server."
+    },
+    "launchUrl": "https://daniel22-dev.github.io/Sestavovac-aktivit/",
+    "manualUrl": "https://daniel22-dev.github.io/Sestavovac-aktivit/manual/",
+    "repository": "daniel22-dev/Sestavovac-aktivit",
+    "icon": "assets/apps/activity-builder.png",
+    "accent": "#3157FF",
+    "tags": [
+      {
+        "cs": "Pracovní listy a PDF",
+        "en": "Worksheets and PDF"
+      },
+      {
+        "cs": "39 typů aktivit",
+        "en": "39 activity types"
+      },
+      {
+        "cs": "Projekce bez mobilů",
+        "en": "Phone-free projection"
+      },
+      {
+        "cs": "Připraveno na server",
+        "en": "Server-ready"
+      }
+    ],
+    "capabilities": [
+      "worksheet-builder",
+      "print-ready-pdf",
+      "answer-keys",
+      "variants-abc",
+      "three-level-differentiation",
+      "subject-packs",
+      "cross-curricular",
+      "language-activities",
+      "stem-activities",
+      "humanities-activities",
+      "crossword",
+      "wordsearch",
+      "local-draft",
+      "anonymous-output-telemetry",
+      "group-work-kits",
+      "learning-stations",
+      "paper-escape-room",
+      "printable-board-game",
+      "role-cards",
+      "case-study",
+      "debate-cards",
+      "image-annotation",
+      "diagram-labels",
+      "blank-map",
+      "data-chart",
+      "timeline-cards",
+      "projection-mode",
+      "teacher-led-interactivity",
+      "team-scoreboard",
+      "class-timer",
+      "local-material-library",
+      "school-material-catalog",
+      "share-package",
+      "standalone-interactive-html",
+      "local-session-analytics",
+      "complete-in-app-manual",
+      "internal-self-tests",
+      "ghrab-qa-1.0.2",
+      "storage-provider-adapter",
+      "backend-ready"
+    ],
+    "compatibility": {
+      "studioMinVersion": "0.18.3",
+      "materialSchema": "ghrab-material-v1",
+      "studioBridge": "1.1"
+    },
+    "publishedAt": "2026-07-22T13:00:00.000Z"
   }
 ]

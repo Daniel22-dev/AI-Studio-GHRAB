@@ -247,21 +247,21 @@
   .manual-grid {
     grid-template-columns: 1fr;
   }
-  .manual-heading {
+.manual-heading {
     display: block;
   }
-  .manual-sync-state {
+.manual-sync-state {
     text-align: left;
     margin-top: 10px;
   }
-  .manual-access-summary {
+.manual-access-summary {
     grid-template-columns: auto 1fr;
   }
-  .manual-access-summary .button {
+.manual-access-summary .button {
     grid-column: 1/-1;
     width: 100%;
   }
-  .manual-card {
+.manual-card {
     min-height: 0;
   }
 }
@@ -269,20 +269,19 @@
   .manual-section {
     padding-top: 15px;
   }
-  .manual-card {
+.manual-card {
     padding: 20px;
   }
-  .manual-actions {
+.manual-actions {
     display: grid;
   }
-  .manual-actions .button {
+.manual-actions .button {
     width: 100%;
   }
-  .manual-principle {
+.manual-principle {
     padding: 16px;
   }
 }
-
 .manual-utility-card {
   display: grid;
   grid-template-columns: auto minmax(0, 1fr) auto;
@@ -322,8 +321,36 @@
   .manual-utility-card {
     grid-template-columns: auto 1fr;
   }
-  .manual-utility-card .button {
+.manual-utility-card .button {
     grid-column: 1/-1;
     width: 100%;
   }
+}
+.ecosystem-support{margin:0 0 36px;
+  padding:24px;
+  border-color:rgba(49,87,255,.34);
+  background:linear-gradient(135deg,rgba(49,87,255,.12),rgba(255,107,95,.055),rgba(3,12,23,.93))}
+.ecosystem-support-copy{max-width:820px}
+.ecosystem-support h2{margin:4px 0 8px}
+.ecosystem-support-copy>p:last-child{color:var(--muted);line-height:1.6}
+.ecosystem-guide-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:10px;margin-top:20px}
+.ecosystem-guide-grid a{display:block;
+  padding:14px;
+  border:1px solid var(--line);
+  border-radius:14px;
+  background:rgba(2,10,19,.48);text-decoration:none;color:var(--text);transition:.2s}
+.ecosystem-guide-grid a:hover{transform:translateY(-2px);border-color:rgba(80,232,255,.4)}
+.ecosystem-guide-grid b,.ecosystem-guide-grid small{display:block}
+.ecosystem-guide-grid small{margin-top:4px;color:var(--muted);font-size:.72rem}
+.manual-topics{position:relative;
+  z-index:1;
+  margin:0 0 14px;
+  padding:12px 14px 12px 31px;
+  border:1px solid color-mix(in srgb,var(--manual-accent) 18%,var(--line));
+  border-radius:13px;
+  background:rgba(255,255,255,.025);color:var(--muted);font-size:.75rem;line-height:1.5}
+.manual-topics li+li{margin-top:4px}
+@media(max-width:760px){.ecosystem-guide-grid{grid-template-columns:1fr 1fr}
+}
+@media(max-width:480px){.ecosystem-guide-grid{grid-template-columns:1fr}
 }

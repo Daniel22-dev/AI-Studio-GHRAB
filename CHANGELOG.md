@@ -2,6 +2,14 @@
 
 > Tento soubor se generuje ze `src/config/changelog.json`. Neupravujte jej ručně.
 
+## 0.18.3 — 2026-07-22
+
+**ACTIVA, rozšířené manuály a šestá aplikace ekosystému**
+
+- Do aktuálního registru, přístupové politiky, synchronizace a pracovního prostoru byla přidána ACTIVA 0.5.0 s povinným školením ACT-01.
+- Centrum Manuály nově ukazuje konkrétní obsah průvodce každé aplikace a společnou provozní příručku pro API klíče, soukromí, PDF, zálohy, PWA a diagnostiku.
+- Integrační a QA kontroly ověřují šest aplikací, zdroj ACTIVA, manuál, ikonu, školení a kompatibilitu s bezserverovým přístupem.
+
 ## 0.18.2 — 2026-07-17
 
 **Správný návrat z manuálu do otevřené aplikace**

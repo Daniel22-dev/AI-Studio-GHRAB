@@ -1,0 +1,135 @@
+<!DOCTYPE html>
+<html data-theme="dark" lang="cs">
+ <head>
+  <meta charset="utf-8"/>
+  <meta content="width=device-width,initial-scale=1" name="viewport"/>
+  <meta content="#030915" name="theme-color"/>
+  <meta content="default-src 'self'; script-src 'self'; style-src 'self' 'unsafe-inline'; img-src 'self' data:; object-src 'none'; base-uri 'self'" http-equiv="Content-Security-Policy"/>
+  <title>
+   Společná příručka · AI Studio GHRAB
+  </title>
+  <link href="../styles.css" rel="stylesheet"/>
+  <link href="../polish.css" rel="stylesheet"/>
+  <link href="./ecosystem-guide.css" rel="stylesheet"/>
+ </head>
+ <body>
+  <main class="guide">
+   <div class="top">
+    <a href="./">
+     ← Centrum manuálů
+    </a>
+    <strong>
+     AI Studio GHRAB · společná příručka · verze 0.18.3
+    </strong>
+   </div>
+   <section class="hero">
+    <p class="eyebrow">
+     ŠEST APLIKACÍ · JEDEN PROVOZNÍ STANDARD
+    </p>
+    <h1>
+     Společné postupy celého ekosystému
+    </h1>
+    <p>
+     Tato příručka doplňuje manuály jednotlivých aplikací. Popisuje témata, která se mají provádět stejně v GITu, Diferenciátoru, Hodnotiteli, Korespondenčním asistentovi, LUDUSu i ACTIVA.
+    </p>
+   </section>
+   <nav class="toc">
+    <a href="#api">
+     API a modely
+    </a>
+    <a href="#privacy">
+     Soukromí
+    </a>
+    <a href="#print">
+     PDF a tisk
+    </a>
+    <a href="#backup">
+     Zálohy
+    </a>
+    <a href="#pwa">
+     PWA
+    </a>
+    <a href="#diagnostics">
+     Diagnostika
+    </a>
+   </nav>
+   <section class="section" id="api">
+    <h2>
+     API klíče a modely
+    </h2>
+    <ol class="steps">
+     <li>
+      API klíč vkládejte pouze do nastavení konkrétní aplikace.
+     </li>
+     <li>
+      Klíč neposílejte e-mailem a nevkládejte jej do projektu, screenshotu ani diagnostického protokolu.
+     </li>
+     <li>
+      Rychlý model používejte pro běžnou tvorbu, důkladný režim pro náročné podklady.
+     </li>
+     <li>
+      Při chybě limitu zkontrolujte stav klíče a až potom opakujte požadavek.
+     </li>
+    </ol>
+    <div class="callout">
+     AI výstup vždy kontroluje učitel. Připojení modelu nenahrazuje odbornou ani pedagogickou odpovědnost.
+    </div>
+   </section>
+   <section class="section" id="privacy">
+    <h2>
+     Soukromí a anonymizace
+    </h2>
+    <p>
+     Nevkládejte celá jména žáků, osobní e-maily, adresy, rodná čísla, zdravotní údaje ani citlivé rodinné informace. Používejte anonymní označení typu ŽÁK_01. Kontrola aplikace je pomocná; konečnou kontrolu provádí učitel.
+    </p>
+   </section>
+   <section class="section" id="print">
+    <h2>
+     PDF, tisk a náhled
+    </h2>
+    <p>
+     Před exportem zkontrolujte řešení, dělení stran, velikost písma, variantu a režim žák/učitel. Pro běžné kopírování volte úsporný černobílý režim. Systémové „Uložit jako PDF“ zachová přesnou sazbu náhledu.
+    </p>
+   </section>
+   <section class="section" id="backup">
+    <h2>
+     Lokální data, zálohy a obnova
+    </h2>
+    <p>
+     Bezserverové aplikace ukládají část dat do konkrétního prohlížeče. Důležitý materiál proto exportujte jako projekt nebo knihovní balíček. Vymazání dat prohlížeče může místní projekty odstranit. API klíče do záloh nepatří.
+    </p>
+   </section>
+   <section class="section" id="pwa">
+    <h2>
+     Instalace PWA a aktualizace
+    </h2>
+    <p>
+     AI Studio lze v Chrome nebo Edge nainstalovat jako aplikaci. Po vydání nové verze zavřete stará okna a znovu spusťte Studio. Pokud se zobrazuje stará verze, použijte obnovení aplikace v pracovním prostoru nebo vyčkejte na dokončení aktualizace offline cache.
+    </p>
+   </section>
+   <section class="section" id="diagnostics">
+    <h2>
+     Testy, diagnostika a hlášení chyby
+    </h2>
+    <ol class="steps">
+     <li>
+      Zopakujte chybu a poznamenejte přesný krok.
+     </li>
+     <li>
+      Otevřete interní testy nebo diagnostiku aplikace.
+     </li>
+     <li>
+      Zkontrolujte a anonymizujte snímek obrazovky.
+     </li>
+     <li>
+      Přiložte verzi aplikace, technický protokol a stručný popis očekávaného chování.
+     </li>
+    </ol>
+    <div class="callout">
+     Nefotografujte monitor telefonem. Použijte snímek obrazovky a před odesláním začerněte citlivé údaje.
+    </div>
+   </section>
+  </main>
+ </body>
+</html>
+
