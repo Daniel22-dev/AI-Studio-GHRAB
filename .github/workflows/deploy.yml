@@ -37,9 +37,8 @@ jobs:
       - name: Synchronise application manifests
         if: github.event_name != 'pull_request'
         run: npm run sync
-      - name: Format generated registry files
-        if: github.event_name != 'pull_request'
-        run: npx prettier --write src/config/apps.generated.json src/config/sync-report.json
+      - name: Normalize source formatting
+        run: npm run format
       - name: Install Playwright Chromium
         run: npx playwright install --with-deps chromium
       - name: Run GHRAB QA release gate
