@@ -37,6 +37,27 @@ const exists = async (file) => {
   }
 };
 const base64url = (value) => Buffer.from(value).toString("base64url");
+const isVersionAtLeast = (version, minimum) => {
+  const parse = (value) =>
+    String(value)
+      .split(/[+-]/, 1)[0]
+      .split(".")
+      .map((part) => Number(part));
+  const current = parse(version);
+  const required = parse(minimum);
+  if (
+    current.length !== 3 ||
+    required.length !== 3 ||
+    [...current, ...required].some((part) => !Number.isInteger(part))
+  ) {
+    return false;
+  }
+  for (let index = 0; index < 3; index += 1) {
+    if (current[index] > required[index]) return true;
+    if (current[index] < required[index]) return false;
+  }
+  return true;
+};
 
 const pkg = await loadJson(path.join(root, "package.json"));
 const apps = await loadJson(path.join(src, "config/apps.generated.json"));
@@ -103,16 +124,25 @@ if (!apps?.some((app) => app.id === "essay-evaluator"))
   fail("Generovaný registr neobsahuje essay-evaluator.");
 if (!fallback?.some((app) => app.id === "essay-evaluator"))
   fail("Fallback registr neobsahuje essay-evaluator.");
-if (!apps?.some((app) => app.id === "activity-builder" && app.version === "0.5.0"))
-  fail("Generovaný registr neobsahuje ACTIVA 0.5.0.");
-if (!fallback?.some((app) => app.id === "activity-builder"))
-  fail("Fallback registr neobsahuje ACTIVA.");
+const activityBuilder = apps?.find((app) => app.id === "activity-builder");
+const activityBuilderFallback = fallback?.find(
+  (app) => app.id === "activity-builder",
+);
+if (!activityBuilder || !isVersionAtLeast(activityBuilder.version, "0.5.0"))
+  fail("Generovaný registr neobsahuje ACTIVA 0.5.0 nebo novější.");
+if (
+  !activityBuilderFallback ||
+  !isVersionAtLeast(activityBuilderFallback.version, "0.5.0")
+)
+  fail("Fallback registr neobsahuje ACTIVA 0.5.0 nebo novější.");
 if (!sources?.some((source) => source.id === "activity-builder"))
   fail("sources.json neobsahuje zdroj ACTIVA.");
-if (!apps?.some((app) => app.id === "sortio" && app.version === "1.0.1"))
-  fail("Generovaný registr neobsahuje SORTIO 1.0.1.");
-if (!fallback?.some((app) => app.id === "sortio"))
-  fail("Fallback registr neobsahuje SORTIO.");
+const sortio = apps?.find((app) => app.id === "sortio");
+const sortioFallback = fallback?.find((app) => app.id === "sortio");
+if (!sortio || !isVersionAtLeast(sortio.version, "1.0.2"))
+  fail("Generovaný registr neobsahuje SORTIO 1.0.2 nebo novější.");
+if (!sortioFallback || !isVersionAtLeast(sortioFallback.version, "1.0.2"))
+  fail("Fallback registr neobsahuje SORTIO 1.0.2 nebo novější.");
 if (!sources?.some((source) => source.id === "sortio"))
   fail("sources.json neobsahuje zdroj SORTIO.");
 if (apps?.slice(0, 4).every((app) => app.id !== "essay-evaluator"))

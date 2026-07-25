@@ -5,7 +5,7 @@
 ## 0.18.4 — 2026-07-23
 **SORTIO jako sedmá aplikace AI Studia**
 
-- Do registru aplikací, přístupové politiky a synchronizace bylo přidáno SORTIO 1.0.1 s povinným školením SOR-01.
+- Do registru aplikací, přístupové politiky a synchronizace bylo přidáno SORTIO 1.0.2 s povinným školením SOR-01.
 - Centrum manuálů nyní nabízí průvodce importem tříd, losováním, chytrými skupinami, rolemi, zasedacím pořádkem, projekcí a zálohami SORTIO.
 - Integrační a QA kontroly ověřují sedm aplikací, zdroj SORTIO, ikonu, manuál, školení a kompatibilitu se Studio Bridge 1.1.
 

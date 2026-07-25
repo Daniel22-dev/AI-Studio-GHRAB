@@ -352,14 +352,14 @@
       "cs": "SORTIO – Organizátor třídy",
       "en": "SORTIO – Classroom Organiser"
     },
-    "version": "1.0.1",
+    "version": "1.0.2",
     "status": {
       "cs": "Připraveno k řízenému pilotu",
       "en": "Ready for controlled pilot"
     },
     "description": {
-      "cs": "Prémiový local-first organizátor třídy pro import seznamů z IS, docházku, losování, chytré skupiny, role, zasedací pořádek, bezpečnou projekci, spravedlivou historii zapojování, tisk/PDF, odolné zálohy a diagnostiku bez osobních údajů.",
-      "en": "A premium local-first classroom organiser for school-system import, attendance, random selection, smart groups, roles, seating, safe projection, fair engagement history, print/PDF, resilient backups and privacy-safe diagnostics."
+      "cs": "Produkční local-first organizátor třídy: import z IS, losování, chytré skupiny, role, zasedací pořádek, bezpečná projekce, třídní nástroje, spravedlivá historie, tisk/PDF, odolné zálohy a diagnostika bez osobních údajů.",
+      "en": "A production local-first classroom organiser with school-system import, random selection, smart groups, roles, seating, safe projection, classroom tools, fair engagement history, print/PDF, resilient backups and privacy-safe diagnostics."
     },
     "launchUrl": "https://daniel22-dev.github.io/SORTIO/",
     "manualUrl": "https://daniel22-dev.github.io/SORTIO/manual/",
@@ -441,11 +441,11 @@
       "diagnosticsContainStudentNames": false
     },
     "compatibility": {
-      "studioMinVersion": "0.18.4",
+      "studioMinVersion": "0.18.3",
       "materialSchema": "ghrab-material-v1",
       "studioBridge": "1.1",
       "dataSchema": "sortio-data-v5"
     },
-    "publishedAt": "2026-07-23T13:55:00.000Z"
+    "publishedAt": "2026-07-25T05:12:01.613Z"
   }
 ]

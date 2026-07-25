@@ -283,8 +283,9 @@ let runsInBrowser = 0;
 const maxRunsPerBrowser = Number(process.env.GHRAB_VISUAL_BROWSER_BATCH || 1);
 
 function isTransientBrowserError(error) {
-  return /Target (?:page|context|browser).*closed|has been closed|browserContext\.newPage|browser.*disconnected|Browser closed|crash/i.test(
-    String(error),
+  const text = String(error);
+  return /Target (?:page|context|browser).*closed|has been closed|browserContext\.newPage|browser.*disconnected|Browser closed|crash|Page\.captureScreenshot|Unable to capture screenshot|Protocol error.*captureScreenshot|screenshot.*failed|Target crashed|Renderer process crashed/i.test(
+    text,
   );
 }
 
@@ -307,9 +308,43 @@ async function ensureBrowser() {
   return browser;
 }
 
+const visualAttempts = Math.max(
+  2,
+  Number(process.env.GHRAB_VISUAL_ATTEMPTS || 3),
+);
+const screenshotAttempts = Math.max(
+  2,
+  Number(process.env.GHRAB_VISUAL_SCREENSHOT_ATTEMPTS || 3),
+);
+
+async function captureScreenshotWithRetry(page, targetPath) {
+  let lastError;
+  for (let attempt = 1; attempt <= screenshotAttempts; attempt += 1) {
+    try {
+      if (attempt > 1) {
+        await page.bringToFront().catch(() => {});
+        await page.waitForTimeout(250 * attempt);
+      }
+      return await page.screenshot({
+        path: targetPath,
+        fullPage: false,
+        animations: "disabled",
+        caret: "hide",
+        timeout: 20000,
+      });
+    } catch (error) {
+      lastError = error;
+      if (!isTransientBrowserError(error) || attempt >= screenshotAttempts) {
+        throw error;
+      }
+    }
+  }
+  throw lastError;
+}
+
 async function runVisualCase(scenario, viewport) {
   const transientErrors = [];
-  for (let attempt = 1; attempt <= 2; attempt += 1) {
+  for (let attempt = 1; attempt <= visualAttempts; attempt += 1) {
     let context;
     try {
       const activeBrowser = await ensureBrowser();
@@ -410,10 +445,10 @@ async function runVisualCase(scenario, viewport) {
           "-",
         );
       const screenshot = `qa-screenshots/${filename}`;
-      const buffer = await page.screenshot({
-        path: path.join(SCREEN_DIR, filename),
-        fullPage: false,
-      });
+      const buffer = await captureScreenshotWithRetry(
+        page,
+        path.join(SCREEN_DIR, filename),
+      );
       const pixels = blankStats(buffer);
       const problems = [];
       if (checks.htmlHidden || checks.bodyHidden)
@@ -458,7 +493,7 @@ async function runVisualCase(scenario, viewport) {
       if (badResponses.length)
         problems.push(`lokální HTTP chyba (${badResponses.length})`);
 
-      if (problems.length && attempt < 2) {
+      if (problems.length && attempt < visualAttempts) {
         transientErrors.push(
           `Vizuální kontrola zopakována: ${problems.join("; ")}`,
         );
@@ -505,7 +540,7 @@ async function runVisualCase(scenario, viewport) {
       };
     } catch (error) {
       const text = String(error);
-      if (isTransientBrowserError(error) && attempt < 2) {
+      if (isTransientBrowserError(error) && attempt < visualAttempts) {
         transientErrors.push(text);
         await closeWithLimit(context, 2500);
         context = undefined;

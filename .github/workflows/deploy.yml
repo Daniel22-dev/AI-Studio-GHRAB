@@ -48,6 +48,8 @@ jobs:
         run: npm run qa:release
         env:
           NPM_CONFIG_REGISTRY: https://registry.npmjs.org
+          GHRAB_VISUAL_ATTEMPTS: 3
+          GHRAB_VISUAL_SCREENSHOT_ATTEMPTS: 3
       - name: Upload QA evidence
         if: always()
         uses: actions/upload-artifact@v4
