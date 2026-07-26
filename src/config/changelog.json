@@ -1,7 +1,25 @@
 {
   "schema": "ai-studio-changelog-v1",
-  "current": "0.18.6",
+  "current": "0.18.7",
   "items": [
+    {
+      "version": "0.18.7",
+      "date": "2026-07-26",
+      "title": {
+        "cs": "Optické vycentrování hlavní brány",
+        "en": "Optical centring of the main gateway"
+      },
+      "changes": [
+        {
+          "cs": "Hlavní hvězdná brána je na desktopu jemně posunuta doleva podle skutečného rozdílu mezer mezi její viditelnou obrubou a levým i pravým sloupcem aplikací.",
+          "en": "The main desktop gateway is shifted slightly left according to the measured difference between its visible rim and the left and right application columns."
+        },
+        {
+          "cs": "Korekce se vztahuje na celý kompozit brány včetně kruhů, záře, plošiny a stavového štítku; mobilní jednosloupcové rozložení zůstává přesně geometricky vystředěné.",
+          "en": "The correction applies to the complete gateway composition, including rings, glow, platform and status badge; the mobile single-column layout remains geometrically centred."
+        }
+      ]
+    },
     {
       "version": "0.18.6",
       "date": "2026-07-26",

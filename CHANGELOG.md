@@ -2,6 +2,12 @@
 
 > Tento soubor se generuje ze `src/config/changelog.json`. Neupravujte jej ručně.
 
+## 0.18.7 — 2026-07-26
+**Optické vycentrování hlavní brány**
+
+- Hlavní hvězdná brána je na desktopu jemně posunuta doleva podle skutečného rozdílu mezer mezi její viditelnou obrubou a levým i pravým sloupcem aplikací.
+- Korekce se vztahuje na celý kompozit brány včetně kruhů, záře, plošiny a stavového štítku; mobilní jednosloupcové rozložení zůstává přesně geometricky vystředěné.
+
 ## 0.18.6 — 2026-07-26
 **Samostatné repozitáře Diferenciátoru a Korespondenčního asistenta**
 

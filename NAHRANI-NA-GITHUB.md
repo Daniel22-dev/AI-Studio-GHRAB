@@ -1,6 +1,6 @@
-# Nahrání AI Studio GHRAB 0.18.6
+# Nahrání AI Studio GHRAB 0.18.7
 
-Tento balík přepojuje Diferenciátor a Korespondenčního asistenta na jejich nové samostatné repozitáře a GitHub Pages adresy.
+Tento balík zachovává samostatné repozitáře aplikací a opravuje optické vycentrování hlavní hvězdné brány mezi kartami.
 
 ## Postup
 
@@ -13,4 +13,4 @@ Tento balík přepojuje Diferenciátor a Korespondenčního asistenta na jejich 
 
 ## Očekávaný výsledek
 
-Ve správě zdrojů budou Diferenciátor **1.3.3** a Korespondenční asistent **5.2.5** zobrazeny jako živě ověřené zdroje z vlastních repozitářů.
+Hlavní brána bude mít na desktopu vyrovnaný odstup od levého i pravého sloupce aplikací; registry aplikací zůstávají beze změny.

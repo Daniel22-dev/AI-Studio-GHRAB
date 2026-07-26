@@ -826,6 +826,11 @@ html:not(.access-ready) body[data-page="changelog"] main {
   --portal-shift-y: 0px;
 }
 .portal-core-zone {
+  /* Optical correction: the gateway artwork extends farther to the right.
+     Shift the complete desktop gateway by half of the measured gap difference
+     so its visible rim sits equally far from both application columns. */
+  --portal-optical-center-x: -4px;
+  left: var(--portal-optical-center-x);
   width: min(100%, 570px);
   isolation: isolate;
   transform-style: preserve-3d;
@@ -1420,6 +1425,7 @@ html[data-motion="off"] .portal-core-zone::after {
 }
 @media (max-width: 900px) {
   .portal-core-zone {
+    left: 0;
     width: min(560px, 88vw);
   }
   .portal-hero::before {

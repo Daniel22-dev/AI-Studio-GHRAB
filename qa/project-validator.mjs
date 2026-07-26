@@ -135,6 +135,17 @@ export async function validateSecurity({ root, finding }) {
         `Pilotní report neobsahuje aplikaci ${id}.`,
       );
 
+  const polishCss = await readFile(path.join(src, "polish.css"), "utf8");
+  if (
+    !polishCss.includes("--portal-optical-center-x: -4px") ||
+    !/\.portal-core-zone\s*\{[\s\S]*?left:\s*var\(--portal-optical-center-x\)/.test(polishCss)
+  )
+    add(
+      "MAJOR",
+      "PORTAL_GATEWAY_CENTERING_MISSING",
+      "Hlavní brána nemá zachovanou desktopovou optickou korekci vycentrování.",
+    );
+
   const readme = await readFile(path.join(root, "README.md"), "utf8");
   const readmeVersion = readme.match(/Aktuální verze:\s*([0-9.]+)/)?.[1];
   if (readmeVersion !== pkg.version)

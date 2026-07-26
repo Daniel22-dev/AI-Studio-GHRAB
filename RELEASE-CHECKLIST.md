@@ -1,10 +1,10 @@
-# Release checklist AI Studio GHRAB 0.18.6
+# Release checklist AI Studio GHRAB 0.18.7
 
-**Aktuální verze: 0.18.6**
+**Aktuální verze: 0.18.7**
 
 ## Veřejný balík
 
-- [x] Verze 0.18.6 je shodná v package, buildu, dokumentaci a changelogu; PWA manifest nepoužívá nestandardní pole `version`.
+- [x] Verze 0.18.7 je shodná v package, buildu, dokumentaci a changelogu; PWA manifest nepoužívá nestandardní pole `version`.
 - [x] Všechny aplikace jsou ve výchozím stavu uzamčené.
 - [x] Veřejný balík obsahuje pouze veřejný ověřovací klíč.
 - [x] Ve zdroji ani buildu není soukromý klíč ani `.ghrab-access.json`.
