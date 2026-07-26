@@ -1,6 +1,6 @@
-# Automatizace aktualizací AI Studio GHRAB 0.15.0
+# Automatizace aktualizací AI Studio GHRAB 0.18.6
 
-**Aktuální verze: 0.18.5**
+**Aktuální verze: 0.18.6**
 
 ## Pravidelná synchronizace
 

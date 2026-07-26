@@ -1,7 +1,29 @@
 {
   "schema": "ai-studio-changelog-v1",
-  "current": "0.18.5",
+  "current": "0.18.6",
   "items": [
+    {
+      "version": "0.18.6",
+      "date": "2026-07-26",
+      "title": {
+        "cs": "Samostatné repozitáře Diferenciátoru a Korespondenčního asistenta",
+        "en": "Standalone repositories for Differentiator and Correspondence Assistant"
+      },
+      "changes": [
+        {
+          "cs": "Diferenciátor 1.3.3 a Korespondenční asistent 5.2.5 se nyní načítají z vlastních samostatných repozitářů a nových adres GitHub Pages.",
+          "en": "Differentiator 1.3.3 and Correspondence Assistant 5.2.5 now load from their own standalone repositories and new GitHub Pages addresses."
+        },
+        {
+          "cs": "Centrální registr, ověřený fallback, odkazy na interaktivní manuály a informace o zdrojových repozitářích byly sjednoceny s novou strukturou.",
+          "en": "The central registry, verified fallback, interactive manual links and source repository metadata were aligned with the new structure."
+        },
+        {
+          "cs": "Dokumentace nasazení a bezpečnostní přehled byly aktualizovány pro oddělené aplikace; přístupová brána, telemetrie a společný origin zůstávají zachovány.",
+          "en": "Deployment documentation and the security overview were updated for separated applications; the access gate, telemetry and shared origin remain unchanged."
+        }
+      ]
+    },
     {
       "version": "0.18.5",
       "date": "2026-07-25",

@@ -1,14 +1,14 @@
 # Ochrana samostatných aplikací bez serveru
 
-## Stav ve verzi 0.6.3
+## Stav ve verzi 0.18.6
 
 Ochranná vrstva je integrována v těchto vydáních:
 
-- Generátor interaktivních testů 7.0.6 — ID `generator`,
-- Diferenciátor 1.0.3 — ID `differentiator`,
-- Hodnotitel maturitních slohů 1.3.2 — ID `essay-evaluator`,
-- LUDUS 1.14.3 — ID `ludus`,
-- Korespondenční asistent 4.0.3 — ID `correspondence`.
+- Generátor interaktivních testů 7.1.4 — ID `generator`,
+- Diferenciátor 1.3.3 — ID `differentiator`,
+- Hodnotitel maturitních slohů 1.5.2 — ID `essay-evaluator`,
+- LUDUS 1.16.3 — ID `ludus`,
+- Korespondenční asistent 5.2.5 — ID `correspondence`.
 
 Přímé otevření jejich veřejných adres používá stejné podepsané oprávnění jako spuštění z AI Studia.
 

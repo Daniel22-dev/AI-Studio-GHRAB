@@ -1,7 +1,7 @@
 {
   "schema": "ai-studio-sync-report-v1",
   "generated": true,
-  "generatedAt": "2026-07-25T06:16:09.306Z",
+  "generatedAt": "2026-07-26T04:53:52.711Z",
   "mode": "fallback",
   "fallbackSnapshotConfirmed": true,
   "sources": [
@@ -14,9 +14,9 @@
     },
     {
       "id": "differentiator",
-      "url": "https://daniel22-dev.github.io/Skolni-aplikace/diferenciator/studio-manifest.json",
+      "url": "https://daniel22-dev.github.io/diferenciator/studio-manifest.json",
       "ok": false,
-      "version": "1.3.2",
+      "version": "1.3.3",
       "error": "offline režim"
     },
     {
@@ -28,9 +28,9 @@
     },
     {
       "id": "correspondence",
-      "url": "https://daniel22-dev.github.io/Skolni-aplikace/korespondencni-asistent/studio-manifest.json",
+      "url": "https://daniel22-dev.github.io/korespondencni-asistent/studio-manifest.json",
       "ok": false,
-      "version": "5.2.2",
+      "version": "5.2.5",
       "error": "offline režim"
     },
     {

@@ -2,6 +2,13 @@
 
 > Tento soubor se generuje ze `src/config/changelog.json`. Neupravujte jej ručně.
 
+## 0.18.6 — 2026-07-26
+**Samostatné repozitáře Diferenciátoru a Korespondenčního asistenta**
+
+- Diferenciátor 1.3.3 a Korespondenční asistent 5.2.5 se nyní načítají z vlastních samostatných repozitářů a nových adres GitHub Pages.
+- Centrální registr, ověřený fallback, odkazy na interaktivní manuály a informace o zdrojových repozitářích byly sjednoceny s novou strukturou.
+- Dokumentace nasazení a bezpečnostní přehled byly aktualizovány pro oddělené aplikace; přístupová brána, telemetrie a společný origin zůstávají zachovány.
+
 ## 0.18.5 — 2026-07-25
 **Audit telemetrie, přístupu a offline provozu**
 

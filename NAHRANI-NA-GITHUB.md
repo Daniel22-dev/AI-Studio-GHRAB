@@ -1,6 +1,6 @@
-# Nahrání opravy AI Studio GHRAB 0.18.5
+# Nahrání AI Studio GHRAB 0.18.6
 
-Tento balík opravuje selhání `qa-build` po přechodu SORTIO z verze 1.0.1 na 1.0.2.
+Tento balík přepojuje Diferenciátor a Korespondenčního asistenta na jejich nové samostatné repozitáře a GitHub Pages adresy.
 
 ## Postup
 
@@ -13,4 +13,4 @@ Tento balík opravuje selhání `qa-build` po přechodu SORTIO z verze 1.0.1 na 
 
 ## Očekávaný výsledek
 
-Ve správě zdrojů bude SORTIO zobrazeno jako **Ověřeno, verze 1.0.2** a nebude použit záložní registr.
+Ve správě zdrojů budou Diferenciátor **1.3.3** a Korespondenční asistent **5.2.5** zobrazeny jako živě ověřené zdroje z vlastních repozitářů.
