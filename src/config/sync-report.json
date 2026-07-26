@@ -1,8 +1,9 @@
 {
   "schema": "ai-studio-sync-report-v1",
   "generated": true,
-  "generatedAt": "2026-07-23T14:07:32.096Z",
+  "generatedAt": "2026-07-25T06:16:09.306Z",
   "mode": "fallback",
+  "fallbackSnapshotConfirmed": true,
   "sources": [
     {
       "id": "generator",

@@ -543,7 +543,7 @@ if (
 if (
   !manualViewerHtml.includes('id="manual-frame"') ||
   !manualViewerHtml.includes("allowfullscreen") ||
-  !manualViewerHtml.includes("frame-src 'self' https://daniel22-dev.github.io")
+  !manualViewerHtml.includes("frame-src 'self'")
 )
   fail(
     "Interní prohlížeč manuálu nemá bezpečný rámec s podporou celé obrazovky.",
@@ -600,7 +600,11 @@ if (
   !appGuardText.includes("recordOutput(appId, keys") ||
   !appGuardText.includes("OUTPUT_KINDS") ||
   !appGuardText.includes("worksheet-variant") ||
-  !appGuardText.includes("essay-evaluation")
+  !appGuardText.includes("essay-evaluation") ||
+  !appGuardText.includes('"activity-builder"') ||
+  !appGuardText.includes('"activity-pack"') ||
+  !appGuardText.includes("sortio") ||
+  !appGuardText.includes('"seating-plan"')
 )
   fail("app-guard nemá jednotné anonymní metriky výstupů všech aplikací.");
 if (!appGuardText.includes("options.telemetry !== false"))
@@ -609,7 +613,10 @@ if (
   !/import \{ setupErrorReporter \} from ["\']\.\/error-reporter\.js["\']/.test(
     appGuardText,
   ) ||
-  !/setupErrorReporter\(\{\s*appId/.test(appGuardText)
+  !/setupErrorReporter\(\{\s*appId/.test(appGuardText) ||
+  !/\}\s*if \(options\.errorReporter !== false\)\s*setupErrorReporter/.test(
+    appGuardText,
+  )
 )
   fail("app-guard neaktivuje jednotné hlášení chyb v chráněných aplikacích.");
 const mainAppText = await readFile(path.join(src, "app.js"), "utf8");
@@ -710,13 +717,19 @@ if (
 )
   fail("Chybí mechanické navolování prstenců nebo sekvenční zámky brány.");
 if (
-  !mainAppText.includes("return 2000;") ||
+  !mainAppText.includes('return 2000;') ||
+  !mainAppText.includes(
+    'return root.dataset.motion === "full" ? 2800 : 1350;',
+  ) ||
   !portalHomeHtml.includes("portal-launch-overlay") ||
   !mainAppText.includes("PRSTENCE SE OTÁČEJÍ") ||
-  !mainAppText.includes("BRÁNA OTEVŘENA — SPOUŠTÍM APLIKACI")
+  !mainAppText.includes("BRÁNA OTEVŘENA — SPOUŠTÍM APLIKACI") ||
+  !mainAppText.includes("activateModalIsolation") ||
+  !mainAppText.includes("cancelLaunchOnEscape") ||
+  !mainAppText.includes('event.key !== "Escape"')
 )
   fail(
-    "Dvoufázové časování 2 s prstenců a samostatné animace aplikace není zapojeno.",
+    "Plné dvoufázové časování, přístupný modal nebo zrušení spuštění není zapojeno.",
   );
 const embeddedViewerHtml = await readFile(
   path.join(src, "app/index.html"),
@@ -796,7 +809,8 @@ if (
   !errorReporterText.includes("MAX_SCREENSHOTS = 5") ||
   !errorReporterText.includes("makeZip(entries)") ||
   !errorReporterText.includes("Začernit údaje") ||
-  !errorReporterText.includes("balaz@ghrabuvka.cz")
+  !errorReporterText.includes("loadSupportEmail") ||
+  !errorReporterText.includes("config/support.json")
 )
   fail(
     "Jednotné hlášení chyb nemá snímání, více snímků, ZIP, redakci nebo e-mail správce.",
@@ -833,7 +847,8 @@ const reportGuideHtml = await readFile(
 );
 if (
   !reportGuideHtml.includes("guide-download") ||
-  !reportGuideHtml.includes("balaz@ghrabuvka.cz") ||
+  !reportGuideHtml.includes("data-support-email-link") ||
+  !reportGuideHtml.includes("support-link.js") ||
   !reportGuideHtml.includes("Používáte dvě zařízení")
 )
   fail("Chybí úplný interaktivní návod k měsíčnímu souhrnu.");
@@ -878,8 +893,8 @@ if (
   );
 if (
   !reportScriptText.includes("canvasPdf") ||
-  !reportScriptText.includes("school-logo.png") ||
-  !reportScriptText.includes("portal-gateway.png") ||
+  !reportScriptText.includes("school-logo.jpg") ||
+  !reportScriptText.includes("portal-gateway.webp") ||
   !/downloadPdf\(["\']mono["\']\)/.test(reportScriptText)
 )
   fail(
@@ -895,10 +910,13 @@ if (
 
 const sourceSwText = await readFile(path.join(src, "sw.js"), "utf8");
 if (
-  !sourceSwText.includes("/*__CORE_ASSETS__*/") ||
+  !sourceSwText.includes("/*__CORE_REQUIRED__*/") ||
+  !sourceSwText.includes("/*__CORE_OPTIONAL__*/") ||
   !sourceSwText.includes("cacheFirst") ||
   !sourceSwText.includes("networkFirst") ||
-  !sourceSwText.includes('fetch(request, { cache: "no-store" })')
+  !sourceSwText.includes('fetch(request, { cache: "no-store" })') ||
+  !sourceSwText.includes("cachedNavigation") ||
+  !sourceSwText.includes("Promise.allSettled")
 )
   fail(
     "Service worker nemá generovaný precache a oddělené strategie pro statiku a konfiguraci.",
@@ -987,8 +1005,8 @@ const required = [
   "integration/generator-access-bootstrap.example.js",
   "integration/essay-evaluator-access-bootstrap.example.js",
   "assets/apps/essay-evaluator-v2.png",
-  "assets/brand/school-logo.png",
-  "assets/brand/portal-gateway.png",
+  "assets/brand/school-logo.jpg",
+  "assets/brand/portal-gateway.webp",
   "assets/brand/portal-ring-outer.svg",
   "assets/brand/portal-ring-middle.svg",
   "assets/brand/portal-ring-inner.svg",
@@ -997,24 +1015,38 @@ for (const rel of required)
   if (!distFiles.includes(path.join(dist, rel)))
     fail(`Build neobsahuje ${rel}`);
 const builtSw = await readFile(path.join(dist, "sw.js"), "utf8");
-const block = builtSw.match(/const CORE = \[([\s\S]*?)\];/)?.[1] || "";
-const precache = [...block.matchAll(/['"](\.\/[^'"]+)['"]/g)].map((m) =>
-  m[1].replace(/^\.\//, "").replace(/\/$/, "index.html"),
-);
-if (!precache.length) fail("Service worker nemá čitelný CORE seznam.");
+const requiredBlock =
+  builtSw.match(/const CORE_REQUIRED = \[([\s\S]*?)\];/)?.[1] || "";
+const optionalBlock =
+  builtSw.match(/const CORE_OPTIONAL = \[([\s\S]*?)\];/)?.[1] || "";
+const parsePrecacheBlock = (block) =>
+  [...block.matchAll(/['"](\.\/[^'"]+)['"]/g)].map((match) =>
+    match[1].replace(/^\.\//, "").replace(/\/$/, "index.html"),
+  );
+const requiredPrecache = parsePrecacheBlock(requiredBlock);
+const optionalPrecache = parsePrecacheBlock(optionalBlock);
+const precache = [...new Set([...requiredPrecache, ...optionalPrecache])];
+if (!requiredPrecache.length)
+  fail("Service worker nemá čitelný seznam kritického shellu.");
 for (const rel of precache)
   if (!distFiles.includes(path.join(dist, rel)))
     fail(`PWA precache odkazuje na chybějící ${rel}`);
-const expectedPrecache = distFiles
-  .filter((file) => file !== path.join(dist, "sw.js"))
-  .map((file) => path.relative(dist, file).replaceAll("\\", "/"))
-  .sort();
-const actualPrecache = precache
-  .filter((rel) => rel !== "index.html" || !precache.includes(""))
-  .sort();
-for (const rel of expectedPrecache)
-  if (!actualPrecache.includes(rel))
-    fail(`PWA precache neobsahuje produkční soubor ${rel}`);
+for (const rel of [
+  "index.html",
+  "styles.css",
+  "app.js",
+  "app/index.html",
+  "access/access-control.js",
+  "config/access-policy.json",
+  "assets/brand/portal-gateway.webp",
+]) {
+  if (!requiredPrecache.includes(rel))
+    fail(`Kritický PWA shell neobsahuje ${rel}`);
+}
+for (const prefix of ["tools/", "tests/", "integration/", "schemas/"]) {
+  if (optionalPrecache.some((rel) => rel.startsWith(prefix)))
+    fail(`Volitelný precache nemá obsahovat ${prefix}`);
+}
 for (const file of distFiles.filter((f) =>
   /\.(html|js|json|webmanifest|css|md)$/.test(f),
 )) {

@@ -11,6 +11,8 @@ const accessState = {
   revocations: null,
   publicKeyInfo: null,
   checkedAt: null,
+  revocationListUpdatedAt: null,
+  revocationCheckMode: null,
 };
 
 const textEncoder = new TextEncoder();
@@ -229,6 +231,10 @@ export async function initialiseAccess(options = {}) {
       throw new Error("invalid public key schema");
     accessState.policy = policy;
     accessState.revocations = revocations;
+    accessState.revocationListUpdatedAt = revocations.updatedAt || null;
+    accessState.revocationCheckMode = navigator.onLine
+      ? "online-or-cached"
+      : "offline-cache";
     accessState.publicKeyInfo = publicKeyInfo;
     const token = safeStorageGet(TOKEN_KEY);
     const result = await verifyToken(token);
@@ -301,6 +307,8 @@ export function getAccessSnapshot() {
       : null,
     policy: accessState.policy,
     checkedAt: accessState.checkedAt,
+    revocationListUpdatedAt: accessState.revocationListUpdatedAt,
+    revocationCheckMode: accessState.revocationCheckMode,
   };
 }
 export function getPermitToken() {

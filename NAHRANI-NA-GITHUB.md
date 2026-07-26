@@ -1,4 +1,4 @@
-# Nahrání opravy AI Studio GHRAB 0.18.4
+# Nahrání opravy AI Studio GHRAB 0.18.5
 
 Tento balík opravuje selhání `qa-build` po přechodu SORTIO z verze 1.0.1 na 1.0.2.
 

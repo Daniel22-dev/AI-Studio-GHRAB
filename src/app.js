@@ -17,8 +17,11 @@ const VERSION = "__APP_VERSION__";
 const root = document.documentElement;
 const page = document.body.dataset.page || "home";
 const base = document.body.dataset.base || (page === "home" ? "./" : "../");
+const forcedLanguage = ["cs", "en"].includes(root.dataset.forceLanguage)
+  ? root.dataset.forceLanguage
+  : null;
 const state = {
-  language: safeGetItem("ghrab.language") || "cs",
+  language: forcedLanguage || safeGetItem("ghrab.language") || "cs",
   theme: "dark",
   motion: safeGetItem("ghrab.motion") || "auto",
 };
@@ -213,6 +216,62 @@ function safeRemoveItem(key) {
     );
     return false;
   }
+}
+function modalFocusables(modal) {
+  return [...modal.querySelectorAll(
+    'a[href], button:not([disabled]), input:not([disabled]), select:not([disabled]), textarea:not([disabled]), [tabindex]:not([tabindex="-1"])',
+  )].filter((element) => !element.hidden && element.offsetParent !== null);
+}
+function activateModalIsolation(modal, { onEscape } = {}) {
+  const previousFocus =
+    document.activeElement instanceof HTMLElement
+      ? document.activeElement
+      : null;
+  const isolated = [...document.body.children].filter(
+    (element) => element !== modal && element.tagName !== "SCRIPT",
+  );
+  const previousState = isolated.map((element) => ({
+    element,
+    inert: element.inert,
+    ariaHidden: element.getAttribute("aria-hidden"),
+  }));
+  isolated.forEach((element) => {
+    element.inert = true;
+    element.setAttribute("aria-hidden", "true");
+  });
+  const keyHandler = (event) => {
+    if (event.key === "Escape" && typeof onEscape === "function") {
+      event.preventDefault();
+      onEscape();
+      return;
+    }
+    if (event.key !== "Tab") return;
+    const focusable = modalFocusables(modal);
+    if (!focusable.length) {
+      event.preventDefault();
+      modal.focus({ preventScroll: true });
+      return;
+    }
+    const first = focusable[0];
+    const last = focusable[focusable.length - 1];
+    if (event.shiftKey && document.activeElement === first) {
+      event.preventDefault();
+      last.focus();
+    } else if (!event.shiftKey && document.activeElement === last) {
+      event.preventDefault();
+      first.focus();
+    }
+  };
+  document.addEventListener("keydown", keyHandler);
+  return () => {
+    document.removeEventListener("keydown", keyHandler);
+    previousState.forEach(({ element, inert, ariaHidden }) => {
+      element.inert = inert;
+      if (ariaHidden == null) element.removeAttribute("aria-hidden");
+      else element.setAttribute("aria-hidden", ariaHidden);
+    });
+    previousFocus?.focus?.({ preventScroll: true });
+  };
 }
 function storageUsage() {
   let bytes = 0;
@@ -1114,7 +1173,7 @@ function portalAppCinematicDelay() {
   if (root.dataset.motion === "off") return 260;
   return root.dataset.motion === "full" ? 2800 : 1350;
 }
-function portalLaunchOverlay(app, delay) {
+function portalLaunchOverlay(app, delay, onCancel = () => {}) {
   const overlay = document.querySelector("#portal-launch-overlay");
   if (!overlay) return { setPhase: () => {}, finish: () => {}, skip: null };
   const icon = overlay.querySelector("#portal-launch-icon");
@@ -1123,13 +1182,7 @@ function portalLaunchOverlay(app, delay) {
   const phase = overlay.querySelector("#portal-launch-phase");
   const progress = overlay.querySelector("#portal-launch-progress");
   const skip = overlay.querySelector("#portal-launch-skip");
-  const previousFocus =
-    document.activeElement instanceof HTMLElement
-      ? document.activeElement
-      : null;
-  const escapeHandler = (event) => {
-    if (event.key === "Escape" && skip?.onclick) skip.click();
-  };
+  let releaseIsolation = () => {};
   const phaseCopy = {
     prepare: {
       kicker: t("APLIKACE ZAMĚŘENA", "APPLICATION TARGETED"),
@@ -1197,20 +1250,20 @@ function portalLaunchOverlay(app, delay) {
   }
   overlay.hidden = false;
   overlay.setAttribute("aria-hidden", "false");
-  document.addEventListener("keydown", escapeHandler);
+  releaseIsolation = activateModalIsolation(overlay, { onEscape: onCancel });
   requestAnimationFrame(() =>
     requestAnimationFrame(() => {
       overlay.classList.add("is-active");
       applyPhase("prepare");
-      if (delay > 600) skip?.focus({ preventScroll: true });
+      skip?.focus({ preventScroll: true });
     }),
   );
   const finish = () => {
     overlay.classList.remove("is-active");
     overlay.setAttribute("aria-hidden", "true");
-    document.removeEventListener("keydown", escapeHandler);
+    releaseIsolation();
+    releaseIsolation = () => {};
     if (skip) skip.onclick = null;
-    previousFocus?.focus?.({ preventScroll: true });
     window.setTimeout(() => {
       overlay.hidden = true;
       overlay.dataset.phase = "complete";
@@ -1293,6 +1346,8 @@ function launchApp(app, article) {
   const appName = localised(app.name).toUpperCase();
   const timers = [];
   let completed = false;
+  let cancelled = false;
+  let cleanedUp = false;
   let cinematic = { setPhase: () => {}, finish: () => {}, skip: null };
 
   launchButtons.forEach((button) => {
@@ -1310,6 +1365,10 @@ function launchApp(app, article) {
     timers.push(window.setTimeout(callback, after));
   };
   const cleanup = () => {
+    if (cleanedUp) return;
+    cleanedUp = true;
+    cancelled = true;
+    document.removeEventListener("keydown", cancelLaunchOnEscape);
     timers.forEach((timer) => window.clearTimeout(timer));
     cinematic.finish();
     stage?.classList.remove("is-launching");
@@ -1333,6 +1392,7 @@ function launchApp(app, article) {
   };
 
   const startGatewaySequence = () => {
+    if (cancelled) return;
     zone?.classList.remove("is-targeting");
     stage?.classList.add("is-launching");
     zone?.classList.add("is-launching");
@@ -1379,6 +1439,13 @@ function launchApp(app, article) {
       schedule(cinematicDelay, navigate);
     });
   };
+
+  const cancelLaunchOnEscape = (event) => {
+    if (event.key !== "Escape") return;
+    event.preventDefault();
+    cleanup();
+  };
+  document.addEventListener("keydown", cancelLaunchOnEscape);
 
   focusPortalGateway(zone).then(startGatewaySequence, startGatewaySequence);
   return true;
@@ -1487,7 +1554,7 @@ function renderExtraApps(apps) {
   const wrap = el("div");
   wrap.append(
     el("p", "eyebrow", t("DALŠÍ DESTINACE", "MORE DESTINATIONS")),
-    el("h2", "", t("Nově připojené aplikace", "Newly connected applications")),
+    el("h2", "", t("Další aplikace", "More applications")),
   );
   heading.append(wrap);
   const grid = el("div", "app-grid");
@@ -1553,6 +1620,26 @@ function renderHomeAccessSummary() {
           ),
     ),
   );
+  if (valid && snapshot.revocationListUpdatedAt) {
+    const revocationDate = new Date(
+      snapshot.revocationListUpdatedAt,
+    ).toLocaleDateString(state.language === "cs" ? "cs-CZ" : "en-GB");
+    body.append(
+      el(
+        "small",
+        "",
+        snapshot.revocationCheckMode === "offline-cache"
+          ? t(
+              `Kontrola odvolání proběhla offline · seznam k ${revocationDate}`,
+              `Revocation check used offline data · list dated ${revocationDate}`,
+            )
+          : t(
+              `Seznam odvolání k ${revocationDate}`,
+              `Revocation list dated ${revocationDate}`,
+            ),
+      ),
+    );
+  }
   const link = el(
     "a",
     "button compact secondary",
@@ -1930,6 +2017,7 @@ function setupStartupIntro() {
 
   let closed = false;
   let timer = 0;
+  let releaseIsolation = () => {};
   const close = () => {
     if (closed) return;
     closed = true;
@@ -1948,9 +2036,13 @@ function setupStartupIntro() {
       intro.classList.remove("is-active", "is-leaving");
       root.classList.remove("startup-intro-revealing");
       root.classList.add("startup-intro-skip");
+      releaseIsolation();
+      releaseIsolation = () => {};
     }, 520);
   };
 
+  releaseIsolation = activateModalIsolation(intro, { onEscape: close });
+  skip.focus({ preventScroll: true });
   skip.addEventListener("click", close, { once: true });
   timer = setTimeout(close, 3300);
 }
@@ -1965,17 +2057,11 @@ async function registerPwa() {
   }
 }
 
-const ADMIN_PAGES = new Set([
-  "automation",
-  "demo",
-  "report",
-  "tests",
-  "changelog",
-  "issuer",
-  "access-registry",
-]);
 function renderPageAccessGate() {
-  if (!ADMIN_PAGES.has(page) || isAdmin()) return;
+  const administratorPages = new Set(
+    getAccessSnapshot().policy?.administratorPages || [],
+  );
+  if (!administratorPages.has(page) || isAdmin()) return;
   const main = document.querySelector("main");
   if (!main) return;
   main.replaceChildren();

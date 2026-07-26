@@ -46,12 +46,15 @@ let lastApplicationUrl = "";
 let manualReturnTimer = 0;
 
 let embeddedObserver = null;
+const embeddedPolishTimers = new Set();
 const embeddedOverridesUrl = new URL("./embed-overrides.css", import.meta.url)
   .href;
 
 function stopEmbeddedPolishObserver() {
   embeddedObserver?.disconnect();
   embeddedObserver = null;
+  embeddedPolishTimers.forEach((timer) => window.clearTimeout(timer));
+  embeddedPolishTimers.clear();
 }
 
 function frameUrl() {
@@ -190,43 +193,36 @@ function applyEvaluatorEmbeddedPolish() {
   }
 
   const compactLargeFooterBrand = () => {
-    const documentHeight = Math.max(
-      doc.documentElement.scrollHeight,
-      doc.body.scrollHeight,
-      doc.documentElement.clientHeight,
-    );
-    const candidates = [...doc.images]
+    const allImages = [...doc.images];
+    const likely = allImages.filter((image) => {
+      const context =
+        `${image.alt || ""} ${image.currentSrc || image.src || ""} ${image.className || ""}`.toLowerCase();
+      return (
+        image.closest(
+          "footer, [class*='footer' i], [class*='credit' i], [class*='about' i], [class*='owner' i]",
+        ) || /logo|brand|ghrab|gymn|school|heart|owner/.test(context)
+      );
+    });
+    const candidates = (likely.length ? likely : allImages.slice(-4))
       .map((image) => {
         const rect = image.getBoundingClientRect();
-        const absoluteTop = rect.top + doc.defaultView.scrollY;
-        const context =
-          `${image.alt || ""} ${image.currentSrc || image.src || ""} ${image.className || ""}`.toLowerCase();
         const inFooter = Boolean(
           image.closest(
             "footer, [class*='footer' i], [class*='credit' i], [class*='about' i], [class*='owner' i]",
           ),
         );
-        const logoLike = /logo|brand|ghrab|gymn|school|heart|owner/.test(
-          context,
-        );
-        const nearBottom = absoluteTop > documentHeight * 0.52;
-        const oversized = rect.width >= 230 || rect.height >= 210;
         return {
           image,
           rect,
-          score:
-            rect.width * rect.height +
-            (inFooter ? 500000 : 0) +
-            (logoLike ? 250000 : 0) +
-            (nearBottom ? 120000 : 0),
-          eligible: oversized && (inFooter || logoLike || nearBottom),
+          score: rect.width * rect.height + (inFooter ? 500000 : 0),
+          eligible: rect.width >= 230 || rect.height >= 210,
         };
       })
       .filter((item) => item.eligible)
       .sort((a, b) => b.score - a.score);
 
     const target = candidates[0]?.image;
-    if (!target) return;
+    if (!target) return false;
     target.classList.add("ghrab-studio-compact-footer-logo");
 
     const wrapper = target.closest("picture") || target.parentElement;
@@ -235,22 +231,34 @@ function applyEvaluatorEmbeddedPolish() {
     const cell = wrapper?.parentElement;
     if (cell) {
       const rect = cell.getBoundingClientRect();
-      if (rect.height >= 220 || rect.width >= 260) {
+      if (rect.height >= 220 || rect.width >= 260)
         cell.classList.add("ghrab-studio-compact-footer-logo-cell");
-      }
     }
+    stopEmbeddedPolishObserver();
+    return true;
   };
 
-  compactLargeFooterBrand();
+  let debounceTimer = 0;
+  const scheduleScan = (delay = 250) => {
+    window.clearTimeout(debounceTimer);
+    embeddedPolishTimers.delete(debounceTimer);
+    debounceTimer = window.setTimeout(() => {
+      embeddedPolishTimers.delete(debounceTimer);
+      compactLargeFooterBrand();
+    }, delay);
+    embeddedPolishTimers.add(debounceTimer);
+  };
+
+  if (compactLargeFooterBrand()) return;
   doc.querySelectorAll("img").forEach((image) => {
     if (!image.complete)
-      image.addEventListener("load", compactLargeFooterBrand, { once: true });
+      image.addEventListener("load", () => scheduleScan(80), { once: true });
   });
-  [250, 900, 1800].forEach((delay) =>
-    window.setTimeout(compactLargeFooterBrand, delay),
-  );
+  scheduleScan(250);
+  const fallbackTimer = window.setTimeout(compactLargeFooterBrand, 900);
+  embeddedPolishTimers.add(fallbackTimer);
 
-  embeddedObserver = new MutationObserver(compactLargeFooterBrand);
+  embeddedObserver = new MutationObserver(() => scheduleScan());
   embeddedObserver.observe(doc.body, {
     childList: true,
     subtree: true,

@@ -1,24 +1,24 @@
 # AI Studio GHRAB
 
-**Aktuální verze: 0.18.4**
+**Aktuální verze: 0.18.5**
 
-**Verze 0.15.0 – federovaný serverless portál pěti chráněných školních aplikací s mechanicky animovanou hvězdnou bránou, řízeným přístupem, pilotním měřením a diagnostickým hlášením chyb.**
+**Verze 0.18.5 – federovaný serverless portál sedmi chráněných školních aplikací s prémiovou hvězdnou bránou, řízeným přístupem, pilotním měřením, PWA provozem a diagnostickým hlášením chyb.**
 
 AI Studio GHRAB je centrální brána školních digitálních a AI nástrojů. Jednotlivé aplikace zůstávají v samostatných repozitářích; Studio zajišťuje společnou navigaci, Top 4, synchronizaci verzí, bezpečnostní rámec, pracovní materiály, pilotní měření a správu podepsaných přístupů.
 
-## Hlavní novinky 0.15.0
+## Hlavní novinky 0.18.5
 
-- povinné školení se nyní kontroluje technicky včetně přesné verze,
-- veřejné klíče používají sadu klíčů pro bezpečnou rotaci s překryvem,
-- platnost oprávnění je omezena na 400 dní,
-- soukromý podpisový klíč se ve vydavateli po 10 minutách nečinnosti automaticky zapomene,
-- PWA cache se generuje z produkčního stromu a nový service worker nepřebírá otevřené karty uprostřed práce,
-- duplicity konfigurace a ručně udržovaného changelogu byly odstraněny a hlídají je regresní testy.
+- pilotní telemetrie a report zahrnují všech sedm aplikací včetně ACTIVA a SORTIO,
+- stránková ochrana správcovských částí čte jediný seznam z `access-policy.json`,
+- synchronizace manifestů přijímá pouze adresy pod povoleným prefixem konkrétní aplikace,
+- offline navigace vrací uživatele na správnou podstránku a precache je rozdělena na povinné jádro a volitelný obsah,
+- projektový QA validátor hlídá konzistenci registrů, typy výstupů, verze, formáty obrázků a velikost precache,
+- původní plná prémiová animace hvězdné brány zůstává zachována; klávesa Escape nyní přechod skutečně zruší.
 
 ## Starší milník 0.10.0
 
 - Každá chráněná aplikace anonymně eviduje skutečné otevření po ověření přístupu a orientační aktivní čas. Čas se počítá jen při viditelné kartě, zaměřeném okně a nedávné interakci; po pěti minutách nečinnosti se měření zastaví.
-- Generátor, Diferenciátor, LUDUS, Korespondenční asistent a Hodnotitel maturitních slohů zapisují pouze technické počty pokusů, úspěšných výstupů, chyb a zrušení. Nezapisují prompty ani obsah výstupů.
+- Generátor, Diferenciátor, LUDUS, Korespondenční asistent, Hodnotitel maturitních slohů, ACTIVA a SORTIO zapisují pouze technické počty pokusů, úspěšných výstupů, chyb a zrušení. Nezapisují prompty ani obsah výstupů.
 - Správce může zapnout testovací režim. Jeho vývojové a kontrolní použití se ukládá odděleně a nikdy nevstupuje do pilotního reportu.
 - Report odděluje moje místní data, importované anonymní souhrny kolegů a celkový součet. Místní data lze z celku jedním přepínačem vyloučit.
 - Během posledních sedmi kalendářních dnů měsíce se učitelům nejvýše jednou denně zobrazí zdvořilá prosba o anonymní souhrn, dokud nepotvrdí jeho odeslání.
@@ -37,15 +37,16 @@ Bez serveru nelze spolehlivě ověřit totožnost držitele, centrálně synchro
 
 ## Ochrana přímých adres a měření
 
-Ochranný bootstrap je integrován v Generátoru 7.1.0, Diferenciátoru 1.2.0, Hodnotiteli maturitních slohů 1.4.0, LUDUSu 1.15.0 a Korespondenčním asistentovi 5.1.0. Stejný centrální modul ověřuje podepsaný přístup a po úspěšném otevření spustí místní měření. Dílčí aplikace navíc hlásí pouze povolené technické typy výstupů.
+Ochranný bootstrap je určen pro Generátor 7.1.4, Diferenciátor 1.3.2, Hodnotitel maturitních slohů 1.5.2, LUDUS 1.16.3, Korespondenčního asistenta 5.2.2, ACTIVA 0.5.0 a SORTIO 1.0.2. Stejný centrální modul ověřuje podepsaný přístup a po úspěšném otevření spustí místní měření. Dílčí aplikace navíc hlásí pouze povolené technické typy výstupů.
 
 ## Doporučené pořadí nasazení
 
-1. Generátor interaktivních testů 7.1.0.
-2. LUDUS 1.15.0.
-3. Školní aplikace: Diferenciátor 1.2.0 a Korespondenční asistent 5.1.0.
-4. Hodnotitel maturitních slohů 1.4.0.
-5. AI Studio GHRAB 0.15.0 jako poslední.
+1. Generátor interaktivních testů 7.1.4.
+2. LUDUS 1.16.3.
+3. Školní aplikace: Diferenciátor 1.3.2 a Korespondenční asistent 5.2.2.
+4. Hodnotitel maturitních slohů 1.5.2.
+5. ACTIVA 0.5.0 a SORTIO 1.0.2 včetně volání pilotní telemetrie.
+6. AI Studio GHRAB 0.18.5 jako poslední.
 
 Po zeleném nasazení zavřete staré otevřené karty Studia a znovu je otevřete. Nová verze service workeru se aktivuje až po bezpečném ukončení staré relace; rutinní `Ctrl + F5` už není součástí standardního postupu.
 

@@ -16,8 +16,9 @@ const ACTIVE_TICK_MS = 15 * 1000;
 const ACTIVE_MAX_CREDIT_MS = 20 * 1000;
 const ACTIVE_LOCK_TTL_MS = 35 * 1000;
 const MAX_EVENTS = 2000;
+const MAX_MONTHLY_PERIODS = 24;
 
-const OUTPUT_KINDS = Object.freeze({
+export const OUTPUT_KINDS = Object.freeze({
   generator: new Set(["test-package"]),
   ludus: new Set(["game", "content-pack", "class-quiz", "lesson-pack"]),
   differentiator: new Set(["worksheet-variant"]),
@@ -27,6 +28,8 @@ const OUTPUT_KINDS = Object.freeze({
     "outgoing-email",
   ]),
   "essay-evaluator": new Set(["essay-evaluation"]),
+  "activity-builder": new Set(["activity-pack"]),
+  sortio: new Set(["class-import", "grouping", "seating-plan", "roles"]),
 });
 
 function language() {
@@ -45,14 +48,39 @@ function readJson(key, fallback) {
     return fallback;
   }
 }
+function showStorageWarning(error) {
+  if (document.getElementById("ghrab-storage-warning")) return;
+  const warning = document.createElement("div");
+  warning.id = "ghrab-storage-warning";
+  warning.className = "ghrab-storage-warning";
+  warning.setAttribute("role", "alert");
+  warning.textContent =
+    error?.name === "QuotaExceededError"
+      ? text(
+          "Místní úložiště je plné. Exportujte důležité materiály a odstraňte starší data; nové statistiky se nyní neukládají.",
+          "Local storage is full. Export important resources and remove older data; new statistics are not being saved.",
+        )
+      : text(
+          "Prohlížeč nepovolil uložení místních statistik. Zkontrolujte režim soukromého prohlížení a nastavení úložiště.",
+          "The browser did not allow local statistics to be saved. Check private browsing and storage settings.",
+        );
+  (document.body || document.documentElement).append(warning);
+}
 function writeJson(key, value) {
   try {
     localStorage.setItem(key, JSON.stringify(value));
     return true;
   } catch (error) {
     console.warn(`AI Studio telemetry: zápis selhal pro ${key}`, error);
+    showStorageWarning(error);
     return false;
   }
+}
+function pruneMonthlyBuckets(monthly) {
+  const entries = Object.entries(monthly || {}).sort(([a], [b]) =>
+    a.localeCompare(b),
+  );
+  return Object.fromEntries(entries.slice(-MAX_MONTHLY_PERIODS));
 }
 function removeStorage(key) {
   try {
@@ -199,6 +227,7 @@ function recordApplicationOpen(appId, keys) {
   bucket.activeSessions = Math.max(0, Number(bucket.activeSessions || 0));
   bucket.lastActiveAt = bucket.lastActiveAt || null;
   current.monthly[period] = bucket;
+  current.monthly = pruneMonthlyBuckets(current.monthly);
   safeLaunches[appId] = current;
   writeJson(keys.launches, safeLaunches);
 }
@@ -393,9 +422,9 @@ export async function protectApp(appId, options = {}) {
       exposeTelemetry(appId, keys, mode);
       recordApplicationOpen(appId, keys);
       startActiveTimeTracker(appId, keys);
-      if (options.errorReporter !== false)
-        setupErrorReporter({ appId, studioUrl: studioHref(options) });
     }
+    if (options.errorReporter !== false)
+      setupErrorReporter({ appId, studioUrl: studioHref(options) });
     document.dispatchEvent(
       new CustomEvent("ghrab:app-access-granted", {
         detail: { appId, permit: access.permit, telemetryMode: mode },

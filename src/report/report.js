@@ -17,6 +17,8 @@ if (window.GHRAB.isAdmin()) {
     "ludus",
     "correspondence",
     "essay-evaluator",
+    "activity-builder",
+    "sortio",
   ];
   const APP_NAMES = {
     generator: "Generátor testů",
@@ -24,6 +26,8 @@ if (window.GHRAB.isAdmin()) {
     ludus: "LUDUS",
     correspondence: "Korespondenční asistent",
     "essay-evaluator": "Hodnotitel slohů",
+    "activity-builder": "ACTIVA",
+    sortio: "SORTIO",
   };
   const OUTPUT_LABELS = {
     "test-package": "testové balíčky",
@@ -36,6 +40,11 @@ if (window.GHRAB.isAdmin()) {
     "reply-draft": "návrhy odpovědí",
     "outgoing-email": "nové e-maily",
     "essay-evaluation": "vyhodnocené slohy",
+    "activity-pack": "balíčky aktivit",
+    "class-import": "importy tříd",
+    grouping: "vytvořené skupiny",
+    "seating-plan": "zasedací pořádky",
+    roles: "rozdělení rolí",
   };
   const REPORT_W = 1240;
   const REPORT_H = 1754;
@@ -631,8 +640,8 @@ if (window.GHRAB.isAdmin()) {
     ctx.fillStyle = palette.bg;
     ctx.fillRect(0, 0, REPORT_W, REPORT_H);
     const [schoolLogo, gateway] = await Promise.all([
-      loadImage("../assets/brand/school-logo.png"),
-      loadImage("../assets/brand/portal-gateway.png"),
+      loadImage("../assets/brand/school-logo.jpg"),
+      loadImage("../assets/brand/portal-gateway.webp"),
     ]);
     if (token !== renderToken) return;
     const m = 56;

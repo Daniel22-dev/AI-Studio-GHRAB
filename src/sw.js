@@ -1,5 +1,6 @@
 const CACHE = "ai-studio-ghrab-v__APP_VERSION__";
-const CORE = [/*__CORE_ASSETS__*/];
+const CORE_REQUIRED = [/*__CORE_REQUIRED__*/];
+const CORE_OPTIONAL = [/*__CORE_OPTIONAL__*/];
 
 function isConfigurationRequest(request) {
   const url = new URL(request.url);
@@ -12,18 +13,32 @@ function isConfigurationRequest(request) {
 async function networkFirst(request) {
   try {
     const response = await fetch(request, { cache: "no-store" });
-    if (response.ok) {
-      const cache = await caches.open(CACHE);
-      await cache.put(request, response.clone());
-    }
+    if (!response.ok) throw new Error(`HTTP ${response.status}`);
+    const cache = await caches.open(CACHE);
+    await cache.put(request, response.clone());
     return response;
   } catch {
-    return (await caches.match(request)) || Response.error();
+    return (await caches.match(request, { ignoreSearch: true })) || Response.error();
   }
 }
 
+async function cachedNavigation(request) {
+  const direct = await caches.match(request, { ignoreSearch: true });
+  if (direct) return direct;
+  const url = new URL(request.url);
+  if (url.pathname.endsWith("/")) {
+    const indexUrl = new URL("index.html", url);
+    const directoryIndex = await caches.match(indexUrl, { ignoreSearch: true });
+    if (directoryIndex) return directoryIndex;
+  }
+  return null;
+}
+
 async function cacheFirst(request) {
-  const cached = await caches.match(request);
+  const cached =
+    request.mode === "navigate"
+      ? await cachedNavigation(request)
+      : await caches.match(request);
   if (cached) return cached;
   try {
     const response = await fetch(request);
@@ -33,14 +48,27 @@ async function cacheFirst(request) {
     }
     return response;
   } catch {
-    if (request.mode === "navigate")
-      return (await caches.match("./index.html")) || Response.error();
+    if (request.mode === "navigate") {
+      return (
+        (await cachedNavigation(request)) ||
+        (await caches.match("./index.html")) ||
+        Response.error()
+      );
+    }
     return Response.error();
   }
 }
 
 self.addEventListener("install", (event) => {
-  event.waitUntil(caches.open(CACHE).then((cache) => cache.addAll(CORE)));
+  event.waitUntil(
+    (async () => {
+      const cache = await caches.open(CACHE);
+      await cache.addAll(CORE_REQUIRED);
+      await Promise.allSettled(
+        CORE_OPTIONAL.map((asset) => cache.add(asset)),
+      );
+    })(),
+  );
 });
 
 self.addEventListener("activate", (event) => {

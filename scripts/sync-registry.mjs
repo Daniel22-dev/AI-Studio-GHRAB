@@ -28,7 +28,7 @@ const required = [
 ];
 const semver = /^\d+\.\d+\.\d+(?:[-+][0-9A-Za-z.-]+)?$/;
 
-function validate(app, expectedId) {
+function validate(app, expectedId, source) {
   if (!app || typeof app !== "object") throw new Error("manifest není objekt");
   for (const key of required) if (!app[key]) throw new Error(`chybí ${key}`);
   if (app.schema !== "ai-studio-app-manifest-v1")
@@ -37,10 +37,25 @@ function validate(app, expectedId) {
     throw new Error(`id ${app.id} neodpovídá ${expectedId}`);
   if (!semver.test(app.version))
     throw new Error(`neplatná verze ${app.version}`);
-  if (!/^https:\/\//.test(app.launchUrl))
-    throw new Error("launchUrl není HTTPS");
-  if (!/^https:\/\//.test(app.manualUrl))
-    throw new Error("manualUrl není HTTPS");
+  const allowedPrefix = new URL(".", source.url);
+  for (const [label, value] of [
+    ["launchUrl", app.launchUrl],
+    ["manualUrl", app.manualUrl],
+  ]) {
+    let url;
+    try {
+      url = new URL(value);
+    } catch {
+      throw new Error(`${label} není platná URL`);
+    }
+    if (url.protocol !== "https:") throw new Error(`${label} není HTTPS`);
+    if (!url.href.startsWith(allowedPrefix.href))
+      throw new Error(
+        `${label} musí zůstat pod povoleným prefixem ${allowedPrefix.href}`,
+      );
+  }
+  if (!/^[A-Za-z0-9_.-]+\/[A-Za-z0-9_.-]+$/.test(app.repository))
+    throw new Error("repository musí mít tvar vlastník/repozitář");
   if (
     !app.name.cs ||
     !app.name.en ||
@@ -67,7 +82,7 @@ async function fetchManifest(source) {
       headers: { "user-agent": "AI-Studio-GHRAB-registry-sync" },
     });
     if (!response.ok) throw new Error(`HTTP ${response.status}`);
-    return validate(await response.json(), source.id);
+    return validate(await response.json(), source.id, source);
   } finally {
     clearTimeout(timer);
   }
@@ -91,7 +106,7 @@ for (const source of sources) {
     const app = fallbackById.get(source.id);
     if (!app)
       throw new Error(`Chybí fallback pro ${source.id}: ${error.message}`);
-    apps.push(validate(app, source.id));
+    apps.push(validate(app, source.id, source));
     reportSources.push({
       id: source.id,
       url: source.url,
@@ -114,6 +129,7 @@ const report = {
   generated: true,
   generatedAt: new Date().toISOString(),
   mode,
+  fallbackSnapshotConfirmed: mode === "fallback" && offline,
   sources: reportSources,
 };
 await writeFile(

@@ -1,7 +1,33 @@
 {
   "schema": "ai-studio-changelog-v1",
-  "current": "0.18.4",
+  "current": "0.18.5",
   "items": [
+    {
+      "version": "0.18.5",
+      "date": "2026-07-25",
+      "title": {
+        "cs": "Audit telemetrie, přístupu a offline provozu",
+        "en": "Telemetry, access and offline audit fixes"
+      },
+      "changes": [
+        {
+          "cs": "ACTIVA a SORTIO nyní mají povolené typy pilotních výstupů a report zobrazuje všech sedm aplikací.",
+          "en": "ACTIVA and SORTIO now have allowed pilot output types and the report covers all seven applications."
+        },
+        {
+          "cs": "Správcovské stránky čtou jediný seznam z přístupové politiky; Pilot je chráněn stejně jako ostatní administrátorské části.",
+          "en": "Administrator pages now use the single list in the access policy; Pilot is protected like the other administrator areas."
+        },
+        {
+          "cs": "Byla zpřísněna synchronizace manifestů, opraven offline návrat na podstránky a zmenšena precache; plná prémiová animace hvězdné brány zůstává zachována.",
+          "en": "Manifest synchronisation was hardened, offline subpage restoration fixed and the precache reduced; the full premium gateway animation remains intact."
+        },
+        {
+          "cs": "Nový projektový QA validátor hlídá registry, telemetrii, správcovské stránky, verze, formáty obrázků a rozpočet precache.",
+          "en": "A new project QA validator checks registries, telemetry, administrator pages, versions, image formats and the precache budget."
+        }
+      ]
+    },
     {
       "version": "0.18.4",
       "date": "2026-07-23",

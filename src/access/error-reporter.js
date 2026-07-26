@@ -3,7 +3,18 @@ const MAX_SCREENSHOTS = 5;
 const MAX_CAPTURE_WIDTH = 1800;
 const MAX_CAPTURE_HEIGHT = 1200;
 const JPEG_QUALITY = 0.9;
-const ADMIN_EMAIL = "balaz@ghrabuvka.cz";
+
+async function loadSupportEmail(studioUrl) {
+  const response = await fetch(new URL("config/support.json", studioUrl), {
+    cache: "no-store",
+  });
+  if (!response.ok) throw new Error("support-config-unavailable");
+  const config = await response.json();
+  const email = String(config?.administratorEmail || "").trim();
+  if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email))
+    throw new Error("support-email-invalid");
+  return email;
+}
 
 function language() {
   return document.documentElement.lang === "en" ? "en" : "cs";
@@ -186,6 +197,8 @@ async function loadAppMeta(appId, studioUrl) {
     differentiator: ["Diferenciátor", "Differentiator"],
     correspondence: ["Korespondenční asistent", "Correspondence Assistant"],
     "essay-evaluator": ["Hodnotitel slohů", "Essay Evaluator"],
+    "activity-builder": ["ACTIVA", "ACTIVA"],
+    sortio: ["SORTIO", "SORTIO"],
   };
   const fallback = fallbackNames[appId] || [appId, appId];
   try {
@@ -341,8 +354,8 @@ async function buildOverviewHtml({
   studioUrl,
 }) {
   const [schoolLogo, portalImage] = await Promise.all([
-    fetchDataUrl(new URL("assets/brand/school-logo.png", studioUrl)),
-    fetchDataUrl(new URL("assets/brand/portal-gateway.png", studioUrl)),
+    fetchDataUrl(new URL("assets/brand/school-logo.jpg", studioUrl)),
+    fetchDataUrl(new URL("assets/brand/portal-gateway.webp", studioUrl)),
   ]);
   const shots = [];
   for (const item of screenshots) shots.push(await blobToDataUrl(item.blob));
@@ -467,6 +480,7 @@ export function setupErrorReporter(options = {}) {
     location.href,
   );
   injectStyles(studioUrl);
+  const supportEmailPromise = loadSupportEmail(studioUrl);
 
   const state = {
     appMeta: { appId: options.appId, name: options.appId, version: "—" },
@@ -1291,7 +1305,7 @@ export function setupErrorReporter(options = {}) {
       return false;
     }
   }
-  function mailtoUrl(packageInfo, screenshotCopied) {
+  function mailtoUrl(packageInfo, screenshotCopied, supportEmail) {
     const subject = `[AI GHRAB] Chyba – ${state.appMeta.name} ${state.appMeta.version} – ${packageInfo.metadata.reportId}`;
     const body = [
       "Dobrý den,",
@@ -1325,19 +1339,22 @@ export function setupErrorReporter(options = {}) {
       "",
       "Děkuji.",
     ].join("\n");
-    return `mailto:${ADMIN_EMAIL}?subject=${encodeURIComponent(subject)}&body=${encodeURIComponent(clipText(body, 6500))}`;
+    return `mailto:${supportEmail}?subject=${encodeURIComponent(subject)}&body=${encodeURIComponent(clipText(body, 6500))}`;
   }
   async function prepareAndEmail() {
     prepareButton.disabled = true;
     prepareButton.textContent = t("Připravuji balíček…", "Preparing package…");
     try {
-      const info = await buildPackage();
+      const [info, supportEmail] = await Promise.all([
+        buildPackage(),
+        supportEmailPromise,
+      ]);
       const screenshotCopied = await copyPrimaryScreenshot();
       downloadBlob(info.blob, info.file.name);
       finalStatus.hidden = false;
-      finalStatus.innerHTML = `<strong>${t("Hlášení je připravené.", "The report is ready.")}</strong><span>${t(`${screenshotCopied ? "Hlavní snímek je ve schránce – v e-mailu použijte Ctrl+V. " : ""}Přiložte soubor „${info.file.name}“ a zprávu odešlete na ${ADMIN_EMAIL}.`, `${screenshotCopied ? "The main screenshot is in the clipboard – paste it into the email. " : ""}Attach “${info.file.name}” and send the message to ${ADMIN_EMAIL}.`)}</span>`;
+      finalStatus.innerHTML = `<strong>${t("Hlášení je připravené.", "The report is ready.")}</strong><span>${t(`${screenshotCopied ? "Hlavní snímek je ve schránce – v e-mailu použijte Ctrl+V. " : ""}Přiložte soubor „${info.file.name}“ a zprávu odešlete na ${supportEmail}.`, `${screenshotCopied ? "The main screenshot is in the clipboard – paste it into the email. " : ""}Attach “${info.file.name}” and send the message to ${supportEmail}.`)}</span>`;
       await delay(160);
-      location.href = mailtoUrl(info, screenshotCopied);
+      location.href = mailtoUrl(info, screenshotCopied, supportEmail);
     } catch (error) {
       finalStatus.hidden = false;
       finalStatus.textContent =
@@ -1356,9 +1373,10 @@ export function setupErrorReporter(options = {}) {
   }
   async function sharePrepared() {
     try {
-      const info = state.preparedFile
-        ? { file: state.preparedFile }
-        : await buildPackage();
+      const [info, supportEmail] = await Promise.all([
+        state.preparedFile ? { file: state.preparedFile } : buildPackage(),
+        supportEmailPromise,
+      ]);
       if (!navigator.canShare?.({ files: [info.file] }))
         throw new Error("file-sharing-not-supported");
       await navigator.share({
@@ -1368,8 +1386,8 @@ export function setupErrorReporter(options = {}) {
           `Issue report – ${state.appMeta.name}`,
         ),
         text: t(
-          `Prosím odešlete správci na ${ADMIN_EMAIL}.`,
-          `Please send this to the administrator at ${ADMIN_EMAIL}.`,
+          `Prosím odešlete správci na ${supportEmail}.`,
+          `Please send this to the administrator at ${supportEmail}.`,
         ),
       });
     } catch (error) {

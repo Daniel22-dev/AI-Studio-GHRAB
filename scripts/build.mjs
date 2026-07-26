@@ -56,19 +56,73 @@ await writeFile(
   "utf8",
 );
 
-const cacheFiles = (await walk(dist))
+const allCacheFiles = (await walk(dist))
   .filter((file) => file !== path.join(dist, "sw.js"))
   .map((file) => `./${path.relative(dist, file).split(path.sep).join("/")}`)
   .sort();
-cacheFiles.unshift("./");
+const requiredCacheFiles = [
+  "./",
+  "./index.html",
+  "./app.js",
+  "./styles.css",
+  "./polish.css",
+  "./startup-prepaint.js",
+  "./manifest.webmanifest",
+  "./app/index.html",
+  "./app/viewer.js",
+  "./app/viewer.css",
+  "./app/embed-overrides.css",
+  "./access/access-control.js",
+  "./shared/material-validator.js",
+  "./shared/safe-export.js",
+  "./config/apps.generated.json",
+  "./config/apps.fallback.json",
+  "./config/access-policy.json",
+  "./config/revoked-access.json",
+  "./config/access-public-key.json",
+  "./config/sync-report.json",
+  "./assets/brand/brand-mark.svg",
+  "./assets/brand/portal-gateway.webp",
+  "./assets/brand/icon-32.png",
+];
+const missingRequired = requiredCacheFiles.filter(
+  (file) => file !== "./" && !allCacheFiles.includes(file),
+);
+if (missingRequired.length)
+  throw new Error(
+    `Missing required precache assets: ${missingRequired.join(", ")}`,
+  );
+const excludedOptionalPrefixes = [
+  "./tools/",
+  "./tests/",
+  "./integration/",
+  "./schemas/",
+];
+const optionalCacheFiles = allCacheFiles.filter(
+  (file) =>
+    !requiredCacheFiles.includes(file) &&
+    !excludedOptionalPrefixes.some((prefix) => file.startsWith(prefix)),
+);
 const swPath = path.join(dist, "sw.js");
 const sw = await readFile(swPath, "utf8");
-const core = cacheFiles.map((file) => `  ${JSON.stringify(file)}`).join(",\n");
-if (!sw.includes("/*__CORE_ASSETS__*/"))
-  throw new Error("Service worker does not contain CORE placeholder.");
+const serialise = (files) =>
+  files.map((file) => `  ${JSON.stringify(file)}`).join(",\n");
+if (
+  !sw.includes("/*__CORE_REQUIRED__*/") ||
+  !sw.includes("/*__CORE_OPTIONAL__*/")
+)
+  throw new Error("Service worker does not contain precache placeholders.");
 await writeFile(
   swPath,
-  sw.replace("/*__CORE_ASSETS__*/", `\n${core}\n`),
+  sw
+    .replace(
+      "/*__CORE_REQUIRED__*/",
+      `\n${serialise(requiredCacheFiles)}\n`,
+    )
+    .replace(
+      "/*__CORE_OPTIONAL__*/",
+      `\n${serialise(optionalCacheFiles)}\n`,
+    ),
   "utf8",
 );
 

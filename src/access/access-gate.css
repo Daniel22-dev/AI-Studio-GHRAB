@@ -101,3 +101,18 @@ html[data-ghrab-access="checking"] body {
     box-sizing: border-box;
   }
 }
+
+.ghrab-storage-warning {
+  position: fixed;
+  z-index: 2147483646;
+  right: 18px;
+  bottom: 18px;
+  max-width: min(420px, calc(100vw - 36px));
+  padding: 14px 16px;
+  border: 1px solid rgba(255, 177, 84, 0.65);
+  border-radius: 14px;
+  background: rgba(35, 20, 6, 0.96);
+  color: #fff3df;
+  box-shadow: 0 18px 50px rgba(0, 0, 0, 0.38);
+  font: 600 14px/1.45 system-ui, sans-serif;
+}

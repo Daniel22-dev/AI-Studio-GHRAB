@@ -2,6 +2,14 @@
 
 > Tento soubor se generuje ze `src/config/changelog.json`. Neupravujte jej ručně.
 
+## 0.18.5 — 2026-07-25
+**Audit telemetrie, přístupu a offline provozu**
+
+- ACTIVA a SORTIO nyní mají povolené typy pilotních výstupů a report zobrazuje všech sedm aplikací.
+- Správcovské stránky čtou jediný seznam z přístupové politiky; Pilot je chráněn stejně jako ostatní administrátorské části.
+- Byla zpřísněna synchronizace manifestů, opraven offline návrat na podstránky a zmenšena precache; plná prémiová animace hvězdné brány zůstává zachována.
+- Nový projektový QA validátor hlídá registry, telemetrii, správcovské stránky, verze, formáty obrázků a rozpočet precache.
+
 ## 0.18.4 — 2026-07-23
 **SORTIO jako sedmá aplikace AI Studia**
 
