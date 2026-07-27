@@ -2,7 +2,7 @@
 
 ## Aktuální stav
 
-Integrace je dokončena v Generátoru 7.1.4, Diferenciátoru 1.3.3, Hodnotiteli maturitních slohů 1.5.2, LUDUSu 1.16.3, Korespondenčním asistentovi 5.2.5, ACTIVA 0.5.0 a SORTIO 1.0.2. Ochrana se nevztahuje jen na karty ve Studiu; probíhá také při přímém otevření každé aplikace.
+Integrace je dokončena v Generátoru 7.1.4, Diferenciátoru 1.3.3, Hodnotiteli maturitních slohů 1.5.2, LUDUSu 1.16.3, Korespondenčním asistentovi 5.5.1, ACTIVA 0.5.0 a SORTIO 1.0.2. Ochrana se nevztahuje jen na karty ve Studiu; probíhá také při přímém otevření každé aplikace.
 
 ## Jak funguje jednotné přihlášení
 

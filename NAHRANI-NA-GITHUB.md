@@ -1,4 +1,4 @@
-# Nahrání AI Studio GHRAB 0.18.7
+# Nahrání AI Studio GHRAB 0.18.8
 
 Tento balík zachovává samostatné repozitáře aplikací a opravuje optické vycentrování hlavní hvězdné brány mezi kartami.
 

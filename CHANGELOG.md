@@ -2,6 +2,13 @@
 
 > Tento soubor se generuje ze `src/config/changelog.json`. Neupravujte jej ručně.
 
+## 0.18.8 — 2026-07-27
+**Aktuální manuál Korespondenčního asistenta**
+
+- Centrální registr a jeho offline fallback byly aktualizovány na Korespondenčního asistenta 5.5.1 včetně kompatibility se Studio Bridge 1.3.
+- Centrum manuálů nyní výslovně uvádí pracovní profil, rychlé rozpoznání nastavení, školní scénáře, tón a délku i hromadné adresáty.
+- AI Studio nadále načítá samotný interaktivní manuál z repozitáře aplikace, takže po nasazení Korespondenčního asistenta zobrazuje jeho aktuální obsah bez duplicitní kopie.
+
 ## 0.18.7 — 2026-07-26
 **Optické vycentrování hlavní brány**
 

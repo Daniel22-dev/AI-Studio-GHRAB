@@ -1,15 +1,19 @@
 # AI Studio GHRAB
 
-**Aktuální verze: 0.18.7**
+**Aktuální verze: 0.18.8**
 
-**Verze 0.18.7 – federovaný serverless portál sedmi chráněných školních aplikací s opticky vycentrovanou hlavní hvězdnou bránou.**
+**Verze 0.18.8 – federovaný serverless portál sedmi chráněných školních aplikací s aktuálním registrem a manuálem Korespondenčního asistenta 5.5.1.**
 
 AI Studio GHRAB je centrální brána školních digitálních a AI nástrojů. Jednotlivé aplikace zůstávají v samostatných repozitářích; Studio zajišťuje společnou navigaci, Top 4, synchronizaci verzí, bezpečnostní rámec, pracovní materiály, pilotní měření a správu podepsaných přístupů.
 
-## Hlavní novinky 0.18.7
+## Hlavní novinky 0.18.8
+
+- Korespondenční asistent je v živém i záložním registru veden ve verzi 5.5.1,
+- karta jeho manuálu popisuje pracovní profil, rychlé rozpoznání, školní scénáře, volbu tónu a hromadné adresáty,
+- samotný manuál se dál načítá z aktuálního repozitáře aplikace, takže AI Studio nevytváří zastaralou duplicitní kopii,
 
 - hlavní hvězdná brána je opticky vycentrovaná mezi levým a pravým sloupcem aplikací,
-- Diferenciátor 1.3.3 a Korespondenční asistent 5.2.5 se načítají z vlastních repozitářů a samostatných adres GitHub Pages,
+- Diferenciátor 1.3.3 a Korespondenční asistent 5.5.1 se načítají z vlastních repozitářů a samostatných adres GitHub Pages,
 - odkazy na aplikace, manuály, živé manifesty a fallback registry byly sjednoceny s novou strukturou,
 - přístupová brána, pilotní telemetrie, PWA identita a společný origin `daniel22-dev.github.io` zůstávají zachovány,
 - stránková ochrana správcovských částí čte jediný seznam z `access-policy.json`,
@@ -40,16 +44,16 @@ Bez serveru nelze spolehlivě ověřit totožnost držitele, centrálně synchro
 
 ## Ochrana přímých adres a měření
 
-Ochranný bootstrap je určen pro Generátor 7.1.4, Diferenciátor 1.3.3, Hodnotitel maturitních slohů 1.5.2, LUDUS 1.16.3, Korespondenčního asistenta 5.2.5, ACTIVA 0.5.0 a SORTIO 1.0.2. Stejný centrální modul ověřuje podepsaný přístup a po úspěšném otevření spustí místní měření. Dílčí aplikace navíc hlásí pouze povolené technické typy výstupů.
+Ochranný bootstrap je určen pro Generátor 7.1.4, Diferenciátor 1.3.3, Hodnotitel maturitních slohů 1.5.2, LUDUS 1.16.3, Korespondenčního asistenta 5.5.1, ACTIVA 0.5.0 a SORTIO 1.0.2. Stejný centrální modul ověřuje podepsaný přístup a po úspěšném otevření spustí místní měření. Dílčí aplikace navíc hlásí pouze povolené technické typy výstupů.
 
 ## Doporučené pořadí nasazení
 
 1. Generátor interaktivních testů 7.1.4.
 2. LUDUS 1.16.3.
-3. Školní aplikace: Diferenciátor 1.3.3 a Korespondenční asistent 5.2.5.
+3. Školní aplikace: Diferenciátor 1.3.3 a Korespondenční asistent 5.5.1.
 4. Hodnotitel maturitních slohů 1.5.2.
 5. ACTIVA 0.5.0 a SORTIO 1.0.2 včetně volání pilotní telemetrie.
-6. AI Studio GHRAB 0.18.7 jako poslední.
+6. AI Studio GHRAB 0.18.8 jako poslední.
 
 Po zeleném nasazení zavřete staré otevřené karty Studia a znovu je otevřete. Nová verze service workeru se aktivuje až po bezpečném ukončení staré relace; rutinní `Ctrl + F5` už není součástí standardního postupu.
 

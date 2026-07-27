@@ -8,7 +8,12 @@ const MANUAL_TOPICS = {
   generator: ["Tvorba testu a procvičování", "Varianty, kódy a offline odevzdání", "Vyhodnocení a export"],
   differentiator: ["Tři pedagogické úrovně", "Úprava pracovního listu", "Kontrola kvality a PDF"],
   "essay-evaluator": ["Anonymizace a import slohů", "Rubrika, důkazy a schválení", "Reporty a bezpečná distribuce"],
-  correspondence: ["Rozbor příchozí zprávy", "Anonymizace a tři varianty", "Kontrola před odesláním"],
+  correspondence: [
+    "Příchozí zpráva, anonymizace a varianty odpovědi",
+    "Můj e-mail: pracovní profil a rychlé rozpoznání",
+    "Školní scénáře, tón, délka a rozsah úprav",
+    "Jednotlivec, hromadní adresáti a finální kontrola",
+  ],
   ludus: ["Výběr herního světa", "Tvorba a vedení hry", "Týmový režim a offline export"],
   "activity-builder": ["39 typů aktivit a předmětové balíčky", "Diferenciace, varianty a prémiové PDF", "Projekce, knihovna a interní testy"],
   sortio: ["Import tříd a docházka", "Losování, chytré skupiny, role a místa", "Projekce, historie zapojování, tisk a zálohy"]

@@ -1,6 +1,6 @@
-# Architektura AI Studio GHRAB 0.18.7
+# Architektura AI Studio GHRAB 0.18.8
 
-**Aktuální verze: 0.18.7**
+**Aktuální verze: 0.18.8**
 
 ## Federovaný portál
 
@@ -70,8 +70,8 @@ Server nahradí import oprávnění školním přihlášením, místní úloži�
 
 ## Interaktivní manuály
 
-- AI Studio obsahuje pouze katalog `manualy/`; vlastní manuál zůstává v repozitáři konkrétní aplikace.
+- AI Studio obsahuje pouze katalog `manualy/`; vlastní manuál zůstává v repozitáři konkrétní aplikace. Po nasazení nové verze aplikace se proto v AI Studiu zobrazí její aktuální manuál bez ručního kopírování, pokud zůstane zachována stejná `manualUrl`.
 - Adresa manuálu je povinné pole `manualUrl` v `ai-studio-app-manifest-v1`.
-- Katalog vždy zobrazí všech pět aplikací a pro otevření použije `hasAppAccess(appId)`.
+- Katalog vždy zobrazí všech sedm aplikací a pro otevření použije `hasAppAccess(appId)`.
 - Správce díky roli `admin` otevře všechny manuály; učitel jen manuály aplikací uvedených v podepsaném oprávnění.
 - Samotný manuál je navíc chráněn stejným `app-guard.js`, takže přímá URL neobchází AI Studio.
