@@ -225,7 +225,7 @@ html:not(.access-ready) body[data-page="changelog"] main {
 }
 .access-summary {
   width: min(860px, calc(100% - 20px));
-  margin: -8px auto 15px;
+  margin: 20px auto 15px;
   display: grid;
   grid-template-columns: auto 1fr auto;
   gap: 14px;
@@ -664,7 +664,7 @@ html:not(.access-ready) body[data-page="changelog"] main {
   }
   .access-summary {
     grid-template-columns: auto 1fr;
-    margin-top: 0;
+    margin-top: 12px;
   }
   .access-summary .button {
     grid-column: 1/3;

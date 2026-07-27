@@ -1,7 +1,29 @@
 {
   "schema": "ai-studio-changelog-v1",
-  "current": "0.18.10",
+  "current": "0.18.11",
   "items": [
+    {
+      "version": "0.18.11",
+      "date": "2026-07-27",
+      "title": {
+        "cs": "Více prostoru pod hlavní bránou",
+        "en": "More space below the main gateway"
+      },
+      "changes": [
+        {
+          "cs": "Panel „Správcovský přístup aktivní“ byl posunut níže, aby jeho horní rohy opticky nezasahovaly do spodních karet LUDUS a Generátoru interaktivních testů.",
+          "en": "The “Administrator access active” panel was moved lower so its upper corners no longer visually overlap the lower LUDUS and Test Generator cards."
+        },
+        {
+          "cs": "Na úzkých obrazovkách zůstává zachovaný menší, ale zřetelný odstup bez zbytečného prodlužování stránky.",
+          "en": "On narrow screens, a smaller but clear gap remains without unnecessarily lengthening the page."
+        },
+        {
+          "cs": "Registry aplikací, přístupová logika a obsah brány se nemění.",
+          "en": "Application registries, access logic and gateway content remain unchanged."
+        }
+      ]
+    },
     {
       "version": "0.18.10",
       "date": "2026-07-27",

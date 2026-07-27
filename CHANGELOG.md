@@ -2,6 +2,13 @@
 
 > Tento soubor se generuje ze `src/config/changelog.json`. Neupravujte jej ručně.
 
+## 0.18.11 — 2026-07-27
+**Více prostoru pod hlavní bránou**
+
+- Panel „Správcovský přístup aktivní“ byl posunut níže, aby jeho horní rohy opticky nezasahovaly do spodních karet LUDUS a Generátoru interaktivních testů.
+- Na úzkých obrazovkách zůstává zachovaný menší, ale zřetelný odstup bez zbytečného prodlužování stránky.
+- Registry aplikací, přístupová logika a obsah brány se nemění.
+
 ## 0.18.10 — 2026-07-27
 **Korespondenční asistent 5.5.5 v registru Studia**
 

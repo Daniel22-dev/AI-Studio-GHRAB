@@ -703,6 +703,10 @@ if (
   fail("Katalogové aplikace před animací nevracejí pohled k centrální bráně.");
 const portalHomeHtml = await readFile(path.join(src, "index.html"), "utf8");
 const portalPolishText = await readFile(path.join(src, "polish.css"), "utf8");
+const accessSummaryRule =
+  portalPolishText.match(/\.access-summary\s*\{([\s\S]*?)\}/)?.[1] || "";
+if (!accessSummaryRule || /margin(?:-top)?\s*:\s*-/.test(accessSummaryRule))
+  fail("Panel stavu přístupu se znovu překrývá se spodními kartami brány.");
 if (
   !portalHomeHtml.includes("portal-ring-assembly") ||
   !portalHomeHtml.includes("portal-mechanical-ring ring-outer") ||

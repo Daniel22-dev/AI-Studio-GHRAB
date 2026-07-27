@@ -1,6 +1,6 @@
-# Přesný postup nahrání AI Studio GHRAB 0.18.10 na GitHub
+# Přesný postup nahrání AI Studio GHRAB 0.18.11 na GitHub
 
-**Aktuální verze: 0.18.10**
+**Aktuální verze: 0.18.11**
 
 ## Doporučené pořadí
 
@@ -10,7 +10,7 @@
    - Hodnotitel maturitních slohů 1.5.2,
    - Korespondenční asistent 5.5.5,
    - LUDUS 1.16.3.
-2. Potom nahrajte obsah balíku AI Studio GHRAB 0.18.10 do kořene repozitáře `AI-Studio-GHRAB`.
+2. Potom nahrajte obsah balíku AI Studio GHRAB 0.18.11 do kořene repozitáře `AI-Studio-GHRAB`.
 3. Zachovejte složky `.github`, `src`, `scripts` a soubory `package.json` a `package-lock.json`.
 4. Složku `dist` nenahrávejte. GitHub Actions ji vytvoří znovu při každém nasazení.
 5. Po commitu otevřete záložku **Actions** a ověřte zelený běh „Sync, certify and deploy AI Studio GHRAB“.
@@ -25,4 +25,4 @@
 
 ## Kontrola verze
 
-V patičce Studia a v `dist/build-info.json` musí být verze **0.18.10**.
+V patičce Studia a v `dist/build-info.json` musí být verze **0.18.11**.

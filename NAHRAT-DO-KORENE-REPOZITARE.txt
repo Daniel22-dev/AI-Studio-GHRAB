@@ -1,4 +1,4 @@
-AI Studio GHRAB 0.18.10
+AI Studio GHRAB 0.18.11
 
 Rozbalte ZIP a nahrajte VEŠKERÝ OBSAH této složky přímo do kořene repozitáře AI-Studio-GHRAB.
 Nenahrávejte nadřazenou složku jako další vnořenou složku.

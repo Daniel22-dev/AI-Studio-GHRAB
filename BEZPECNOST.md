@@ -1,6 +1,6 @@
-# Bezpečnostní hranice AI Studio GHRAB 0.18.10
+# Bezpečnostní hranice AI Studio GHRAB 0.18.11
 
-**Aktuální verze: 0.18.10**
+**Aktuální verze: 0.18.11**
 
 ## Co serverless portál zajišťuje
 
