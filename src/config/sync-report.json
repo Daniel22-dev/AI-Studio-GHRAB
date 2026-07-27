@@ -1,7 +1,7 @@
 {
   "schema": "ai-studio-sync-report-v1",
   "generated": true,
-  "generatedAt": "2026-07-27T17:01:35.849Z",
+  "generatedAt": "2026-07-27T19:45:52.680Z",
   "mode": "fallback",
   "fallbackSnapshotConfirmed": true,
   "sources": [
@@ -30,7 +30,7 @@
       "id": "correspondence",
       "url": "https://daniel22-dev.github.io/korespondencni-asistent/studio-manifest.json",
       "ok": false,
-      "version": "5.5.2",
+      "version": "5.5.5",
       "error": "offline režim"
     },
     {

@@ -2,6 +2,13 @@
 
 > Tento soubor se generuje ze `src/config/changelog.json`. Neupravujte jej ručně.
 
+## 0.18.10 — 2026-07-27
+**Korespondenční asistent 5.5.5 v registru Studia**
+
+- Živý i offline registr byly sjednoceny s Korespondenčním asistentem 5.5.5.
+- Centrum manuálů nově upozorňuje také na kapitolu Bezpečná práce s údaji a finální kontrolu.
+- Dokumentace nasazení, integrace a bezpečnostního rámce byla aktualizována na aktuální verze.
+
 ## 0.18.9 — 2026-07-27
 **Přehlednější workflow Korespondenčního asistenta**
 

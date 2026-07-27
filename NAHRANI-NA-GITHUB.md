@@ -1,6 +1,6 @@
-# Nahrání AI Studio GHRAB 0.18.9
+# Nahrání AI Studio GHRAB 0.18.10
 
-Tento balík zachovává samostatné repozitáře aplikací a opravuje optické vycentrování hlavní hvězdné brány mezi kartami.
+Tento balík zachovává samostatné repozitáře aplikací a aktualizuje registry AI Studia na Korespondenčního asistenta 5.5.5.
 
 ## Postup
 
@@ -13,4 +13,4 @@ Tento balík zachovává samostatné repozitáře aplikací a opravuje optické 
 
 ## Očekávaný výsledek
 
-Hlavní brána bude mít na desktopu vyrovnaný odstup od levého i pravého sloupce aplikací; registry aplikací zůstávají beze změny.
+Karta Korespondenčního asistenta bude zobrazovat verzi 5.5.5 a centrum manuálů bude odkazovat na aktuální manuál z jeho samostatného repozitáře.

@@ -1,26 +1,18 @@
 # AI Studio GHRAB
 
-**Aktuální verze: 0.18.9**
+**Aktuální verze: 0.18.10**
 
-**Verze 0.18.9 – federovaný serverless portál sedmi chráněných školních aplikací s aktuálním registrem a workflow Korespondenčního asistenta 5.5.2.**
+**Verze 0.18.10 – federovaný serverless portál sedmi chráněných školních aplikací s aktuálním registrem Korespondenčního asistenta 5.5.5.**
 
 AI Studio GHRAB je centrální brána školních digitálních a AI nástrojů. Jednotlivé aplikace zůstávají v samostatných repozitářích; Studio zajišťuje společnou navigaci, Top 4, synchronizaci verzí, bezpečnostní rámec, pracovní materiály, pilotní měření a správu podepsaných přístupů.
 
-## Hlavní novinky 0.18.9
+## Hlavní novinky 0.18.10
 
-- Korespondenční asistent je v živém i záložním registru veden ve verzi 5.5.2,
-- karta jeho manuálu popisuje pracovní profil, rychlé rozpoznání, školní scénáře, volbu tónu a hromadné adresáty,
-- samotný manuál se dál načítá z aktuálního repozitáře aplikace, takže AI Studio nevytváří zastaralou duplicitní kopii,
-
-- hlavní hvězdná brána je opticky vycentrovaná mezi levým a pravým sloupcem aplikací,
-- Diferenciátor 1.3.3 a Korespondenční asistent 5.5.2 se načítají z vlastních repozitářů a samostatných adres GitHub Pages,
-- odkazy na aplikace, manuály, živé manifesty a fallback registry byly sjednoceny s novou strukturou,
-- přístupová brána, pilotní telemetrie, PWA identita a společný origin `daniel22-dev.github.io` zůstávají zachovány,
-- stránková ochrana správcovských částí čte jediný seznam z `access-policy.json`,
-- synchronizace manifestů přijímá pouze adresy pod povoleným prefixem konkrétní aplikace,
-- offline navigace vrací uživatele na správnou podstránku a precache je rozdělena na povinné jádro a volitelný obsah,
-- projektový QA validátor hlídá konzistenci registrů, typy výstupů, verze, formáty obrázků a velikost precache,
-- původní plná prémiová animace hvězdné brány zůstává zachována; klávesa Escape nyní přechod skutečně zruší.
+- Korespondenční asistent je v živém i záložním registru veden ve verzi 5.5.5,
+- centrum manuálů upozorňuje na pracovní profil, školní situace, volbu „Píšu jako“, hromadné adresáty, vícejazyčný předmět a bezpečnou práci s údaji,
+- samotný interaktivní manuál se dál načítá přímo z repozitáře aplikace, takže AI Studio nevytváří zastaralou duplicitní kopii,
+- registry, integrační dokumentace, bezpečnostní přehled a postup nasazení jsou sjednocené s aktuální verzí KS,
+- přístupová brána, pilotní telemetrie, PWA identita, Top 4 a prémiová hvězdná brána zůstávají beze změny.
 
 ## Starší milník 0.10.0
 
@@ -44,16 +36,16 @@ Bez serveru nelze spolehlivě ověřit totožnost držitele, centrálně synchro
 
 ## Ochrana přímých adres a měření
 
-Ochranný bootstrap je určen pro Generátor 7.1.4, Diferenciátor 1.3.3, Hodnotitel maturitních slohů 1.5.2, LUDUS 1.16.3, Korespondenčního asistenta 5.5.2, ACTIVA 0.5.0 a SORTIO 1.0.2. Stejný centrální modul ověřuje podepsaný přístup a po úspěšném otevření spustí místní měření. Dílčí aplikace navíc hlásí pouze povolené technické typy výstupů.
+Ochranný bootstrap je určen pro Generátor 7.1.4, Diferenciátor 1.3.3, Hodnotitel maturitních slohů 1.5.2, LUDUS 1.16.3, Korespondenčního asistenta 5.5.5, ACTIVA 0.5.0 a SORTIO 1.0.2. Stejný centrální modul ověřuje podepsaný přístup a po úspěšném otevření spustí místní měření. Dílčí aplikace navíc hlásí pouze povolené technické typy výstupů.
 
 ## Doporučené pořadí nasazení
 
 1. Generátor interaktivních testů 7.1.4.
 2. LUDUS 1.16.3.
-3. Školní aplikace: Diferenciátor 1.3.3 a Korespondenční asistent 5.5.2.
+3. Školní aplikace: Diferenciátor 1.3.3 a Korespondenční asistent 5.5.5.
 4. Hodnotitel maturitních slohů 1.5.2.
 5. ACTIVA 0.5.0 a SORTIO 1.0.2 včetně volání pilotní telemetrie.
-6. AI Studio GHRAB 0.18.9 jako poslední.
+6. AI Studio GHRAB 0.18.10 jako poslední.
 
 Po zeleném nasazení zavřete staré otevřené karty Studia a znovu je otevřete. Nová verze service workeru se aktivuje až po bezpečném ukončení staré relace; rutinní `Ctrl + F5` už není součástí standardního postupu.
 
