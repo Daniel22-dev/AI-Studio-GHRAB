@@ -10,8 +10,8 @@ const MANUAL_TOPICS = {
   "essay-evaluator": ["Anonymizace a import slohů", "Rubrika, důkazy a schválení", "Reporty a bezpečná distribuce"],
   correspondence: [
     "Příchozí zpráva, anonymizace a varianty odpovědi",
-    "Můj e-mail: pracovní profil a rychlé rozpoznání",
-    "Školní scénáře, tón, délka a rozsah úprav",
+    "Můj e-mail: profil nad konceptem a rychlé rozpoznání",
+    "Dvě hlavní cesty, školní situace a kontextové nápovědy",
     "Jednotlivec, hromadní adresáti a finální kontrola",
   ],
   ludus: ["Výběr herního světa", "Tvorba a vedení hry", "Týmový režim a offline export"],

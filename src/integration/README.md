@@ -1,6 +1,6 @@
 # Ochrana samostatných aplikací bez serveru
 
-## Stav ve verzi 0.18.8
+## Stav ve verzi 0.18.9
 
 Ochranná vrstva je integrována v těchto vydáních:
 
@@ -8,7 +8,7 @@ Ochranná vrstva je integrována v těchto vydáních:
 - Diferenciátor 1.3.3 — ID `differentiator`,
 - Hodnotitel maturitních slohů 1.5.2 — ID `essay-evaluator`,
 - LUDUS 1.16.3 — ID `ludus`,
-- Korespondenční asistent 5.5.1 — ID `correspondence`.
+- Korespondenční asistent 5.5.2 — ID `correspondence`.
 
 Přímé otevření jejich veřejných adres používá stejné podepsané oprávnění jako spuštění z AI Studia.
 

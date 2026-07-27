@@ -2,6 +2,13 @@
 
 > Tento soubor se generuje ze `src/config/changelog.json`. Neupravujte jej ručně.
 
+## 0.18.9 — 2026-07-27
+**Přehlednější workflow Korespondenčního asistenta**
+
+- Registr a offline fallback byly aktualizovány na Korespondenčního asistenta 5.5.2.
+- Centrum manuálů nyní popisuje dvě hlavní cesty, školní situaci uvnitř sestavení e-mailu, profil nad konceptem a kontextové nápovědy.
+- Samotný manuál se nadále načítá přímo z repozitáře Korespondenčního asistenta.
+
 ## 0.18.8 — 2026-07-27
 **Aktuální manuál Korespondenčního asistenta**
 
