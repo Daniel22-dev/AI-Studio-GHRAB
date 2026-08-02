@@ -1,7 +1,7 @@
 {
   "schema": "ai-studio-sync-report-v1",
   "generated": true,
-  "generatedAt": "2026-07-27T19:45:52.680Z",
+  "generatedAt": "2026-08-02T16:30:00.000Z",
   "mode": "fallback",
   "fallbackSnapshotConfirmed": true,
   "sources": [
@@ -52,6 +52,13 @@
       "url": "https://daniel22-dev.github.io/SORTIO/studio-manifest.json",
       "ok": false,
       "version": "1.0.2",
+      "error": "offline režim"
+    },
+    {
+      "id": "lesson-hub",
+      "url": "https://daniel22-dev.github.io/lesson-hub/studio-manifest.json",
+      "ok": false,
+      "version": "1.2.0",
       "error": "offline režim"
     }
   ]

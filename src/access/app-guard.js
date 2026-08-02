@@ -30,6 +30,13 @@ export const OUTPUT_KINDS = Object.freeze({
   "essay-evaluator": new Set(["essay-evaluation"]),
   "activity-builder": new Set(["activity-pack"]),
   sortio: new Set(["class-import", "grouping", "seating-plan", "roles"]),
+  "lesson-hub": new Set([
+    "lesson-plan",
+    "lesson-record",
+    "material-record",
+    "material-import",
+    "backup-export",
+  ]),
 });
 
 function language() {

@@ -1,6 +1,6 @@
-# Přesný postup nahrání AI Studio GHRAB 0.18.11 na GitHub
+# Přesný postup nahrání AI Studio GHRAB 0.19.0 na GitHub
 
-**Aktuální verze: 0.18.11**
+**Aktuální verze: 0.19.0**
 
 ## Doporučené pořadí
 
@@ -9,12 +9,16 @@
    - Diferenciátor 1.3.3,
    - Hodnotitel maturitních slohů 1.5.2,
    - Korespondenční asistent 5.5.5,
-   - LUDUS 1.16.3.
-2. Potom nahrajte obsah balíku AI Studio GHRAB 0.18.11 do kořene repozitáře `AI-Studio-GHRAB`.
-3. Zachovejte složky `.github`, `src`, `scripts` a soubory `package.json` a `package-lock.json`.
-4. Složku `dist` nenahrávejte. GitHub Actions ji vytvoří znovu při každém nasazení.
-5. Po commitu otevřete záložku **Actions** a ověřte zelený běh „Sync, certify and deploy AI Studio GHRAB“.
-6. Po nasazení zavřete staré otevřené karty Studia a znovu je otevřete. Nový service worker už nepřebírá rozpracovanou relaci násilně.
+   - LUDUS 1.16.3,
+   - ACTIVA 0.5.0,
+   - SORTIO 1.0.2,
+   - Lesson Hub 1.2.0.
+2. U Lesson Hubu nejprve ověřte živý manifest `/lesson-hub/studio-manifest.json` a interaktivní manuál `/lesson-hub/manual/`.
+3. Potom nahrajte obsah balíku AI Studio GHRAB 0.19.0 do kořene repozitáře `AI-Studio-GHRAB`.
+4. Zachovejte složky `.github`, `src`, `scripts` a soubory `package.json` a `package-lock.json`.
+5. Složku `dist` nenahrávejte. GitHub Actions ji vytvoří znovu při každém nasazení.
+6. Po commitu otevřete záložku **Actions** a ověřte zelený běh „Sync, certify and deploy AI Studio GHRAB“.
+7. Po nasazení zavřete staré otevřené karty Studia a znovu je otevřete. Nový service worker už nepřebírá rozpracovanou relaci násilně.
 
 ## Co se děje automaticky
 
@@ -25,4 +29,4 @@
 
 ## Kontrola verze
 
-V patičce Studia a v `dist/build-info.json` musí být verze **0.18.11**.
+V patičce Studia a v `dist/build-info.json` musí být verze **0.19.0**.

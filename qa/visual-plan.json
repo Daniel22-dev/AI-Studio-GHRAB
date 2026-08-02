@@ -85,7 +85,7 @@
       "id": "studio-manuals-support",
       "name": "Společná podpora ekosystému v Centru manuálů",
       "url": "/manualy/index.html",
-      "expectedText": "Jednotné postupy pro všech sedm aplikací",
+      "expectedText": "Jednotné postupy pro všech osm aplikací",
       "mustVisible": [
         "#ecosystem-support"
       ],
@@ -116,7 +116,7 @@
     },
     {
       "id": "studio-manuals-catalog",
-      "name": "Katalog sedmi aplikací v Centru manuálů",
+      "name": "Katalog osmi aplikací v Centru manuálů",
       "url": "/manualy/index.html",
       "expectedText": "Vyberte aplikaci",
       "mustVisible": [

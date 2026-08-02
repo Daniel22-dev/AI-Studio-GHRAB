@@ -2,6 +2,14 @@
 
 > Tento soubor se generuje ze `src/config/changelog.json`. Neupravujte jej ručně.
 
+## 0.19.0 — 2026-08-02
+**Lesson Hub jako osmá aplikace ekosystému**
+
+- Lesson Hub 1.2.0 byl přidán do živého registru, offline fallbacku, přístupové politiky a synchronizace se školením LHB-01.
+- Centrum manuálů otevírá aktuální příručku přímo z repozitáře Lesson Hubu a katalog popisuje kontinuitu skupin, výuku, materiály, zálohy, komunikaci a zastupování.
+- Pilotní telemetrie a report přijímají pouze schválené technické počty bez názvů hodin, poznámek, materiálů nebo studentských údajů.
+- QA kontroly, bezpečnostní rámec a dokumentace nyní ověřují osm chráněných aplikací.
+
 ## 0.18.11 — 2026-07-27
 **Více prostoru pod hlavní bránou**
 

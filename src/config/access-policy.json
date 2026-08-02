@@ -71,6 +71,15 @@
         "cs": "SORTIO – Organizátor třídy",
         "en": "SORTIO – Classroom Organiser"
       }
+    },
+    "lesson-hub": {
+      "trainingRequired": true,
+      "trainingCode": "LHB-01",
+      "trainingVersion": "2026-09",
+      "label": {
+        "cs": "Lesson Hub",
+        "en": "Lesson Hub"
+      }
     }
   },
   "administratorPages": [

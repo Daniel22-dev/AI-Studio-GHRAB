@@ -19,6 +19,7 @@ if (window.GHRAB.isAdmin()) {
     "essay-evaluator",
     "activity-builder",
     "sortio",
+    "lesson-hub",
   ];
   const APP_NAMES = {
     generator: "Generátor testů",
@@ -28,6 +29,7 @@ if (window.GHRAB.isAdmin()) {
     "essay-evaluator": "Hodnotitel slohů",
     "activity-builder": "ACTIVA",
     sortio: "SORTIO",
+    "lesson-hub": "Lesson Hub",
   };
   const OUTPUT_LABELS = {
     "test-package": "testové balíčky",
@@ -45,6 +47,11 @@ if (window.GHRAB.isAdmin()) {
     grouping: "vytvořené skupiny",
     "seating-plan": "zasedací pořádky",
     roles: "rozdělení rolí",
+    "lesson-plan": "naplánované hodiny",
+    "lesson-record": "záznamy výuky",
+    "material-record": "uložené materiály",
+    "material-import": "materiály převzaté ze Studia",
+    "backup-export": "exporty záloh",
   };
   const REPORT_W = 1240;
   const REPORT_H = 1754;

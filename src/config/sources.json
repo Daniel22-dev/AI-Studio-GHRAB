@@ -26,5 +26,9 @@
   {
     "id": "sortio",
     "url": "https://daniel22-dev.github.io/SORTIO/studio-manifest.json"
+  },
+  {
+    "id": "lesson-hub",
+    "url": "https://daniel22-dev.github.io/lesson-hub/studio-manifest.json"
   }
 ]

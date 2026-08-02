@@ -1,7 +1,33 @@
 {
   "schema": "ai-studio-changelog-v1",
-  "current": "0.18.11",
+  "current": "0.19.0",
   "items": [
+    {
+      "version": "0.19.0",
+      "date": "2026-08-02",
+      "title": {
+        "cs": "Lesson Hub jako osmá aplikace ekosystému",
+        "en": "Lesson Hub as the eighth ecosystem application"
+      },
+      "changes": [
+        {
+          "cs": "Lesson Hub 1.2.0 byl přidán do živého registru, offline fallbacku, přístupové politiky a synchronizace se školením LHB-01.",
+          "en": "Lesson Hub 1.2.0 was added to the live registry, offline fallback, access policy and synchronisation with LHB-01 training."
+        },
+        {
+          "cs": "Centrum manuálů otevírá aktuální příručku přímo z repozitáře Lesson Hubu a katalog popisuje kontinuitu skupin, výuku, materiály, zálohy, komunikaci a zastupování.",
+          "en": "The Manuals centre opens the current guide directly from the Lesson Hub repository and the catalogue covers group continuity, teaching, materials, backups, communication and substitution."
+        },
+        {
+          "cs": "Pilotní telemetrie a report přijímají pouze schválené technické počty bez názvů hodin, poznámek, materiálů nebo studentských údajů.",
+          "en": "Pilot telemetry and reporting accept only approved technical counts without lesson titles, notes, materials or student data."
+        },
+        {
+          "cs": "QA kontroly, bezpečnostní rámec a dokumentace nyní ověřují osm chráněných aplikací.",
+          "en": "QA checks, the security framework and documentation now verify eight protected applications."
+        }
+      ]
+    },
     {
       "version": "0.18.11",
       "date": "2026-07-27",

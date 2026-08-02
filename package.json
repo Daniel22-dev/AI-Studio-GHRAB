@@ -1,8 +1,8 @@
 {
   "name": "ai-studio-ghrab",
-  "version": "0.18.11",
+  "version": "0.19.0",
   "private": true,
-  "description": "Profesionální PWA ekosystém sedmi školních AI nástrojů s ACTIVA, SORTIO, rozšířenými manuály, řízeným přístupem a jednotnou GHRAB QA bránou",
+  "description": "Profesionální federované PWA osmi chráněných školních aplikací včetně Lesson Hubu, manuálů, řízeného přístupu a jednotné GHRAB QA brány",
   "type": "module",
   "scripts": {
     "sync": "node scripts/sync-registry.mjs",

@@ -15,9 +15,26 @@ const MANUAL_TOPICS = {
     "Píšu jako, hromadní adresáti a vícejazyčné předměty",
     "Bezpečná práce s údaji a finální kontrola",
   ],
-  ludus: ["Výběr herního světa", "Tvorba a vedení hry", "Týmový režim a offline export"],
-  "activity-builder": ["39 typů aktivit a předmětové balíčky", "Diferenciace, varianty a prémiové PDF", "Projekce, knihovna a interní testy"],
-  sortio: ["Import tříd a docházka", "Losování, chytré skupiny, role a místa", "Projekce, historie zapojování, tisk a zálohy"]
+  ludus: [
+    "Výběr herního světa",
+    "Tvorba a vedení hry",
+    "Týmový režim a offline export",
+  ],
+  "activity-builder": [
+    "39 typů aktivit a předmětové balíčky",
+    "Diferenciace, varianty a prémiové PDF",
+    "Projekce, knihovna a interní testy",
+  ],
+  sortio: [
+    "Import tříd a docházka",
+    "Losování, chytré skupiny, role a místa",
+    "Projekce, historie zapojování, tisk a zálohy",
+  ],
+  "lesson-hub": [
+    "Školní roky, předměty a kontinuita skupin",
+    "Plánování, záznam výuky, materiály a povinnosti",
+    "Zálohy, komunikace, zastupování a serverová připravenost",
+  ],
 };
 
 

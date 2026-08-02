@@ -88,8 +88,8 @@ for (const [label, list] of [
   ["generated registry", apps],
   ["fallback registry", fallback],
 ]) {
-  if (!Array.isArray(list) || list.length < 7) {
-    fail(`${label} musí obsahovat alespoň sedm aplikací.`);
+  if (!Array.isArray(list) || list.length < 8) {
+    fail(`${label} musí obsahovat alespoň osm aplikací.`);
     continue;
   }
   const ids = new Set();
@@ -118,8 +118,8 @@ for (const [label, list] of [
       fail(`Chybí ikona ${app.id}: ${app.icon}`);
   }
 }
-if (!Array.isArray(sources) || sources.length < 7)
-  fail("sources.json musí obsahovat alespoň sedm zdrojů.");
+if (!Array.isArray(sources) || sources.length < 8)
+  fail("sources.json musí obsahovat alespoň osm zdrojů.");
 if (!apps?.some((app) => app.id === "essay-evaluator"))
   fail("Generovaný registr neobsahuje essay-evaluator.");
 if (!fallback?.some((app) => app.id === "essay-evaluator"))
@@ -145,6 +145,22 @@ if (!sortioFallback || !isVersionAtLeast(sortioFallback.version, "1.0.2"))
   fail("Fallback registr neobsahuje SORTIO 1.0.2 nebo novější.");
 if (!sources?.some((source) => source.id === "sortio"))
   fail("sources.json neobsahuje zdroj SORTIO.");
+const lessonHub = apps?.find((app) => app.id === "lesson-hub");
+const lessonHubFallback = fallback?.find((app) => app.id === "lesson-hub");
+if (!lessonHub || !isVersionAtLeast(lessonHub.version, "1.2.0"))
+  fail("Generovaný registr neobsahuje Lesson Hub 1.2.0 nebo novější.");
+if (
+  !lessonHubFallback ||
+  !isVersionAtLeast(lessonHubFallback.version, "1.2.0")
+)
+  fail("Fallback registr neobsahuje Lesson Hub 1.2.0 nebo novější.");
+if (!sources?.some((source) => source.id === "lesson-hub"))
+  fail("sources.json neobsahuje zdroj Lesson Hubu.");
+if (
+  lessonHub?.manualUrl !==
+  "https://daniel22-dev.github.io/lesson-hub/manual/"
+)
+  fail("Lesson Hub nemá aktuální adresu interaktivního manuálu.");
 if (apps?.slice(0, 4).every((app) => app.id !== "essay-evaluator"))
   fail("Hodnotitel musí být ve výchozím Top 4.");
 if (apps?.slice(4).every((app) => app.id !== "ludus"))
@@ -174,6 +190,8 @@ if (policy?.applications?.["activity-builder"]?.trainingCode !== "ACT-01")
   fail("ACTIVA nemá školení ACT-01.");
 if (policy?.applications?.sortio?.trainingCode !== "SOR-01")
   fail("SORTIO nemá školení SOR-01.");
+if (policy?.applications?.["lesson-hub"]?.trainingCode !== "LHB-01")
+  fail("Lesson Hub nemá školení LHB-01.");
 if (syncReport?.schema !== "ai-studio-sync-report-v1")
   fail("sync-report.json má neplatné schema.");
 if (
@@ -346,8 +364,21 @@ if (manifest?.id !== "/AI-Studio-GHRAB/")
 const manualsHtml = await readFile(path.join(src, "manualy/index.html"), "utf8");
 const manualsJs = await readFile(path.join(src, "manualy/manualy.js"), "utf8");
 if (!manualsHtml.includes('id="ecosystem-support"')) fail("Centrum manuálů nemá společnou podporu ekosystému.");
-if (!manualsJs.includes('activity-builder') || !manualsJs.includes('sortio') || !manualsJs.includes('MANUAL_TOPICS')) fail("Centrum manuálů nepopisuje ACTIVA, SORTIO a obsah jednotlivých průvodců.");
-if (!(await exists(path.join(src, "manualy/ecosystem-guide.html")))) fail("Chybí společná provozní příručka ekosystému.");
+if (
+  !manualsJs.includes("activity-builder") ||
+  !manualsJs.includes("sortio") ||
+  !manualsJs.includes("lesson-hub") ||
+  !manualsJs.includes("MANUAL_TOPICS")
+)
+  fail(
+    "Centrum manuálů nepopisuje ACTIVA, SORTIO, Lesson Hub a obsah jednotlivých průvodců.",
+  );
+if (!(await exists(path.join(src, "manualy/ecosystem-guide.html"))))
+  fail("Chybí společná provozní příručka ekosystému.");
+if (!manualsHtml.includes("všech osm aplikací"))
+  fail("Centrum manuálů neuvádí osm aplikací.");
+if (!(await exists(path.join(src, "assets/apps/lesson-hub.png"))))
+  fail("Chybí lokální ikona Lesson Hubu.");
 
 if (Object.hasOwn(manifest || {}, "version"))
   fail("PWA manifest obsahuje nestandardní pole version.");
@@ -604,7 +635,10 @@ if (
   !appGuardText.includes('"activity-builder"') ||
   !appGuardText.includes('"activity-pack"') ||
   !appGuardText.includes("sortio") ||
-  !appGuardText.includes('"seating-plan"')
+  !appGuardText.includes('"seating-plan"') ||
+  !appGuardText.includes('"lesson-hub"') ||
+  !appGuardText.includes('"lesson-record"') ||
+  !appGuardText.includes('"backup-export"')
 )
   fail("app-guard nemá jednotné anonymní metriky výstupů všech aplikací.");
 if (!appGuardText.includes("options.telemetry !== false"))

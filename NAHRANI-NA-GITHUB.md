@@ -1,4 +1,4 @@
-# Nahrání AI Studio GHRAB 0.18.11
+# Nahrání AI Studio GHRAB 0.19.0
 
 Tento balík zachovává samostatné repozitáře aplikací a aktualizuje registry AI Studia na Korespondenčního asistenta 5.5.5.
 

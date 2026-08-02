@@ -1,10 +1,10 @@
-# Architektura AI Studio GHRAB 0.18.11
+# Architektura AI Studio GHRAB 0.19.0
 
-**Aktuální verze: 0.18.11**
+**Aktuální verze: 0.19.0**
 
 ## Federovaný portál
 
-Generátor, Diferenciátor, Hodnotitel maturitních slohů, LUDUS a Korespondenční asistent zůstávají v samostatných repozitářích. Každá aplikace zveřejňuje manifest; Studio sestaví společný registr a při nedostupnosti živého zdroje použije ověřený fallback.
+Generátor, Diferenciátor, Hodnotitel maturitních slohů, LUDUS, Korespondenční asistent, ACTIVA, SORTIO a Lesson Hub zůstávají v samostatných repozitářích. Každá aplikace zveřejňuje manifest; Studio sestaví společný registr a při nedostupnosti živého zdroje použije ověřený fallback.
 
 ```text
 samostatné aplikace ─ manifesty ─► AI Studio
@@ -72,6 +72,6 @@ Server nahradí import oprávnění školním přihlášením, místní úloži�
 
 - AI Studio obsahuje pouze katalog `manualy/`; vlastní manuál zůstává v repozitáři konkrétní aplikace. Po nasazení nové verze aplikace se proto v AI Studiu zobrazí její aktuální manuál bez ručního kopírování, pokud zůstane zachována stejná `manualUrl`.
 - Adresa manuálu je povinné pole `manualUrl` v `ai-studio-app-manifest-v1`.
-- Katalog vždy zobrazí všech sedm aplikací a pro otevření použije `hasAppAccess(appId)`.
+- Katalog vždy zobrazí všech osm aplikací a pro otevření použije `hasAppAccess(appId)`.
 - Správce díky roli `admin` otevře všechny manuály; učitel jen manuály aplikací uvedených v podepsaném oprávnění.
 - Samotný manuál je navíc chráněn stejným `app-guard.js`, takže přímá URL neobchází AI Studio.

@@ -1,10 +1,10 @@
-# Release checklist AI Studio GHRAB 0.18.11
+# Release checklist AI Studio GHRAB 0.19.0
 
-**Aktuální verze: 0.18.11**
+**Aktuální verze: 0.19.0**
 
 ## Veřejný balík
 
-- [x] Verze 0.18.11 je shodná v package, buildu, dokumentaci a changelogu; PWA manifest nepoužívá nestandardní pole `version`.
+- [x] Verze 0.19.0 je shodná v package, buildu, dokumentaci a changelogu; PWA manifest nepoužívá nestandardní pole `version`.
 - [x] Všechny aplikace jsou ve výchozím stavu uzamčené.
 - [x] Veřejný balík obsahuje pouze veřejný ověřovací klíč.
 - [x] Ve zdroji ani buildu není soukromý klíč ani `.ghrab-access.json`.
@@ -37,7 +37,7 @@
 ## Po nasazení
 
 - [ ] Ověřit zelený GitHub Actions build.
-- [ ] V anonymním okně potvrdit sedm viditelných a uzamčených aplikací (čtyři v Top 4 a tři v katalogu).
+- [ ] V anonymním okně potvrdit osm viditelných a uzamčených aplikací (čtyři v Top 4 a čtyři v katalogu).
 - [ ] Načíst správcovské oprávnění.
 - [ ] Spustit Kontrolu Studia.
 - [ ] Ověřit Android Chrome, desktop Chrome/Edge a iPhone Safari.
@@ -46,7 +46,7 @@
 ## Manuály
 
 - [ ] Každý manifest obsahuje platné HTTPS `manualUrl`.
-- [ ] Katalog zobrazuje všech sedm karet i bez přístupu.
+- [ ] Katalog zobrazuje všech osm karet i bez přístupu.
 - [ ] Učitel otevře jen manuály povolených aplikací.
 - [ ] Správce otevře všechny manuály.
 - [ ] `manualy/index.html`, `manualy/manualy.js` a `manualy/manualy.css` jsou v PWA precache.

@@ -1,19 +1,18 @@
 # AI Studio GHRAB
 
-**Aktuální verze: 0.18.11**
+**Aktuální verze: 0.19.0**
 
-**Verze 0.18.11 – federovaný serverless portál sedmi chráněných školních aplikací s jemně upraveným rozestupem domovské brány.**
+**Verze 0.19.0 – federovaný serverless portál osmi chráněných školních aplikací s plnou integrací Lesson Hubu.**
 
 AI Studio GHRAB je centrální brána školních digitálních a AI nástrojů. Jednotlivé aplikace zůstávají v samostatných repozitářích; Studio zajišťuje společnou navigaci, Top 4, synchronizaci verzí, bezpečnostní rámec, pracovní materiály, pilotní měření a správu podepsaných přístupů.
 
-## Hlavní novinky 0.18.11
+## Hlavní novinky 0.19.0
 
-- panel se stavem správcovského přístupu je posunut níže a už opticky nezasahuje do spodních karet LUDUS a Generátoru interaktivních testů,
-- Korespondenční asistent je v živém i záložním registru veden ve verzi 5.5.5,
-- centrum manuálů upozorňuje na pracovní profil, školní situace, volbu „Píšu jako“, hromadné adresáty, vícejazyčný předmět a bezpečnou práci s údaji,
-- samotný interaktivní manuál se dál načítá přímo z repozitáře aplikace, takže AI Studio nevytváří zastaralou duplicitní kopii,
-- registry, integrační dokumentace, bezpečnostní přehled a postup nasazení jsou sjednocené s aktuální verzí KS,
-- přístupová brána, pilotní telemetrie, PWA identita, Top 4 a prémiová hvězdná brána zůstávají beze změny.
+- Lesson Hub 1.2.0 je osmou chráněnou aplikací AI Studia a zůstává mimo výchozí Top 4 v navazujícím katalogu.
+- Studio načítá živý manifest, verzi, stav, popis a aktuální interaktivní manuál přímo z repozitáře Lesson Hubu.
+- Přístupová politika vyžaduje školení `LHB-01` ve verzi `2026-09`; správcovský přístup zůstává univerzální.
+- Pilotní report rozpoznává pouze povolené technické počty plánů, záznamů výuky, materiálů, importů a exportů záloh. Nezapisuje obsah hodin ani osobní údaje.
+- Katalog manuálů, bezpečnostní rámec, diagnostika, registry, offline fallback a QA kontroly jsou rozšířeny z původních sedmi na osm aplikací.
 
 ## Starší milník 0.10.0
 
@@ -37,7 +36,7 @@ Bez serveru nelze spolehlivě ověřit totožnost držitele, centrálně synchro
 
 ## Ochrana přímých adres a měření
 
-Ochranný bootstrap je určen pro Generátor 7.1.4, Diferenciátor 1.3.3, Hodnotitel maturitních slohů 1.5.2, LUDUS 1.16.3, Korespondenčního asistenta 5.5.5, ACTIVA 0.5.0 a SORTIO 1.0.2. Stejný centrální modul ověřuje podepsaný přístup a po úspěšném otevření spustí místní měření. Dílčí aplikace navíc hlásí pouze povolené technické typy výstupů.
+Ochranný bootstrap je určen pro Generátor 7.1.4, Diferenciátor 1.3.3, Hodnotitel maturitních slohů 1.5.2, LUDUS 1.16.3, Korespondenčního asistenta 5.5.5, ACTIVA 0.5.0, SORTIO 1.0.2 a Lesson Hub 1.2.0. Stejný centrální modul ověřuje podepsaný přístup a po úspěšném otevření spustí místní měření. Dílčí aplikace navíc hlásí pouze povolené technické typy výstupů.
 
 ## Doporučené pořadí nasazení
 
@@ -46,7 +45,8 @@ Ochranný bootstrap je určen pro Generátor 7.1.4, Diferenciátor 1.3.3, Hodnot
 3. Školní aplikace: Diferenciátor 1.3.3 a Korespondenční asistent 5.5.5.
 4. Hodnotitel maturitních slohů 1.5.2.
 5. ACTIVA 0.5.0 a SORTIO 1.0.2 včetně volání pilotní telemetrie.
-6. AI Studio GHRAB 0.18.11 jako poslední.
+6. Lesson Hub 1.2.0 včetně živého manifestu a aktuálního manuálu.
+7. AI Studio GHRAB 0.19.0 jako poslední.
 
 Po zeleném nasazení zavřete staré otevřené karty Studia a znovu je otevřete. Nová verze service workeru se aktivuje až po bezpečném ukončení staré relace; rutinní `Ctrl + F5` už není součástí standardního postupu.
 

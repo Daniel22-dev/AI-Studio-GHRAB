@@ -199,6 +199,7 @@ async function loadAppMeta(appId, studioUrl) {
     "essay-evaluator": ["Hodnotitel slohů", "Essay Evaluator"],
     "activity-builder": ["ACTIVA", "ACTIVA"],
     sortio: ["SORTIO", "SORTIO"],
+    "lesson-hub": ["Lesson Hub", "Lesson Hub"],
   };
   const fallback = fallbackNames[appId] || [appId, appId];
   try {

@@ -88,6 +88,49 @@
           "message": "Chybí ikona SORTIO."
         }
       ]
+    },
+    {
+      "id": "STUDIO-LESSON-HUB-INTEGRATION",
+      "name": "Lesson Hub je v registru, politice, manuálech a telemetrii",
+      "type": "static",
+      "assertions": [
+        {
+          "file": "src/config/apps.fallback.json",
+          "regex": "\\\"id\\\"\\s*:\\s*\\\"lesson-hub\\\"",
+          "message": "Fallback registr neobsahuje Lesson Hub."
+        },
+        {
+          "file": "src/config/sources.json",
+          "regex": "lesson-hub/studio-manifest\\.json",
+          "message": "Zdroje neobsahují manifest Lesson Hubu."
+        },
+        {
+          "file": "src/config/access-policy.json",
+          "regex": "\\\"trainingCode\\\"\\s*:\\s*\\\"LHB-01\\\"",
+          "message": "Lesson Hub nemá školení LHB-01."
+        },
+        {
+          "file": "src/manualy/manualy.js",
+          "regex": "lesson-hub",
+          "message": "Centrum manuálů nemá obsah Lesson Hubu."
+        },
+        {
+          "file": "src/access/app-guard.js",
+          "regex": "lesson-record[\\s\\S]*backup-export",
+          "message": "Access Guard nemá povolené anonymní metriky Lesson Hubu."
+        },
+        {
+          "file": "src/report/report.js",
+          "regex": "lesson-hub[\\s\\S]*backup-export",
+          "message": "Pilotní report nezná Lesson Hub."
+        },
+        {
+          "file": "src/assets/apps/lesson-hub.png",
+          "regex": ".",
+          "flags": "s",
+          "message": "Chybí ikona Lesson Hubu."
+        }
+      ]
     }
   ]
 }
