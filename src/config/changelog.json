@@ -1,7 +1,33 @@
 {
   "schema": "ai-studio-changelog-v1",
-  "current": "0.20.1",
+  "current": "0.20.2",
   "items": [
+    {
+      "version": "0.20.2",
+      "date": "2026-08-03",
+      "title": {
+        "cs": "Stavově odolná synchronizace nasazených aplikací",
+        "en": "State-aware synchronisation of deployed applications"
+      },
+      "changes": [
+        {
+          "cs": "Regresní test již podporuje oba pravdivé stavy aplikace: certifikováno před nasazením i živě nasazeno.",
+          "en": "The regression test now supports both truthful application states: certified before deployment and live deployment."
+        },
+        {
+          "cs": "Souhrn readiness se kontroluje proti skutečným stavům všech aplikací, nikoli proti jedné natvrdo zadané přechodové hodnotě.",
+          "en": "The readiness summary is validated against the actual state of every application instead of one hard-coded transitional value."
+        },
+        {
+          "cs": "KS 5.9.1 může po živé synchronizaci přejít do stavu ready bez falešného pádu release gate.",
+          "en": "Correspondence Assistant 5.9.1 can transition to ready after live synchronisation without a false release-gate failure."
+        },
+        {
+          "cs": "GHRAB AI Core 1.0.0, Migration Kit 1.0.2, runtime direct-gemini a funkce Studia zůstávají beze změny.",
+          "en": "GHRAB AI Core 1.0.0, Migration Kit 1.0.2, the direct-gemini runtime and Studio functionality remain unchanged."
+        }
+      ]
+    },
     {
       "version": "0.20.1",
       "date": "2026-08-03",

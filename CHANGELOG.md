@@ -1,5 +1,12 @@
 # Changelog
 
+## 0.20.2 — 2026-08-03
+
+- opraven zastaralý regresní test, který po úspěšném živém nasazení KS 5.9.1 stále vyžadoval stav `certified-pending-deployment`;
+- readiness test nyní ověřuje skutečný stav `ready` nebo odpovídající přechodový stav podle načteného manifestu;
+- souhrnné počty jsou odvozovány a kontrolovány proti jednotlivým aplikacím;
+- GHRAB AI Core 1.0.0, Migration Kit 1.0.2 a runtime `direct-gemini` se nemění.
+
 > Tento soubor se generuje ze `src/config/changelog.json`. Neupravujte jej ručně.
 
 ## 0.20.1 — 2026-08-03

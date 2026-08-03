@@ -8,7 +8,7 @@ Ochranná vrstva je integrována v těchto vydáních:
 - Diferenciátor 1.3.3 — ID `differentiator`,
 - Hodnotitel maturitních slohů 1.5.2 — ID `essay-evaluator`,
 - LUDUS 1.16.3 — ID `ludus`,
-- Korespondenční asistent 5.5.5 — ID `correspondence`,
+- Korespondenční asistent 5.9.1 — ID `correspondence`,
 - ACTIVA 0.5.0 — ID `activity-builder`,
 - SORTIO 1.0.2 — ID `sortio`,
 - Lesson Hub 1.2.0 — ID `lesson-hub`.

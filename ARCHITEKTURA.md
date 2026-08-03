@@ -1,6 +1,6 @@
-# Architektura AI Studio GHRAB 0.20.1
+# Architektura AI Studio GHRAB 0.20.2
 
-**Aktuální verze: 0.20.1**
+**Aktuální verze: 0.20.2**
 
 ## Federovaný portál
 

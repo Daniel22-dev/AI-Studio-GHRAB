@@ -1,10 +1,10 @@
-# Release checklist AI Studio GHRAB 0.20.1
+# Release checklist AI Studio GHRAB 0.20.2
 
-**Aktuální verze: 0.20.1**
+**Aktuální verze: 0.20.2**
 
 ## Veřejný balík
 
-- [x] Verze 0.20.1 je shodná v package, buildu, dokumentaci a changelogu; PWA manifest nepoužívá nestandardní pole `version`.
+- [x] Verze 0.20.2 je shodná v package, buildu, dokumentaci a changelogu; PWA manifest nepoužívá nestandardní pole `version`.
 - [x] Všechny aplikace jsou ve výchozím stavu uzamčené.
 - [x] Veřejný balík obsahuje pouze veřejný ověřovací klíč.
 - [x] Ve zdroji ani buildu není soukromý klíč ani `.ghrab-access.json`.
@@ -58,4 +58,5 @@
 - [x] Formátovací příkazy i GitHub Actions ověřují Core před formátováním a workflow také bezprostředně po něm.
 - [x] Runtime povoluje pouze `direct-gemini` a zakazuje automatický fallback.
 - [x] Migrační stav se odvozuje z živých manifestů; lokální certifikace se nezobrazuje jako nasazená.
+- [x] Regresní test akceptuje pravdivý přechodový stav i živý stav `ready` a kontroluje konzistenci souhrnných počtů.
 - [x] Migration Kit 1.0.2 obsahuje kontrakt, Core, konformitní sadu, prompt a consumer workflow.

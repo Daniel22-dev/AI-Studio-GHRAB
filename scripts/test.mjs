@@ -394,20 +394,45 @@ if (
   aiReadinessBaseline?.applications?.length !== apps?.length
 )
   fail("Readiness baseline nepokrývá všech osm aplikací.");
-const correspondenceReadiness = aiReadiness?.applications?.find(
+const readinessRows = aiReadiness?.applications || [];
+const readinessCount = (status) =>
+  readinessRows.filter((item) => item.status === status).length;
+const correspondenceApp = apps?.find((item) => item.id === "correspondence");
+const correspondenceReadiness = readinessRows.find(
   (item) => item.appId === "correspondence",
 );
+const correspondenceIsLiveReady =
+  correspondenceApp?.version === "5.9.1" &&
+  correspondenceApp?.aiCore?.serverReady === true &&
+  correspondenceApp?.aiCore?.conformancePassed === true &&
+  correspondenceApp?.aiCore?.coreVersion ===
+    aiCoreRegistry?.activeRelease?.coreVersion;
+const expectedCorrespondenceStatus = correspondenceIsLiveReady
+  ? "ready"
+  : correspondenceApp?.version === "5.9.1"
+    ? "certified-pending-manifest"
+    : "certified-pending-deployment";
 if (
   aiReadiness?.schema !== "ghrab-ai-readiness-report-v1" ||
-  aiReadiness?.summary?.readyApps !== 0 ||
-  aiReadiness?.summary?.certifiedPendingApps !== 1 ||
+  aiReadiness?.summary?.totalApps !== readinessRows.length ||
+  aiReadiness?.summary?.readyApps !== readinessCount("ready") ||
+  aiReadiness?.summary?.certifiedPendingApps !==
+    readinessRows.filter((item) => item.status?.startsWith("certified-")).length ||
+  aiReadiness?.summary?.notMigratedApps !== readinessCount("not-migrated") ||
+  aiReadiness?.summary?.incompatibleApps !== readinessCount("incompatible") ||
   aiReadiness?.summary?.notMigratedApps !== 7 ||
-  correspondenceReadiness?.status !== "certified-pending-deployment" ||
+  correspondenceReadiness?.status !== expectedCorrespondenceStatus ||
   correspondenceReadiness?.certifiedAppVersion !== "5.9.1" ||
   correspondenceReadiness?.operationsCount !== 8 ||
-  correspondenceReadiness?.conformancePassed !== true
+  correspondenceReadiness?.conformancePassed !== true ||
+  (correspondenceIsLiveReady &&
+    (correspondenceReadiness?.appVersion !== "5.9.1" ||
+      correspondenceReadiness?.coreVersion !== "1.0.0" ||
+      !/^https:\/\//.test(correspondenceReadiness?.operationsManifestUrl || "")))
 )
-  fail("KS 5.9.1 není pravdivě veden jako certifikovaný před nasazením.");
+  fail(
+    "KS 5.9.1 nemá konzistentní stav mezi živým manifestem, readiness reportem a souhrnnými počty.",
+  );
 if (
   aiCoreConsumers?.eventType !== "ghrab-ai-core-released" ||
   aiCoreConsumers?.consumers?.length !== apps?.length ||
