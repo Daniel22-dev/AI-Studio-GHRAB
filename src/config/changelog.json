@@ -1,7 +1,29 @@
 {
   "schema": "ai-studio-changelog-v1",
-  "current": "0.20.3",
+  "current": "0.20.4",
   "items": [
+    {
+      "version": "0.20.4",
+      "date": "2026-08-03",
+      "title": {
+        "cs": "Spolehlivé hlášení chyby a aktuální návod",
+        "en": "Reliable issue reporting and updated guide"
+      },
+      "changes": [
+        {
+          "cs": "Centrální reportér nabízí plovoucí ovládání snímání vpravo dole a při zavření rozepsaného hlášení se zeptá, zda koncept smazat, ponechat, nebo se vrátit.",
+          "en": "The central reporter provides bottom-right floating capture controls and asks whether a draft should be deleted, kept or reopened when closing."
+        },
+        {
+          "cs": "Předvyplněný Gmail se otevře přímo v nové kartě v okamžiku kliknutí; ZIP se následně připraví a stáhne na původní kartě. Dostupné jsou i záložní odkazy na Gmail, poštovní aplikaci a kopírování údajů.",
+          "en": "A prefilled Gmail draft opens directly in a new tab on the original click; the ZIP is then built and downloaded in the original tab. Fallback actions for Gmail, the mail app and copying the message remain available."
+        },
+        {
+          "cs": "Volba Sdílet ZIP přes nabídku zařízení se zobrazuje až pro hotový soubor na podporovaném mobilu či tabletu. Aktualizovaný návod vysvětluje celý postup i bezpečné smazání konceptu.",
+          "en": "The Share ZIP using the device menu option appears only for a ready file on a supported phone or tablet. The updated guide explains the full workflow and safe draft deletion."
+        }
+      ]
+    },
     {
       "version": "0.20.3",
       "date": "2026-08-03",

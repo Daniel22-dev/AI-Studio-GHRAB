@@ -1,4 +1,4 @@
-# AI Studio GHRAB 0.20.3 — správa GHRAB AI Core
+# AI Studio GHRAB 0.20.4 — správa GHRAB AI Core
 
 AI Studio je zdrojem pravdy pro vydaný GHRAB AI Core, runtime politiku a stav migrace aplikací. Nemění poskytovatele samo a neposílá AI požadavky.
 

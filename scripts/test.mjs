@@ -1142,7 +1142,14 @@ if (
   !errorReporterText.includes("makeZip(entries)") ||
   !errorReporterText.includes("Začernit údaje") ||
   !errorReporterText.includes("loadSupportEmail") ||
-  !errorReporterText.includes("config/support.json")
+  !errorReporterText.includes("config/support.json") ||
+  !errorReporterText.includes("ghrab-capture-bar") ||
+  !errorReporterText.includes("Přejít do aplikace") ||
+  !errorReporterText.includes("Smazat hlášení a zavřít") ||
+  !errorReporterText.includes("Ponechat rozepsané a zavřít") ||
+  !errorReporterText.includes("gmailUrl") ||
+  !errorReporterText.includes('host.open(draft.gmailUrl, "_blank")') ||
+  !errorReporterText.includes("supportsFileShare")
 )
   fail(
     "Jednotné hlášení chyb nemá snímání, více snímků, ZIP, redakci nebo e-mail správce.",
@@ -1155,7 +1162,12 @@ if (
   fail("Technické údaje hlášení mohou obsahovat citlivé query parametry URL.");
 if (
   !errorReporterCss.includes(".ghrab-report-button.launcher") ||
+  !errorReporterCss.includes(".ghrab-capture-bar") ||
+  !errorReporterCss.includes(".ghrab-discard-dialog") ||
   !errorGuideHtml.includes("Jak poslat správci srozumitelné hlášení") ||
+  !errorGuideHtml.includes("Stáhnout ZIP a otevřít Gmail") ||
+  !errorGuideHtml.includes("Smazat hlášení a zavřít") ||
+  !errorGuideHtml.includes("Sdílet ZIP přes nabídku zařízení") ||
   !errorGuideHtml.includes("Začerněte citlivé údaje")
 )
   fail("Chybí vzhled reporteru nebo úplný interaktivní návod k hlášení chyby.");

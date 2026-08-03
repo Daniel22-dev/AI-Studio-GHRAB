@@ -46,9 +46,9 @@
           <h1>Jak poslat správci srozumitelné hlášení bez focení monitoru.</h1>
           <p>
             Každá chráněná aplikace obsahuje tlačítko
-            <strong>Nahlásit chybu</strong>. Nástroj umí pořídit více snímků,
-            zachytit základní technické chyby, přidat komentář a připravit
-            jediný přehledný ZIP balíček pro e-mail.
+            <strong>Nahlásit chybu</strong>. Nástroj umí pořídit až pět snímků,
+            zachytit základní technické chyby, přidat komentář, připravit
+            jediný ZIP balíček a otevřít předvyplněný Gmail správci.
           </p>
         </div>
         <div class="guide-bug-mark" aria-hidden="true"><span>!</span></div>
@@ -79,7 +79,8 @@
             <p>
               Zvolte <strong>Povolit snímání obrazovky</strong> a v nabídce
               prohlížeče vyberte nejlépe <strong>Tato karta</strong> nebo okno
-              dané aplikace.
+              dané aplikace. Systémová lišta Chromu může zůstat nad aplikací;
+              lze ji skrýt, ale snímání tím pokračuje.
             </p>
           </div>
         </article>
@@ -88,9 +89,10 @@
           <div>
             <h2>Zobrazte chybu a pořiďte snímky</h2>
             <p>
-              Vraťte se k chybovému stavu a klikněte na
-              <strong>Pořídit snímek</strong>. Lze přidat až pět snímků. Panel
-              se při zachycení na okamžik skryje.
+              Hlášení se skryje a vpravo dole zůstane kompaktní panel
+              <strong>Pořídit snímek · Zpět k hlášení · Ukončit snímání</strong>.
+              Zobrazte chybu a pořiďte až pět snímků. Panel se při samotném
+              zachycení na okamžik skryje, aby nebyl na výsledném obrázku.
             </p>
           </div>
         </article>
@@ -118,15 +120,37 @@
         <article>
           <span>06</span>
           <div>
-            <h2>Připravte e-mail</h2>
+            <h2>Stáhněte ZIP a otevřete Gmail</h2>
             <p>
-              Tlačítko vytvoří jeden ZIP balíček, pokusí se zkopírovat hlavní
-              screenshot do schránky a otevře podrobně předvyplněný e-mail
-              správci. Vložte snímek pomocí <strong>Ctrl + V</strong>, přiložte
-              ZIP a zprávu odešlete.
+              Tlačítko <strong>Stáhnout ZIP a otevřít Gmail</strong> otevře
+              předvyplněnou zprávu v nové kartě přímo při kliknutí a na původní
+              kartě současně připraví a stáhne ZIP. Vložte hlavní snímek pomocí
+              <strong>Ctrl + V</strong>, přiložte stažený ZIP a zprávu odešlete.
+              Pokud prohlížeč novou kartu nepovolí, po dokončení použijte
+              <strong>Otevřít Gmail</strong>, <strong>Otevřít poštovní
+              aplikaci</strong> nebo <strong>Zkopírovat údaje e-mailu</strong>.
             </p>
           </div>
         </article>
+      </section>
+      <section class="guide-limit">
+        <strong>Co se stane při zavření hlášení?</strong>
+        <p>
+          Obsahuje-li formulář text, snímky nebo už připravený ZIP, aplikace se
+          před zavřením zeptá. Volba <strong>Smazat hlášení a zavřít</strong>
+          odstraní snímky i poslední výstup; volba
+          <strong>Ponechat rozepsané a zavřít</strong> je zachová pro návrat.
+        </p>
+      </section>
+      <section class="guide-limit">
+        <strong>Co znamená „Sdílet ZIP přes nabídku zařízení“?</strong>
+        <p>
+          Volba se ukáže až po vytvoření ZIP a pouze na podporovaném mobilu či
+          tabletu. Otevře systémovou nabídku aplikací, například Gmail, Disk
+          nebo jiné cíle dostupné v zařízení. Sama neodesílá e-mail ani přílohu
+          správci. Na běžném stolním Chromu se proto zpravidla nezobrazí; použijte
+          hlavní tlačítko pro Gmail nebo poštovní aplikaci.
+        </p>
       </section>
       <section class="guide-explainer">
         <div>
@@ -158,12 +182,11 @@
       <section class="guide-limit">
         <strong>Proč je ještě potřeba ručně přiložit ZIP?</strong>
         <p>
-          Webová aplikace bez školního serveru nemůže sama odeslat e-mail s
-          přílohou na pevnou adresu. Připravený postup proto vyžaduje ručně
-          vložit hlavní snímek ze schránky, přiložit stažený ZIP a potvrdit
-          odeslání. Už z těla e-mailu správce obvykle pozná, co se stalo; ZIP
-          pak může poslat vývojáři k opravě. Na podporovaných zařízeních lze
-          použít také systémové sdílení souboru.
+          Webová aplikace bez školního serveru nemůže sama připojit ZIP k
+          e-mailu ani zprávu odeslat. Otevře proto předvyplněný Gmail nebo
+          poštovní aplikaci, ale ZIP musíte přiložit ručně a odeslání potvrdit.
+          Už z těla zprávy správce obvykle pozná základ problému; ZIP obsahuje
+          snímky a bezpečné technické údaje potřebné pro opravu.
         </p>
       </section>
     </main>

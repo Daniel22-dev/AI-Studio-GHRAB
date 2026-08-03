@@ -3,17 +3,26 @@ const MAX_SCREENSHOTS = 5;
 const MAX_CAPTURE_WIDTH = 1800;
 const MAX_CAPTURE_HEIGHT = 1200;
 const JPEG_QUALITY = 0.9;
+const DEFAULT_SUPPORT_EMAIL = "balaz@ghrabuvka.cz";
 
-async function loadSupportEmail(studioUrl) {
-  const response = await fetch(new URL("config/support.json", studioUrl), {
-    cache: "no-store",
-  });
-  if (!response.ok) throw new Error("support-config-unavailable");
-  const config = await response.json();
-  const email = String(config?.administratorEmail || "").trim();
-  if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email))
-    throw new Error("support-email-invalid");
-  return email;
+function validEmail(value) {
+  return /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(String(value || "").trim());
+}
+async function loadSupportEmail(studioUrl, fallbackEmail = DEFAULT_SUPPORT_EMAIL) {
+  try {
+    const response = await fetch(new URL("config/support.json", studioUrl), {
+      cache: "no-store",
+    });
+    if (!response.ok) throw new Error("support-config-unavailable");
+    const config = await response.json();
+    const email = String(config?.administratorEmail || "").trim();
+    if (!validEmail(email)) throw new Error("support-email-invalid");
+    return email;
+  } catch (error) {
+    const fallback = String(fallbackEmail || "").trim();
+    if (validEmail(fallback)) return fallback;
+    throw error;
+  }
 }
 
 function language() {
@@ -41,6 +50,17 @@ function reportId() {
 }
 function delay(ms) {
   return new Promise((resolve) => setTimeout(resolve, ms));
+}
+function supportsFileShare() {
+  if (!navigator.share || !navigator.canShare || typeof File === "undefined")
+    return false;
+  try {
+    return navigator.canShare({
+      files: [new File(["ghrab"], "ghrab-report.txt", { type: "text/plain" })],
+    });
+  } catch {
+    return false;
+  }
 }
 function twoFrames() {
   return new Promise((resolve) =>
@@ -481,7 +501,7 @@ export function setupErrorReporter(options = {}) {
     location.href,
   );
   injectStyles(studioUrl);
-  const supportEmailPromise = loadSupportEmail(studioUrl);
+  const supportEmailPromise = loadSupportEmail(studioUrl, DEFAULT_SUPPORT_EMAIL);
 
   const state = {
     appMeta: { appId: options.appId, name: options.appId, version: "—" },
@@ -491,8 +511,12 @@ export function setupErrorReporter(options = {}) {
     reportId: reportId(),
     preparedFile: null,
     preparedBlob: null,
+    supportEmail: options.supportEmail || DEFAULT_SUPPORT_EMAIL,
     technicalErrors: [],
   };
+  supportEmailPromise.then((email) => {
+    state.supportEmail = email;
+  }).catch(() => {});
   loadAppMeta(options.appId, studioUrl).then((meta) => {
     state.appMeta = meta;
     updateLabels();
@@ -664,6 +688,11 @@ export function setupErrorReporter(options = {}) {
   snapButton.disabled = true;
   const stopButton = button(t("Ukončit snímání", "Stop capture"), "ghost");
   stopButton.disabled = true;
+  const leaveCaptureButton = button(
+    t("Přejít do aplikace", "Go to application"),
+    "secondary",
+  );
+  leaveCaptureButton.disabled = true;
   const uploadLabel = element(
     "label",
     "ghrab-report-button secondary",
@@ -675,7 +704,13 @@ export function setupErrorReporter(options = {}) {
   uploadInput.multiple = true;
   uploadInput.hidden = true;
   uploadLabel.append(uploadInput);
-  captureActions.append(shareButton, snapButton, stopButton, uploadLabel);
+  captureActions.append(
+    shareButton,
+    snapButton,
+    leaveCaptureButton,
+    stopButton,
+    uploadLabel,
+  );
   const captureStatus = element(
     "p",
     "ghrab-report-status",
@@ -745,24 +780,39 @@ export function setupErrorReporter(options = {}) {
     "p",
     "ghrab-report-help",
     t(
-      "Bez školního serveru nelze přílohu odeslat z webové aplikace zcela automaticky. Nástroj vytvoří jeden ZIP balíček, stáhne jej a otevře předvyplněný e-mail. Vy pouze přiložíte stažený ZIP a zprávu odešlete.",
-      "Without a school server a web app cannot send an attachment fully automatically. The tool creates one ZIP package, downloads it and opens a prefilled email. You only attach the downloaded ZIP and send the message.",
+      "Nástroj vytvoří jeden ZIP balíček, stáhne jej a otevře předvyplněný Gmail v nové kartě. Vy pouze přiložíte stažený ZIP a zprávu odešlete. Kdyby se karta neotevřela, po přípravě se zobrazí samostatné odkazy pro Gmail i poštovní aplikaci.",
+      "The tool creates one ZIP package, downloads it and opens a prefilled Gmail draft in a new tab. You only attach the downloaded ZIP and send the message. If the tab does not open, separate Gmail and mail-app links appear after preparation.",
     ),
   );
   const sendActions = element("div", "ghrab-report-actions");
   const prepareButton = button(
-    t("Stáhnout balíček a otevřít e-mail", "Download package and open email"),
+    t("Stáhnout ZIP a otevřít Gmail", "Download ZIP and open Gmail"),
     "primary",
   );
   const shareFileButton = button(
-    t("Sdílet balíček přímo", "Share package directly"),
+    t("Sdílet ZIP přes nabídku zařízení", "Share ZIP using the device menu"),
     "secondary",
   );
-  shareFileButton.hidden = !(navigator.share && navigator.canShare);
+  const fileShareSupported = supportsFileShare();
+  shareFileButton.hidden = true;
+  shareFileButton.disabled = true;
   sendActions.append(prepareButton, shareFileButton);
+  const shareHelp = element(
+    "p",
+    "ghrab-report-help ghrab-report-share-help",
+    fileShareSupported
+      ? t(
+          "Volba „Sdílet ZIP přes nabídku zařízení“ se objeví až po vytvoření balíčku a jen na podporovaném mobilu či tabletu. Otevře systémovou nabídku aplikací; e-mail sama neodešle.",
+          "“Share ZIP using the device menu” appears only after the package is created and only on a supported phone or tablet. It opens the system app menu; it does not send an email by itself.",
+        )
+      : t(
+          "Tento prohlížeč neumí přímo sdílet ZIP soubor. Použijte stažení a předvyplněný Gmail nebo poštovní aplikaci.",
+          "This browser cannot directly share ZIP files. Use the download and the prefilled Gmail or mail app instead.",
+        ),
+  );
   const finalStatus = element("div", "ghrab-report-final");
   finalStatus.hidden = true;
-  sendSection.append(sendHelp, sendActions, finalStatus);
+  sendSection.append(sendHelp, sendActions, shareHelp, finalStatus);
 
   const footer = element("footer", "ghrab-report-footer");
   const cancelButton = button(t("Zavřít", "Close"), "ghost");
@@ -778,6 +828,41 @@ export function setupErrorReporter(options = {}) {
   );
   backdrop.append(panel);
   root.append(launcher, backdrop);
+
+  const captureBar = element("div", "ghrab-capture-bar");
+  captureBar.hidden = true;
+  captureBar.setAttribute("role", "region");
+  captureBar.setAttribute(
+    "aria-label",
+    t("Ovládání snímání obrazovky", "Screen capture controls"),
+  );
+  const captureBarState = element("span", "ghrab-capture-bar-state");
+  const captureBarTitle = element(
+    "strong",
+    "",
+    t("Snímání obrazovky", "Screen capture"),
+  );
+  const captureBarCount = element("small", "", `0 / ${MAX_SCREENSHOTS}`);
+  captureBarState.append(captureBarTitle, captureBarCount);
+  const captureBarSnap = button(
+    t("Pořídit snímek", "Capture screenshot"),
+    "primary",
+  );
+  const captureBarBack = button(
+    t("Zpět k hlášení", "Back to report"),
+    "secondary",
+  );
+  const captureBarStop = button(
+    t("Ukončit snímání", "Stop capture"),
+    "ghost",
+  );
+  captureBar.append(
+    captureBarState,
+    captureBarSnap,
+    captureBarBack,
+    captureBarStop,
+  );
+  root.append(captureBar);
   document.body.append(root);
 
   const editor = element("div", "ghrab-redaction-backdrop");
@@ -817,6 +902,44 @@ export function setupErrorReporter(options = {}) {
   editor.append(editorPanel);
   root.append(editor);
 
+  const discardBackdrop = element("div", "ghrab-discard-backdrop");
+  discardBackdrop.hidden = true;
+  const discardDialog = element("section", "ghrab-discard-dialog");
+  discardDialog.setAttribute("role", "dialog");
+  discardDialog.setAttribute("aria-modal", "true");
+  discardDialog.setAttribute("aria-labelledby", "ghrab-discard-title");
+  const discardTitle = element(
+    "h3",
+    "",
+    t("Co s rozepsaným hlášením?", "What should happen to this draft?"),
+  );
+  discardTitle.id = "ghrab-discard-title";
+  const discardText = element(
+    "p",
+    "",
+    t(
+      "Hlášení obsahuje text, snímky nebo připravený balíček. Po smazání je nebude možné obnovit.",
+      "The report contains text, screenshots or a prepared package. Deleted data cannot be restored.",
+    ),
+  );
+  const discardActions = element("div", "ghrab-report-actions");
+  const keepDraftButton = button(
+    t("Ponechat rozepsané a zavřít", "Keep draft and close"),
+    "secondary",
+  );
+  const deleteDraftButton = button(
+    t("Smazat hlášení a zavřít", "Delete report and close"),
+    "danger",
+  );
+  const returnToDraftButton = button(
+    t("Zpět do hlášení", "Back to report"),
+    "ghost",
+  );
+  discardActions.append(returnToDraftButton, keepDraftButton, deleteDraftButton);
+  discardDialog.append(discardTitle, discardText, discardActions);
+  discardBackdrop.append(discardDialog);
+  root.append(discardBackdrop);
+
   let currentEdit = null;
   let baseEditorImage = null;
   let redactions = [];
@@ -829,8 +952,37 @@ export function setupErrorReporter(options = {}) {
   updateLabels();
   function open() {
     backdrop.hidden = false;
+    discardBackdrop.hidden = true;
     document.documentElement.classList.add("ghrab-report-open");
     setTimeout(() => comment.focus({ preventScroll: true }), 40);
+  }
+  function captureIsActive() {
+    return Boolean(state.stream && state.video && !snapButton.disabled);
+  }
+  function updateCaptureControls() {
+    const active = captureIsActive();
+    const count = state.screenshots.length;
+    leaveCaptureButton.disabled = !active;
+    captureBarSnap.disabled = !active || count >= MAX_SCREENSHOTS;
+    captureBarStop.disabled = !active;
+    captureBarCount.textContent = `${count} / ${MAX_SCREENSHOTS} ${t("snímků", "screenshots")}`;
+  }
+  function showApplicationForCapture() {
+    if (!captureIsActive()) return;
+    backdrop.hidden = true;
+    root.classList.add("ghrab-capture-mode");
+    captureBar.hidden = false;
+    document.documentElement.classList.remove("ghrab-report-open");
+    updateCaptureControls();
+    captureBarSnap.focus({ preventScroll: true });
+  }
+  function showReportFromCapture() {
+    root.classList.remove("ghrab-capture-mode");
+    captureBar.hidden = true;
+    backdrop.hidden = false;
+    document.documentElement.classList.add("ghrab-report-open");
+    updateCaptureControls();
+    leaveCaptureButton.focus({ preventScroll: true });
   }
   function stopCapture() {
     state.stream?.getTracks().forEach((track) => track.stop());
@@ -847,13 +999,64 @@ export function setupErrorReporter(options = {}) {
       "Snímání není aktivní. Již pořízené snímky zůstávají zachované.",
       "Capture is inactive. Existing screenshots remain available.",
     );
+    leaveCaptureButton.disabled = true;
+    captureBar.hidden = true;
+    root.classList.remove("ghrab-capture-mode");
+    updateCaptureControls();
   }
-  function close() {
+  function hasDraft() {
+    return Boolean(
+      state.screenshots.length ||
+        comment.value.trim() ||
+        steps.value.trim() ||
+        state.preparedFile ||
+        !finalStatus.hidden,
+    );
+  }
+  function closeNow() {
     stopCapture();
     backdrop.hidden = true;
     editor.hidden = true;
+    discardBackdrop.hidden = true;
+    panel.removeAttribute("aria-hidden");
     document.documentElement.classList.remove("ghrab-report-open");
     launcher.focus();
+  }
+  function showDiscardPrompt() {
+    discardBackdrop.hidden = false;
+    panel.setAttribute("aria-hidden", "true");
+    deleteDraftButton.focus({ preventScroll: true });
+  }
+  function hideDiscardPrompt() {
+    discardBackdrop.hidden = true;
+    panel.removeAttribute("aria-hidden");
+    cancelButton.focus({ preventScroll: true });
+  }
+  function resetDraft() {
+    stopCapture();
+    state.screenshots.forEach(revokeScreenshot);
+    state.screenshots = [];
+    state.preparedFile = null;
+    state.preparedBlob = null;
+    state.reportId = reportId();
+    state.technicalErrors = [];
+    comment.value = "";
+    steps.value = "";
+    uploadInput.value = "";
+    finalStatus.replaceChildren();
+    finalStatus.hidden = true;
+    shareFileButton.hidden = true;
+    shareFileButton.disabled = true;
+    renderScreenshots();
+    updateCaptureControls();
+    setStatus(
+      t("Snímání zatím není aktivní.", "Screen capture is not active yet."),
+    );
+  }
+  function requestClose() {
+    stopCapture();
+    if (hasDraft()) showDiscardPrompt();
+    else closeNow();
   }
   function revokeScreenshot(item) {
     if (item.url) URL.revokeObjectURL(item.url);
@@ -861,6 +1064,14 @@ export function setupErrorReporter(options = {}) {
   function setStatus(message, type = "") {
     captureStatus.textContent = message;
     captureStatus.dataset.type = type;
+  }
+  function invalidatePreparedPackage() {
+    state.preparedFile = null;
+    state.preparedBlob = null;
+    shareFileButton.hidden = true;
+    shareFileButton.disabled = true;
+    finalStatus.replaceChildren();
+    finalStatus.hidden = true;
   }
 
   async function addScreenshot(blob) {
@@ -883,6 +1094,7 @@ export function setupErrorReporter(options = {}) {
       };
       state.screenshots.push(item);
       renderScreenshots();
+      updateCaptureControls();
       setStatus(
         t(
           `Snímek ${state.screenshots.length}/${MAX_SCREENSHOTS} je připraven. Chybové hlášení ponechte viditelné; začernění je pouze volitelné pro nesouvisející osobní údaje.`,
@@ -890,9 +1102,7 @@ export function setupErrorReporter(options = {}) {
         ),
         "ok",
       );
-      state.preparedFile = null;
-      state.preparedBlob = null;
-      finalStatus.hidden = true;
+      invalidatePreparedPackage();
     } catch {
       setStatus(
         t(
@@ -930,7 +1140,9 @@ export function setupErrorReporter(options = {}) {
         state.screenshots = state.screenshots.filter(
           (candidate) => candidate.id !== item.id,
         );
+        invalidatePreparedPackage();
         renderScreenshots();
+        updateCaptureControls();
       });
       tools.append(redact, remove);
       meta.append(tools);
@@ -990,9 +1202,16 @@ export function setupErrorReporter(options = {}) {
         ),
         "ok",
       );
-      stream
-        .getVideoTracks()[0]
-        ?.addEventListener("ended", stopCapture, { once: true });
+      updateCaptureControls();
+      showApplicationForCapture();
+      stream.getVideoTracks()[0]?.addEventListener(
+        "ended",
+        () => {
+          stopCapture();
+          showReportFromCapture();
+        },
+        { once: true },
+      );
     } catch (error) {
       const denied = error?.name === "NotAllowedError";
       setStatus(
@@ -1170,10 +1389,37 @@ export function setupErrorReporter(options = {}) {
     currentEdit = null;
     baseEditorImage = null;
     redactions = [];
+    invalidatePreparedPackage();
     renderScreenshots();
   });
 
-  async function buildPackage() {
+  function packageFilename(createdAt) {
+    return `ghrab-hlaseni-chyby-${safeName(state.appMeta.appId)}-${nowFileStamp(createdAt)}.zip`;
+  }
+  function draftPackageInfo(createdAt) {
+    const technicalErrors = state.technicalErrors
+      .slice(-12)
+      .map(({ fingerprint, ...item }) => item);
+    return {
+      file: { name: packageFilename(createdAt) },
+      metadata: {
+        reportId: state.reportId,
+        createdAt: createdAt.toISOString(),
+        page: safePageUrl(),
+        browser: browserLabel(),
+        platform:
+          navigator.userAgentData?.platform || navigator.platform || "unknown",
+        viewport: { width: innerWidth, height: innerHeight },
+        online: navigator.onLine,
+        screenshotCount: state.screenshots.length,
+      },
+      description: comment.value.trim(),
+      stepsText: steps.value.trim(),
+      diagnostics: formatTechnicalErrors(technicalErrors),
+    };
+  }
+
+  async function buildPackage(createdAt = new Date()) {
     const description = comment.value.trim();
     const stepsText = steps.value.trim();
     if (description.length < 8) {
@@ -1185,7 +1431,6 @@ export function setupErrorReporter(options = {}) {
         ),
       );
     }
-    const createdAt = new Date();
     const technicalErrors = state.technicalErrors
       .slice(-12)
       .map(({ fingerprint, ...item }) => item);
@@ -1262,7 +1507,7 @@ export function setupErrorReporter(options = {}) {
       }),
     );
     const blob = await makeZip(entries);
-    const filename = `ghrab-hlaseni-chyby-${safeName(state.appMeta.appId)}-${nowFileStamp(createdAt)}.zip`;
+    const filename = packageFilename(createdAt);
     const file = new File([blob], filename, {
       type: "application/zip",
       lastModified: createdAt.getTime(),
@@ -1306,7 +1551,7 @@ export function setupErrorReporter(options = {}) {
       return false;
     }
   }
-  function mailtoUrl(packageInfo, screenshotCopied, supportEmail) {
+  function mailDraft(packageInfo, screenshotCopied, supportEmail) {
     const subject = `[AI GHRAB] Chyba – ${state.appMeta.name} ${state.appMeta.version} – ${packageInfo.metadata.reportId}`;
     const body = [
       "Dobrý den,",
@@ -1340,23 +1585,144 @@ export function setupErrorReporter(options = {}) {
       "",
       "Děkuji.",
     ].join("\n");
-    return `mailto:${supportEmail}?subject=${encodeURIComponent(subject)}&body=${encodeURIComponent(clipText(body, 6500))}`;
+    const clippedBody = clipText(body, 6500);
+    return {
+      to: supportEmail,
+      subject,
+      body: clippedBody,
+      mailtoUrl: `mailto:${supportEmail}?subject=${encodeURIComponent(subject)}&body=${encodeURIComponent(clippedBody)}`,
+      gmailUrl: `https://mail.google.com/mail/?view=cm&fs=1&to=${encodeURIComponent(supportEmail)}&su=${encodeURIComponent(subject)}&body=${encodeURIComponent(clippedBody)}`,
+    };
+  }
+  function actionLink(label, href, className, target = "_blank") {
+    const link = document.createElement("a");
+    link.className = `ghrab-report-button ${className}`.trim();
+    link.href = href;
+    link.textContent = label;
+    if (target) link.target = target;
+    link.rel = "noopener";
+    return link;
+  }
+  function openGmailDraft(draft) {
+    const hosts = [];
+    try {
+      if (window.top && window.top !== window) hosts.push(window.top);
+    } catch {}
+    hosts.push(window);
+    for (const host of hosts) {
+      try {
+        const popup = host.open(draft.gmailUrl, "_blank");
+        if (!popup || popup.closed) continue;
+        try {
+          popup.opener = null;
+        } catch {}
+        return popup;
+      } catch {}
+    }
+    return null;
+  }
+  async function copyMailDraft(draft) {
+    const text = `Komu: ${draft.to}\nPředmět: ${draft.subject}\n\n${draft.body}`;
+    if (navigator.clipboard?.writeText) {
+      await navigator.clipboard.writeText(text);
+      return true;
+    }
+    const area = document.createElement("textarea");
+    area.value = text;
+    area.setAttribute("readonly", "");
+    area.style.position = "fixed";
+    area.style.opacity = "0";
+    document.body.append(area);
+    area.select();
+    const copied = document.execCommand?.("copy") === true;
+    area.remove();
+    return copied;
+  }
+  function showPreparedMailActions(info, screenshotCopied, draft, autoOpened) {
+    finalStatus.hidden = false;
+    finalStatus.replaceChildren();
+    finalStatus.append(
+      element("strong", "", t("Hlášení je připravené.", "The report is ready.")),
+      element(
+        "span",
+        "",
+        t(
+          `${autoOpened ? "Předvyplněný Gmail se otevřel v nové kartě. " : "Kartu s Gmailem prohlížeč neotevřel; použijte tlačítko níže. "}${screenshotCopied ? "Hlavní snímek je ve schránce – v e-mailu použijte Ctrl+V. " : ""}Přiložte soubor „${info.file.name}“. Příjemce je ${draft.to}.`,
+          `${autoOpened ? "A prefilled Gmail draft opened in a new tab. " : "The browser did not open Gmail; use the button below. "}${screenshotCopied ? "The main screenshot is in the clipboard – paste it into the email. " : ""}Attach “${info.file.name}”. The recipient is ${draft.to}.`,
+        ),
+      ),
+    );
+    const actions = element("div", "ghrab-report-actions ghrab-mail-fallback-actions");
+    const gmail = actionLink(
+      t("Otevřít Gmail", "Open Gmail"),
+      draft.gmailUrl,
+      "secondary small",
+    );
+    const mailApp = actionLink(
+      t("Otevřít poštovní aplikaci", "Open mail app"),
+      draft.mailtoUrl,
+      "ghost small",
+      "_blank",
+    );
+    const copy = button(
+      t("Zkopírovat údaje e-mailu", "Copy email details"),
+      "ghost small",
+    );
+    copy.addEventListener("click", async () => {
+      try {
+        const copied = await copyMailDraft(draft);
+        copy.textContent = copied
+          ? t("Zkopírováno", "Copied")
+          : t("Kopírování se nezdařilo", "Copy failed");
+      } catch {
+        copy.textContent = t("Kopírování se nezdařilo", "Copy failed");
+      }
+    });
+    actions.append(gmail, mailApp, copy);
+    finalStatus.append(actions);
+    if (fileShareSupported && state.preparedFile) {
+      shareFileButton.hidden = false;
+      shareFileButton.disabled = false;
+    }
   }
   async function prepareAndEmail() {
-    prepareButton.disabled = true;
-    prepareButton.textContent = t("Připravuji balíček…", "Preparing package…");
-    try {
-      const [info, supportEmail] = await Promise.all([
-        buildPackage(),
-        supportEmailPromise,
-      ]);
-      const screenshotCopied = await copyPrimaryScreenshot();
-      downloadBlob(info.blob, info.file.name);
+    if (comment.value.trim().length < 8) {
+      comment.focus();
       finalStatus.hidden = false;
-      finalStatus.innerHTML = `<strong>${t("Hlášení je připravené.", "The report is ready.")}</strong><span>${t(`${screenshotCopied ? "Hlavní snímek je ve schránce – v e-mailu použijte Ctrl+V. " : ""}Přiložte soubor „${info.file.name}“ a zprávu odešlete na ${supportEmail}.`, `${screenshotCopied ? "The main screenshot is in the clipboard – paste it into the email. " : ""}Attach “${info.file.name}” and send the message to ${supportEmail}.`)}</span>`;
-      await delay(160);
-      location.href = mailtoUrl(info, screenshotCopied, supportEmail);
+      finalStatus.textContent = t(
+        "Doplňte prosím krátký popis chyby (alespoň 8 znaků).",
+        "Please add a short issue description (at least 8 characters).",
+      );
+      return;
+    }
+    const createdAt = new Date();
+    const initialEmail = state.supportEmail || DEFAULT_SUPPORT_EMAIL;
+    const initialDraft = mailDraft(
+      draftPackageInfo(createdAt),
+      false,
+      initialEmail,
+    );
+    // Gmail se otevírá přímo v uživatelském kliknutí. Tím se nečeká na
+    // asynchronní tvorbu ZIP a prohlížeč novou kartu nevyhodnotí jako popup.
+    const composeWindow = openGmailDraft(initialDraft);
+    prepareButton.disabled = true;
+    prepareButton.textContent = t("Připravuji ZIP…", "Preparing ZIP…");
+    try {
+      const info = await buildPackage(createdAt);
+      const supportEmail = state.supportEmail || initialEmail;
+      const screenshotCopied = await copyPrimaryScreenshot();
+      const draft = mailDraft(info, screenshotCopied, supportEmail);
+      downloadBlob(info.blob, info.file.name);
+      showPreparedMailActions(
+        info,
+        screenshotCopied,
+        draft,
+        Boolean(composeWindow),
+      );
     } catch (error) {
+      try {
+        composeWindow?.close();
+      } catch {}
       finalStatus.hidden = false;
       finalStatus.textContent =
         error?.message ||
@@ -1367,51 +1733,70 @@ export function setupErrorReporter(options = {}) {
     } finally {
       prepareButton.disabled = false;
       prepareButton.textContent = t(
-        "Stáhnout balíček a otevřít e-mail",
-        "Download package and open email",
+        "Stáhnout ZIP a otevřít Gmail",
+        "Download ZIP and open Gmail",
       );
     }
   }
   async function sharePrepared() {
+    if (!fileShareSupported || !state.preparedFile) {
+      finalStatus.hidden = false;
+      finalStatus.textContent = t(
+        "Nejprve vytvořte ZIP. Přímé sdílení je dostupné jen na podporovaných zařízeních.",
+        "Create the ZIP first. Direct sharing is available only on supported devices.",
+      );
+      return;
+    }
     try {
-      const [info, supportEmail] = await Promise.all([
-        state.preparedFile ? { file: state.preparedFile } : buildPackage(),
-        supportEmailPromise,
-      ]);
-      if (!navigator.canShare?.({ files: [info.file] }))
-        throw new Error("file-sharing-not-supported");
       await navigator.share({
-        files: [info.file],
+        files: [state.preparedFile],
         title: t(
           `Hlášení chyby – ${state.appMeta.name}`,
           `Issue report – ${state.appMeta.name}`,
         ),
         text: t(
-          `Prosím odešlete správci na ${supportEmail}.`,
-          `Please send this to the administrator at ${supportEmail}.`,
+          `Prosím odešlete správci na ${state.supportEmail || DEFAULT_SUPPORT_EMAIL}.`,
+          `Please send this to the administrator at ${state.supportEmail || DEFAULT_SUPPORT_EMAIL}.`,
         ),
       });
     } catch (error) {
-      if (error?.name !== "AbortError")
+      if (error?.name !== "AbortError") {
+        finalStatus.hidden = false;
         finalStatus.textContent = t(
-          "Přímé sdílení se nepodařilo. Použijte stažení balíčku a e-mail.",
-          "Direct sharing failed. Use package download and email.",
+          "Systémové sdílení se nepodařilo. ZIP už je stažený; použijte Gmail nebo poštovní aplikaci.",
+          "System sharing failed. The ZIP is already downloaded; use Gmail or the mail app.",
         );
+      }
     }
   }
 
   launcher.addEventListener("click", open);
-  closeButton.addEventListener("click", close);
-  cancelButton.addEventListener("click", close);
+  closeButton.addEventListener("click", requestClose);
+  cancelButton.addEventListener("click", requestClose);
   backdrop.addEventListener("click", (event) => {
-    if (event.target === backdrop) close();
+    if (event.target === backdrop) requestClose();
+  });
+  returnToDraftButton.addEventListener("click", hideDiscardPrompt);
+  keepDraftButton.addEventListener("click", closeNow);
+  deleteDraftButton.addEventListener("click", () => {
+    resetDraft();
+    closeNow();
   });
   document.addEventListener("keydown", (event) => {
-    if (event.key === "Escape" && !backdrop.hidden) close();
+    if (event.key !== "Escape") return;
+    if (!discardBackdrop.hidden) hideDiscardPrompt();
+    else if (!backdrop.hidden) requestClose();
   });
   shareButton.addEventListener("click", startCapture);
   snapButton.addEventListener("click", captureFrame);
   stopButton.addEventListener("click", stopCapture);
+  leaveCaptureButton.addEventListener("click", showApplicationForCapture);
+  captureBarSnap.addEventListener("click", captureFrame);
+  captureBarBack.addEventListener("click", showReportFromCapture);
+  captureBarStop.addEventListener("click", () => {
+    stopCapture();
+    showReportFromCapture();
+  });
   uploadInput.addEventListener("change", async () => {
     for (const file of [...uploadInput.files].slice(
       0,
@@ -1420,7 +1805,10 @@ export function setupErrorReporter(options = {}) {
       await addScreenshot(file);
     uploadInput.value = "";
   });
+  comment.addEventListener("input", invalidatePreparedPackage);
+  steps.addEventListener("input", invalidatePreparedPackage);
   prepareButton.addEventListener("click", prepareAndEmail);
   shareFileButton.addEventListener("click", sharePrepared);
   renderScreenshots();
+  updateCaptureControls();
 }

@@ -2,6 +2,13 @@
 
 > Tento soubor se generuje ze `src/config/changelog.json`. Neupravujte jej ručně.
 
+## 0.20.4 — 2026-08-03
+**Spolehlivé hlášení chyby a aktuální návod**
+
+- Centrální reportér nabízí plovoucí ovládání snímání vpravo dole a při zavření rozepsaného hlášení se zeptá, zda koncept smazat, ponechat, nebo se vrátit.
+- Předvyplněný Gmail se otevře přímo v nové kartě v okamžiku kliknutí; ZIP se následně připraví a stáhne na původní kartě. Dostupné jsou i záložní odkazy na Gmail, poštovní aplikaci a kopírování údajů.
+- Volba Sdílet ZIP přes nabídku zařízení se zobrazuje až pro hotový soubor na podporovaném mobilu či tabletu. Aktualizovaný návod vysvětluje celý postup i bezpečné smazání konceptu.
+
 ## 0.20.3 — 2026-08-03
 **Readiness bez vazby na pevnou verzi aplikace**
 
