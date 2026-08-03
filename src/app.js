@@ -1076,6 +1076,15 @@ async function loadSyncReport() {
     return null;
   }
 }
+async function loadAiCoreRegistry() {
+  return fetchJson(`${base}config/ai-core.json`);
+}
+async function loadAiReadiness() {
+  return fetchJson(`${base}config/ai-readiness.generated.json`);
+}
+async function loadAiRuntime() {
+  return fetchJson(`${base}config/ai-runtime.json`);
+}
 async function loadPermissions() {
   try {
     return await fetchJson(`${base}config/permissions.json`);
@@ -2108,6 +2117,9 @@ window.GHRAB = {
   base,
   loadApps,
   loadSyncReport,
+  loadAiCoreRegistry,
+  loadAiReadiness,
+  loadAiRuntime,
   loadPermissions,
   getLaunches,
   getTestLaunches,

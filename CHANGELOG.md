@@ -2,6 +2,15 @@
 
 > Tento soubor se generuje ze `src/config/changelog.json`. Neupravujte jej ručně.
 
+## 0.20.0 — 2026-08-02
+**Centrální správa GHRAB AI Core**
+
+- AI Studio vydává a ověřuje neměnný GHRAB AI Core 1.0.0 včetně manifestu, kontraktu, konformitní sady a SHA-256.
+- Správcovské centrum zobrazuje aktivní Core, runtime režim a pravdivý stav migrace všech osmi aplikací.
+- KS 5.9.1 je evidován jako lokálně certifikovaná referenční integrace čekající na skutečné nasazení živého manifestu.
+- Výchozí provoz zůstává direct-gemini bez automatického fallbacku; School Gateway se nezapíná.
+- Připraven je bezpečný repository_dispatch workflow a Migration Kit 1.0.2 pro další aplikace.
+
 ## 0.19.0 — 2026-08-02
 **Lesson Hub jako osmá aplikace ekosystému**
 

@@ -1,6 +1,6 @@
 import { execFileSync } from "node:child_process";
 import { readdir, readFile, stat } from "node:fs/promises";
-import { generateKeyPairSync, sign, webcrypto } from "node:crypto";
+import { createHash, generateKeyPairSync, sign, webcrypto } from "node:crypto";
 import path from "node:path";
 import { fileURLToPath } from "node:url";
 import { safeExportSelfTest } from "../src/shared/safe-export.js";
@@ -83,6 +83,29 @@ const deployWorkflow = await readFile(
   path.join(root, ".github/workflows/deploy.yml"),
   "utf8",
 );
+const aiCoreRegistry = await loadJson(path.join(src, "config/ai-core.json"));
+const aiRuntime = await loadJson(path.join(src, "config/ai-runtime.json"));
+const aiReadinessBaseline = await loadJson(
+  path.join(src, "config/ai-readiness-baseline.json"),
+);
+const aiReadiness = await loadJson(
+  path.join(src, "config/ai-readiness.generated.json"),
+);
+const aiCoreConsumers = await loadJson(
+  path.join(src, "config/ai-core-consumers.json"),
+);
+const aiCoreWorkflow = await readFile(
+  path.join(root, ".github/workflows/distribute-ai-core.yml"),
+  "utf8",
+);
+const verifyAiCoreScript = await readFile(
+  path.join(root, "scripts/verify-ai-core.mjs"),
+  "utf8",
+);
+const readinessScript = await readFile(
+  path.join(root, "scripts/generate-ai-readiness.mjs"),
+  "utf8",
+);
 
 for (const [label, list] of [
   ["generated registry", apps],
@@ -137,6 +160,12 @@ if (
   fail("Fallback registr neobsahuje ACTIVA 0.5.0 nebo novější.");
 if (!sources?.some((source) => source.id === "activity-builder"))
   fail("sources.json neobsahuje zdroj ACTIVA.");
+if (
+  !syncScript.includes("validateOperationsManifest") ||
+  !syncScript.includes("ghrab-ai-operations-v1") ||
+  !syncScript.includes("aiOperations: fetched.operationsCount")
+)
+  fail("Synchronizace neověřuje veřejný registr AI operací server-ready aplikací.");
 const sortio = apps?.find((app) => app.id === "sortio");
 const sortioFallback = fallback?.find((app) => app.id === "sortio");
 if (!sortio || !isVersionAtLeast(sortio.version, "1.0.2"))
@@ -310,6 +339,85 @@ try {
     fail("WebCrypto neověřilo P-256 podpis ve formátu používaném vydavatelem.");
 } catch (e) {
   fail(`Test podpisového algoritmu selhal: ${e.message}`);
+}
+
+if (
+  aiCoreRegistry?.schema !== "ghrab-ai-studio-core-registry-v1" ||
+  aiCoreRegistry?.activeRelease?.coreVersion !== "1.0.0" ||
+  String(aiCoreRegistry?.activeRelease?.contractVersion) !== "1" ||
+  !/^https:\/\//.test(aiCoreRegistry?.publicBaseUrl || "")
+)
+  fail("Centrální registr GHRAB AI Core je neplatný.");
+if (
+  aiRuntime?.schema !== "ghrab-runtime-config-v1" ||
+  aiRuntime?.ai?.defaultMode !== "direct-gemini" ||
+  JSON.stringify(aiRuntime?.ai?.allowedModes) !==
+    JSON.stringify(["direct-gemini"]) ||
+  aiRuntime?.ai?.automaticFallback !== false ||
+  aiRuntime?.telemetry?.recordContent !== false
+)
+  fail("Centrální runtime není bezpečný direct-gemini režim.");
+const runtimeText = JSON.stringify(aiRuntime || {});
+if (/sk-|AIza|apiKey|secret/i.test(runtimeText))
+  fail("Centrální runtime může obsahovat tajný klíč.");
+if (
+  aiReadinessBaseline?.activeCoreVersion !== "1.0.0" ||
+  aiReadinessBaseline?.applications?.length !== apps?.length
+)
+  fail("Readiness baseline nepokrývá všech osm aplikací.");
+const correspondenceReadiness = aiReadiness?.applications?.find(
+  (item) => item.appId === "correspondence",
+);
+if (
+  aiReadiness?.schema !== "ghrab-ai-readiness-report-v1" ||
+  aiReadiness?.summary?.readyApps !== 0 ||
+  aiReadiness?.summary?.certifiedPendingApps !== 1 ||
+  aiReadiness?.summary?.notMigratedApps !== 7 ||
+  correspondenceReadiness?.status !== "certified-pending-deployment" ||
+  correspondenceReadiness?.certifiedAppVersion !== "5.9.1" ||
+  correspondenceReadiness?.operationsCount !== 8 ||
+  correspondenceReadiness?.conformancePassed !== true
+)
+  fail("KS 5.9.1 není pravdivě veden jako certifikovaný před nasazením.");
+if (
+  aiCoreConsumers?.eventType !== "ghrab-ai-core-released" ||
+  aiCoreConsumers?.consumers?.length !== apps?.length ||
+  aiCoreConsumers.consumers.filter((item) => item.enabled).length !== 1 ||
+  aiCoreConsumers.consumers.find((item) => item.enabled)?.appId !==
+    "correspondence"
+)
+  fail("Registr spotřebitelů GHRAB AI Core není bezpečně omezený.");
+if (
+  !aiCoreWorkflow.includes("workflow_dispatch") ||
+  !aiCoreWorkflow.includes("default: true") ||
+  !aiCoreWorkflow.includes("GHRAB_CORE_SYNC_TOKEN") ||
+  !aiCoreWorkflow.includes("verify-ai-core.mjs")
+)
+  fail("Distribuční workflow Core není ve výchozím stavu bezpečný dry-run.");
+if (
+  !verifyAiCoreScript.includes("createHash") ||
+  !verifyAiCoreScript.includes("sha256") ||
+  !readinessScript.includes("certified-pending-deployment") ||
+  !readinessScript.includes("ready")
+)
+  fail("Core ověření nebo readiness generátor nemají povinné kontroly.");
+for (const [file, metadata] of Object.entries(
+  aiCoreRegistry?.activeRelease?.artifacts || {},
+)) {
+  const artifact = path.join(
+    src,
+    aiCoreRegistry.activeRelease.releasePath,
+    file,
+  );
+  if (!(await exists(artifact))) {
+    fail(`Chybí vydaný Core artefakt ${file}.`);
+    continue;
+  }
+  const actual = createHash("sha256")
+    .update(await readFile(artifact))
+    .digest("hex");
+  if (actual !== metadata.sha256)
+    fail(`SHA-256 nesouhlasí pro Core artefakt ${file}.`);
 }
 
 if (
@@ -1038,6 +1146,12 @@ const required = [
   "config/access-policy.json",
   "config/access-public-key.json",
   "config/revoked-access.json",
+  "config/ai-core.json",
+  "config/ai-runtime.json",
+  "config/ai-readiness.generated.json",
+  "ai-core/releases/1.0.0/ghrab-ai-core-manifest-1.0.0.json",
+  "ai-core/releases/1.0.0/ghrab-ai-core-1.0.0.js",
+  "ai-core/migration/ghrab-ai-migration-kit-1.0.2.zip",
   "shared/material-validator.js",
   "integration/README.md",
   "integration/generator-access-bootstrap.example.js",
@@ -1076,12 +1190,17 @@ for (const rel of [
   "app/index.html",
   "access/access-control.js",
   "config/access-policy.json",
+  "config/ai-core.json",
+  "config/ai-runtime.json",
+  "config/ai-readiness.generated.json",
+  "ai-core/releases/1.0.0/ghrab-ai-core-manifest-1.0.0.json",
+  "ai-core/releases/1.0.0/ghrab-ai-core-1.0.0.js",
   "assets/brand/portal-gateway.webp",
 ]) {
   if (!requiredPrecache.includes(rel))
     fail(`Kritický PWA shell neobsahuje ${rel}`);
 }
-for (const prefix of ["tools/", "tests/", "integration/", "schemas/"]) {
+for (const prefix of ["tools/", "tests/", "integration/", "schemas/", "ai-core/"]) {
   if (optionalPrecache.some((rel) => rel.startsWith(prefix)))
     fail(`Volitelný precache nemá obsahovat ${prefix}`);
 }

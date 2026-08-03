@@ -1,6 +1,6 @@
-# Bezpečnostní hranice AI Studio GHRAB 0.19.0
+# Bezpečnostní hranice AI Studio GHRAB 0.20.0
 
-**Aktuální verze: 0.19.0**
+**Aktuální verze: 0.20.0**
 
 ## Co serverless portál zajišťuje
 
@@ -61,3 +61,7 @@ Nástroj neprovádí automatický screenshot ani nečte obsah aplikace. Snímek 
 Automatické technické údaje jsou omezeny na název a verzi aplikace, čas, cestu stránky bez query parametrů a fragmentu, velikost okna a obrazovky, platformu, prohlížeč, online stav a počet snímků. Neobsahují identitu držitele oprávnění, prompty ani vygenerovaný obsah.
 
 Bez serveru se hlášení neodesílá samo. Aplikace vytvoří jediný ZIP a otevře předvyplněný e-mail; uživatel přílohu vědomě přidá a odeslání potvrdí v e-mailovém klientu.
+
+## GHRAB AI Core
+
+Studio publikuje pouze veřejné artefakty Core, jejich SHA-256 a runtime bez tajných klíčů. `automaticFallback` je zakázán. Školní API klíč ani serverová autentizace nejsou v klientském balíku.

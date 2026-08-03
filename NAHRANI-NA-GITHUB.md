@@ -1,6 +1,6 @@
-# Nahrání AI Studio GHRAB 0.19.0
+# Nahrání AI Studio GHRAB 0.20.0
 
-Tento balík zachovává samostatné repozitáře aplikací a aktualizuje registry AI Studia na Korespondenčního asistenta 5.5.5.
+Tento balík zachovává samostatné repozitáře aplikací a přidává centrální správu GHRAB AI Core 1.0.0; živé verze aplikací zůstávají řízeny jejich manifesty.
 
 ## Postup
 
@@ -13,4 +13,6 @@ Tento balík zachovává samostatné repozitáře aplikací a aktualizuje regist
 
 ## Očekávaný výsledek
 
-Karta Korespondenčního asistenta bude zobrazovat verzi 5.5.5 a centrum manuálů bude odkazovat na aktuální manuál z jeho samostatného repozitáře.
+Studio zachová aktuální živé verze aplikací a ve Správě zobrazí Core 1.0.0, runtime direct-gemini a pravdivý stav migrace.
+
+Správcovská stránka po nasazení zobrazí aktivní Core 1.0.0 a KS 5.9.1 jako certifikovaný před nasazením. Po publikování KS 5.9.1 a další synchronizaci se stav automaticky změní na nasazený.

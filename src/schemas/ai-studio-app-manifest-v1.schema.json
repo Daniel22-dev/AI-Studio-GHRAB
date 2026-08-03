@@ -75,12 +75,60 @@
       "type": "string",
       "format": "uri",
       "pattern": "^https://"
+    },
+    "aiCore": {
+      "type": "object",
+      "required": [
+        "schema",
+        "coreVersion",
+        "contractVersion",
+        "serverReady",
+        "conformancePassed",
+        "operationsManifestUrl"
+      ],
+      "properties": {
+        "schema": {
+          "const": "ghrab-ai-app-integration-v1"
+        },
+        "coreVersion": {
+          "type": "string",
+          "pattern": "^\\d+\\.\\d+\\.\\d+(?:[-+][0-9A-Za-z.-]+)?$"
+        },
+        "contractVersion": {
+          "type": [
+            "string",
+            "integer"
+          ]
+        },
+        "serverReady": {
+          "type": "boolean"
+        },
+        "conformancePassed": {
+          "type": "boolean"
+        },
+        "operationsManifestUrl": {
+          "type": "string",
+          "format": "uri",
+          "pattern": "^https://"
+        },
+        "runtimeSchema": {
+          "const": "ghrab-runtime-config-v1"
+        },
+        "certifiedAt": {
+          "type": "string",
+          "format": "date-time"
+        }
+      },
+      "additionalProperties": false
     }
   },
   "$defs": {
     "i18n": {
       "type": "object",
-      "required": ["cs", "en"],
+      "required": [
+        "cs",
+        "en"
+      ],
       "properties": {
         "cs": {
           "type": "string",

@@ -1,6 +1,6 @@
-# Přesný postup nahrání AI Studio GHRAB 0.19.0 na GitHub
+# Přesný postup nahrání AI Studio GHRAB 0.20.0 na GitHub
 
-**Aktuální verze: 0.19.0**
+**Aktuální verze: 0.20.0**
 
 ## Doporučené pořadí
 
@@ -14,7 +14,7 @@
    - SORTIO 1.0.2,
    - Lesson Hub 1.2.0.
 2. U Lesson Hubu nejprve ověřte živý manifest `/lesson-hub/studio-manifest.json` a interaktivní manuál `/lesson-hub/manual/`.
-3. Potom nahrajte obsah balíku AI Studio GHRAB 0.19.0 do kořene repozitáře `AI-Studio-GHRAB`.
+3. Potom nahrajte obsah balíku AI Studio GHRAB 0.20.0 do kořene repozitáře `AI-Studio-GHRAB`.
 4. Zachovejte složky `.github`, `src`, `scripts` a soubory `package.json` a `package-lock.json`.
 5. Složku `dist` nenahrávejte. GitHub Actions ji vytvoří znovu při každém nasazení.
 6. Po commitu otevřete záložku **Actions** a ověřte zelený běh „Sync, certify and deploy AI Studio GHRAB“.
@@ -29,4 +29,11 @@
 
 ## Kontrola verze
 
-V patičce Studia a v `dist/build-info.json` musí být verze **0.19.0**.
+V patičce Studia a v `dist/build-info.json` musí být verze **0.20.0**.
+
+## Pořadí pro Core
+
+1. Nasaďte AI Studio 0.20.0.
+2. Nasaďte KS 5.9.1 s `aiCore` manifestem a `ai-operations.json`.
+3. Spusťte synchronizaci Studia a ověřte změnu KS na „Nasazeno“.
+4. Teprve potom migrujte další aplikace pomocí Migration Kitu 1.0.2.

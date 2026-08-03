@@ -3697,3 +3697,59 @@ html[data-motion="off"] .premium-launch-content {
     display: none !important;
   }
 }
+
+/* GHRAB AI Core registry */
+.ai-core-report {
+  grid-column: 1 / -1;
+}
+.ai-core-summary {
+  margin: 18px 0;
+}
+.ai-core-meta-grid {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 14px;
+  margin: 0 0 18px;
+}
+.ai-core-meta-card {
+  padding: 16px;
+  border: 1px solid var(--line);
+  border-radius: 18px;
+  background: color-mix(in srgb, var(--panel) 88%, transparent);
+  display: flex;
+  flex-direction: column;
+  gap: 7px;
+}
+.ai-core-meta-card > span {
+  font-size: 0.76rem;
+  text-transform: uppercase;
+  letter-spacing: 0.08em;
+  color: var(--muted);
+}
+.ai-core-meta-card strong {
+  font-size: 1.03rem;
+}
+.ai-core-meta-card small {
+  color: var(--muted);
+  overflow-wrap: anywhere;
+}
+.ai-core-downloads > div {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+}
+.ai-readiness-table .sync-neutral {
+  color: var(--muted);
+}
+.sync-error {
+  color: #ff8f8f;
+  font-weight: 700;
+}
+@media (max-width: 820px) {
+  .ai-core-meta-grid {
+    grid-template-columns: 1fr;
+  }
+  .ai-readiness-table {
+    min-width: 720px;
+  }
+}

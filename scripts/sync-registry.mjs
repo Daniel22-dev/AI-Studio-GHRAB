@@ -56,6 +56,28 @@ function validate(app, expectedId, source) {
   }
   if (!/^[A-Za-z0-9_.-]+\/[A-Za-z0-9_.-]+$/.test(app.repository))
     throw new Error("repository musí mít tvar vlastník/repozitář");
+  if (app.aiCore != null) {
+    const aiCore = app.aiCore;
+    if (!aiCore || typeof aiCore !== "object")
+      throw new Error("aiCore není objekt");
+    if (aiCore.schema !== "ghrab-ai-app-integration-v1")
+      throw new Error("aiCore má neznámé schema");
+    if (!semver.test(aiCore.coreVersion || ""))
+      throw new Error("aiCore.coreVersion není SemVer");
+    if (String(aiCore.contractVersion || "") !== "1")
+      throw new Error("aiCore.contractVersion není podporována");
+    if (typeof aiCore.serverReady !== "boolean")
+      throw new Error("aiCore.serverReady není boolean");
+    if (typeof aiCore.conformancePassed !== "boolean")
+      throw new Error("aiCore.conformancePassed není boolean");
+    let operationsUrl;
+    try { operationsUrl = new URL(aiCore.operationsManifestUrl); }
+    catch { throw new Error("aiCore.operationsManifestUrl není platná URL"); }
+    if (operationsUrl.protocol !== "https:")
+      throw new Error("aiCore.operationsManifestUrl není HTTPS");
+    if (!operationsUrl.href.startsWith(allowedPrefix.href))
+      throw new Error("aiCore.operationsManifestUrl musí zůstat pod povoleným prefixem aplikace");
+  }
   if (
     !app.name.cs ||
     !app.name.en ||
@@ -72,6 +94,37 @@ function validate(app, expectedId, source) {
   return app;
 }
 
+function validateOperationsManifest(operations, app) {
+  if (!operations || typeof operations !== "object")
+    throw new Error("ai-operations manifest není objekt");
+  if (operations.schema !== "ghrab-ai-operations-v1")
+    throw new Error("ai-operations manifest má neznámé schema");
+  if (operations.appId !== app.id || operations.appVersion !== app.version)
+    throw new Error("ai-operations manifest neodpovídá aplikaci nebo verzi");
+  if (
+    operations.coreVersion !== app.aiCore.coreVersion ||
+    String(operations.contractVersion) !== String(app.aiCore.contractVersion)
+  )
+    throw new Error("ai-operations manifest neodpovídá Core kontraktu");
+  if (!Array.isArray(operations.operations) || !operations.operations.length)
+    throw new Error("ai-operations manifest neobsahuje operace");
+  const names = new Set();
+  for (const operation of operations.operations) {
+    if (
+      !operation ||
+      typeof operation.operation !== "string" ||
+      !operation.operation ||
+      typeof operation.schemaId !== "string" ||
+      !operation.schemaId
+    )
+      throw new Error("ai-operations manifest obsahuje neplatnou operaci");
+    if (names.has(operation.operation))
+      throw new Error(`duplicitní AI operace ${operation.operation}`);
+    names.add(operation.operation);
+  }
+  return operations.operations.length;
+}
+
 async function fetchManifest(source) {
   if (offline) throw new Error("offline režim");
   const controller = new AbortController();
@@ -82,7 +135,21 @@ async function fetchManifest(source) {
       headers: { "user-agent": "AI-Studio-GHRAB-registry-sync" },
     });
     if (!response.ok) throw new Error(`HTTP ${response.status}`);
-    return validate(await response.json(), source.id, source);
+    const app = validate(await response.json(), source.id, source);
+    let operationsCount = null;
+    if (app.aiCore?.serverReady) {
+      const operationsResponse = await fetch(app.aiCore.operationsManifestUrl, {
+        signal: controller.signal,
+        headers: { "user-agent": "AI-Studio-GHRAB-registry-sync" },
+      });
+      if (!operationsResponse.ok)
+        throw new Error(`ai-operations HTTP ${operationsResponse.status}`);
+      operationsCount = validateOperationsManifest(
+        await operationsResponse.json(),
+        app,
+      );
+    }
+    return { app, operationsCount };
   } finally {
     clearTimeout(timer);
   }
@@ -94,13 +161,16 @@ for (const source of sources) {
   try {
     const fetched = await fetchManifest(source);
     const localIcon = fallbackById.get(source.id)?.icon;
-    const app = localIcon ? { ...fetched, icon: localIcon } : fetched;
+    const app = localIcon
+      ? { ...fetched.app, icon: localIcon }
+      : fetched.app;
     apps.push(app);
     reportSources.push({
       id: source.id,
       url: source.url,
       ok: true,
       version: app.version,
+      aiOperations: fetched.operationsCount,
     });
   } catch (error) {
     const app = fallbackById.get(source.id);

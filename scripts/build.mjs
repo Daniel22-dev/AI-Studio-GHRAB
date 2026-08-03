@@ -41,6 +41,12 @@ const syncReport = JSON.parse(
 const apps = JSON.parse(
   await readFile(path.join(src, "config", "apps.generated.json"), "utf8"),
 );
+const aiCoreRegistry = JSON.parse(
+  await readFile(path.join(src, "config", "ai-core.json"), "utf8"),
+);
+const aiReadiness = JSON.parse(
+  await readFile(path.join(src, "config", "ai-readiness.generated.json"), "utf8"),
+);
 await writeFile(
   path.join(dist, "build-info.json"),
   JSON.stringify(
@@ -48,6 +54,13 @@ await writeFile(
       version: pkg.version,
       builtAt: new Date().toISOString(),
       syncMode: syncReport.mode,
+      aiCore: {
+        coreVersion: aiCoreRegistry.activeRelease.coreVersion,
+        contractVersion: aiCoreRegistry.activeRelease.contractVersion,
+        buildId: aiCoreRegistry.activeRelease.buildId,
+        readyApps: aiReadiness.summary.readyApps,
+        certifiedPendingApps: aiReadiness.summary.certifiedPendingApps,
+      },
       apps: apps.map((app) => ({ id: app.id, version: app.version })),
     },
     null,
@@ -81,6 +94,11 @@ const requiredCacheFiles = [
   "./config/revoked-access.json",
   "./config/access-public-key.json",
   "./config/sync-report.json",
+  "./config/ai-core.json",
+  "./config/ai-runtime.json",
+  "./config/ai-readiness.generated.json",
+  "./ai-core/releases/1.0.0/ghrab-ai-core-manifest-1.0.0.json",
+  "./ai-core/releases/1.0.0/ghrab-ai-core-1.0.0.js",
   "./assets/brand/brand-mark.svg",
   "./assets/brand/portal-gateway.webp",
   "./assets/brand/icon-32.png",
@@ -97,6 +115,7 @@ const excludedOptionalPrefixes = [
   "./tests/",
   "./integration/",
   "./schemas/",
+  "./ai-core/",
 ];
 const optionalCacheFiles = allCacheFiles.filter(
   (file) =>

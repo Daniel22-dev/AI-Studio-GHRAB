@@ -1,0 +1,14 @@
+{
+  "schema": "ghrab-ai-readiness-baseline-v1",
+  "activeCoreVersion": "1.0.0",
+  "applications": [
+    {"appId":"correspondence","certification":{"appVersion":"5.9.1","coreVersion":"1.0.0","contractVersion":"1","conformancePassed":true,"operationsCount":8,"certifiedAt":"2026-08-02T20:55:00.000Z","evidence":"KS-5.9.1-overeni.txt"}},
+    {"appId":"generator"},
+    {"appId":"differentiator"},
+    {"appId":"essay-evaluator"},
+    {"appId":"ludus"},
+    {"appId":"activity-builder"},
+    {"appId":"sortio"},
+    {"appId":"lesson-hub"}
+  ]
+}

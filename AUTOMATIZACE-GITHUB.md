@@ -1,6 +1,6 @@
-# Automatizace aktualizací AI Studio GHRAB 0.19.0
+# Automatizace aktualizací AI Studio GHRAB 0.20.0
 
-**Aktuální verze: 0.19.0**
+**Aktuální verze: 0.20.0**
 
 ## Pravidelná synchronizace
 
@@ -19,3 +19,7 @@ Po nasazení dílčí aplikace může její repozitář odeslat `repository_disp
 3. Spusťte Kontrolu Studia.
 4. V anonymním okně ověřte výchozí uzamčení.
 5. Se správcovským oprávněním ověřte odemčení a administraci.
+
+## Distribuce GHRAB AI Core
+
+Workflow `distribute-ai-core.yml` je standardně dry-run. Ostrý `repository_dispatch` vyžaduje secret `GHRAB_CORE_SYNC_TOKEN`; spotřebitelský repozitář musí před commitem ověřit SHA-256, konformitní sadu a vlastní testy.

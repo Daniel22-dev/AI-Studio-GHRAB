@@ -1,12 +1,17 @@
 # AI Studio GHRAB
 
-**Aktuální verze: 0.19.0**
+**Aktuální verze: 0.20.0**
 
-**Verze 0.19.0 – federovaný serverless portál osmi chráněných školních aplikací s plnou integrací Lesson Hubu.**
+**Verze 0.20.0 – federovaný serverless portál a centrální správce GHRAB AI Core 1.0.0.**
 
 AI Studio GHRAB je centrální brána školních digitálních a AI nástrojů. Jednotlivé aplikace zůstávají v samostatných repozitářích; Studio zajišťuje společnou navigaci, Top 4, synchronizaci verzí, bezpečnostní rámec, pracovní materiály, pilotní měření a správu podepsaných přístupů.
 
-## Hlavní novinky 0.19.0
+## Hlavní novinky 0.20.0
+
+- Studio centrálně vydává a ověřuje GHRAB AI Core 1.0.0, runtime politiku a stav migrace aplikací.
+- Výchozí režim zůstává `direct-gemini`; School Gateway ani placené API se nezapínají.
+- KS 5.9.1 je první certifikovaná referenční integrace čekající na skutečné nasazení živého manifestu.
+- Správcovská stránka rozlišuje nasazený stav, lokální certifikaci a dosud nezahájenou migraci.
 
 - Lesson Hub 1.2.0 je osmou chráněnou aplikací AI Studia a zůstává mimo výchozí Top 4 v navazujícím katalogu.
 - Studio načítá živý manifest, verzi, stav, popis a aktuální interaktivní manuál přímo z repozitáře Lesson Hubu.
@@ -46,7 +51,7 @@ Ochranný bootstrap je určen pro Generátor 7.1.4, Diferenciátor 1.3.3, Hodnot
 4. Hodnotitel maturitních slohů 1.5.2.
 5. ACTIVA 0.5.0 a SORTIO 1.0.2 včetně volání pilotní telemetrie.
 6. Lesson Hub 1.2.0 včetně živého manifestu a aktuálního manuálu.
-7. AI Studio GHRAB 0.19.0 jako poslední.
+7. AI Studio GHRAB 0.20.0 jako poslední.
 
 Po zeleném nasazení zavřete staré otevřené karty Studia a znovu je otevřete. Nová verze service workeru se aktivuje až po bezpečném ukončení staré relace; rutinní `Ctrl + F5` už není součástí standardního postupu.
 

@@ -1,6 +1,6 @@
-# Architektura AI Studio GHRAB 0.19.0
+# Architektura AI Studio GHRAB 0.20.0
 
-**Aktuální verze: 0.19.0**
+**Aktuální verze: 0.20.0**
 
 ## Federovaný portál
 
@@ -75,3 +75,7 @@ Server nahradí import oprávnění školním přihlášením, místní úloži�
 - Katalog vždy zobrazí všech osm aplikací a pro otevření použije `hasAppAccess(appId)`.
 - Správce díky roli `admin` otevře všechny manuály; učitel jen manuály aplikací uvedených v podepsaném oprávnění.
 - Samotný manuál je navíc chráněn stejným `app-guard.js`, takže přímá URL neobchází AI Studio.
+
+## Centrální AI vrstva
+
+AI Studio neprovádí modelová volání. Vydává neměnný GHRAB AI Core, runtime konfiguraci a readiness report. Aplikace zveřejňují `aiCore` ve Studio manifestu a `ai-operations.json`; server-ready stav je uznán až z živě načtených metadat.

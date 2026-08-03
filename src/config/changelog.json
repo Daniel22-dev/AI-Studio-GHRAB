@@ -1,7 +1,37 @@
 {
   "schema": "ai-studio-changelog-v1",
-  "current": "0.19.0",
+  "current": "0.20.0",
   "items": [
+    {
+      "version": "0.20.0",
+      "date": "2026-08-02",
+      "title": {
+        "cs": "Centrální správa GHRAB AI Core",
+        "en": "Central GHRAB AI Core management"
+      },
+      "changes": [
+        {
+          "cs": "AI Studio vydává a ověřuje neměnný GHRAB AI Core 1.0.0 včetně manifestu, kontraktu, konformitní sady a SHA-256.",
+          "en": "AI Studio publishes and verifies immutable GHRAB AI Core 1.0.0 including its manifest, contract, conformance suite and SHA-256."
+        },
+        {
+          "cs": "Správcovské centrum zobrazuje aktivní Core, runtime režim a pravdivý stav migrace všech osmi aplikací.",
+          "en": "The administration centre displays the active Core, runtime mode and truthful migration status of all eight applications."
+        },
+        {
+          "cs": "KS 5.9.1 je evidován jako lokálně certifikovaná referenční integrace čekající na skutečné nasazení živého manifestu.",
+          "en": "Correspondence Assistant 5.9.1 is tracked as a locally certified reference integration awaiting deployment of its live manifest."
+        },
+        {
+          "cs": "Výchozí provoz zůstává direct-gemini bez automatického fallbacku; School Gateway se nezapíná.",
+          "en": "The default remains direct-gemini with no automatic fallback; School Gateway is not enabled."
+        },
+        {
+          "cs": "Připraven je bezpečný repository_dispatch workflow a Migration Kit 1.0.2 pro další aplikace.",
+          "en": "A safe repository_dispatch workflow and Migration Kit 1.0.2 are prepared for subsequent applications."
+        }
+      ]
+    },
     {
       "version": "0.19.0",
       "date": "2026-08-02",
