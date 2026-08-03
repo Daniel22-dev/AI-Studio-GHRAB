@@ -1,0 +1,29 @@
+name: Distribute GHRAB AI Core
+on:
+  workflow_dispatch:
+    inputs:
+      dry_run:
+        description: Preview without repository dispatch
+        required: true
+        default: true
+        type: boolean
+permissions:
+  contents: read
+jobs:
+  distribute:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 20
+      - name: Verify immutable Core release
+        run: node scripts/verify-ai-core.mjs
+      - name: Preview distribution
+        if: ${{ inputs.dry_run }}
+        run: node scripts/dispatch-ai-core.mjs --dry-run
+      - name: Dispatch verified release
+        if: ${{ !inputs.dry_run }}
+        env:
+          GHRAB_CORE_SYNC_TOKEN: ${{ secrets.GHRAB_CORE_SYNC_TOKEN }}
+        run: node scripts/dispatch-ai-core.mjs
