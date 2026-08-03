@@ -1,0 +1,415 @@
+import {
+  initialiseAccess,
+  hasAppAccess,
+  formatReason,
+} from "../access/access-control.js";
+
+const language = (() => {
+  try {
+    return localStorage.getItem("ghrab.language") || "cs";
+  } catch {
+    return "cs";
+  }
+})();
+const t = (cs, en) => (language === "en" ? en : cs);
+const localised = (value) => {
+  if (typeof value === "string") return value;
+  return value?.[language] || value?.cs || value?.en || "";
+};
+
+document.documentElement.lang = language;
+document.querySelectorAll("[data-cs][data-en]").forEach((node) => {
+  node.textContent = node.dataset[language];
+});
+document.querySelectorAll("[data-cs-aria][data-en-aria]").forEach((node) => {
+  node.setAttribute("aria-label", node.dataset[`${language}Aria`]);
+});
+
+const frame = document.querySelector("#embedded-app-frame");
+const loading = document.querySelector("#embedded-loading");
+const errorPanel = document.querySelector("#embedded-error");
+const errorTitle = document.querySelector("#embedded-error-title");
+const errorCopy = document.querySelector("#embedded-error-copy");
+const nameNode = document.querySelector("#embedded-app-name");
+const iconNode = document.querySelector("#embedded-app-icon");
+const reloadButton = document.querySelector("#embedded-reload");
+const fullscreenButton = document.querySelector("#embedded-fullscreen");
+const externalButton = document.querySelector("#embedded-external");
+const errorExternalButton = document.querySelector("#embedded-error-external");
+const backLink = document.querySelector("#embedded-back");
+const backLabel = document.querySelector("#embedded-back-label");
+const contextNode = document.querySelector("#embedded-app-context");
+
+let currentApp = null;
+let loadTimeout = 0;
+let lastApplicationUrl = "";
+let manualReturnTimer = 0;
+
+let embeddedObserver = null;
+const embeddedPolishTimers = new Set();
+const embeddedOverridesUrl = new URL("./embed-overrides.css", import.meta.url)
+  .href;
+
+function stopEmbeddedPolishObserver() {
+  embeddedObserver?.disconnect();
+  embeddedObserver = null;
+  embeddedPolishTimers.forEach((timer) => window.clearTimeout(timer));
+  embeddedPolishTimers.clear();
+}
+
+function frameUrl() {
+  try {
+    const value = frame.contentWindow?.location?.href;
+    if (!value) return null;
+    const url = new URL(value, location.href);
+    return url.origin === location.origin ? url : null;
+  } catch {
+    return null;
+  }
+}
+
+function isManualUrl(url) {
+  return Boolean(url && /\/manual(?:\/|$)/i.test(url.pathname));
+}
+
+function setWorkspaceMode() {
+  if (!currentApp) return;
+  const appName = localised(currentApp.name);
+  const url = frameUrl();
+  const manualOpen = isManualUrl(url);
+
+  if (!manualOpen && url) lastApplicationUrl = url.href;
+
+  backLink.dataset.destination = manualOpen ? "application" : "studio";
+  backLink.href = manualOpen
+    ? lastApplicationUrl || currentApp.launchUrl
+    : "../#applications";
+  backLabel.textContent = manualOpen
+    ? t("Zpět do aplikace", "Back to application")
+    : "AI Studio";
+  backLink.setAttribute(
+    "aria-label",
+    manualOpen
+      ? t(`Zpět do aplikace ${appName}`, `Back to ${appName}`)
+      : t("Zpět do AI Studia", "Back to AI Studio"),
+  );
+  contextNode.textContent = manualOpen
+    ? t("MANUÁL OTEVŘENÝ V APLIKACI", "MANUAL OPENED FROM APPLICATION")
+    : t("APLIKACE OTEVŘENÁ V AI STUDIU", "APPLICATION OPEN IN AI STUDIO");
+  nameNode.textContent = manualOpen
+    ? `${appName} · ${t("manuál", "manual")}`
+    : appName;
+  externalButton.textContent = manualOpen
+    ? t("Otevřít manuál samostatně", "Open manual separately")
+    : t("Otevřít samostatně", "Open separately");
+}
+
+function returnToApplication() {
+  if (!currentApp) return;
+  window.clearTimeout(manualReturnTimer);
+  const fallbackUrl = lastApplicationUrl || currentApp.launchUrl;
+
+  try {
+    frame.contentWindow.history.back();
+    manualReturnTimer = window.setTimeout(() => {
+      const url = frameUrl();
+      if (!url || isManualUrl(url)) frame.src = fallbackUrl;
+    }, 900);
+  } catch {
+    frame.src = fallbackUrl;
+  }
+}
+
+function keepManualsInsideWorkspace() {
+  let doc;
+  try {
+    doc = frame.contentDocument;
+  } catch {
+    return;
+  }
+  if (!doc?.documentElement) return;
+  const updateLinks = (rootNode = doc) => {
+    rootNode
+      .querySelectorAll?.(
+        'a[href*="/manual/"], a[href$="/manual"], a.manual-launch-btn',
+      )
+      .forEach((link) => {
+        link.setAttribute("target", "_self");
+        link.removeAttribute("rel");
+        link.dataset.ghrabManualInternal = "true";
+      });
+  };
+  updateLinks();
+  if (!doc.documentElement.dataset.ghrabManualGuard) {
+    doc.documentElement.dataset.ghrabManualGuard = "true";
+    doc.addEventListener(
+      "click",
+      (event) => {
+        const link = event.target.closest?.(
+          'a[href*="/manual/"], a[href$="/manual"], a.manual-launch-btn',
+        );
+        if (!link) return;
+        const url = new URL(
+          link.getAttribute("href") || "./manual/",
+          doc.baseURI,
+        );
+        if (url.origin !== location.origin) return;
+        event.preventDefault();
+        doc.defaultView.location.assign(url.href);
+      },
+      true,
+    );
+    const observer = new MutationObserver((records) => {
+      records.forEach((record) =>
+        record.addedNodes.forEach((node) => {
+          if (node.nodeType === Node.ELEMENT_NODE) updateLinks(node);
+        }),
+      );
+    });
+    observer.observe(doc.documentElement, { childList: true, subtree: true });
+  }
+}
+
+function applyEvaluatorEmbeddedPolish() {
+  stopEmbeddedPolishObserver();
+  if (currentApp?.id !== "essay-evaluator") return;
+  let doc;
+  try {
+    doc = frame.contentDocument;
+  } catch {
+    return;
+  }
+  if (!doc?.documentElement || !doc.head || !doc.body) return;
+
+  doc.documentElement.classList.add("ghrab-studio-embedded-app");
+  doc.documentElement.dataset.ghrabEmbeddedApp = currentApp.id;
+
+  if (!doc.querySelector('link[data-ghrab-embed-overrides="true"]')) {
+    const link = doc.createElement("link");
+    link.rel = "stylesheet";
+    link.href = embeddedOverridesUrl;
+    link.dataset.ghrabEmbedOverrides = "true";
+    doc.head.append(link);
+  }
+
+  const compactLargeFooterBrand = () => {
+    const allImages = [...doc.images];
+    const likely = allImages.filter((image) => {
+      const context =
+        `${image.alt || ""} ${image.currentSrc || image.src || ""} ${image.className || ""}`.toLowerCase();
+      return (
+        image.closest(
+          "footer, [class*='footer' i], [class*='credit' i], [class*='about' i], [class*='owner' i]",
+        ) || /logo|brand|ghrab|gymn|school|heart|owner/.test(context)
+      );
+    });
+    const candidates = (likely.length ? likely : allImages.slice(-4))
+      .map((image) => {
+        const rect = image.getBoundingClientRect();
+        const inFooter = Boolean(
+          image.closest(
+            "footer, [class*='footer' i], [class*='credit' i], [class*='about' i], [class*='owner' i]",
+          ),
+        );
+        return {
+          image,
+          rect,
+          score: rect.width * rect.height + (inFooter ? 500000 : 0),
+          eligible: rect.width >= 230 || rect.height >= 210,
+        };
+      })
+      .filter((item) => item.eligible)
+      .sort((a, b) => b.score - a.score);
+
+    const target = candidates[0]?.image;
+    if (!target) return false;
+    target.classList.add("ghrab-studio-compact-footer-logo");
+
+    const wrapper = target.closest("picture") || target.parentElement;
+    wrapper?.classList.add("ghrab-studio-compact-footer-logo-wrap");
+
+    const cell = wrapper?.parentElement;
+    if (cell) {
+      const rect = cell.getBoundingClientRect();
+      if (rect.height >= 220 || rect.width >= 260)
+        cell.classList.add("ghrab-studio-compact-footer-logo-cell");
+    }
+    stopEmbeddedPolishObserver();
+    return true;
+  };
+
+  let debounceTimer = 0;
+  const scheduleScan = (delay = 250) => {
+    window.clearTimeout(debounceTimer);
+    embeddedPolishTimers.delete(debounceTimer);
+    debounceTimer = window.setTimeout(() => {
+      embeddedPolishTimers.delete(debounceTimer);
+      compactLargeFooterBrand();
+    }, delay);
+    embeddedPolishTimers.add(debounceTimer);
+  };
+
+  if (compactLargeFooterBrand()) return;
+  doc.querySelectorAll("img").forEach((image) => {
+    if (!image.complete)
+      image.addEventListener("load", () => scheduleScan(80), { once: true });
+  });
+  scheduleScan(250);
+  const fallbackTimer = window.setTimeout(compactLargeFooterBrand, 900);
+  embeddedPolishTimers.add(fallbackTimer);
+
+  embeddedObserver = new MutationObserver(() => scheduleScan());
+  embeddedObserver.observe(doc.body, {
+    childList: true,
+    subtree: true,
+    attributes: true,
+    attributeFilter: ["src", "class"],
+  });
+}
+
+async function fetchApps() {
+  for (const path of [
+    "../config/apps.generated.json",
+    "../config/apps.fallback.json",
+  ]) {
+    try {
+      const response = await fetch(path, { cache: "no-store" });
+      if (response.ok) return await response.json();
+    } catch {
+      /* try fallback */
+    }
+  }
+  throw new Error(
+    t(
+      "Registr aplikací se nepodařilo načíst.",
+      "The application registry could not be loaded.",
+    ),
+  );
+}
+
+function showError(title, copy) {
+  window.clearTimeout(loadTimeout);
+  loading.hidden = true;
+  frame.hidden = true;
+  errorPanel.hidden = false;
+  errorTitle.textContent = title;
+  errorCopy.textContent = copy;
+}
+
+function openSeparately() {
+  if (!currentApp?.launchUrl) return;
+  const url = frameUrl()?.href || currentApp.launchUrl;
+  window.open(url, "_blank", "noopener,noreferrer");
+}
+
+function setApp(app) {
+  currentApp = app;
+  const appName = localised(app.name);
+  const appUrl = new URL(app.launchUrl, location.href);
+  if (appUrl.origin !== location.origin) {
+    showError(
+      t(
+        "Tuto aplikaci nelze bezpečně vložit.",
+        "This application cannot be embedded safely.",
+      ),
+      t(
+        "Je umístěna na jiné internetové doméně. Použijte volbu Otevřít aplikaci samostatně.",
+        "It is hosted on another internet domain. Use Open application separately.",
+      ),
+    );
+    return;
+  }
+  nameNode.textContent = appName;
+  document.title = `${appName} · AI Studio GHRAB`;
+  iconNode.src = app.icon?.startsWith("http") ? app.icon : `../${app.icon}`;
+  iconNode.alt = "";
+  frame.title = appName;
+  lastApplicationUrl = appUrl.href;
+  frame.src = appUrl.href;
+  loadTimeout = window.setTimeout(() => {
+    if (!frame.classList.contains("is-ready")) {
+      loading.querySelector("small").textContent = t(
+        "Načítání trvá déle. Můžete ještě chvíli počkat, znovu načíst nebo aplikaci otevřít samostatně.",
+        "Loading is taking longer. You can wait, reload, or open the application separately.",
+      );
+    }
+  }, 9000);
+}
+
+frame.addEventListener("load", () => {
+  window.clearTimeout(loadTimeout);
+  window.clearTimeout(manualReturnTimer);
+  applyEvaluatorEmbeddedPolish();
+  keepManualsInsideWorkspace();
+  setWorkspaceMode();
+  loading.hidden = true;
+  frame.hidden = false;
+  frame.classList.add("is-ready");
+});
+
+reloadButton.addEventListener("click", () => {
+  if (!currentApp) return;
+  loading.hidden = false;
+  frame.classList.remove("is-ready");
+  try {
+    frame.contentWindow.location.reload();
+  } catch {
+    frame.src = currentApp.launchUrl;
+  }
+});
+fullscreenButton.addEventListener("click", async () => {
+  try {
+    if (document.fullscreenElement) await document.exitFullscreen();
+    else await document.documentElement.requestFullscreen();
+  } catch {
+    /* browser may deny */
+  }
+});
+backLink.addEventListener("click", (event) => {
+  if (backLink.dataset.destination !== "application") return;
+  event.preventDefault();
+  returnToApplication();
+});
+externalButton.addEventListener("click", openSeparately);
+errorExternalButton.addEventListener("click", openSeparately);
+
+(async () => {
+  try {
+    const appId = new URLSearchParams(location.search).get("app");
+    if (!appId)
+      throw new Error(
+        t(
+          "V adrese chybí identifikátor aplikace.",
+          "The application identifier is missing from the URL.",
+        ),
+      );
+    await initialiseAccess();
+    const apps = await fetchApps();
+    const app = apps.find((item) => item.id === appId);
+    if (!app)
+      throw new Error(
+        t(
+          "Vybraná aplikace není v registru Studia.",
+          "The selected application is not in the Studio registry.",
+        ),
+      );
+    currentApp = app;
+    const access = hasAppAccess(app.id);
+    if (!access.enabled) {
+      showError(
+        t("Aplikace je uzamčena.", "The application is locked."),
+        formatReason(access.reason, language),
+      );
+      return;
+    }
+    setApp(app);
+  } catch (error) {
+    showError(
+      t(
+        "Aplikaci se nepodařilo připravit.",
+        "The application could not be prepared.",
+      ),
+      error instanceof Error ? error.message : String(error),
+    );
+  }
+})();

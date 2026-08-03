@@ -1,0 +1,34 @@
+[
+  {
+    "id": "generator",
+    "url": "https://daniel22-dev.github.io/generator-testu/studio-manifest.json"
+  },
+  {
+    "id": "differentiator",
+    "url": "https://daniel22-dev.github.io/diferenciator/studio-manifest.json"
+  },
+  {
+    "id": "essay-evaluator",
+    "url": "https://daniel22-dev.github.io/Hodnotitel-maturitnich-slohu/studio-manifest.json"
+  },
+  {
+    "id": "correspondence",
+    "url": "https://daniel22-dev.github.io/korespondencni-asistent/studio-manifest.json"
+  },
+  {
+    "id": "ludus",
+    "url": "https://daniel22-dev.github.io/Ludus/studio-manifest.json"
+  },
+  {
+    "id": "activity-builder",
+    "url": "https://daniel22-dev.github.io/Sestavovac-aktivit/studio-manifest.json"
+  },
+  {
+    "id": "sortio",
+    "url": "https://daniel22-dev.github.io/SORTIO/studio-manifest.json"
+  },
+  {
+    "id": "lesson-hub",
+    "url": "https://daniel22-dev.github.io/lesson-hub/studio-manifest.json"
+  }
+]

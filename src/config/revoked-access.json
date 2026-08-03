@@ -1,0 +1,6 @@
+{
+  "schema": "ghrab-access-revocation-list-v1",
+  "updatedAt": "2026-07-10T00:00:00.000Z",
+  "revokedBefore": null,
+  "revokedJti": []
+}

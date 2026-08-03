@@ -1,0 +1,62 @@
+# Release checklist AI Studio GHRAB 0.20.2
+
+**Aktuální verze: 0.20.2**
+
+## Veřejný balík
+
+- [x] Verze 0.20.2 je shodná v package, buildu, dokumentaci a changelogu; PWA manifest nepoužívá nestandardní pole `version`.
+- [x] Všechny aplikace jsou ve výchozím stavu uzamčené.
+- [x] Veřejný balík obsahuje pouze veřejný ověřovací klíč.
+- [x] Ve zdroji ani buildu není soukromý klíč ani `.ghrab-access.json`.
+- [x] Učitelské a správcovské rozhraní jsou oddělené.
+- [x] Správcovské moduly se bez role admin nespouštějí.
+- [x] Top 4 a sci-fi herní styl jsou zachovány.
+- [x] Komunikace je oddělena od výukového workflow.
+- [x] Import materiálů má hloubkovou validaci a limity.
+- [x] Pilotní metriky jsou přesně označeny jako místní.
+- [x] PWA cache se generuje automaticky z produkčního stromu a neobsahuje neplatné cesty.
+- [x] `npm test` prochází bez chyby.
+
+## Soukromý administrátorský balík
+
+- [x] Obsahuje soukromý klíč.
+- [x] Obsahuje platné správcovské oprávnění.
+- [x] Obsahuje bezpečnostní návod.
+- [ ] Uložit do bezpečné soukromé zálohy.
+- [ ] Nikdy nenahrát na GitHub ani nesdílet s kolegy.
+
+## Dílčí aplikace
+
+- [ ] Vložit správný `*-access-bootstrap.example.js` do každého repozitáře.
+- [ ] Upravit poslední dynamický import podle skutečného vstupního modulu.
+- [ ] Ověřit přímou URL bez oprávnění.
+- [ ] Ověřit oprávnění pro jinou aplikaci.
+- [ ] Ověřit správné učitelské oprávnění.
+- [ ] Ověřit správcovské oprávnění.
+
+## Po nasazení
+
+- [ ] Ověřit zelený GitHub Actions build.
+- [ ] V anonymním okně potvrdit osm viditelných a uzamčených aplikací (čtyři v Top 4 a čtyři v katalogu).
+- [ ] Načíst správcovské oprávnění.
+- [ ] Spustit Kontrolu Studia.
+- [ ] Ověřit Android Chrome, desktop Chrome/Edge a iPhone Safari.
+- [ ] Ověřit přenos materiálu do všech podporovaných aplikací.
+
+## Manuály
+
+- [ ] Každý manifest obsahuje platné HTTPS `manualUrl`.
+- [ ] Katalog zobrazuje všech osm karet i bez přístupu.
+- [ ] Učitel otevře jen manuály povolených aplikací.
+- [ ] Správce otevře všechny manuály.
+- [ ] `manualy/index.html`, `manualy/manualy.js` a `manualy/manualy.css` jsou v PWA precache.
+
+## GHRAB AI Core 1.0.0
+
+- [x] Core manifest a SHA-256 jsou ověřovány buildem.
+- [x] `.prettierignore` chrání celý `src/ai-core/releases/**` před změnou bajtové podoby.
+- [x] Formátovací příkazy i GitHub Actions ověřují Core před formátováním a workflow také bezprostředně po něm.
+- [x] Runtime povoluje pouze `direct-gemini` a zakazuje automatický fallback.
+- [x] Migrační stav se odvozuje z živých manifestů; lokální certifikace se nezobrazuje jako nasazená.
+- [x] Regresní test akceptuje pravdivý přechodový stav i živý stav `ready` a kontroluje konzistenci souhrnných počtů.
+- [x] Migration Kit 1.0.2 obsahuje kontrakt, Core, konformitní sadu, prompt a consumer workflow.

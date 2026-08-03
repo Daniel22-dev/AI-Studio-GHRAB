@@ -1,0 +1,129 @@
+{
+  "schema": "ghrab-library-v1",
+  "items": [
+    {
+      "id": "past-simple",
+      "title": {
+        "cs": "Past Simple: The unexpected journey",
+        "en": "Past Simple: The Unexpected Journey"
+      },
+      "description": {
+        "cs": "Materiál se třemi úrovněmi podpory a společným cílem.",
+        "en": "A resource with three levels of support and one shared learning goal."
+      },
+      "subject": {
+        "cs": "Anglický jazyk",
+        "en": "English"
+      },
+      "level": "B1",
+      "type": {
+        "cs": "Diferencovaný pracovní list",
+        "en": "Differentiated worksheet"
+      },
+      "topic": {
+        "cs": "Minulý čas",
+        "en": "Past simple"
+      },
+      "quality": {
+        "cs": "Zkontrolováno učitelem",
+        "en": "Teacher-reviewed"
+      },
+      "download": "library/materials/past-simple.ghrab.json",
+      "subjectKey": "english",
+      "typeKey": "differentiated"
+    },
+    {
+      "id": "spanish-travel",
+      "title": {
+        "cs": "Viajes y experiencias",
+        "en": "Travel and Experiences"
+      },
+      "description": {
+        "cs": "Krátký jazykový balíček pro procvičení zkušeností a cestování.",
+        "en": "A short language package for practising experiences and travel."
+      },
+      "subject": {
+        "cs": "Španělský jazyk",
+        "en": "Spanish"
+      },
+      "level": "A2",
+      "type": {
+        "cs": "Interaktivní test",
+        "en": "Interactive test"
+      },
+      "topic": {
+        "cs": "Pretérito perfecto",
+        "en": "Present perfect in Spanish"
+      },
+      "quality": {
+        "cs": "Zkontrolováno učitelem",
+        "en": "Teacher-reviewed"
+      },
+      "download": "library/materials/spanish-travel.ghrab.json",
+      "subjectKey": "spanish",
+      "typeKey": "test"
+    },
+    {
+      "id": "czech-syntax",
+      "title": {
+        "cs": "Vedlejší věty v souvětí",
+        "en": "Subordinate Clauses in Complex Sentences"
+      },
+      "description": {
+        "cs": "Ukázka práce s rozpoznáním a převodem typů vedlejších vět.",
+        "en": "A sample activity for identifying and transforming types of subordinate clauses."
+      },
+      "subject": {
+        "cs": "Český jazyk",
+        "en": "Czech"
+      },
+      "level": "2. ročník",
+      "type": {
+        "cs": "Procvičování",
+        "en": "Practice"
+      },
+      "topic": {
+        "cs": "Skladba",
+        "en": "Syntax"
+      },
+      "quality": {
+        "cs": "Zkontrolováno učitelem",
+        "en": "Teacher-reviewed"
+      },
+      "download": "library/materials/czech-syntax.ghrab.json",
+      "subjectKey": "czech",
+      "typeKey": "practice"
+    },
+    {
+      "id": "school-email",
+      "title": {
+        "cs": "Oznámení o změně termínu",
+        "en": "Notice of a Schedule Change"
+      },
+      "description": {
+        "cs": "Anonymní šablona věcného a diplomatického školního e-mailu.",
+        "en": "An anonymous template for a clear and diplomatic school email."
+      },
+      "subject": {
+        "cs": "Společné",
+        "en": "General"
+      },
+      "level": "Učitelé",
+      "type": {
+        "cs": "Komunikační šablona",
+        "en": "Communication template"
+      },
+      "topic": {
+        "cs": "Školní komunikace",
+        "en": "School communication"
+      },
+      "quality": {
+        "cs": "Zkontrolováno učitelem",
+        "en": "Teacher-reviewed"
+      },
+      "download": "library/materials/school-email.ghrab.json",
+      "subjectKey": "common",
+      "typeKey": "template"
+    }
+  ]
+}
