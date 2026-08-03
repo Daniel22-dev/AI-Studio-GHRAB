@@ -1,8 +1,8 @@
-# Nahrání AI Studio GHRAB 0.20.5
+# Nahrání AI Studio GHRAB 0.20.6
 
 Tento balík zachovává samostatné repozitáře aplikací a přidává definitivní opravu otevírání předvyplněného Gmailu v centrálním reportéru.
 
-> Verze 0.20.5 nahrazuje skriptované otevírání okna skutečným odkazem prohlížeče. Tím odstraňuje blokování Gmailu v PWA, vloženém rámci i chráněném kontextu. Současně odstraňuje nespolehlivou volbu přímého sdílení ZIPu.
+> Verze 0.20.6 nahrazuje skriptované otevírání okna skutečným odkazem prohlížeče. Tím odstraňuje blokování Gmailu v PWA, vloženém rámci i chráněném kontextu. Současně odstraňuje nespolehlivou volbu přímého sdílení ZIPu.
 
 ## Postup
 

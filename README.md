@@ -1,12 +1,12 @@
 # AI Studio GHRAB
 
-**Aktuální verze: 0.20.5**
+**Aktuální verze: 0.20.6**
 
-**Verze 0.20.5 – federovaný serverless portál a centrální správce GHRAB AI Core 1.0.0.**
+**Verze 0.20.6 – federovaný serverless portál a centrální správce GHRAB AI Core 1.0.0.**
 
 AI Studio GHRAB je centrální brána školních digitálních a AI nástrojů. Jednotlivé aplikace zůstávají v samostatných repozitářích; Studio zajišťuje společnou navigaci, Top 4, synchronizaci verzí, bezpečnostní rámec, pracovní materiály, pilotní měření a správu podepsaných přístupů.
 
-## Hlavní novinky 0.20.5
+## Hlavní novinky 0.20.6
 
 - Centrální reportér už neotevírá Gmail pomocí `window.open()`. Hlavní akce je skutečný odkaz do nové karty, který Chrome zpracuje jako přímé kliknutí uživatele.
 - Na původní kartě se současně vytvoří a stáhne ZIP; po dokončení zůstávají záložní odkazy pro Gmail, poštovní aplikaci a kopírování celé zprávy.
@@ -47,7 +47,7 @@ Ochranný bootstrap je určen pro Generátor 7.1.4, Diferenciátor 1.3.3, Hodnot
 4. Hodnotitel maturitních slohů 1.5.2.
 5. ACTIVA 0.5.0 a SORTIO 1.0.2 včetně volání pilotní telemetrie.
 6. Lesson Hub 1.2.0 včetně živého manifestu a aktuálního manuálu.
-7. AI Studio GHRAB 0.20.5 jako poslední.
+7. AI Studio GHRAB 0.20.6 jako poslední.
 
 Po zeleném nasazení zavřete staré otevřené karty Studia a znovu je otevřete. Nová verze service workeru se aktivuje až po bezpečném ukončení staré relace; rutinní `Ctrl + F5` už není součástí standardního postupu.
 

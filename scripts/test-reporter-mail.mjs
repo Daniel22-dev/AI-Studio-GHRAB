@@ -14,7 +14,7 @@ if (!existsSync(chromePath)) {
 const packageJson = JSON.parse(readFileSync(join(ROOT, "package.json"), "utf8"));
 let reporter = readFileSync(join(ROOT, "src", "access", "error-reporter.js"), "utf8");
 reporter = reporter.replace("export function setupErrorReporter", "function setupErrorReporter");
-const html = `<!doctype html><html lang="cs"><head><meta charset="utf-8"></head><body><main><h1>Harness</h1></main><script type="module">${reporter}\nsetupErrorReporter({appId:"correspondence",appName:"Korespondencni asistent",appVersion:"5.9.9",studioUrl:"https://invalid.local/",supportEmail:"balaz@ghrabuvka.cz"});<\/script></body></html>`;
+const html = `<!doctype html><html lang="cs"><head><meta charset="utf-8"></head><body><main><h1>Harness</h1></main><script type="module">${reporter}\nsetupErrorReporter({appId:"correspondence",appName:"Korespondencni asistent",appVersion:"5.9.11",studioUrl:"https://invalid.local/",supportEmail:"balaz@ghrabuvka.cz"});<\/script></body></html>`;
 const port = 9900 + (process.pid % 100);
 const profile = join("/tmp", `studio-reporter-mail-${process.pid}`);
 rmSync(profile, { recursive: true, force: true });
@@ -109,6 +109,17 @@ try {
   if (box.tag !== "A" || box.target !== "_blank") {
     throw new Error("Primary Gmail action is not a native target=_blank link");
   }
+  if (!box.href.startsWith("https://mail.google.com/mail/")) {
+    throw new Error("Primary action does not point to Gmail before the click");
+  }
+  if (!box.href.includes("to=balaz%40ghrabuvka.cz")) {
+    throw new Error("Gmail link does not contain the support recipient before the click");
+  }
+  const beforeTargets = new Set(
+    (await fetch(`http://127.0.0.1:${port}/json`).then((response) => response.json()))
+      .filter((item) => item.type === "page")
+      .map((item) => item.id),
+  );
   await call("Input.dispatchMouseEvent", {
     type: "mousePressed",
     x: box.x,
@@ -123,17 +134,22 @@ try {
     button: "left",
     clickCount: 1,
   });
-  await sleep(1000);
-  const targets = await fetch(`http://127.0.0.1:${port}/json`).then((response) => response.json());
-  const gmail = targets.find(
-    (item) => item.type === "page" && item.url.startsWith("https://mail.google.com/mail/"),
-  );
-  ws.close();
-  if (!gmail) throw new Error("A real user click did not create a Gmail tab");
-  if (!gmail.url.includes("to=balaz%40ghrabuvka.cz")) {
-    throw new Error("Gmail draft does not contain the support recipient");
+  let openedPage = null;
+  for (let i = 0; i < 60; i += 1) {
+    const targets = await fetch(`http://127.0.0.1:${port}/json`).then((response) =>
+      response.json(),
+    );
+    openedPage = targets.find(
+      (item) => item.type === "page" && !beforeTargets.has(item.id),
+    );
+    if (openedPage) break;
+    await sleep(100);
   }
-  console.log(`PASS: native Gmail link opened for AI Studio ${packageJson.version}`);
+  ws.close();
+  if (!openedPage) throw new Error("A real user click did not create a new browser tab");
+  console.log(
+    `PASS: native Gmail link created a new tab for AI Studio ${packageJson.version}`,
+  );
 } finally {
   chrome.kill("SIGKILL");
   await sleep(250);

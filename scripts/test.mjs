@@ -1136,6 +1136,10 @@ const errorGuideHtml = await readFile(
   path.join(src, "manualy/error-report.html"),
   "utf8",
 );
+const errorGuideText = errorGuideHtml
+  .replace(/<[^>]*>/g, " ")
+  .replace(/\s+/g, " ")
+  .trim();
 if (
   !errorReporterText.includes("getDisplayMedia") ||
   !errorReporterText.includes("MAX_SCREENSHOTS = 5") ||
@@ -1166,15 +1170,18 @@ if (
 if (
   !errorReporterCss.includes(".ghrab-report-button.launcher") ||
   !errorReporterCss.includes(".ghrab-capture-bar") ||
-  !errorReporterCss.includes(".ghrab-discard-dialog") ||
-  !errorGuideHtml.includes("Jak poslat správci srozumitelné hlášení") ||
-  !errorGuideHtml.includes("Stáhnout ZIP a otevřít Gmail") ||
-  !errorGuideHtml.includes("Smazat hlášení a zavřít") ||
-  errorGuideHtml.includes("Sdílet ZIP přes nabídku zařízení") ||
-  !errorGuideHtml.includes("běžný odkaz prohlížeče") ||
-  !errorGuideHtml.includes("Začerněte citlivé údaje")
+  !errorReporterCss.includes(".ghrab-discard-dialog")
 )
-  fail("Chybí vzhled reporteru nebo úplný interaktivní návod k hlášení chyby.");
+  fail("Chybí povinné styly centrálního reporteru.");
+if (
+  !errorGuideText.includes("Jak poslat správci srozumitelné hlášení") ||
+  !errorGuideText.includes("Stáhnout ZIP a otevřít Gmail") ||
+  !errorGuideText.includes("Smazat hlášení a zavřít") ||
+  errorGuideText.includes("Sdílet ZIP přes nabídku zařízení") ||
+  !errorGuideText.includes("běžný odkaz prohlížeče") ||
+  !errorGuideText.includes("Začerněte citlivé údaje")
+)
+  fail("Chybí úplný interaktivní návod k hlášení chyby.");
 try {
   execFileSync(process.execPath, [path.join(root, "scripts", "test-reporter-mail.mjs")], {
     cwd: root,

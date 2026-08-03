@@ -2,6 +2,13 @@
 
 > Tento soubor se generuje ze `src/config/changelog.json`. Neupravujte jej ručně.
 
+## 0.20.6 — 2026-08-03
+**Odolná QA kontrola reporteru a předem připravený Gmail odkaz**
+
+- Úplná Gmail adresa včetně příjemce je v nativním odkazu připravena ještě před kliknutím; kliknutí již adresu na poslední chvíli nepřepisuje.
+- Chromium test ověřuje správný Gmail odkaz a vznik nové karty odděleně, takže není závislý na přesměrování, přihlášení ani dostupnosti služby Google.
+- Kontrola návodu normalizuje HTML mezery a formátování, takže Prettier nemůže způsobit falešný pád release gate.
+
 ## 0.20.5 — 2026-08-03
 **Definitivní otevření Gmailu bez blokovaného popupu**
 

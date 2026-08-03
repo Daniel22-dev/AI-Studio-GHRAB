@@ -1,7 +1,29 @@
 {
   "schema": "ai-studio-changelog-v1",
-  "current": "0.20.5",
+  "current": "0.20.6",
   "items": [
+    {
+      "version": "0.20.6",
+      "date": "2026-08-03",
+      "title": {
+        "cs": "Odolná QA kontrola reporteru a předem připravený Gmail odkaz",
+        "en": "Robust reporter QA and a precomputed Gmail link"
+      },
+      "changes": [
+        {
+          "cs": "Úplná Gmail adresa včetně příjemce je v nativním odkazu připravena ještě před kliknutím; kliknutí již adresu na poslední chvíli nepřepisuje.",
+          "en": "The complete Gmail URL, including the recipient, is present in the native link before the click; the click no longer rewrites it at the last moment."
+        },
+        {
+          "cs": "Chromium test ověřuje správný Gmail odkaz a vznik nové karty odděleně, takže není závislý na přesměrování, přihlášení ani dostupnosti služby Google.",
+          "en": "The Chromium test verifies the Gmail URL and creation of a new tab separately, so it no longer depends on redirects, authentication or Google service availability."
+        },
+        {
+          "cs": "Kontrola návodu normalizuje HTML mezery a formátování, takže Prettier nemůže způsobit falešný pád release gate.",
+          "en": "The guide check normalises HTML whitespace and formatting, preventing Prettier from causing a false release-gate failure."
+        }
+      ]
+    },
     {
       "version": "0.20.5",
       "date": "2026-08-03",

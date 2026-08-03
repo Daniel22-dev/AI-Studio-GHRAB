@@ -503,12 +503,16 @@ export function setupErrorReporter(options = {}) {
     supportEmail: options.supportEmail || DEFAULT_SUPPORT_EMAIL,
     technicalErrors: [],
   };
-  supportEmailPromise.then((email) => {
-    state.supportEmail = email;
-  }).catch(() => {});
+  supportEmailPromise
+    .then((email) => {
+      state.supportEmail = email;
+      refreshPrepareLink();
+    })
+    .catch(() => {});
   loadAppMeta(options.appId, studioUrl).then((meta) => {
     state.appMeta = meta;
     updateLabels();
+    refreshPrepareLink();
   });
 
   const pushTechnicalError = (raw) => {
@@ -919,12 +923,14 @@ export function setupErrorReporter(options = {}) {
   let redactions = [];
   let dragStart = null;
   let dragCurrent = null;
+  let draftCreatedAt = null;
 
   function updateLabels() {
     appLine.textContent = `${t("Aplikace", "Application")}: ${state.appMeta.name} · v${state.appMeta.version}`;
   }
   updateLabels();
   function open() {
+    refreshPrepareLink();
     backdrop.hidden = false;
     discardBackdrop.hidden = true;
     document.documentElement.classList.add("ghrab-report-open");
@@ -1014,6 +1020,7 @@ export function setupErrorReporter(options = {}) {
     state.preparedBlob = null;
     state.reportId = reportId();
     state.technicalErrors = [];
+    draftCreatedAt = null;
     comment.value = "";
     steps.value = "";
     uploadInput.value = "";
@@ -1024,6 +1031,7 @@ export function setupErrorReporter(options = {}) {
     setStatus(
       t("Snímání zatím není aktivní.", "Screen capture is not active yet."),
     );
+    refreshPrepareLink();
   }
   function requestClose() {
     stopCapture();
@@ -1040,8 +1048,10 @@ export function setupErrorReporter(options = {}) {
   function invalidatePreparedPackage() {
     state.preparedFile = null;
     state.preparedBlob = null;
+    draftCreatedAt = null;
     finalStatus.replaceChildren();
     finalStatus.hidden = true;
+    refreshPrepareLink();
   }
 
   async function addScreenshot(blob) {
@@ -1564,6 +1574,18 @@ export function setupErrorReporter(options = {}) {
       gmailUrl: `https://mail.google.com/mail/?view=cm&fs=1&to=${encodeURIComponent(supportEmail)}&su=${encodeURIComponent(subject)}&body=${encodeURIComponent(clippedBody)}`,
     };
   }
+  function ensureDraftCreatedAt() {
+    if (!draftCreatedAt) draftCreatedAt = new Date();
+    return draftCreatedAt;
+  }
+  function refreshPrepareLink() {
+    if (!prepareLink) return;
+    const createdAt = ensureDraftCreatedAt();
+    const supportEmail = state.supportEmail || DEFAULT_SUPPORT_EMAIL;
+    const draft = mailDraft(draftPackageInfo(createdAt), false, supportEmail);
+    prepareLink.href = draft.gmailUrl;
+    prepareLink.dataset.reportId = state.reportId;
+  }
   function actionLink(label, href, className, target = "_blank") {
     const link = document.createElement("a");
     link.className = `ghrab-report-button ${className}`.trim();
@@ -1648,17 +1670,11 @@ export function setupErrorReporter(options = {}) {
       event.preventDefault();
       return;
     }
-    const createdAt = new Date();
+    const createdAt = ensureDraftCreatedAt();
     const initialEmail = state.supportEmail || DEFAULT_SUPPORT_EMAIL;
-    const initialDraft = mailDraft(
-      draftPackageInfo(createdAt),
-      false,
-      initialEmail,
-    );
-    // Gmail is opened by the browser as a normal user-activated link. This is
-    // more reliable than a scripted popup, which Chrome can block in PWAs and
-    // protected application contexts even when the ZIP download succeeds.
-    prepareLink.href = initialDraft.gmailUrl;
+    // The complete Gmail URL is already present before the user clicks. The
+    // browser therefore performs a native target=_blank navigation without a
+    // scripted popup or a last-moment href rewrite.
     prepareLink.setAttribute("aria-busy", "true");
     prepareLink.setAttribute("aria-disabled", "true");
     prepareLink.textContent = t("Připravuji ZIP…", "Preparing ZIP…");
@@ -1727,4 +1743,5 @@ export function setupErrorReporter(options = {}) {
   prepareLink.addEventListener("click", prepareAndEmail);
   renderScreenshots();
   updateCaptureControls();
+  refreshPrepareLink();
 }
