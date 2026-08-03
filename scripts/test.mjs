@@ -1148,11 +1148,14 @@ if (
   !errorReporterText.includes("Smazat hlášení a zavřít") ||
   !errorReporterText.includes("Ponechat rozepsané a zavřít") ||
   !errorReporterText.includes("gmailUrl") ||
-  !errorReporterText.includes('host.open(draft.gmailUrl, "_blank")') ||
-  !errorReporterText.includes("supportsFileShare")
+  !errorReporterText.includes('document.createElement("a")') ||
+  !errorReporterText.includes('prepareLink.target = "_blank"') ||
+  /\bwindow\.open\s*\(/.test(errorReporterText) ||
+  errorReporterText.includes("supportsFileShare") ||
+  errorReporterText.includes("navigator.share")
 )
   fail(
-    "Jednotné hlášení chyb nemá snímání, více snímků, ZIP, redakci nebo e-mail správce.",
+    "Jednotné hlášení chyb nemá nativní Gmail odkaz, snímání, ZIP, redakci nebo bezpečné záložní akce.",
   );
 if (
   !errorReporterText.includes("safePageUrl") ||
@@ -1167,10 +1170,19 @@ if (
   !errorGuideHtml.includes("Jak poslat správci srozumitelné hlášení") ||
   !errorGuideHtml.includes("Stáhnout ZIP a otevřít Gmail") ||
   !errorGuideHtml.includes("Smazat hlášení a zavřít") ||
-  !errorGuideHtml.includes("Sdílet ZIP přes nabídku zařízení") ||
+  errorGuideHtml.includes("Sdílet ZIP přes nabídku zařízení") ||
+  !errorGuideHtml.includes("běžný odkaz prohlížeče") ||
   !errorGuideHtml.includes("Začerněte citlivé údaje")
 )
   fail("Chybí vzhled reporteru nebo úplný interaktivní návod k hlášení chyby.");
+try {
+  execFileSync(process.execPath, [path.join(root, "scripts", "test-reporter-mail.mjs")], {
+    cwd: root,
+    stdio: "pipe",
+  });
+} catch (error) {
+  fail(`Skutečné kliknutí v Chromiu neotevřelo Gmail: ${error.stderr?.toString() || error.message}`);
+}
 const pilotPageText = await readFile(
   path.join(src, "pilot/index.html"),
   "utf8",

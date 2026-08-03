@@ -1,6 +1,6 @@
 # Ochrana samostatných aplikací bez serveru
 
-## Stav ve verzi 0.20.4
+## Stav ve verzi 0.20.5
 
 Ochranná vrstva je integrována v těchto vydáních:
 

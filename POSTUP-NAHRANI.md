@@ -1,6 +1,6 @@
-# Přesný postup nahrání AI Studio GHRAB 0.20.4 na GitHub
+# Přesný postup nahrání AI Studio GHRAB 0.20.5 na GitHub
 
-**Aktuální verze: 0.20.4**
+**Aktuální verze: 0.20.5**
 
 ## Doporučené pořadí
 
@@ -8,13 +8,13 @@
    - Generátor interaktivních testů 7.1.4,
    - Diferenciátor 1.3.3,
    - Hodnotitel maturitních slohů 1.5.2,
-   - Korespondenční asistent 5.9.3,
+   - Korespondenční asistent 5.9.9,
    - LUDUS 1.16.3,
    - ACTIVA 0.5.0,
    - SORTIO 1.0.2,
    - Lesson Hub 1.2.0.
 2. U Lesson Hubu nejprve ověřte živý manifest `/lesson-hub/studio-manifest.json` a interaktivní manuál `/lesson-hub/manual/`.
-3. Potom nahrajte obsah balíku AI Studio GHRAB 0.20.4 do kořene repozitáře `AI-Studio-GHRAB`.
+3. Potom nahrajte obsah balíku AI Studio GHRAB 0.20.5 do kořene repozitáře `AI-Studio-GHRAB`.
 4. Zachovejte složky `.github`, `src`, `scripts` a soubory `package.json` a `package-lock.json`.
 5. Složku `dist` nenahrávejte. GitHub Actions ji vytvoří znovu při každém nasazení.
 6. Po commitu otevřete záložku **Actions** a ověřte zelený běh „Sync, certify and deploy AI Studio GHRAB“.
@@ -29,11 +29,11 @@
 
 ## Kontrola verze
 
-V patičce Studia a v `dist/build-info.json` musí být verze **0.20.4**.
+V patičce Studia a v `dist/build-info.json` musí být verze **0.20.5**.
 
 ## Pořadí pro Core
 
 1. Nejprve nasaďte KS 5.9.3 s `aiCore` manifestem a `ai-operations.json`.
-2. Potom nasaďte AI Studio 0.20.4; jeho workflow načte živý manifest KS během synchronizace.
+2. Potom nasaďte AI Studio 0.20.5; jeho workflow načte živý manifest KS během synchronizace.
 3. Ve Správě ověřte stav KS „Nasazeno“.
 4. Teprve potom migrujte další aplikace pomocí Migration Kitu 1.0.2.

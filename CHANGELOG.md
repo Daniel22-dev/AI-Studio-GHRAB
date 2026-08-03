@@ -2,6 +2,13 @@
 
 > Tento soubor se generuje ze `src/config/changelog.json`. Neupravujte jej ručně.
 
+## 0.20.5 — 2026-08-03
+**Definitivní otevření Gmailu bez blokovaného popupu**
+
+- Hlavní akce reportéru je nativní odkaz do nové karty; nepoužívá window.open, které mohl Chrome v PWA nebo chráněném kontextu zablokovat.
+- Kliknutí otevře předvyplněný Gmail a na původní kartě současně vytvoří a stáhne diagnostický ZIP. Záložní odkazy na Gmail, poštovní aplikaci a kopírování údajů zůstávají.
+- Nespolehlivá volba přímého sdílení ZIP byla odstraněna a nový Chromium test skutečným kliknutím ověřuje vznik karty Gmailu s adresou správce.
+
 ## 0.20.4 — 2026-08-03
 **Spolehlivé hlášení chyby a aktuální návod**
 

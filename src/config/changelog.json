@@ -1,7 +1,29 @@
 {
   "schema": "ai-studio-changelog-v1",
-  "current": "0.20.4",
+  "current": "0.20.5",
   "items": [
+    {
+      "version": "0.20.5",
+      "date": "2026-08-03",
+      "title": {
+        "cs": "Definitivní otevření Gmailu bez blokovaného popupu",
+        "en": "Reliable Gmail opening without a blocked popup"
+      },
+      "changes": [
+        {
+          "cs": "Hlavní akce reportéru je nativní odkaz do nové karty; nepoužívá window.open, které mohl Chrome v PWA nebo chráněném kontextu zablokovat.",
+          "en": "The reporter primary action is a native link to a new tab; it no longer uses window.open, which Chrome could block in a PWA or protected context."
+        },
+        {
+          "cs": "Kliknutí otevře předvyplněný Gmail a na původní kartě současně vytvoří a stáhne diagnostický ZIP. Záložní odkazy na Gmail, poštovní aplikaci a kopírování údajů zůstávají.",
+          "en": "The click opens a prefilled Gmail draft while the original tab builds and downloads the diagnostic ZIP. Fallback links for Gmail, the mail app and copying details remain."
+        },
+        {
+          "cs": "Nespolehlivá volba přímého sdílení ZIP byla odstraněna a nový Chromium test skutečným kliknutím ověřuje vznik karty Gmailu s adresou správce.",
+          "en": "The unreliable direct ZIP sharing option was removed, and a new Chromium test uses a real click to verify that a Gmail tab opens with the administrator address."
+        }
+      ]
+    },
     {
       "version": "0.20.4",
       "date": "2026-08-03",
