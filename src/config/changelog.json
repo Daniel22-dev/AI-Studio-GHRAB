@@ -1,7 +1,37 @@
 {
   "schema": "ai-studio-changelog-v1",
-  "current": "0.20.2",
+  "current": "0.20.3",
   "items": [
+    {
+      "version": "0.20.3",
+      "date": "2026-08-03",
+      "title": {
+        "cs": "Readiness bez vazby na pevnou verzi aplikace",
+        "en": "Readiness without a fixed application-version dependency"
+      },
+      "changes": [
+        {
+          "cs": "Release gate už neurčuje živý stav KS podle natvrdo zadané verze 5.9.1; porovnává aktuální manifest, aktivní Core, konformitu a HTTPS registr operací.",
+          "en": "The release gate no longer determines live Correspondence Assistant readiness from the hard-coded 5.9.1 version; it evaluates the current manifest, active Core, conformance and HTTPS operations registry."
+        },
+        {
+          "cs": "Readiness řádky, souhrnné počty a registr spotřebitelů se ověřují datově pro všech osm aplikací, takže běžný patch release znovu nezpůsobí falešný pád.",
+          "en": "Readiness rows, summary counts and the consumer registry are now validated from data for all eight applications, so an ordinary patch release cannot trigger the same false failure again."
+        },
+        {
+          "cs": "KS 5.9.3 byl znovu certifikován: 135/135 interních testů, 17/17 Core conformance testů, Core 1.0.0 a osm veřejných AI operací.",
+          "en": "Correspondence Assistant 5.9.3 was recertified: 135/135 internal tests, 17/17 Core conformance tests, Core 1.0.0 and eight public AI operations."
+        },
+        {
+          "cs": "Doplněn verzovaný certifikační důkaz a regresní sonda, která výslovně ověřuje, že novější živá verze může zůstat ready bez změny kontraktu.",
+          "en": "A versioned certification record and a regression probe were added to explicitly verify that a newer live release can remain ready when the contract is unchanged."
+        },
+        {
+          "cs": "GHRAB AI Core 1.0.0, Migration Kit 1.0.2, runtime direct-gemini a funkce Studia se nemění.",
+          "en": "GHRAB AI Core 1.0.0, Migration Kit 1.0.2, the direct-gemini runtime and Studio functionality remain unchanged."
+        }
+      ]
+    },
     {
       "version": "0.20.2",
       "date": "2026-08-03",

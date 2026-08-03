@@ -1,0 +1,22 @@
+AI Studio GHRAB 0.20.3 - soubory patchu
+
+AKTUALIZACE-0.20.3.md
+ARCHITEKTURA.md
+AUTOMATIZACE-GITHUB.md
+BEZPECNOST.md
+CHANGELOG.md
+NAHRANI-NA-GITHUB.md
+POSTUP-NAHRANI.md
+README.md
+RELEASE-CHECKLIST.md
+docs/GHRAB-AI-CORE-SPRAVA.md
+docs/evidence/KS-5.9.3-overeni.txt
+package-lock.json
+package.json
+qa/qa-manifest.json
+scripts/test.mjs
+src/automation/index.html
+src/config/ai-readiness-baseline.json
+src/config/ai-readiness.generated.json
+src/config/changelog.json
+src/integration/README.md

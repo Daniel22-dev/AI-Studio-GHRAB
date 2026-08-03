@@ -1,4 +1,4 @@
-# AI Studio GHRAB 0.20.2 — správa GHRAB AI Core
+# AI Studio GHRAB 0.20.3 — správa GHRAB AI Core
 
 AI Studio je zdrojem pravdy pro vydaný GHRAB AI Core, runtime politiku a stav migrace aplikací. Nemění poskytovatele samo a neposílá AI požadavky.
 
@@ -9,7 +9,7 @@ AI Studio je zdrojem pravdy pro vydaný GHRAB AI Core, runtime politiku a stav m
 - povolený režim: pouze `direct-gemini`;
 - automatický fallback: zakázaný;
 - School Gateway: připravená smlouva, nikoli aktivní služba;
-- KS 5.9.1: certifikovaná referenční integrace čekající na skutečné nasazení manifestu.
+- KS 5.9.3: živě nasazená a znovu certifikovaná referenční integrace; auditní důkaz je uložen v `docs/evidence/KS-5.9.3-overeni.txt`.
 
 ## Pravdivé stavy
 

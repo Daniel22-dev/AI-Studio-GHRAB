@@ -1,6 +1,6 @@
 {
   "schema": "ghrab-ai-readiness-report-v1",
-  "generatedAt": "2026-08-03T04:54:12.408Z",
+  "generatedAt": "2026-08-03T14:05:33.510Z",
   "activeCoreVersion": "1.0.0",
   "runtime": {
     "defaultMode": "direct-gemini",
@@ -37,9 +37,9 @@
       "contractVersion": "1",
       "conformancePassed": true,
       "operationsManifestUrl": null,
-      "certifiedAppVersion": "5.9.1",
+      "certifiedAppVersion": "5.9.3",
       "operationsCount": 8,
-      "evidence": "KS-5.9.1-overeni.txt"
+      "evidence": "docs/evidence/KS-5.9.3-overeni.txt"
     },
     {
       "appId": "generator",

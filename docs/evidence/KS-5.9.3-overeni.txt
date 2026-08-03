@@ -1,0 +1,33 @@
+Korespondencni asistent 5.9.3 - certifikacni dukaz GHRAB AI Core
+=================================================================
+
+Datum overeni (UTC): 2026-08-03T14:00:50.000Z
+Zdrojovy balik: korespondencni-asistent-main-5.9.3.zip
+SHA-256 baliku: bacb31b21bf8a795ff6f9c22d4a197e51ee676b6377b06efb2927b7f6a69a95d
+Verze aplikace: 5.9.3
+GHRAB AI Core: 1.0.0
+Kontrakt: 1
+Pocet verejnych AI operaci: 8
+
+Provedena kontrola
+------------------
+- npm test
+- sestaveni dist/
+- kontrola SHA-256 vydaneho Core
+- 135/135 internich testu
+- 17/17 Core conformance testu
+- kontrola server-ready studio manifestu
+- kontrola verejneho registru osmi AI operaci
+- kontrola zakazaneho automatickeho fallbacku
+- kontrola runtime konfigurace mimo PWA cache
+- kontrola jednotneho lokalniho zdroje sklonovani osob
+
+Vysledek
+--------
+CELKEM: vse zelene - release gate OK.
+
+Poznamka
+--------
+Verze 5.9.3 meni aplikacni vrstvu sklonovani osob. Smlouva GHRAB AI Core,
+verze Core 1.0.0, kontrakt 1 a sada osmi verejnych AI operaci zustavaji
+kompatibilni a byly znovu overeny plnou konformitni sadou.

@@ -389,58 +389,190 @@ if (
 const runtimeText = JSON.stringify(aiRuntime || {});
 if (/sk-|AIza|apiKey|secret/i.test(runtimeText))
   fail("Centrální runtime může obsahovat tajný klíč.");
-if (
-  aiReadinessBaseline?.activeCoreVersion !== "1.0.0" ||
-  aiReadinessBaseline?.applications?.length !== apps?.length
+const readinessApps = Array.isArray(apps) ? apps : [];
+const readinessBaselineRows = Array.isArray(
+  aiReadinessBaseline?.applications,
 )
-  fail("Readiness baseline nepokrývá všech osm aplikací.");
-const readinessRows = aiReadiness?.applications || [];
+  ? aiReadinessBaseline.applications
+  : [];
+const readinessRows = Array.isArray(aiReadiness?.applications)
+  ? aiReadiness.applications
+  : [];
+const readinessAppsById = new Map(
+  readinessApps.map((item) => [item.id, item]),
+);
+const readinessBaselineById = new Map(
+  readinessBaselineRows.map((item) => [item.appId, item]),
+);
+const readinessRowsById = new Map(
+  readinessRows.map((item) => [item.appId, item]),
+);
+const activeCoreVersion = aiCoreRegistry?.activeRelease?.coreVersion;
+if (
+  aiReadinessBaseline?.activeCoreVersion !== activeCoreVersion ||
+  readinessBaselineRows.length !== readinessApps.length ||
+  readinessBaselineById.size !== readinessBaselineRows.length ||
+  readinessAppsById.size !== readinessApps.length ||
+  readinessRows.length !== readinessApps.length ||
+  readinessRowsById.size !== readinessRows.length ||
+  readinessApps.some((app) => !readinessBaselineById.has(app.id)) ||
+  readinessRows.some((row) => !readinessAppsById.has(row.appId))
+)
+  fail(
+    "Readiness baseline a report nepokrývají přesně všechny aplikace.",
+  );
 const readinessCount = (status) =>
   readinessRows.filter((item) => item.status === status).length;
-const correspondenceApp = apps?.find((item) => item.id === "correspondence");
-const correspondenceReadiness = readinessRows.find(
-  (item) => item.appId === "correspondence",
-);
-const correspondenceIsLiveReady =
-  correspondenceApp?.version === "5.9.1" &&
-  correspondenceApp?.aiCore?.serverReady === true &&
-  correspondenceApp?.aiCore?.conformancePassed === true &&
-  correspondenceApp?.aiCore?.coreVersion ===
-    aiCoreRegistry?.activeRelease?.coreVersion;
-const expectedCorrespondenceStatus = correspondenceIsLiveReady
-  ? "ready"
-  : correspondenceApp?.version === "5.9.1"
-    ? "certified-pending-manifest"
-    : "certified-pending-deployment";
+const expectedReadinessFor = (app, baselineItem) => {
+  const live = app?.aiCore;
+  const certification = baselineItem?.certification;
+  if (live) {
+    const conformancePassed = live.conformancePassed === true;
+    return {
+      status:
+        live.serverReady === true &&
+        conformancePassed &&
+        live.coreVersion === activeCoreVersion
+          ? "ready"
+          : "incompatible",
+      coreVersion: live.coreVersion || null,
+      contractVersion: String(live.contractVersion),
+      conformancePassed,
+      operationsManifestUrl: live.operationsManifestUrl || null,
+    };
+  }
+  if (certification) {
+    return {
+      status:
+        app?.version === certification.appVersion
+          ? "certified-pending-manifest"
+          : "certified-pending-deployment",
+      coreVersion: certification.coreVersion || null,
+      contractVersion: String(certification.contractVersion),
+      conformancePassed: certification.conformancePassed === true,
+      operationsManifestUrl: null,
+    };
+  }
+  return {
+    status: "not-migrated",
+    coreVersion: null,
+    contractVersion: null,
+    conformancePassed: false,
+    operationsManifestUrl: null,
+  };
+};
 if (
   aiReadiness?.schema !== "ghrab-ai-readiness-report-v1" ||
+  aiReadiness?.activeCoreVersion !== activeCoreVersion ||
   aiReadiness?.summary?.totalApps !== readinessRows.length ||
   aiReadiness?.summary?.readyApps !== readinessCount("ready") ||
   aiReadiness?.summary?.certifiedPendingApps !==
     readinessRows.filter((item) => item.status?.startsWith("certified-")).length ||
   aiReadiness?.summary?.notMigratedApps !== readinessCount("not-migrated") ||
-  aiReadiness?.summary?.incompatibleApps !== readinessCount("incompatible") ||
-  aiReadiness?.summary?.notMigratedApps !== 7 ||
-  correspondenceReadiness?.status !== expectedCorrespondenceStatus ||
-  correspondenceReadiness?.certifiedAppVersion !== "5.9.1" ||
-  correspondenceReadiness?.operationsCount !== 8 ||
-  correspondenceReadiness?.conformancePassed !== true ||
-  (correspondenceIsLiveReady &&
-    (correspondenceReadiness?.appVersion !== "5.9.1" ||
-      correspondenceReadiness?.coreVersion !== "1.0.0" ||
-      !/^https:\/\//.test(correspondenceReadiness?.operationsManifestUrl || "")))
+  aiReadiness?.summary?.incompatibleApps !== readinessCount("incompatible")
 )
-  fail(
-    "KS 5.9.1 nemá konzistentní stav mezi živým manifestem, readiness reportem a souhrnnými počty.",
-  );
+  fail("Souhrn readiness neodpovídá skutečným stavům aplikací.");
+for (const app of readinessApps) {
+  const baselineItem = readinessBaselineById.get(app.id);
+  const row = readinessRowsById.get(app.id);
+  if (!baselineItem || !row) {
+    fail(`${app.id}: chybí baseline nebo řádek readiness reportu.`);
+    continue;
+  }
+  const certification = baselineItem.certification;
+  const expected = expectedReadinessFor(app, baselineItem);
+  if (
+    row.appVersion !== (app.version || null) ||
+    row.status !== expected.status ||
+    row.coreVersion !== expected.coreVersion ||
+    row.contractVersion !== expected.contractVersion ||
+    row.conformancePassed !== expected.conformancePassed ||
+    row.operationsManifestUrl !== expected.operationsManifestUrl ||
+    row.certifiedAppVersion !== (certification?.appVersion || null) ||
+    row.operationsCount !== (certification?.operationsCount || null) ||
+    row.evidence !== (certification?.evidence || null)
+  )
+    fail(`${app.id}: readiness report neodpovídá manifestu a baseline.`);
+  if (
+    expected.status === "ready" &&
+    !/^https:\/\//.test(expected.operationsManifestUrl || "")
+  )
+    fail(`${app.id}: živá server-ready integrace nemá HTTPS registr operací.`);
+  if (certification) {
+    const evidencePath = path.resolve(root, certification.evidence || "");
+    if (
+      !/^\d+\.\d+\.\d+(?:[-+][0-9A-Za-z.-]+)?$/.test(
+        certification.appVersion || "",
+      ) ||
+      certification.coreVersion !== activeCoreVersion ||
+      String(certification.contractVersion) !== "1" ||
+      certification.conformancePassed !== true ||
+      !Number.isInteger(certification.operationsCount) ||
+      certification.operationsCount < 1 ||
+      Number.isNaN(Date.parse(certification.certifiedAt || "")) ||
+      !certification.evidence ||
+      !evidencePath.startsWith(`${root}${path.sep}`) ||
+      !(await exists(evidencePath))
+    )
+      fail(`${app.id}: certifikační baseline je neúplná nebo bez důkazu.`);
+  }
+}
+const correspondenceCertification = readinessBaselineById.get(
+  "correspondence",
+)?.certification;
 if (
-  aiCoreConsumers?.eventType !== "ghrab-ai-core-released" ||
-  aiCoreConsumers?.consumers?.length !== apps?.length ||
-  aiCoreConsumers.consumers.filter((item) => item.enabled).length !== 1 ||
-  aiCoreConsumers.consumers.find((item) => item.enabled)?.appId !==
-    "correspondence"
+  !correspondenceCertification ||
+  correspondenceCertification.operationsCount !== 8 ||
+  correspondenceCertification.coreVersion !== activeCoreVersion
 )
-  fail("Registr spotřebitelů GHRAB AI Core není bezpečně omezený.");
+  fail("KS nemá úplnou certifikaci osmi AI operací pro aktivní Core.");
+const livePatchUpgradeProbe = expectedReadinessFor(
+  {
+    version: "99.99.99",
+    aiCore: {
+      serverReady: true,
+      conformancePassed: true,
+      coreVersion: activeCoreVersion,
+      contractVersion: "1",
+      operationsManifestUrl: "https://example.invalid/ai-operations.json",
+    },
+  },
+  {
+    certification: {
+      ...correspondenceCertification,
+      appVersion: "1.0.0",
+    },
+  },
+);
+if (livePatchUpgradeProbe.status !== "ready")
+  fail("Readiness znovu váže živý stav na přesnou certifikovanou verzi aplikace.");
+const consumerRows = Array.isArray(aiCoreConsumers?.consumers)
+  ? aiCoreConsumers.consumers
+  : [];
+const consumersById = new Map(
+  consumerRows.map((item) => [item.appId, item]),
+);
+const certifiedConsumerIds = new Set(
+  readinessBaselineRows
+    .filter((item) => item.certification)
+    .map((item) => item.appId),
+);
+if (
+  aiCoreConsumers?.schema !== "ghrab-ai-core-consumers-v1" ||
+  aiCoreConsumers?.eventType !== "ghrab-ai-core-released" ||
+  consumerRows.length !== readinessApps.length ||
+  consumersById.size !== consumerRows.length
+)
+  fail("Registr spotřebitelů GHRAB AI Core nemá úplné nebo jedinečné záznamy.");
+for (const app of readinessApps) {
+  const consumer = consumersById.get(app.id);
+  if (
+    !consumer ||
+    consumer.repository !== app.repository ||
+    consumer.enabled !== certifiedConsumerIds.has(app.id)
+  )
+    fail(`${app.id}: registr spotřebitelů neodpovídá certifikační baseline.`);
+}
 if (
   !aiCoreWorkflow.includes("workflow_dispatch") ||
   !aiCoreWorkflow.includes("default: true") ||

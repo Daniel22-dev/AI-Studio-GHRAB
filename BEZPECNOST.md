@@ -1,6 +1,6 @@
-# Bezpečnostní hranice AI Studio GHRAB 0.20.2
+# Bezpečnostní hranice AI Studio GHRAB 0.20.3
 
-**Aktuální verze: 0.20.2**
+**Aktuální verze: 0.20.3**
 
 ## Co serverless portál zajišťuje
 
@@ -24,7 +24,7 @@
 
 ## Stav ochrany přímých adres
 
-Ochranný bootstrap je integrován v Generátoru 7.1.4, Diferenciátoru 1.3.3, Hodnotiteli maturitních slohů 1.5.2, LUDUSu 1.16.3, Korespondenčním asistentovi 5.9.1, ACTIVA 0.5.0, SORTIO 1.0.2 a Lesson Hubu 1.2.0. Běžný vstupní bod těchto aplikací nejprve načte centrální modul a ověří podpis, platnost, revokaci, roli, ID aplikace a aktuální verzi školení. Jde o praktickou ochranu proti běžnému sdílení přímé adresy, nikoli o serverovou ochranu zdrojového kódu: technicky zkušený uživatel může veřejný statický kód stáhnout nebo spustit mimo standardní bootstrap. Při nedostupnosti centrální konfigurace robustní bootstrap zobrazí srozumitelnou chybovou obrazovku a aplikaci nespustí.
+Ochranný bootstrap je integrován v Generátoru 7.1.4, Diferenciátoru 1.3.3, Hodnotiteli maturitních slohů 1.5.2, LUDUSu 1.16.3, Korespondenčním asistentovi 5.9.3, ACTIVA 0.5.0, SORTIO 1.0.2 a Lesson Hubu 1.2.0. Běžný vstupní bod těchto aplikací nejprve načte centrální modul a ověří podpis, platnost, revokaci, roli, ID aplikace a aktuální verzi školení. Jde o praktickou ochranu proti běžnému sdílení přímé adresy, nikoli o serverovou ochranu zdrojového kódu: technicky zkušený uživatel může veřejný statický kód stáhnout nebo spustit mimo standardní bootstrap. Při nedostupnosti centrální konfigurace robustní bootstrap zobrazí srozumitelnou chybovou obrazovku a aplikaci nespustí.
 
 ## Klíče
 

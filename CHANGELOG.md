@@ -1,13 +1,23 @@
 # Changelog
 
-## 0.20.2 — 2026-08-03
-
-- opraven zastaralý regresní test, který po úspěšném živém nasazení KS 5.9.1 stále vyžadoval stav `certified-pending-deployment`;
-- readiness test nyní ověřuje skutečný stav `ready` nebo odpovídající přechodový stav podle načteného manifestu;
-- souhrnné počty jsou odvozovány a kontrolovány proti jednotlivým aplikacím;
-- GHRAB AI Core 1.0.0, Migration Kit 1.0.2 a runtime `direct-gemini` se nemění.
-
 > Tento soubor se generuje ze `src/config/changelog.json`. Neupravujte jej ručně.
+
+## 0.20.3 — 2026-08-03
+**Readiness bez vazby na pevnou verzi aplikace**
+
+- Release gate už neurčuje živý stav KS podle natvrdo zadané verze 5.9.1; porovnává aktuální manifest, aktivní Core, konformitu a HTTPS registr operací.
+- Readiness řádky, souhrnné počty a registr spotřebitelů se ověřují datově pro všech osm aplikací, takže běžný patch release znovu nezpůsobí falešný pád.
+- KS 5.9.3 byl znovu certifikován: 135/135 interních testů, 17/17 Core conformance testů, Core 1.0.0 a osm veřejných AI operací.
+- Doplněn verzovaný certifikační důkaz a regresní sonda, která výslovně ověřuje, že novější živá verze může zůstat ready bez změny kontraktu.
+- GHRAB AI Core 1.0.0, Migration Kit 1.0.2, runtime direct-gemini a funkce Studia se nemění.
+
+## 0.20.2 — 2026-08-03
+**Stavově odolná synchronizace nasazených aplikací**
+
+- Regresní test již podporuje oba pravdivé stavy aplikace: certifikováno před nasazením i živě nasazeno.
+- Souhrn readiness se kontroluje proti skutečným stavům všech aplikací, nikoli proti jedné natvrdo zadané přechodové hodnotě.
+- KS 5.9.1 může po živé synchronizaci přejít do stavu ready bez falešného pádu release gate.
+- GHRAB AI Core 1.0.0, Migration Kit 1.0.2, runtime direct-gemini a funkce Studia zůstávají beze změny.
 
 ## 0.20.1 — 2026-08-03
 **Ochrana neměnných artefaktů GHRAB AI Core**

@@ -1,25 +1,19 @@
 # AI Studio GHRAB
 
-**Aktuální verze: 0.20.2**
+**Aktuální verze: 0.20.3**
 
-**Verze 0.20.2 – federovaný serverless portál a centrální správce GHRAB AI Core 1.0.0.**
+**Verze 0.20.3 – federovaný serverless portál a centrální správce GHRAB AI Core 1.0.0.**
 
 AI Studio GHRAB je centrální brána školních digitálních a AI nástrojů. Jednotlivé aplikace zůstávají v samostatných repozitářích; Studio zajišťuje společnou navigaci, Top 4, synchronizaci verzí, bezpečnostní rámec, pracovní materiály, pilotní měření a správu podepsaných přístupů.
 
-## Hlavní novinky 0.20.2
+## Hlavní novinky 0.20.3
 
-- Opraven regresní test, který po úspěšném nasazení KS 5.9.1 falešně odmítal správný stav `ready`.
-- Test nyní ověřuje skutečné souhrnné počty a podporuje živý i přechodový stav manifestu.
-- Studio centrálně vydává a ověřuje GHRAB AI Core 1.0.0, runtime politiku a stav migrace aplikací.
-- Výchozí režim zůstává `direct-gemini`; School Gateway ani placené API se nezapínají.
-- KS 5.9.1 je první živě nasazená referenční integrace; Studio jej po synchronizaci vede jako `ready`.
-- Správcovská stránka rozlišuje nasazený stav, lokální certifikaci a dosud nezahájenou migraci.
-
-- Lesson Hub 1.2.0 je osmou chráněnou aplikací AI Studia a zůstává mimo výchozí Top 4 v navazujícím katalogu.
-- Studio načítá živý manifest, verzi, stav, popis a aktuální interaktivní manuál přímo z repozitáře Lesson Hubu.
-- Přístupová politika vyžaduje školení `LHB-01` ve verzi `2026-09`; správcovský přístup zůstává univerzální.
-- Pilotní report rozpoznává pouze povolené technické počty plánů, záznamů výuky, materiálů, importů a exportů záloh. Nezapisuje obsah hodin ani osobní údaje.
-- Katalog manuálů, bezpečnostní rámec, diagnostika, registry, offline fallback a QA kontroly jsou rozšířeny z původních sedmi na osm aplikací.
+- Opravena skutečná příčina pádu po nasazení KS 5.9.3: release gate už nepovažuje jednu konkrétní verzi aplikace za podmínku stavu `ready`.
+- Readiness se ověřuje proti aktuálnímu živému manifestu, aktivnímu Core 1.0.0, výsledku konformity a HTTPS registru operací.
+- Řádky všech osmi aplikací, souhrnné počty i povolení spotřebitelů Core se kontrolují z konfiguračních dat místo přechodových čísel zapsaných přímo v testu.
+- KS 5.9.3 má nový certifikační důkaz: 135/135 interních testů, 17/17 Core conformance testů a osm veřejných AI operací.
+- Regresní sonda simuluje novější patch verzi aplikace a hlídá, aby se stejná falešná chyba nevrátila.
+- GHRAB AI Core 1.0.0, Migration Kit 1.0.2, výchozí `direct-gemini` provoz a uživatelské funkce Studia zůstávají beze změny.
 
 ## Starší milník 0.10.0
 
@@ -43,17 +37,17 @@ Bez serveru nelze spolehlivě ověřit totožnost držitele, centrálně synchro
 
 ## Ochrana přímých adres a měření
 
-Ochranný bootstrap je určen pro Generátor 7.1.4, Diferenciátor 1.3.3, Hodnotitel maturitních slohů 1.5.2, LUDUS 1.16.3, Korespondenčního asistenta 5.9.1, ACTIVA 0.5.0, SORTIO 1.0.2 a Lesson Hub 1.2.0. Stejný centrální modul ověřuje podepsaný přístup a po úspěšném otevření spustí místní měření. Dílčí aplikace navíc hlásí pouze povolené technické typy výstupů.
+Ochranný bootstrap je určen pro Generátor 7.1.4, Diferenciátor 1.3.3, Hodnotitel maturitních slohů 1.5.2, LUDUS 1.16.3, Korespondenčního asistenta 5.9.3, ACTIVA 0.5.0, SORTIO 1.0.2 a Lesson Hub 1.2.0. Stejný centrální modul ověřuje podepsaný přístup a po úspěšném otevření spustí místní měření. Dílčí aplikace navíc hlásí pouze povolené technické typy výstupů.
 
 ## Doporučené pořadí nasazení
 
 1. Generátor interaktivních testů 7.1.4.
 2. LUDUS 1.16.3.
-3. Školní aplikace: Diferenciátor 1.3.3 a Korespondenční asistent 5.9.1.
+3. Školní aplikace: Diferenciátor 1.3.3 a Korespondenční asistent 5.9.3.
 4. Hodnotitel maturitních slohů 1.5.2.
 5. ACTIVA 0.5.0 a SORTIO 1.0.2 včetně volání pilotní telemetrie.
 6. Lesson Hub 1.2.0 včetně živého manifestu a aktuálního manuálu.
-7. AI Studio GHRAB 0.20.2 jako poslední.
+7. AI Studio GHRAB 0.20.3 jako poslední.
 
 Po zeleném nasazení zavřete staré otevřené karty Studia a znovu je otevřete. Nová verze service workeru se aktivuje až po bezpečném ukončení staré relace; rutinní `Ctrl + F5` už není součástí standardního postupu.
 
