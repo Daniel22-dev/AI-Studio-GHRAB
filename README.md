@@ -1,19 +1,25 @@
 # AI Studio GHRAB
 
-**Aktuální verze: 0.20.6**
+**Aktuální verze:** 0.20.14  
+**Platforma:** GHRAB Platform 1.1.0 · etapa P3
 
-**Verze 0.20.6 – federovaný serverless portál a centrální správce GHRAB AI Core 1.0.0.**
 
-AI Studio GHRAB je centrální brána školních digitálních a AI nástrojů. Jednotlivé aplikace zůstávají v samostatných repozitářích; Studio zajišťuje společnou navigaci, Top 4, synchronizaci verzí, bezpečnostní rámec, pracovní materiály, pilotní měření a správu podepsaných přístupů.
+**Verze 0.20.14 – jednotná platformní vrstva pro GitHub Pages i školní server.**
 
-## Hlavní novinky 0.20.6
+AI Studio GHRAB je centrální brána školních digitálních a AI nástrojů. Jednotlivé aplikace zůstávají v samostatných repozitářích; Studio zajišťuje společnou navigaci, Top 4, synchronizaci verzí, bezpečnostní rámec, pracovní materiály, pilotní měření, správu podepsaných přístupů a kanonický základ technického reportéru.
 
-- Centrální reportér už neotevírá Gmail pomocí `window.open()`. Hlavní akce je skutečný odkaz do nové karty, který Chrome zpracuje jako přímé kliknutí uživatele.
-- Na původní kartě se současně vytvoří a stáhne ZIP; po dokončení zůstávají záložní odkazy pro Gmail, poštovní aplikaci a kopírování celé zprávy.
-- Nejasná a podle systému nespolehlivá volba **Sdílet ZIP přes nabídku zařízení** byla odstraněna.
-- Návod **Jak poslat správci srozumitelné hlášení bez focení monitoru** byl upraven tak, aby odpovídal skutečnému workflow.
-- Nový regresní test spustí Chromium, provede fyzické kliknutí a ověří vznik nové karty Gmailu s pracovním e-mailem správce.
-- Příjemce se načítá z `src/config/support.json`; aktuálně je nastaven na `balaz@ghrabuvka.cz`.
+## Hlavní novinky 0.20.14
+
+- GHRAB Platform 1.1.0 sjednocuje branding, motiv, úložiště, Studio Bridge, artefakty a PWA aktualizace ve všech devíti projektech.
+- Všechny aplikace používají jeden kanonický školní logotyp bez inline base64 kopií a jednotnou autorskou patičku.
+- Service workery používají názvy `ghrab-<appId>-v<verze>`, respektují `no-store` a aktivují novou verzi až po rozhodnutí uživatele.
+- Aplikační data mají namespace `ghrab.<appId>.*`; historické klíče se migrují vratně a před změnou vzniká úplná záloha.
+- Studio Bridge v2 zachovává kompatibilitu se starším handoffem v1 a strukturované exporty používají artifact envelope v1 se SHA-256.
+- Registr Studia je synchronizován s verzemi KS 5.9.17, SORTIO 1.0.9, Lesson Hub 1.2.6, Diferenciátor 1.3.10, ACTIVA 0.5.7, Hodnotitel 1.5.8, LUDUS 1.16.9 a Generátor 7.1.10.
+
+## Serverová vrstva z P1
+
+Školní relace, GHRAB AI Core, School Gateway, CSP, datové manifesty a privacy-safe observability z verze 0.20.9 zůstávají zachovány.
 
 ## Starší milník 0.10.0
 
@@ -37,17 +43,20 @@ Bez serveru nelze spolehlivě ověřit totožnost držitele, centrálně synchro
 
 ## Ochrana přímých adres a měření
 
-Ochranný bootstrap je určen pro Generátor 7.1.4, Diferenciátor 1.3.3, Hodnotitel maturitních slohů 1.5.2, LUDUS 1.16.3, Korespondenčního asistenta 5.9.9, ACTIVA 0.5.0, SORTIO 1.0.2 a Lesson Hub 1.2.0. Stejný centrální modul ověřuje podepsaný přístup a po úspěšném otevření spustí místní měření. Dílčí aplikace navíc hlásí pouze povolené technické typy výstupů.
+Ochranný bootstrap je určen pro Generátor 7.1.8, Diferenciátor 1.3.8, Hodnotitel maturitních slohů 1.5.6, LUDUS 1.16.7, Korespondenčního asistenta 5.9.15, ACTIVA 0.5.5, SORTIO 1.0.7 a Lesson Hub 1.2.4. Stejný centrální modul ověřuje podepsaný přístup a po úspěšném otevření spustí místní měření. Dílčí aplikace navíc hlásí pouze povolené technické typy výstupů.
 
-## Doporučené pořadí nasazení
+## Doporučené pořadí nasazení P2
 
-1. Generátor interaktivních testů 7.1.4.
-2. LUDUS 1.16.3.
-3. Školní aplikace: Diferenciátor 1.3.3 a Korespondenční asistent 5.9.9.
-4. Hodnotitel maturitních slohů 1.5.2.
-5. ACTIVA 0.5.0 a SORTIO 1.0.2 včetně volání pilotní telemetrie.
-6. Lesson Hub 1.2.0 včetně živého manifestu a aktuálního manuálu.
-7. AI Studio GHRAB 0.20.6 jako poslední.
+1. AI Studio GHRAB 0.20.14 jako zpětně kompatibilní platformní základ.
+2. Korespondenční asistent 5.9.15.
+3. Diferenciátor 1.3.8.
+4. Generátor testů 7.1.8.
+5. Hodnotitel maturitních slohů 1.5.6.
+6. ACTIVA 0.5.5.
+7. LUDUS 1.16.7.
+8. Lesson Hub 1.2.4.
+9. SORTIO 1.0.7.
+10. V AI Studiu spustit závěrečnou synchronizaci a certifikaci registru.
 
 Po zeleném nasazení zavřete staré otevřené karty Studia a znovu je otevřete. Nová verze service workeru se aktivuje až po bezpečném ukončení staré relace; rutinní `Ctrl + F5` už není součástí standardního postupu.
 
@@ -58,7 +67,7 @@ npm run sync:offline
 npm test
 ```
 
-Autor a vývojový garant: Daniel Baláž  
+Autor a vývojový garant: Daniel Baláž
 Školní projekt Gymnázia, Ostrava-Hrabůvka
 
 ## Novinky 0.13.0

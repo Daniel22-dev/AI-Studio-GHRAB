@@ -56,27 +56,57 @@ function validate(app, expectedId, source) {
   }
   if (!/^[A-Za-z0-9_.-]+\/[A-Za-z0-9_.-]+$/.test(app.repository))
     throw new Error("repository musí mít tvar vlastník/repozitář");
+  const platform = app.platform;
+  if (!platform || typeof platform !== "object")
+    throw new Error("chybí platformní metadata P2");
+  if (platform.schema !== "ghrab-platform-app-integration-v1" || platform.contract !== "ghrab-platform-v1")
+    throw new Error("nepodporovaný platformní kontrakt");
+  if (!semver.test(platform.platformVersion || "") || platform.brandVersion !== "1.0.0")
+    throw new Error("neplatná verze platformy nebo brandu");
+  if (platform.themeContract !== 1 || platform.swContract !== 1 || platform.artifactEnvelope !== 1)
+    throw new Error("nekompatibilní společné kontrakty P2");
+  if (![2, "not-applicable"].includes(platform.studioBridge))
+    throw new Error("neplatná verze Studio Bridge");
+  if (platform.storagePrefix !== `ghrab.${app.id}.`)
+    throw new Error("neplatný namespace úložiště");
+  if (platform.cacheName !== `ghrab-${app.id}-v${app.version}`)
+    throw new Error("neplatný název PWA cache");
   if (app.aiCore != null) {
     const aiCore = app.aiCore;
     if (!aiCore || typeof aiCore !== "object")
       throw new Error("aiCore není objekt");
     if (aiCore.schema !== "ghrab-ai-app-integration-v1")
       throw new Error("aiCore má neznámé schema");
-    if (!semver.test(aiCore.coreVersion || ""))
-      throw new Error("aiCore.coreVersion není SemVer");
-    if (String(aiCore.contractVersion || "") !== "1")
-      throw new Error("aiCore.contractVersion není podporována");
-    if (typeof aiCore.serverReady !== "boolean")
-      throw new Error("aiCore.serverReady není boolean");
-    if (typeof aiCore.conformancePassed !== "boolean")
-      throw new Error("aiCore.conformancePassed není boolean");
-    let operationsUrl;
-    try { operationsUrl = new URL(aiCore.operationsManifestUrl); }
-    catch { throw new Error("aiCore.operationsManifestUrl není platná URL"); }
-    if (operationsUrl.protocol !== "https:")
-      throw new Error("aiCore.operationsManifestUrl není HTTPS");
-    if (!operationsUrl.href.startsWith(allowedPrefix.href))
-      throw new Error("aiCore.operationsManifestUrl musí zůstat pod povoleným prefixem aplikace");
+    if (aiCore.status === "not-applicable") {
+      if (typeof aiCore.reason !== "string" || !aiCore.reason.trim())
+        throw new Error("aiCore.reason chybí pro not-applicable aplikaci");
+      for (const forbidden of [
+        "coreVersion",
+        "contractVersion",
+        "serverReady",
+        "conformancePassed",
+        "operationsManifestUrl",
+      ]) {
+        if (aiCore[forbidden] != null)
+          throw new Error(`aiCore.${forbidden} nesmí být u not-applicable aplikace`);
+      }
+    } else {
+      if (!semver.test(aiCore.coreVersion || ""))
+        throw new Error("aiCore.coreVersion není SemVer");
+      if (String(aiCore.contractVersion || "") !== "1")
+        throw new Error("aiCore.contractVersion není podporována");
+      if (typeof aiCore.serverReady !== "boolean")
+        throw new Error("aiCore.serverReady není boolean");
+      if (typeof aiCore.conformancePassed !== "boolean")
+        throw new Error("aiCore.conformancePassed není boolean");
+      let operationsUrl;
+      try { operationsUrl = new URL(aiCore.operationsManifestUrl); }
+      catch { throw new Error("aiCore.operationsManifestUrl není platná URL"); }
+      if (operationsUrl.protocol !== "https:")
+        throw new Error("aiCore.operationsManifestUrl není HTTPS");
+      if (!operationsUrl.href.startsWith(allowedPrefix.href))
+        throw new Error("aiCore.operationsManifestUrl musí zůstat pod povoleným prefixem aplikace");
+    }
   }
   if (
     !app.name.cs ||

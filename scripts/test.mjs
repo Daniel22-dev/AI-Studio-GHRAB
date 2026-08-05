@@ -75,6 +75,16 @@ const publicKeyInfo = await loadJson(
 const revocations = await loadJson(
   path.join(src, "config/revoked-access.json"),
 );
+const deployment = await loadJson(path.join(src, "config/deployment.json"));
+const deploymentSchoolP0 = await loadJson(
+  path.join(src, "config/deployment.school-server-p0.json"),
+);
+const deploymentSchool = await loadJson(
+  path.join(src, "config/deployment.school-server.json"),
+);
+const deploymentSchoolExample = await loadJson(
+  path.join(src, "config/deployment.school-server.example.json"),
+);
 const syncScript = await readFile(
   path.join(root, "scripts/sync-registry.mjs"),
   "utf8",
@@ -426,6 +436,15 @@ const readinessCount = (status) =>
 const expectedReadinessFor = (app, baselineItem) => {
   const live = app?.aiCore;
   const certification = baselineItem?.certification;
+  if (baselineItem?.classification === "not-applicable") {
+    return {
+      status: "not-applicable",
+      coreVersion: null,
+      contractVersion: null,
+      conformancePassed: false,
+      operationsManifestUrl: null,
+    };
+  }
   if (live) {
     const conformancePassed = live.conformancePassed === true;
     return {
@@ -469,6 +488,7 @@ if (
   aiReadiness?.summary?.certifiedPendingApps !==
     readinessRows.filter((item) => item.status?.startsWith("certified-")).length ||
   aiReadiness?.summary?.notMigratedApps !== readinessCount("not-migrated") ||
+  aiReadiness?.summary?.notApplicableApps !== readinessCount("not-applicable") ||
   aiReadiness?.summary?.incompatibleApps !== readinessCount("incompatible")
 )
   fail("Souhrn readiness neodpovídá skutečným stavům aplikací.");
@@ -483,6 +503,7 @@ for (const app of readinessApps) {
   const expected = expectedReadinessFor(app, baselineItem);
   if (
     row.appVersion !== (app.version || null) ||
+    row.classification !== (baselineItem.classification || "ai-consumer") ||
     row.status !== expected.status ||
     row.coreVersion !== expected.coreVersion ||
     row.contractVersion !== expected.contractVersion ||
@@ -569,7 +590,8 @@ for (const app of readinessApps) {
   if (
     !consumer ||
     consumer.repository !== app.repository ||
-    consumer.enabled !== certifiedConsumerIds.has(app.id)
+    consumer.enabled !== certifiedConsumerIds.has(app.id) ||
+    consumer.applicable !== !["sortio", "lesson-hub"].includes(app.id)
   )
     fail(`${app.id}: registr spotřebitelů neodpovídá certifikační baseline.`);
 }
@@ -581,10 +603,18 @@ if (
 )
   fail("Distribuční workflow Core není ve výchozím stavu bezpečný dry-run.");
 if (
+  !syncScript.includes('aiCore.status === "not-applicable"') ||
+  !syncScript.includes("aiCore.reason chybí pro not-applicable aplikaci") ||
+  !syncScript.includes("nesmí být u not-applicable aplikace")
+)
+  fail("Synchronizace registru neumí bezpečně přijmout not-applicable aplikaci.");
+
+if (
   !verifyAiCoreScript.includes("createHash") ||
   !verifyAiCoreScript.includes("sha256") ||
   !readinessScript.includes("certified-pending-deployment") ||
-  !readinessScript.includes("ready")
+  !readinessScript.includes("ready") ||
+  !readinessScript.includes("not-applicable")
 )
   fail("Core ověření nebo readiness generátor nemají povinné kontroly.");
 for (const [file, metadata] of Object.entries(
@@ -674,8 +704,8 @@ if (!manualsHtml.includes("všech osm aplikací"))
 if (!(await exists(path.join(src, "assets/apps/lesson-hub.png"))))
   fail("Chybí lokální ikona Lesson Hubu.");
 
-if (Object.hasOwn(manifest || {}, "version"))
-  fail("PWA manifest obsahuje nestandardní pole version.");
+if (manifest?.version !== pkg.version)
+  fail(`PWA manifest nemá shodnou verzi ${pkg.version}.`);
 
 const sourceFiles = await walk(src);
 const secretPatterns = [
@@ -712,6 +742,12 @@ const referenceFiles = [
 const referenceTexts = new Map();
 for (const file of referenceFiles)
   referenceTexts.set(file, await readFile(file, "utf8"));
+const deploymentProfileNames = new Set([
+  "deployment.school-server-p0.json",
+  "deployment.school-server.json",
+  "deployment.school-server.example.json",
+  "security-headers.json",
+]);
 for (const configFile of sourceFiles.filter(
   (file) => file.startsWith(path.join(src, "config")) && file.endsWith(".json"),
 )) {
@@ -719,9 +755,61 @@ for (const configFile of sourceFiles.filter(
   const referenced = [...referenceTexts.entries()].some(
     ([file, text]) => file !== configFile && text.includes(name),
   );
-  if (!referenced)
+  if (!referenced && !deploymentProfileNames.has(name))
     fail(`Konfigurační soubor bez spotřebitele: src/config/${name}`);
 }
+for (const [name, profile, expectedProfile] of [
+  ["deployment.json", deployment, "github-pages"],
+  [
+    "deployment.school-server-p0.json",
+    deploymentSchoolP0,
+    "school-server-p0",
+  ],
+  [
+    "deployment.school-server.json",
+    deploymentSchool,
+    "school-server",
+  ],
+  [
+    "deployment.school-server.example.json",
+    deploymentSchoolExample,
+    "school-server",
+  ],
+]) {
+  if (
+    profile?.schema !== "ghrab-deployment-config-v1" ||
+    profile?.version !== 1 ||
+    profile?.profile !== expectedProfile ||
+    !profile?.studioBaseUrl ||
+    !profile?.sharedAccessVersion ||
+    !Array.isArray(profile?.allowedOrigins) ||
+    !profile?.appBaseUrls?.["ai-studio"]
+  )
+    fail(`Deployment profil ${name} neodpovídá kontraktu P0.`);
+}
+if (
+  deploymentSchoolP0?.authMode !== "signed-permit" ||
+  deploymentSchoolP0?.targetAuthMode !== "server-session" ||
+  deploymentSchoolP0?.requiresPhase !== "P1" ||
+  deploymentSchoolP0?.features?.serverSessionReady !== false ||
+  deploymentSchoolP0?.features?.schoolGatewayReady !== false
+)
+  fail("P0 serverový profil nepřiznává kompatibilní a cílový režim pravdivě.");
+if (
+  deploymentSchool?.authMode !== "server-session" ||
+  deploymentSchool?.aiTransport !== "not-applicable" ||
+  deploymentSchool?.features?.allowLocalProviderKeys !== false ||
+  deploymentSchool?.features?.serverSessionReady !== true ||
+  deploymentSchool?.profile !== "school-server"
+)
+  fail("Aktivní P1 serverový profil nemá bezpečný kontrakt.");
+if (
+  deploymentSchoolExample?.authMode !== "server-session" ||
+  deploymentSchoolExample?.aiTransport !== "not-applicable" ||
+  deploymentSchoolExample?.features?.allowLocalProviderKeys !== false ||
+  deploymentSchoolExample?.features?.serverSessionReady !== true
+)
+  fail("Cílová serverová šablona nemá bezpečný P1 profil.");
 
 for (const file of sourceFiles.filter((file) =>
   /\.(?:html|js|json|md|css|webmanifest)$/.test(file),
@@ -937,17 +1025,34 @@ if (
   fail("app-guard nemá jednotné anonymní metriky výstupů všech aplikací.");
 if (!appGuardText.includes("options.telemetry !== false"))
   fail("app-guard neumí vyloučit interaktivní manuály z měření používání.");
+if (/^import\s+\{\s*setupErrorReporter/m.test(appGuardText))
+  fail("app-guard stále staticky importuje diagnostický reportér.");
 if (
-  !/import \{ setupErrorReporter \} from ["\']\.\/error-reporter\.js["\']/.test(
-    appGuardText,
-  ) ||
-  !/setupErrorReporter\(\{\s*appId/.test(appGuardText) ||
-  !/\}\s*if \(options\.errorReporter !== false\)\s*setupErrorReporter/.test(
-    appGuardText,
-  )
+  !appGuardText.includes("export function startErrorReporterBestEffort") ||
+  !appGuardText.includes('import(reporterModuleUrl)') ||
+  !appGuardText.includes("ReporterTimeoutError") ||
+  !appGuardText.includes("options.errorReporter !== false") ||
+  !appGuardText.includes("options.errorReporterOnDenied !== false") ||
+  !appGuardText.includes("copyGateDiagnostics") ||
+  !appGuardText.includes("Zkopírovat diagnostiku")
 )
-  fail("app-guard neaktivuje jednotné hlášení chyb v chráněných aplikacích.");
-const mainAppText = await readFile(path.join(src, "app.js"), "utf8");
+  fail(
+    "app-guard nemá neblokující reportér a nezávislou diagnostiku přístupové brány.",
+  );
+const mainAppText = [
+  await readFile(path.join(src, "app.js"), "utf8"),
+  await readFile(path.join(src, "modules/registry-client.js"), "utf8"),
+  await readFile(path.join(src, "modules/portal-effects.js"), "utf8"),
+].join("\n");
+const registryClientText = await readFile(
+  path.join(src, "modules/registry-client.js"),
+  "utf8",
+);
+const studioWorkspaceCode = `${mainAppText}\n${registryClientText}`;
+const deploymentConfigText = await readFile(
+  path.join(src, "access/deployment-config.js"),
+  "utf8",
+);
 if (
   !/\[["\']issuer["\'], ["\']access-registry["\']\]\.includes\(page\)/.test(
     mainAppText,
@@ -1083,6 +1188,12 @@ if (
   !embeddedViewerHtml.includes("embedded-app-frame") ||
   !embeddedViewerScript.includes("frame.src = appUrl.href") ||
   !embeddedViewerScript.includes("appUrl.origin !== location.origin") ||
+  !embeddedViewerScript.includes("applyDeploymentToAppRegistry") ||
+  !embeddedViewerScript.includes("loadDeploymentConfig") ||
+  !mainAppText.includes("applyDeploymentToAppRegistry") ||
+  !studioWorkspaceCode.includes("return applyDeploymentToAppRegistry(deployment, registry)") ||
+  !deploymentConfigText.includes("export function applyDeploymentToAppRegistry") ||
+  !deploymentConfigText.includes('manualUrl: new URL("manual/", launchUrl).href') ||
   !embeddedViewerScript.includes("applyEvaluatorEmbeddedPolish") ||
   !embeddedViewerScript.includes("keepManualsInsideWorkspace") ||
   !embeddedViewerScript.includes("setWorkspaceMode") ||
@@ -1117,13 +1228,22 @@ if (
   );
 if (
   !mainAppText.includes("refreshSharedAccessModuleCache") ||
-  !mainAppText.includes("/AI-Studio-GHRAB/access/app-guard.js") ||
-  !mainAppText.includes("/AI-Studio-GHRAB/access/error-reporter.js") ||
+  !mainAppText.includes("deployment.sharedAccessVersion") ||
+  !mainAppText.includes('"config/access-policy.json"') ||
+  !mainAppText.includes('"config/revoked-access.json"') ||
+  !mainAppText.includes('"config/access-public-key.json"') ||
+  !mainAppText.includes('"config/deployment.json"') ||
+  !mainAppText.includes("deployment.studioBaseUrl") ||
   !mainAppText.includes("cache.delete(request)")
 )
   fail(
-    "Studio nema jednorazove odstraneni starych kopii sdilenych modulu z PWA cache.",
+    "Studio nemá verzovaný purge celé sdílené přístupové vrstvy a konfigurace.",
   );
+if (
+  !mainAppText.includes('startErrorReporterBestEffort("ai-studio"') ||
+  !mainAppText.includes("deploymentReady")
+)
+  fail("Živý portál Studia nemontuje právě svůj neblokující reportér.");
 const errorReporterText = await readFile(
   path.join(src, "access/error-reporter.js"),
   "utf8",
@@ -1256,7 +1376,7 @@ if (
   );
 if (
   !reportScriptText.includes("canvasPdf") ||
-  !reportScriptText.includes("school-logo.jpg") ||
+  !reportScriptText.includes("school-logo.png") ||
   !reportScriptText.includes("portal-gateway.webp") ||
   !/downloadPdf\(["\']mono["\']\)/.test(reportScriptText)
 )
@@ -1277,18 +1397,23 @@ if (
   !sourceSwText.includes("/*__CORE_OPTIONAL__*/") ||
   !sourceSwText.includes("cacheFirst") ||
   !sourceSwText.includes("networkFirst") ||
-  !sourceSwText.includes('fetch(request, { cache: "no-store" })') ||
-  !sourceSwText.includes("cachedNavigation") ||
+  !/fetch\(request,\s*\{\s*cache:\s*["']no-store["']\s*\}\)/.test(sourceSwText) ||
+  !sourceSwText.includes("isRuntimeRequest") ||
   !sourceSwText.includes("Promise.allSettled")
 )
   fail(
-    "Service worker nemá generovaný precache a oddělené strategie pro statiku a konfiguraci.",
+    "Service worker nemá generovaný precache a oddělené strategie pro statiku a runtime konfiguraci.",
   );
+const installSection = sourceSwText.slice(
+  sourceSwText.indexOf("addEventListener('install'"),
+  sourceSwText.indexOf("addEventListener('activate'"),
+);
 if (
-  sourceSwText.includes("skipWaiting") ||
-  sourceSwText.includes("clients.claim")
+  installSection.includes("skipWaiting") ||
+  !sourceSwText.includes("GHRAB_SKIP_WAITING") ||
+  !sourceSwText.includes("clients.claim")
 )
-  fail("Service worker stále násilně přebírá otevřené karty.");
+  fail("Service worker nemá uživatelem řízený aktualizační protokol P2.");
 
 const directStorageWriters = sourceFiles.filter(
   (file) =>
@@ -1329,8 +1454,10 @@ const required = [
   "access/index.html",
   "access/access-control.js",
   "access/app-guard.js",
+  "access/deployment-config.js",
   "access/error-reporter.js",
   "access/error-reporter.css",
+  "access/access-gate.css",
   "tools/access-issuer/index.html",
   "tools/access-registry/index.html",
   "tools/access-registry/registry.js",
@@ -1363,18 +1490,22 @@ const required = [
   "config/access-policy.json",
   "config/access-public-key.json",
   "config/revoked-access.json",
+  "config/deployment.json",
+  "config/deployment.school-server-p0.json",
+  "config/deployment.school-server.json",
+  "config/deployment.school-server.example.json",
   "config/ai-core.json",
   "config/ai-runtime.json",
   "config/ai-readiness.generated.json",
   "ai-core/releases/1.0.0/ghrab-ai-core-manifest-1.0.0.json",
   "ai-core/releases/1.0.0/ghrab-ai-core-1.0.0.js",
-  "ai-core/migration/ghrab-ai-migration-kit-1.0.2.zip",
+  "ai-core/migration/ghrab-ai-migration-kit-1.0.3.zip",
   "shared/material-validator.js",
   "integration/README.md",
   "integration/generator-access-bootstrap.example.js",
   "integration/essay-evaluator-access-bootstrap.example.js",
   "assets/apps/essay-evaluator-v2.png",
-  "assets/brand/school-logo.jpg",
+  "assets/brand/school-logo.png",
   "assets/brand/portal-gateway.webp",
   "assets/brand/portal-ring-outer.svg",
   "assets/brand/portal-ring-middle.svg",
@@ -1406,7 +1537,9 @@ for (const rel of [
   "app.js",
   "app/index.html",
   "access/access-control.js",
+  "access/deployment-config.js",
   "config/access-policy.json",
+  "config/deployment.json",
   "config/ai-core.json",
   "config/ai-runtime.json",
   "config/ai-readiness.generated.json",

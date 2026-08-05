@@ -1,0 +1,156 @@
+{
+  "schema": "ghrab-platform-consumer-v1",
+  "appId": "ai-studio",
+  "appName": "AI Studio GHRAB",
+  "appVersion": "0.20.14",
+  "platform": {
+    "version": "1.1.0",
+    "contract": "ghrab-platform-v1",
+    "requiredRange": ">=1.1.0 <2.0.0",
+    "compatibilityWindow": [
+      "1.1.x",
+      "1.2.x"
+    ]
+  },
+  "brand": {
+    "version": "1.0.0",
+    "logo": "assets/brand/school-logo.png",
+    "footerContract": "ghrab-footer-v1"
+  },
+  "theme": {
+    "supported": [
+      "light",
+      "dark"
+    ],
+    "default": "dark"
+  },
+  "storageMigration": {
+    "id": "p2-storage-namespace-v1",
+    "backup": "full",
+    "mappings": [
+      {
+        "legacy": "ghrab.language",
+        "canonical": "ghrab.ai-studio.language.v1"
+      },
+      {
+        "legacy": "ghrab.motion",
+        "canonical": "ghrab.ai-studio.motion.v1"
+      },
+      {
+        "legacy": "ghrab.workspace.v1",
+        "canonical": "ghrab.ai-studio.workspace.v1"
+      }
+    ]
+  },
+  "bridge": {
+    "contract": "ghrab-studio-handoff-v2",
+    "acceptsLegacy": "ghrab-handoff-v1",
+    "maxBytes": 500000
+  },
+  "artifact": {
+    "schema": "ghrab-artifact-envelope-v1",
+    "checksum": "SHA-256",
+    "exports": [
+      "studio-material",
+      "ludus-content"
+    ],
+    "imports": [
+      "studio-material",
+      "ludus-content"
+    ],
+    "acceptsLegacyJson": true,
+    "nativeFormats": [
+      "html",
+      "pdf",
+      "json"
+    ]
+  },
+  "cache": {
+    "name": "ghrab-ai-studio-v0.20.14",
+    "updateMessage": "GHRAB_SKIP_WAITING"
+  },
+  "html": {
+    "exclude": [
+      "tests/",
+      "integration/"
+    ],
+    "noFooter": [
+      "tests/",
+      "app/",
+      "integration/"
+    ]
+  },
+  "quality": {
+    "schema": "ghrab-quality-consumer-v1",
+    "accessibilityContract": "ghrab-a11y-v1",
+    "performanceContract": "ghrab-performance-v1",
+    "moduleContract": "ghrab-lazy-modules-v1",
+    "requireBudget": true,
+    "performanceBudget": {
+      "distBytes": 2250000,
+      "entryHtmlBytes": 50000,
+      "entryCriticalBytes": 500000,
+      "largestInlineScriptBytes": 30000,
+      "precacheBytes": 1800000,
+      "largestFileBytes": 200000,
+      "duplicateLargeBytes": 260000
+    },
+    "modules": {
+      "required": [
+        "modules/portal-effects.js",
+        "modules/registry-client.js"
+      ]
+    },
+    "referenceProfile": {
+      "cpuSlowdown": 4,
+      "viewport": "1366x768",
+      "memoryClassGb": 4,
+      "viewportWidths": [
+        1280,
+        390,
+        320
+      ]
+    },
+    "stage": "P5",
+    "a11yContract": "ghrab-a11y-v1",
+    "requireRuntimeBudget": true,
+    "runtimeBudget": {
+      "maxDomNodes": 1000,
+      "maxRenderReadyMs": 3000,
+      "maxJsHeapUsedBytes": 8000000,
+      "maxLayoutDurationMs": 1200,
+      "maxTaskDurationMs": 2700
+    },
+    "finalRelease": true,
+    "cleanInstallRequired": true,
+    "a11yGate": "ghrab-p5-runtime-a11y-v2",
+    "releaseGate": "ghrab-p5-release-v2",
+    "runtimeAudit": {
+      "scriptsExecuted": true,
+      "transport": "local-http",
+      "dialogStates": true,
+      "viewports": [
+        1280,
+        390,
+        320
+      ],
+      "pages": [
+        "index.html",
+        "app/index.html",
+        "pilot/index.html",
+        "library/index.html",
+        "automation/index.html",
+        "safety/index.html",
+        "workflow/index.html",
+        "demo/index.html"
+      ]
+    }
+  },
+  "performance": {
+    "stage": "P5",
+    "a11yGate": "ghrab-p5-accessibility-acceptance-v1",
+    "releaseGate": "ghrab-p5-acceptance-v1",
+    "finalRelease": false,
+    "preProductionAccepted": true
+  }
+}

@@ -1,0 +1,14 @@
+{
+  "schema": "ghrab-access-config-signing-key-v1",
+  "algorithm": "ES256",
+  "keyId": "ghrab-access-bundle-2026-08-p1",
+  "publicKey": {
+    "kty": "EC",
+    "x": "Ur1Vc7I0Ev0ji4lBfa1CcM1TXFrzgHbPA48AQsnjVcM",
+    "y": "WEWjNS13k0po9vUuYoviYo-iy-COGowYys0AnfPu00w",
+    "crv": "P-256",
+    "kid": "ghrab-access-bundle-2026-08-p1",
+    "use": "sig",
+    "alg": "ES256"
+  }
+}

@@ -1,6 +1,9 @@
-# Architektura AI Studio GHRAB 0.20.6
+# Architektura AI Studio GHRAB 0.20.9
 
-**Aktuální verze: 0.20.6**
+> Aktuální verze: **0.20.14** · etapa P2
+
+
+**Aktuální verze: 0.20.9**
 
 ## Federovaný portál
 
@@ -18,7 +21,7 @@ samostatné aplikace ─ manifesty ─► AI Studio
 
 ## Role rozhraní
 
-**Učitel:** Aplikace, Tvorba materiálů, Materiály, Bezpečnost, Můj přístup.  
+**Učitel:** Aplikace, Tvorba materiálů, Materiály, Bezpečnost, Můj přístup.
 **Správce:** navíc Správa, Pilot, Report, Prezentace, Změny, Diagnostika a Vydavatel oprávnění.
 
 Správcovské stránky jsou po načtení konfigurace nahrazeny přístupovou bránou, pokud prohlížeč nemá platné správcovské oprávnění. Jejich vlastní moduly se bez správce nespustí.

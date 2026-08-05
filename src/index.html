@@ -4,7 +4,7 @@
   data-theme="dark"
   data-app-version="__APP_VERSION__"
   class="startup-prepaint"
->
+ data-ghrab-app-id="ai-studio" data-ghrab-app-version="0.20.14">
   <head>
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width,initial-scale=1" />
@@ -24,13 +24,14 @@
     <script src="./startup-prepaint.js"></script>
     <link rel="stylesheet" href="./styles.css" />
     <link rel="stylesheet" href="./polish.css" />
-  </head>
+</head>
   <body data-page="home">
     <canvas id="starfield" class="starfield" aria-hidden="true"></canvas>
     <div
       id="studio-startup-intro"
       class="studio-startup-intro"
       hidden
+      inert
       aria-hidden="true"
       role="dialog"
       aria-modal="true"
@@ -77,6 +78,7 @@
       id="portal-launch-overlay"
       class="portal-launch-overlay premium-launch-overlay"
       hidden
+      inert
       aria-hidden="true"
       role="dialog"
       aria-modal="true"

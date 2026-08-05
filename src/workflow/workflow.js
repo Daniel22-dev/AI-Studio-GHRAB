@@ -583,7 +583,12 @@ function updateAll() {
 }
 
 function downloadJson(data, name) {
-  G.downloadJson(data, name);
+  const isLudus = data?.schemaVersion === "ludus-content-v2" || data?.kind === "ludus.content";
+  return G.downloadArtifact(data, name, {
+    artifactType: isLudus ? "ludus-content" : "studio-material",
+    contentKind: isLudus ? "ludus-content" : "teaching-material",
+    sensitivity: data?.provenance?.containsPersonalData ? "restricted" : "internal",
+  }).catch((error) => G.showToast(error.message));
 }
 function handoff(app) {
   const access = G.hasAppAccess(app.id);
@@ -756,7 +761,7 @@ async function importFile(file) {
     return;
   }
   try {
-    const material = JSON.parse(await file.text());
+    const material = await G.parseArtifactJson(await file.text());
     const result = G.validateMaterialPackage(material);
     if (!result.valid) {
       const error = result.errors[0];

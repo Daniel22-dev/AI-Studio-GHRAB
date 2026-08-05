@@ -1,6 +1,50 @@
 # Changelog
 
+
+## 0.20.14 — P5 R2
+
+- P5 R2 runtime audit spouští skutečné portálové UI přes lokální HTTP.
+- Produkční reportér je povinně ověřován mimo testovací strom.
+- Lockfile a CI používají explicitní veřejný npm registr.
+
+
 > Tento soubor se generuje ze `src/config/changelog.json`. Neupravujte jej ručně.
+
+## 0.20.14 — 2026-08-04
+**Platformní P3: modularizace, výkon, přístupnost a provozní důkazy**
+
+- GHRAB Platform 1.1.0 zavádí společné kontrakty přístupnosti, výkonových rozpočtů a lazy modulů.
+- Registry a volitelné portálové efekty byly odděleny do samostatných modulů bez změny pracovního prostoru Studia.
+- Všech devět projektů má jednotnou statickou, klávesnicovou a CI axe bránu a měřený výkonový rozpočet.
+- Registry satelitů, AI readiness a certifikační důkazy odpovídají přesným verzím P3.
+- P3 uzavírá safe distribuci LUDUS médií a kapacitní baseline Lesson Hubu.
+
+## 0.20.9 — 2026-08-04
+**Platformní P1: školní relace, AI Gateway a jednotná datová ochrana**
+
+- Školní profil používá serverem řízenou relaci s HttpOnly/Secure/SameSite cookie a krátkodobým request tokenem pouze v paměti; GitHub Pages nadále zachovávají podepsaný serverless přístup.
+- GHRAB AI Core 1.0.0 je certifikován v šesti AI aplikacích. Společný registr obsahuje 31 pojmenovaných operací a školní gateway autoritativně eviduje provider requesty, tokeny, limity, náklady a vícefázová workflow.
+- Provider API klíče se ve školním profilu nikdy neposílají ani neukládají v prohlížeči. Přímý Gemini režim zůstává dostupný jen v GitHub profilu a staré trvalé klíče jsou migrovány do dočasné relace nebo odstraněny.
+- Devět aplikací sdílí deployment, CSP, datové a privacy kontrakty, společný health/version handshake, bezpečnou diagnostiku bez obsahu a ovládání pro sdílené školní zařízení.
+- Lesson Hub je napojen přes centrální reverzní proxy bez bearer tokenu v úložišti prohlížeče. Registr Studia je synchronizován s KS 5.9.14, SORTIO 1.0.6, Lesson Hub 1.2.3, Diferenciátor 1.3.7, ACTIVA 0.5.4, Hodnotitel 1.5.5, LUDUS 1.16.6 a Generátor 7.1.7.
+
+## 0.20.8 — 2026-08-04
+**Platformní P0: odolný start a server-ready základ**
+
+- Centrální Access Guard už nemá statickou závislost na reportéru. Portál, satelitní aplikace i zamykací obrazovka načítají diagnostiku best-effort a výpadek reportéru nesmí zablokovat aplikaci ani být vydáván za chybu oprávnění.
+- Zaveden společný deployment kontrakt pro současné GitHub Pages a P0 kompatibilní hosting na školním serveru. Profil neobsahuje tajné údaje a poctivě ponechává serverovou relaci a AI gateway do etapy P1.
+- Service workery a nouzové čištění cache chrání čerstvost sdílené přístupové vrstvy včetně policy, revokací, veřejného klíče a deployment konfigurace; identifikátor čištění se řídí verzí společné vrstvy.
+- Kanonický reportér 1.1.0 omezuje skutečnou zakódovanou Gmail/mailto adresu, zachovává plné údaje v ZIPu a kopírování, uzavírá fokus v dialogu, obnovuje fokus a přiděluje nové ID každému novému hlášení.
+- Registr Studia byl synchronizován s verzemi KS 5.9.13, SORTIO 1.0.5, Lesson Hub 1.2.2, Diferenciátor 1.3.6, ACTIVA 0.5.3, Hodnotitel 1.5.4, LUDUS 1.16.5 a Generátor 7.1.6.
+
+## 0.20.7 — 2026-08-03
+**Jednotný reportér chyb v celém ekosystému**
+
+- AI Studio a osm samostatných aplikací používají jeden synchronizovaný základ reportéru s ochranou identifikátorem ghrab-error-reporter; lokální aplikace výslovně vypínají centrální instanci v app-guard.js.
+- Reportér živě sleduje skutečný světlý nebo tmavý motiv aplikace, nabízí výhradně explicitní přechod do aplikace a podporuje až pět snímků přes responzivní plovoucí panel.
+- Křížek, Zavřít, kliknutí mimo dialog i Escape používají stejnou ochranu konceptu; úplné smazání odstraní text, snímky, ZIP, technické chyby, původní ID i aktivní stream.
+- Hlavní akce je skutečný předem připravený Gmail odkaz a současné stažení soukromí respektujícího ZIPu; aktualizován byl také společný návod a záložní e-mailové akce.
+- Registr Studia byl synchronizován s verzemi KS 5.9.12, SORTIO 1.0.4, Lesson Hub 1.2.1, Diferenciátor 1.3.5, ACTIVA 0.5.2, Hodnotitel 1.5.3, LUDUS 1.16.4 a Generátor 7.1.5.
 
 ## 0.20.6 — 2026-08-03
 **Odolná QA kontrola reporteru a předem připravený Gmail odkaz**

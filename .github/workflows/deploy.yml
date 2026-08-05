@@ -31,23 +31,29 @@ jobs:
           registry-url: https://registry.npmjs.org
       - name: Install dependencies
         timeout-minutes: 4
-        run: npm ci --no-audit --no-fund
+        run: npm ci --ignore-scripts --no-audit --no-fund --registry=https://registry.npmjs.org
         env:
           NPM_CONFIG_REGISTRY: https://registry.npmjs.org
+
       - name: Synchronise application manifests
         if: github.event_name != 'pull_request'
         run: npm run sync
       - name: Format generated registry files
         if: github.event_name != 'pull_request'
-        run: npx prettier --write src/config/apps.generated.json src/config/sync-report.json
+        run: npm run format:generated-json
       - name: Verify immutable Core before formatting
         run: npm run verify:ai-core
       - name: Normalize source formatting
         run: npm run format
       - name: Verify immutable Core after formatting
         run: npm run verify:ai-core
-      - name: Install Playwright Chromium
-        run: npx playwright install --with-deps chromium
+      - name: Install pinned Playwright Chromium
+        shell: bash
+        run: |
+          npx playwright install --with-deps chromium
+          node -e "console.log('CHROMIUM_PATH=' + require('playwright').chromium.executablePath())" >> "$GITHUB_ENV"
+      - name: Run unified error reporter regression
+        run: npm run test:reporter
       - name: Run GHRAB QA release gate
         run: npm run qa:release
         env:
@@ -60,6 +66,12 @@ jobs:
         with:
           name: ghrab-qa-${{ github.sha }}
           path: qa-results
+      - name: Verify GHRAB Platform P3 conformance
+        run: npm run qa:platform
+
+      - name: Enforce P5 R2 release gate
+        run: npm run qa:p5:ci
+
       - uses: actions/configure-pages@v5
         if: github.event_name != 'pull_request'
       - uses: actions/upload-pages-artifact@v3

@@ -647,7 +647,7 @@ if (window.GHRAB.isAdmin()) {
     ctx.fillStyle = palette.bg;
     ctx.fillRect(0, 0, REPORT_W, REPORT_H);
     const [schoolLogo, gateway] = await Promise.all([
-      loadImage("../assets/brand/school-logo.jpg"),
+      loadImage("../assets/brand/school-logo.png"),
       loadImage("../assets/brand/portal-gateway.webp"),
     ]);
     if (token !== renderToken) return;

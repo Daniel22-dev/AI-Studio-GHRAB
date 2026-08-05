@@ -1,0 +1,7 @@
+{
+  "schema": "ghrab-access-config-signature-v1",
+  "algorithm": "ES256",
+  "keyId": "ghrab-access-bundle-2026-08-p1",
+  "bundleVersion": "access-p1-2026-08-04",
+  "signature": "rluq4LiCJIYDFvbnT8WarXSB68iCGa9hOtDgUKkySClvZkno6_uaTjgi-xkag_r1Kdt_QNULPknR8xHL1zbvgw"
+}

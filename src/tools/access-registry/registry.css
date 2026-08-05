@@ -324,3 +324,63 @@
 .registry-module-version strong {
   color: var(--accent);
 }
+
+/* P3 — registry must reflow without forcing desktop min-content widths */
+.registry-page,
+.registry-toolbar,
+.registry-toolbar > *,
+.registry-actions,
+.registry-drop-zone,
+.registry-list-head,
+.registry-filters {
+  min-width: 0;
+  max-width: 100%;
+}
+.registry-toolbar {
+  width: 100%;
+}
+.registry-actions > * {
+  min-width: 0;
+  max-width: 100%;
+  overflow-wrap: anywhere;
+  white-space: normal;
+}
+@media (max-width: 620px) {
+  .registry-toolbar {
+    overflow: hidden;
+  }
+  .registry-actions {
+    width: 100%;
+  }
+  .registry-drop-zone {
+    overflow-wrap: anywhere;
+  }
+}
+
+
+/* P3 reflow hardening: contain wide registry tables inside their panel */
+.registry-page,
+.registry-page > *,
+.registry-toolbar > *,
+.registry-list-panel,
+.registry-list-head,
+.registry-list-head > *,
+.registry-filters,
+.registry-filters > * {
+  min-width: 0;
+}
+.table-scroll {
+  width: 100%;
+  max-width: 100%;
+  min-width: 0;
+  overflow-x: auto;
+  overscroll-behavior-inline: contain;
+  -webkit-overflow-scrolling: touch;
+}
+@media (max-width: 620px) {
+  .registry-toolbar,
+  .registry-list-panel,
+  .registry-revocation-guide {
+    padding-inline: 16px;
+  }
+}

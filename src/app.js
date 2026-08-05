@@ -1,6 +1,12 @@
 import { validateMaterialPackage } from "./shared/material-validator.js";
 import { buildPilotSummary } from "./shared/safe-export.js";
 import {
+  applyDeploymentToAppRegistry,
+  loadDeploymentConfig,
+} from "./access/deployment-config.js";
+import { initialisePlatformRuntime } from "./access/platform-runtime.js";
+import { createRegistryClient } from "./modules/registry-client.js";
+import {
   initialiseAccess,
   setPermitToken,
   clearPermit,
@@ -14,9 +20,12 @@ import {
   inspectPermitToken,
 } from "./access/access-control.js";
 const VERSION = "__APP_VERSION__";
+const deploymentReady = loadDeploymentConfig({ appId: "ai-studio" });
 const root = document.documentElement;
 const page = document.body.dataset.page || "home";
 const base = document.body.dataset.base || (page === "home" ? "./" : "../");
+const registryClient = createRegistryClient({ base, deploymentReady, applyDeploymentToAppRegistry });
+const { loadApps, loadSyncReport, loadPlatformConsumers, loadAiCoreRegistry, loadAiReadiness, loadAiRuntime, loadPermissions } = registryClient;
 const forcedLanguage = ["cs", "en"].includes(root.dataset.forceLanguage)
   ? root.dataset.forceLanguage
   : null;
@@ -28,7 +37,8 @@ const state = {
 const MOTION_MODES = ["auto", "full", "lite", "off"];
 
 const WORKSPACE_KEY = "ghrab.workspace.v1";
-const HANDOFF_KEY = "ghrab.handoff.v1";
+const HANDOFF_KEY = "ghrab.platform.handoff.v2";
+const LEGACY_HANDOFF_KEY = "ghrab.handoff.v1";
 const PILOT_EVENTS_KEY = "ghrab.pilot.events.v2";
 const TEST_LAUNCHES_KEY = "ghrab.pilot.test.launches";
 const TEST_EVENTS_KEY = "ghrab.pilot.test.events.v2";
@@ -793,29 +803,48 @@ function deleteWorkspaceMaterial(id) {
 }
 function createHandoff(target, material) {
   if (!validMaterial(material)) throw new Error("Invalid GHRAB Material v1");
-  const payload = {
+  const bridge = globalThis.GHRAB_PLATFORM?.bridge;
+  if (typeof bridge?.create === "function") {
+    return bridge.create({
+      target,
+      targetVersionRange: ">=0.0.0 <100.0.0",
+      sourceAppId: "ai-studio",
+      sourceAppVersion: VERSION,
+      studioUrl: new URL(base, location.href).href,
+      ttlMs: HANDOFF_TTL_MS,
+      material,
+      writeLegacy: true,
+    });
+  }
+  const legacy = {
     schema: "ghrab-handoff-v1",
     target,
     createdAt: new Date().toISOString(),
     expiresAt: new Date(Date.now() + HANDOFF_TTL_MS).toISOString(),
-    source: "ai-studio-ghrab",
+    source: "ai-studio",
+    sourceAppId: "ai-studio",
+    sourceAppVersion: VERSION,
     portalVersion: VERSION,
     studioUrl: new URL(base, location.href).href,
     material,
   };
-  return safeSetJson(HANDOFF_KEY, payload) ? payload : null;
+  return safeSetJson(LEGACY_HANDOFF_KEY, legacy) ? legacy : null;
 }
 function readHandoff() {
-  const payload = parseLocal(HANDOFF_KEY, null);
+  const current = globalThis.GHRAB_PLATFORM?.bridge?.peek?.({ allowAnyTarget: true, maxBytes: 500000 });
+  if (current) return current;
+  const payload = parseLocal(LEGACY_HANDOFF_KEY, null);
   if (!payload || payload.schema !== "ghrab-handoff-v1") return null;
   if (Date.parse(payload.expiresAt || "") < Date.now()) {
-    safeRemoveItem(HANDOFF_KEY);
+    safeRemoveItem(LEGACY_HANDOFF_KEY);
     return null;
   }
   return payload;
 }
 function clearHandoff() {
-  return safeRemoveItem(HANDOFF_KEY);
+  const current = safeRemoveItem(HANDOFF_KEY);
+  const legacy = safeRemoveItem(LEGACY_HANDOFF_KEY);
+  return current || legacy;
 }
 function getPilotEvents() {
   const list = parseLocal(PILOT_EVENTS_KEY, []);
@@ -852,6 +881,35 @@ function downloadJson(data, filename) {
   a.click();
   a.remove();
   setTimeout(() => URL.revokeObjectURL(url), 1500);
+}
+async function downloadArtifact(data, filename, options = {}) {
+  const artifact = globalThis.GHRABArtifact;
+  if (!artifact?.download) {
+    downloadJson(data, filename);
+    return null;
+  }
+  return artifact.download({
+    appId: "ai-studio",
+    appVersion: VERSION,
+    artifactType: options.artifactType || "studio-data",
+    sensitivity: options.sensitivity || "internal",
+    contentManifest: options.contentManifest || [{
+      kind: options.contentKind || "json",
+      schema: data?.schema || data?.format || null,
+    }],
+    payload: data,
+    filename,
+  });
+}
+async function parseArtifactJson(text, options = {}) {
+  const artifact = globalThis.GHRABArtifact;
+  if (!artifact?.unwrapMaybe) return JSON.parse(text);
+  const result = await artifact.unwrapMaybe(text, {
+    allowLegacy: options.allowLegacy !== false,
+    expectedAppId: options.expectedAppId,
+    verifyChecksum: true,
+  });
+  return result.payload;
 }
 
 function anonymousSourceId(period = currentPilotPeriod()) {
@@ -1057,41 +1115,14 @@ function setupMonthlyReportReminder(options = {}) {
   setTimeout(() => download.focus(), 20);
 }
 
-async function fetchJson(url) {
-  const response = await fetch(url, { cache: "no-store" });
-  if (!response.ok) throw new Error(`${url}: ${response.status}`);
-  return response.json();
-}
-async function loadApps() {
-  try {
-    return await fetchJson(`${base}config/apps.generated.json`);
-  } catch {
-    return fetchJson(`${base}config/apps.fallback.json`);
-  }
-}
-async function loadSyncReport() {
-  try {
-    return await fetchJson(`${base}config/sync-report.json`);
-  } catch {
-    return null;
-  }
-}
-async function loadAiCoreRegistry() {
-  return fetchJson(`${base}config/ai-core.json`);
-}
-async function loadAiReadiness() {
-  return fetchJson(`${base}config/ai-readiness.generated.json`);
-}
-async function loadAiRuntime() {
-  return fetchJson(`${base}config/ai-runtime.json`);
-}
-async function loadPermissions() {
-  try {
-    return await fetchJson(`${base}config/permissions.json`);
-  } catch {
-    return null;
-  }
-}
+
+
+
+
+
+
+
+
 
 function el(tag, className, text) {
   const node = document.createElement(tag);
@@ -1258,6 +1289,7 @@ function portalLaunchOverlay(app, delay, onCancel = () => {}) {
     progress.style.width = "0%";
   }
   overlay.hidden = false;
+  overlay.inert = false;
   overlay.setAttribute("aria-hidden", "false");
   releaseIsolation = activateModalIsolation(overlay, { onEscape: onCancel });
   requestAnimationFrame(() =>
@@ -1270,6 +1302,7 @@ function portalLaunchOverlay(app, delay, onCancel = () => {}) {
   const finish = () => {
     overlay.classList.remove("is-active");
     overlay.setAttribute("aria-hidden", "true");
+    overlay.inert = true;
     releaseIsolation();
     releaseIsolation = () => {};
     if (skip) skip.onclick = null;
@@ -1664,12 +1697,14 @@ async function renderHome() {
   if (!grid) return;
   try {
     await accessReady;
-    const [apps, permissions] = await Promise.all([
+    const [apps, permissions, platformConsumers] = await Promise.all([
       loadApps(),
       loadPermissions(),
+      loadPlatformConsumers(),
     ]);
     window.__GHRAB_PERMISSIONS__ = permissions;
-    homeContext = { grid, apps, permissions };
+    window.__GHRAB_PLATFORM_CONSUMERS__ = platformConsumers;
+    homeContext = { grid, apps, permissions, platformConsumers };
     renderHomeCards();
   } catch {
     grid.innerHTML = `<div class="portal-empty">${t("Registr aplikací se nepodařilo načíst. Obnovte stránku.", "The application registry could not be loaded. Refresh the page.")}</div>`;
@@ -1728,115 +1763,52 @@ async function renderHome() {
   }
 }
 
-function setupPortalMotion() {
-  const stage = document.querySelector(".portal-stage");
-  if (!stage || stage.dataset.portalMotionReady === "true") return;
-  stage.dataset.portalMotionReady = "true";
-  const reset = () => {
-    stage.style.setProperty("--portal-tilt-x", "0deg");
-    stage.style.setProperty("--portal-tilt-y", "0deg");
-    stage.style.setProperty("--portal-shift-x", "0px");
-    stage.style.setProperty("--portal-shift-y", "0px");
-  };
-  reset();
-  document.addEventListener("ghrab:motion", reset);
-}
 
-function setupStarfield() {
-  const canvas = document.querySelector("#starfield");
-  if (!canvas) return;
-  const ctx = canvas.getContext("2d", { alpha: true });
-  let stars = [];
-  let raf = 0;
-  let running = false;
-  let lastFrame = 0;
-  const frameInterval = 1000 / 30;
 
-  const resize = () => {
-    if (!running) return;
-    const dpr = Math.min(devicePixelRatio || 1, 1.35);
-    canvas.width = Math.floor(innerWidth * dpr);
-    canvas.height = Math.floor(innerHeight * dpr);
-    canvas.style.width = `${innerWidth}px`;
-    canvas.style.height = `${innerHeight}px`;
-    ctx.setTransform(dpr, 0, 0, dpr, 0, 0);
-    const count = Math.min(95, Math.max(38, Math.floor(innerWidth / 15)));
-    stars = Array.from({ length: count }, () => ({
-      x: Math.random() * innerWidth,
-      y: Math.random() * innerHeight,
-      r: Math.random() * 0.9 + 0.12,
-      a: Math.random() * 0.52 + 0.18,
-      s: Math.random() * 0.055 + 0.012,
-    }));
-  };
 
-  const draw = (timestamp) => {
-    if (!running) return;
-    raf = requestAnimationFrame(draw);
-    if (document.hidden || timestamp - lastFrame < frameInterval) return;
-    lastFrame = timestamp;
-    ctx.clearRect(0, 0, innerWidth, innerHeight);
-    for (const star of stars) {
-      star.y += star.s;
-      if (star.y > innerHeight + 2) star.y = -2;
-      ctx.beginPath();
-      ctx.fillStyle = `rgba(166,235,255,${star.a})`;
-      ctx.arc(star.x, star.y, star.r, 0, Math.PI * 2);
-      ctx.fill();
-    }
-  };
-
-  const stop = () => {
-    running = false;
-    cancelAnimationFrame(raf);
-    ctx.clearRect(0, 0, canvas.width, canvas.height);
-    canvas.hidden = true;
-  };
-
-  const start = () => {
-    if (root.dataset.motion !== "full") {
-      stop();
-      return;
-    }
-    if (running) return;
-    running = true;
-    canvas.hidden = false;
-    resize();
-    raf = requestAnimationFrame(draw);
-  };
-
-  addEventListener("resize", resize, { passive: true });
-  document.addEventListener("visibilitychange", () => {
-    if (!document.hidden && running) lastFrame = 0;
-  });
-  document.addEventListener("ghrab:motion", start);
-  addEventListener("pagehide", stop, { once: true });
-  start();
-}
 
 async function refreshSharedAccessModuleCache() {
   if (!("caches" in globalThis)) return;
-  const refreshKey = `ghrab.shared-access-cache-refreshed.${VERSION}`;
+  const deployment = await deploymentReady;
+  const sharedAccessVersion = String(
+    deployment.sharedAccessVersion || VERSION,
+  ).replace(/[^a-z0-9._-]+/gi, "-");
+  const refreshKey = `ghrab.shared-access-cache-refreshed.${sharedAccessVersion}`;
   if (safeGetItem(refreshKey)) return;
-  const sharedPaths = [
-    "/AI-Studio-GHRAB/access/app-guard.js",
-    "/AI-Studio-GHRAB/access/access-control.js",
-    "/AI-Studio-GHRAB/access/error-reporter.js",
-    "/AI-Studio-GHRAB/access/error-reporter.css",
+  const sharedRelativePaths = [
+    "access/app-guard.js",
+    "access/access-control.js",
+    "access/error-reporter.js",
+    "access/error-reporter.css",
+    "access/access-gate.css",
+    "config/access-policy.json",
+    "config/revoked-access.json",
+    "config/access-public-key.json",
+    "config/deployment.json",
   ];
+  const studioBases = new Set([
+    deployment.studioBaseUrl,
+    new URL("/AI-Studio-GHRAB/", location.origin).href,
+  ]);
+  const sharedPaths = new Set(
+    [...studioBases].flatMap((studioBaseUrl) =>
+      sharedRelativePaths.map(
+        (relativePath) => new URL(relativePath, studioBaseUrl).pathname,
+      ),
+    ),
+  );
   try {
     for (const cacheName of await caches.keys()) {
       const cache = await caches.open(cacheName);
       for (const request of await cache.keys()) {
         const pathname = new URL(request.url).pathname;
-        if (sharedPaths.some((path) => pathname.endsWith(path)))
-          await cache.delete(request);
+        if (sharedPaths.has(pathname)) await cache.delete(request);
       }
     }
     safeSetItem(refreshKey, new Date().toISOString(), { silent: true });
   } catch (error) {
     console.warn(
-      "AI Studio: obnovení sdíleného měřicího modulu se nezdařilo.",
+      "AI Studio: obnovení sdílené přístupové vrstvy se nezdařilo.",
       error,
     );
   }
@@ -1989,6 +1961,7 @@ function releaseStartupPrepaint(intro) {
   root.classList.add("startup-intro-skip");
   if (!intro) return;
   intro.hidden = true;
+  intro.inert = true;
   intro.setAttribute("aria-hidden", "true");
   intro.classList.remove("is-active", "is-leaving");
 }
@@ -2021,6 +1994,7 @@ function setupStartupIntro() {
   root.classList.remove("startup-prepaint", "startup-intro-skip");
   root.classList.add("startup-intro-pending");
   intro.hidden = false;
+  intro.inert = false;
   intro.setAttribute("aria-hidden", "false");
   intro.classList.add("is-active");
 
@@ -2041,6 +2015,7 @@ function setupStartupIntro() {
     intro.classList.add("is-leaving");
     setTimeout(() => {
       intro.hidden = true;
+      intro.inert = true;
       intro.setAttribute("aria-hidden", "true");
       intro.classList.remove("is-active", "is-leaving");
       root.classList.remove("startup-intro-revealing");
@@ -2104,9 +2079,17 @@ function renderPageAccessGate() {
   main.append(section);
 }
 
-const accessReady = initialiseAccess().then((snapshot) => {
+const accessReady = initialiseAccess().then(async (snapshot) => {
   updateAdminVisibility();
   renderPageAccessGate();
+  if (snapshot.valid) {
+    await initialisePlatformRuntime({
+      appId: "ai-studio",
+      appVersion: VERSION,
+      accessSnapshot: snapshot,
+      mountControls: true,
+    }).catch((error) => console.warn("GHRAB platform runtime (ai-studio) nebyl načten.", error));
+  }
   return snapshot;
 });
 window.GHRAB = {
@@ -2117,6 +2100,7 @@ window.GHRAB = {
   base,
   loadApps,
   loadSyncReport,
+  loadPlatformConsumers,
   loadAiCoreRegistry,
   loadAiReadiness,
   loadAiRuntime,
@@ -2138,12 +2122,15 @@ window.GHRAB = {
   recordPilotEvent,
   clearPilotEvents,
   downloadJson,
+  downloadArtifact,
+  parseArtifactJson,
   downloadPilotSummary,
   pilotSummaryPayload,
   anonymousSourceId,
   currentPilotPeriod,
   setupMonthlyReportReminder,
   refreshSharedAccessModuleCache,
+  deploymentReady,
   showToast,
   applyLanguage,
   applyMotion,
@@ -2183,16 +2170,33 @@ applyTheme();
 applyLanguage();
 applyMotion();
 renderHome();
-setupPortalMotion();
-setupStarfield();
 setupStartupIntro();
-refreshSharedAccessModuleCache();
+void import('./modules/portal-effects.js')
+  .then(({ setupPortalEffects }) => setupPortalEffects({ root }))
+  .catch((error) => console.warn('Volitelne portalove efekty nebyly nacteny.', error));
+void refreshSharedAccessModuleCache();
 setupPwaInstallPrompt();
 registerPwa();
 accessReady.then(() => {
   updateTelemetryModeBanner();
   setupMonthlyReportReminder();
 });
+void Promise.all([deploymentReady, import("./access/app-guard.js")])
+  .then(([deployment, { startErrorReporterBestEffort }]) =>
+    startErrorReporterBestEffort("ai-studio", {
+      appName: "AI Studio GHRAB",
+      appVersion: VERSION,
+      studioUrl: deployment.studioBaseUrl,
+      guideUrl: deployment.access.guideUrl,
+      themeResolver: () =>
+        document.documentElement.dataset.theme || state.theme || "dark",
+      launcherBottom: "24px",
+      captureBottom: "96px",
+    }),
+  )
+  .catch((error) =>
+    console.warn("Reportér AI Studia nebyl načten; portál pokračuje.", error),
+  );
 document.addEventListener("ghrab:language", () => {
   renderHomeCards();
   renderHomeAccessSummary();

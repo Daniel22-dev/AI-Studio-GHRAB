@@ -2,13 +2,69 @@
   "schema": "ghrab-ai-core-consumers-v1",
   "eventType": "ghrab-ai-core-released",
   "consumers": [
-    {"appId":"correspondence","repository":"daniel22-dev/korespondencni-asistent","enabled":true},
-    {"appId":"generator","repository":"daniel22-dev/generator-testu","enabled":false},
-    {"appId":"differentiator","repository":"daniel22-dev/diferenciator","enabled":false},
-    {"appId":"essay-evaluator","repository":"daniel22-dev/Hodnotitel-maturitnich-slohu","enabled":false},
-    {"appId":"ludus","repository":"daniel22-dev/Ludus","enabled":false},
-    {"appId":"activity-builder","repository":"daniel22-dev/Sestavovac-aktivit","enabled":false},
-    {"appId":"sortio","repository":"daniel22-dev/SORTIO","enabled":false},
-    {"appId":"lesson-hub","repository":"daniel22-dev/lesson-hub","enabled":false}
+    {
+      "appId": "correspondence",
+      "repository": "daniel22-dev/korespondencni-asistent",
+      "enabled": true,
+      "applicable": true,
+      "syncWorkflow": ".github/workflows/sync-ghrab-ai-core.yml",
+      "delivery": "repository-dispatch-draft-pr"
+    },
+    {
+      "appId": "generator",
+      "repository": "daniel22-dev/generator-testu",
+      "enabled": true,
+      "applicable": true,
+      "syncWorkflow": ".github/workflows/sync-ghrab-ai-core.yml",
+      "delivery": "repository-dispatch-draft-pr"
+    },
+    {
+      "appId": "differentiator",
+      "repository": "daniel22-dev/diferenciator",
+      "enabled": true,
+      "applicable": true,
+      "syncWorkflow": ".github/workflows/sync-ghrab-ai-core.yml",
+      "delivery": "repository-dispatch-draft-pr"
+    },
+    {
+      "appId": "essay-evaluator",
+      "repository": "daniel22-dev/Hodnotitel-maturitnich-slohu",
+      "enabled": true,
+      "applicable": true,
+      "syncWorkflow": ".github/workflows/sync-ghrab-ai-core.yml",
+      "delivery": "repository-dispatch-draft-pr"
+    },
+    {
+      "appId": "ludus",
+      "repository": "daniel22-dev/Ludus",
+      "enabled": true,
+      "applicable": true,
+      "syncWorkflow": ".github/workflows/sync-ghrab-ai-core.yml",
+      "delivery": "repository-dispatch-draft-pr"
+    },
+    {
+      "appId": "activity-builder",
+      "repository": "daniel22-dev/Sestavovac-aktivit",
+      "enabled": true,
+      "applicable": true,
+      "syncWorkflow": ".github/workflows/sync-ghrab-ai-core.yml",
+      "delivery": "repository-dispatch-draft-pr"
+    },
+    {
+      "appId": "sortio",
+      "repository": "daniel22-dev/SORTIO",
+      "enabled": false,
+      "applicable": false,
+      "syncWorkflow": null,
+      "delivery": "not-applicable"
+    },
+    {
+      "appId": "lesson-hub",
+      "repository": "daniel22-dev/lesson-hub",
+      "enabled": false,
+      "applicable": false,
+      "syncWorkflow": null,
+      "delivery": "not-applicable"
+    }
   ]
 }

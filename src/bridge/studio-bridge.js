@@ -1,127 +1,51 @@
-/* AI Studio GHRAB — Studio Bridge v1.1
-   Drop-in helper for applications hosted on the same origin as AI Studio.
-   It never sends data over the network. Handoffs expire after 30 minutes. */
+/* AI Studio GHRAB — Studio Bridge 2.0 compatibility facade. */
 (function (global) {
   "use strict";
-  const HANDOFF_KEY = "ghrab.handoff.v1";
-  const WORKSPACE_KEY = "ghrab.workspace.v1";
+  const WORKSPACE_KEY = "ghrab.ai-studio.workspace.v1";
+  const LEGACY_WORKSPACE_KEY = "ghrab.workspace.v1";
   const parse = (key, fallback) => {
-    try {
-      return JSON.parse(localStorage.getItem(key) || JSON.stringify(fallback));
-    } catch {
-      return fallback;
-    }
+    try { return JSON.parse(localStorage.getItem(key) || JSON.stringify(fallback)); }
+    catch { return fallback; }
   };
-  const validMaterial = (m) =>
-    Boolean(
-      m &&
-      m.schema === "ghrab-material-v1" &&
-      m.id &&
-      m.title &&
-      m.subject &&
-      m.content &&
-      typeof m.content === "object",
-    );
-  function storageError(key, error) {
-    console.warn(
-      `AI Studio Bridge: localStorage write failed for ${key}`,
-      error,
-    );
-    try {
-      global.dispatchEvent(
-        new CustomEvent("ghrab:storage-error", {
-          detail: { key, name: error?.name || "StorageError" },
-        }),
-      );
-    } catch {}
-  }
-  function write(key, value) {
-    try {
-      localStorage.setItem(key, JSON.stringify(value));
-      return true;
-    } catch (error) {
-      storageError(key, error);
-      return false;
-    }
-  }
-  function remove(key) {
-    try {
-      localStorage.removeItem(key);
-      return true;
-    } catch {
-      return false;
-    }
-  }
-  function peek(target) {
-    const payload = parse(HANDOFF_KEY, null);
-    if (
-      !payload ||
-      payload.schema !== "ghrab-handoff-v1" ||
-      !validMaterial(payload.material)
-    )
-      return null;
-    if (Date.parse(payload.expiresAt || "") < Date.now()) {
-      remove(HANDOFF_KEY);
-      return null;
-    }
-    if (target && payload.target !== target) return null;
-    return payload;
-  }
-  function consume(target) {
-    const payload = peek(target);
-    if (payload) remove(HANDOFF_KEY);
-    return payload;
-  }
-  function defaultStudioUrl() {
-    const path = location.pathname.split("/").filter(Boolean);
-    const repo = path[0] || "";
-    if (repo.toLowerCase() === "ai-studio-ghrab")
-      return `${location.origin}/${repo}/`;
-    return `${location.origin}/AI-Studio-GHRAB/`;
-  }
-  function studioUrl(payload) {
-    try {
-      return payload?.studioUrl &&
-        new URL(payload.studioUrl).origin === location.origin
-        ? payload.studioUrl
-        : defaultStudioUrl();
-    } catch {
-      return defaultStudioUrl();
-    }
-  }
+  const validMaterial = (material) => Boolean(
+    material && material.schema === "ghrab-material-v1" && material.id &&
+    material.content && typeof material.content === "object"
+  );
+  const bridge = () => global.GHRAB_PLATFORM?.bridge || null;
+  function peek(target) { return bridge()?.peek?.({ target, maxBytes: 500000 }) || null; }
+  function consume(target) { return bridge()?.take?.({ target, maxBytes: 500000 }) || null; }
   function create(target, material, ttlMinutes = 30) {
     if (!validMaterial(material)) throw new Error("Invalid GHRAB Material v1");
-    const payload = {
-      schema: "ghrab-handoff-v1",
+    if (!bridge()?.create) return null;
+    return bridge().create({
       target,
-      source: "application",
-      createdAt: new Date().toISOString(),
-      expiresAt: new Date(Date.now() + ttlMinutes * 60000).toISOString(),
-      studioUrl: defaultStudioUrl(),
+      sourceAppId: global.GHRAB_PLATFORM?.appId || "ai-studio",
+      sourceAppVersion: global.GHRAB_PLATFORM?.appVersion || "unknown",
+      ttlMs: Math.max(1, Number(ttlMinutes || 30)) * 60000,
+      studioUrl: new URL("./", location.href).href,
       material,
-    };
-    return write(HANDOFF_KEY, payload) ? payload : null;
+      writeLegacy: true,
+    });
   }
   function workspace() {
-    const list = parse(WORKSPACE_KEY, []);
-    return Array.isArray(list) ? list : [];
+    const current = parse(WORKSPACE_KEY, null);
+    const legacy = current === null ? parse(LEGACY_WORKSPACE_KEY, []) : current;
+    return Array.isArray(legacy) ? legacy : [];
   }
   function save(material) {
     if (!validMaterial(material)) throw new Error("Invalid GHRAB Material v1");
     const list = workspace();
-    const i = list.findIndex((x) => x.id === material.id);
-    if (i >= 0) list[i] = material;
-    else list.unshift(material);
-    return write(WORKSPACE_KEY, list.slice(0, 20)) ? material : null;
+    const index = list.findIndex((item) => item.id === material.id);
+    if (index >= 0) list[index] = material; else list.unshift(material);
+    try { localStorage.setItem(WORKSPACE_KEY, JSON.stringify(list.slice(0, 20))); return material; }
+    catch (error) { console.warn("Studio Bridge: workspace write failed", error); return null; }
   }
-  global.GHRABStudioBridge = {
-    version: "1.1.0",
-    peek,
-    consume,
-    create,
-    workspace,
-    save,
-    studioUrl,
-    validMaterial,
-  };
+  function studioUrl(payload) {
+    try { return new URL(payload?.studioUrl || global.__GHRAB_DEPLOYMENT_CONFIG__?.studioBaseUrl || "./", location.href).href; }
+    catch { return new URL("./", location.href).href; }
+  }
+  global.GHRABStudioBridge = Object.freeze({
+    version: "2.0.0", contract: "ghrab-studio-handoff-v2", peek, consume, create,
+    workspace, save, studioUrl, validMaterial,
+  });
 })(window);

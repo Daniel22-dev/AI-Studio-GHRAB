@@ -10,13 +10,17 @@
     "conformanceUrl": "ai-core/releases/1.0.0/ghrab-ai-conformance-1.0.0.js",
     "contractUrl": "ai-core/releases/1.0.0/ghrab-ai-contract-v1.0.0.md",
     "artifacts": {
-      "ghrab-ai-core-1.0.0.js": {"sha256": "81acb93e1f17646ab2b58b3744fce38a6ed5c779e8d5e9cba2ae797816ecec44"},
-      "ghrab-ai-conformance-1.0.0.js": {"sha256": "7707811e4d2e3975a4f90b6d672321ef185e77f71649fdb755f6467da5d4c3b7"}
+      "ghrab-ai-core-1.0.0.js": {
+        "sha256": "81acb93e1f17646ab2b58b3744fce38a6ed5c779e8d5e9cba2ae797816ecec44"
+      },
+      "ghrab-ai-conformance-1.0.0.js": {
+        "sha256": "7707811e4d2e3975a4f90b6d672321ef185e77f71649fdb755f6467da5d4c3b7"
+      }
     }
   },
   "runtimeConfigUrl": "config/ai-runtime.json",
   "readinessReportUrl": "config/ai-readiness.generated.json",
-  "migrationKitUrl": "ai-core/migration/ghrab-ai-migration-kit-1.0.2.zip",
+  "migrationKitUrl": "ai-core/migration/ghrab-ai-migration-kit-1.0.3.zip",
   "distribution": {
     "mode": "versioned-studio-release",
     "immutableRelease": true,

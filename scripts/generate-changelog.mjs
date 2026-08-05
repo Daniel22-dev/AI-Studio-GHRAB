@@ -1,6 +1,5 @@
 import { readFile, writeFile } from "node:fs/promises";
 import path from "node:path";
-import prettier from "prettier";
 import { fileURLToPath } from "node:url";
 
 const here = path.dirname(fileURLToPath(import.meta.url));
@@ -28,7 +27,16 @@ for (const item of source.items) {
   for (const change of item.changes || []) lines.push(`- ${change.cs}`);
   lines.push("");
 }
-const markdown = await prettier.format(`${lines.join("\n").trim()}\n`, {
-  parser: "markdown",
-});
+
+const rawMarkdown = `${lines.join("\n").trim()}\n`;
+let markdown = rawMarkdown;
+try {
+  const { default: prettier } = await import("prettier");
+  markdown = await prettier.format(rawMarkdown, { parser: "markdown" });
+} catch (error) {
+  if (error?.code !== "ERR_MODULE_NOT_FOUND") throw error;
+  console.warn(
+    "Prettier není v tomto archivu nainstalován; CHANGELOG.md byl vytvořen deterministicky bez kosmetického přeformátování.",
+  );
+}
 await writeFile(path.join(root, "CHANGELOG.md"), markdown, "utf8");

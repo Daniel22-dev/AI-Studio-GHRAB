@@ -54,6 +54,12 @@ await writeFile(
       version: pkg.version,
       builtAt: new Date().toISOString(),
       syncMode: syncReport.mode,
+      platform: {
+        contract: "ghrab-platform-v1",
+        version: "1.1.0",
+        brandVersion: "1.0.0",
+        registrySchema: "ghrab-app-registry-v2"
+      },
       aiCore: {
         coreVersion: aiCoreRegistry.activeRelease.coreVersion,
         contractVersion: aiCoreRegistry.activeRelease.contractVersion,
@@ -86,6 +92,10 @@ const requiredCacheFiles = [
   "./app/viewer.css",
   "./app/embed-overrides.css",
   "./access/access-control.js",
+  "./access/deployment-config.js",
+  "./access/platform-runtime.js",
+  "./access/access-gate.css",
+  "./config/deployment.json",
   "./shared/material-validator.js",
   "./shared/safe-export.js",
   "./config/apps.generated.json",
@@ -102,6 +112,10 @@ const requiredCacheFiles = [
   "./assets/brand/brand-mark.svg",
   "./assets/brand/portal-gateway.webp",
   "./assets/brand/icon-32.png",
+  "./assets/brand/school-logo.png",
+  "./config/brand-manifest.json",
+  "./config/platform-manifest.json",
+  "./ghrab-platform.consumer.json",
 ];
 const missingRequired = requiredCacheFiles.filter(
   (file) => file !== "./" && !allCacheFiles.includes(file),
@@ -116,6 +130,9 @@ const excludedOptionalPrefixes = [
   "./integration/",
   "./schemas/",
   "./ai-core/",
+  // P2 platform assets are added only after the canonical postprocessor runs.
+  // Excluding src/platform prevents stale compatibility copies from entering SW precache.
+  "./platform/",
 ];
 const optionalCacheFiles = allCacheFiles.filter(
   (file) =>
@@ -146,3 +163,6 @@ await writeFile(
 );
 
 console.log(`AI Studio GHRAB ${pkg.version} built to dist/`);
+
+// P2: canonical cross-application platform post-processing.
+await import("./apply-ghrab-platform.mjs");

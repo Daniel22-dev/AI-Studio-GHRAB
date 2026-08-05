@@ -1,21 +1,30 @@
-# Nahrání AI Studio GHRAB 0.20.6
+# Nahrání AI Studio GHRAB 0.20.14
 
-Tento balík zachovává samostatné repozitáře aplikací a přidává definitivní opravu otevírání předvyplněného Gmailu v centrálním reportéru.
+> Aktuální verze: **0.20.14** · etapa P3
 
-> Verze 0.20.6 nahrazuje skriptované otevírání okna skutečným odkazem prohlížeče. Tím odstraňuje blokování Gmailu v PWA, vloženém rámci i chráněném kontextu. Současně odstraňuje nespolehlivou volbu přímého sdílení ZIPu.
+Tato verze uzavírá sjednocení funkce **Nahlásit chybu** v celém ekosystému. AI Studio se nasazuje jako poslední, po všech samostatných aplikacích.
 
-## Postup
+## Povinné pořadí
 
-1. Nejprve nasaďte Korespondenčního asistenta 5.9.9 do jeho repozitáře.
-2. Otevřete repozitář `Daniel22-dev/AI-Studio-GHRAB`.
-3. Nahrajte **obsah ZIPu přímo do kořene repozitáře** a potvrďte přepsání existujících souborů.
-4. Zachovejte zejména složky `.github`, `src`, `scripts`, `qa` a soubory `package.json` a `package-lock.json`.
-5. Složku `dist` nahrávat nemusíte; GitHub Actions ji sestaví znovu.
-6. Po commitu se workflow spustí automaticky. Sledujte, zda projdou `qa-build`, `qa-diagnostics` a `deploy`.
-7. Po zeleném nasazení zavřete staré karty i nainstalovanou PWA, poté AI Studio spusťte znovu.
+1. Korespondenční asistent 5.9.17
+2. SORTIO 1.0.9
+3. Lesson Hub 1.2.6
+4. Diferenciátor 1.3.10
+5. ACTIVA 0.5.7
+6. Hodnotitel maturitních slohů 1.5.8
+7. LUDUS 1.16.9
+8. Generátor interaktivních testů 7.1.10
+9. AI Studio GHRAB 0.20.14
 
-## Očekávaný výsledek
+## GitHub
 
-Kliknutí na **Stáhnout balíček a otevřít e-mail** otevře v nové kartě předvyplněný Gmail na adrese `balaz@ghrabuvka.cz`. Na původní kartě se současně připraví a stáhne diagnostický ZIP.
+1. Otevřete repozitář `Daniel22-dev/AI-Studio-GHRAB`.
+2. Rozbalte **source ZIP**.
+3. Nahrajte jeho rozbalený obsah přímo do kořene repozitáře; nevytvářejte další nadřazenou složku.
+4. Potvrďte přepsání existujících souborů. Složku `dist` ze source ZIPu nenahráváte; GitHub Actions ji sestaví znovu.
+5. Ověřte zelené kroky synchronizace, jednotného regresního testu reportéru, GHRAB QA a deploye.
+6. Po nasazení zavřete staré karty a případnou nainstalovanou PWA, potom Studio znovu otevřete.
 
-Pokud Gmail uživatel nepoužívá, reportér nabízí samostatný odkaz pro poštovní aplikaci a možnost zkopírovat údaje zprávy.
+## Ruční smoke test
+
+V reálném Chromu ověřte systémový výběr karty/okna/obrazovky, bezpečné umístění plovoucího panelu vedle lišty sdílení, otevření přihlášeného Gmailu a ruční přiložení staženého ZIPu.

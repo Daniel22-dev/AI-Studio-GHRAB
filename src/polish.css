@@ -2424,3 +2424,135 @@ html[data-motion="full"]
   span:nth-child(7) {
   animation-delay: 1.48s;
 }
+
+/* P3 — skutečný mobilní reflow na 320 px */
+html,
+body {
+  max-width: 100%;
+  overflow-x: clip;
+}
+.studio-startup-intro {
+  width: 100vw;
+  max-width: 100%;
+  contain: layout paint size;
+}
+.studio-startup-core {
+  min-width: 0;
+  max-width: calc(100vw - 24px);
+}
+.studio-startup-core > * {
+  max-width: 100%;
+}
+.studio-startup-copy,
+.studio-startup-core h1,
+.studio-startup-core .eyebrow {
+  overflow-wrap: anywhere;
+}
+@media (max-width: 650px) {
+  .site-header {
+    grid-template-columns: minmax(0, 1fr) auto auto;
+    min-width: 0;
+  }
+  .brand {
+    min-width: 0;
+  }
+  .brand strong {
+    min-width: 0;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+  }
+  .header-actions,
+  .header-actions .segmented {
+    min-width: 0;
+    max-width: 100%;
+  }
+}
+@media (max-width: 350px) {
+  .site-header {
+    grid-template-columns: minmax(0, 1fr) auto;
+  }
+  .nav-toggle {
+    order: 2;
+  }
+  .header-actions {
+    order: 3;
+  }
+  .brand strong {
+    font-size: 0.78rem;
+  }
+  .brand-orbit {
+    width: 34px;
+    height: 34px;
+  }
+  .brand img {
+    width: 30px;
+    height: 30px;
+  }
+}
+
+
+/* P3 reflow hardening: real 1280/390/320 viewport gate */
+.studio-startup-intro {
+  contain: layout paint size style;
+  max-width: 100vw;
+  max-height: 100vh;
+}
+.studio-startup-core,
+.studio-startup-gateway,
+.studio-startup-progress {
+  max-width: 100%;
+}
+@media (max-width: 650px) {
+  /* Jazyk zůstává dostupný v nabídce nastavení; v hlavičce se nesmí vrátit
+     ovládání, které bylo v dřívějším responsivním bloku skryto. */
+  .header-actions .segmented {
+    display: none;
+    transform: none;
+  }
+  .site-header {
+    grid-template-columns: minmax(0, 1fr) auto;
+  }
+  .brand,
+  .brand > span:last-child {
+    min-width: 0;
+  }
+  .brand strong {
+    display: block;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+  }
+  .studio-startup-core {
+    width: min(calc(100% - 24px), 760px);
+  }
+  .studio-startup-gateway {
+    width: min(280px, 70vw, 34vh);
+  }
+  .startup-beam {
+    inset-inline: 0;
+    width: 100%;
+  }
+}
+
+/* P5 R2: portal artwork must not enlarge the document on narrow screens. */
+@media (max-width: 650px) {
+  .portal-hero,
+  .portal-stage,
+  .portal-core-zone {
+    max-width: 100%;
+    overflow: clip;
+  }
+  .portal-core-zone {
+    left: 0;
+    width: 100%;
+  }
+  .portal-gateway-frame {
+    inset: 0;
+  }
+  .portal-core-image,
+  .portal-ring-assembly {
+    width: 100%;
+    height: 100%;
+  }
+}

@@ -75,11 +75,15 @@ html[data-ghrab-access="checking"] body {
   flex-wrap: wrap;
   margin-top: 24px;
 }
-.ghrab-access-gate-actions a {
+.ghrab-access-gate-actions a,
+.ghrab-access-gate-actions button {
   padding: 12px 18px;
   border-radius: 13px;
   text-decoration: none;
+  font: inherit;
   font-weight: 850;
+  cursor: pointer;
+  background: transparent;
 }
 .ghrab-access-gate-primary {
   background: linear-gradient(135deg, #50e8ff, #8db7ff);
@@ -96,7 +100,8 @@ html[data-ghrab-access="checking"] body {
   .ghrab-access-gate-actions {
     flex-direction: column;
   }
-  .ghrab-access-gate-actions a {
+  .ghrab-access-gate-actions a,
+  .ghrab-access-gate-actions button {
     width: 100%;
     box-sizing: border-box;
   }

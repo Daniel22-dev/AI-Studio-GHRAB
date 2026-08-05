@@ -177,9 +177,13 @@ function renderWorkspace() {
       exp.type = "button";
       exp.className = "button ghost";
       exp.textContent = G.t("Export", "Export");
-      exp.addEventListener("click", () =>
-        G.downloadJson(m, `${m.title || "material"}.ghrab.json`),
-      );
+      exp.addEventListener("click", () => {
+        void G.downloadArtifact(m, `${m.title || "material"}.ghrab.json`, {
+          artifactType: "studio-material",
+          contentKind: "teaching-material",
+          sensitivity: m.provenance?.containsPersonalData ? "restricted" : "internal",
+        }).catch((error) => G.showToast(error.message));
+      });
       actions.append(open, exp);
       a.append(q, h, p, actions);
       return a;
@@ -211,7 +215,7 @@ document
       return;
     }
     try {
-      const m = JSON.parse(await f.text());
+      const m = await G.parseArtifactJson(await f.text());
       const result = G.validateMaterialPackage(m);
       if (!result.valid) {
         const error = result.errors[0];

@@ -1,0 +1,93 @@
+{
+  "schema": "ghrab-data-manifest-v1",
+  "appId": "ai-studio",
+  "appVersion": "0.20.14",
+  "manifestVersion": 3,
+  "dataCategories": [
+    "settings",
+    "application-content",
+    "diagnostics"
+  ],
+  "privacy": {
+    "studentContentMayOccur": true,
+    "telemetryContainsContent": false,
+    "diagnosticsContainContentByDefault": false,
+    "pseudonymisationIsNotAnonymisation": true
+  },
+  "stores": [
+    {
+      "kind": "localStorage",
+      "category": "application-data",
+      "patterns": [
+        "ghrab.ai-studio.*",
+        "ghrab.ai-studio.workspace.*",
+        "ghrab.ai-studio.favoriteApps.*",
+        "ghrab.ai-studio.report.*",
+        "ghrab.ai-studio.workflow.*",
+        "ghrab.ai-studio.language",
+        "ghrab.ai-studio.motion",
+        "ghrab.ai-studio.pwa.*"
+      ],
+      "sensitivity": "potentially-personal",
+      "authority": "client",
+      "clearOnEndWork": true
+    },
+    {
+      "kind": "cacheStorage",
+      "category": "application-cache",
+      "patterns": [
+        "ghrab-ai-studio-v*",
+        "ai-studio*"
+      ],
+      "sensitivity": "non-content-cache",
+      "authority": "client",
+      "clearOnEndWork": false
+    }
+  ],
+  "retention": {
+    "defaultDays": 30,
+    "sessionEndsOnLogout": true,
+    "serverLogsDays": 30
+  },
+  "export": {
+    "supported": true,
+    "requiresExplicitUserAction": true,
+    "includesSecrets": false,
+    "envelopeSchema": "ghrab-artifact-envelope-v1",
+    "artifactTypes": [
+      "studio-material",
+      "ludus-content"
+    ],
+    "nativeFormats": [
+      "html",
+      "pdf",
+      "json"
+    ]
+  },
+  "deletion": {
+    "supported": true,
+    "clientVerified": true,
+    "serverEndpoint": "data/ai-studio"
+  },
+  "sharedDevice": {
+    "supported": true,
+    "defaultInSchoolProfile": true,
+    "control": "GHRABPlatform.endWork()"
+  },
+  "storageNamespace": {
+    "schema": "ghrab-storage-namespace-v1",
+    "prefix": "ghrab.ai-studio.",
+    "migrationId": "p2-storage-namespace-v1",
+    "backup": "full",
+    "rollbackSupported": true
+  },
+  "import": {
+    "supported": true,
+    "artifactTypes": [
+      "studio-material",
+      "ludus-content"
+    ],
+    "acceptsLegacyJson": true,
+    "checksumRequiredForEnvelope": true
+  }
+}

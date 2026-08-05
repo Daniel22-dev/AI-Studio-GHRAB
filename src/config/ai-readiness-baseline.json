@@ -5,35 +5,83 @@
     {
       "appId": "correspondence",
       "certification": {
-        "appVersion": "5.9.3",
+        "appVersion": "5.9.17",
         "coreVersion": "1.0.0",
         "contractVersion": "1",
         "conformancePassed": true,
         "operationsCount": 8,
-        "certifiedAt": "2026-08-03T14:00:50.000Z",
-        "evidence": "docs/evidence/KS-5.9.3-overeni.txt"
+        "certifiedAt": "2026-08-04T16:40:00.000Z",
+        "evidence": "evidence/p3-ai-conformance.json"
       }
     },
     {
-      "appId": "generator"
+      "appId": "generator",
+      "certification": {
+        "appVersion": "7.1.10",
+        "coreVersion": "1.0.0",
+        "contractVersion": "1",
+        "conformancePassed": true,
+        "operationsCount": 10,
+        "certifiedAt": "2026-08-04T16:40:00.000Z",
+        "evidence": "evidence/p3-ai-conformance.json"
+      }
     },
     {
-      "appId": "differentiator"
+      "appId": "differentiator",
+      "certification": {
+        "appVersion": "1.3.10",
+        "coreVersion": "1.0.0",
+        "contractVersion": "1",
+        "conformancePassed": true,
+        "operationsCount": 6,
+        "certifiedAt": "2026-08-04T16:40:00.000Z",
+        "evidence": "evidence/p3-ai-conformance.json"
+      }
     },
     {
-      "appId": "essay-evaluator"
+      "appId": "essay-evaluator",
+      "certification": {
+        "appVersion": "1.5.8",
+        "coreVersion": "1.0.0",
+        "contractVersion": "1",
+        "conformancePassed": true,
+        "operationsCount": 4,
+        "certifiedAt": "2026-08-04T16:40:00.000Z",
+        "evidence": "evidence/p3-ai-conformance.json"
+      }
     },
     {
-      "appId": "ludus"
+      "appId": "ludus",
+      "certification": {
+        "appVersion": "1.16.9",
+        "coreVersion": "1.0.0",
+        "contractVersion": "1",
+        "conformancePassed": true,
+        "operationsCount": 2,
+        "certifiedAt": "2026-08-04T16:40:00.000Z",
+        "evidence": "evidence/p3-ai-conformance.json"
+      }
     },
     {
-      "appId": "activity-builder"
+      "appId": "activity-builder",
+      "certification": {
+        "appVersion": "0.5.7",
+        "coreVersion": "1.0.0",
+        "contractVersion": "1",
+        "conformancePassed": true,
+        "operationsCount": 1,
+        "certifiedAt": "2026-08-04T16:40:00.000Z",
+        "evidence": "evidence/p3-ai-conformance.json"
+      }
     },
     {
-      "appId": "sortio"
+      "appId": "sortio",
+      "classification": "not-applicable"
     },
     {
-      "appId": "lesson-hub"
+      "appId": "lesson-hub",
+      "classification": "not-applicable"
     }
-  ]
+  ],
+  "generatedAt": "2026-08-04T16:40:00.000Z"
 }

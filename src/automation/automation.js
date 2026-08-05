@@ -78,7 +78,7 @@ tableBody.append(tr)}
 
   function readinessLabel(status){
 return ({
-ready:t("Nasazeno","Deployed"),"certified-pending-deployment":t("Certifikováno · čeká na nasazení","Certified · awaiting deployment"),"certified-pending-manifest":t("Nasazeno · chybí Core manifest","Deployed · Core manifest missing"),"integration-in-progress":t("Integrace probíhá","Integration in progress"),incompatible:t("Nekompatibilní","Incompatible"),"not-migrated":t("Nezahájeno","Not started")}
+ready:t("Nasazeno","Deployed"),"certified-pending-deployment":t("Certifikováno · čeká na nasazení","Certified · awaiting deployment"),"certified-pending-manifest":t("Nasazeno · chybí Core manifest","Deployed · Core manifest missing"),"integration-in-progress":t("Integrace probíhá","Integration in progress"),incompatible:t("Nekompatibilní","Incompatible"),"not-migrated":t("Nezahájeno","Not started"),"not-applicable":t("Nevyužívá AI Core","AI Core not applicable")}
 )[status]||status||"—"}
 
   function readinessClass(status){
@@ -92,7 +92,7 @@ if(!aiCoreSummaryHost||!aiReadinessTableBody)return;
 const summary=readiness?.summary||{
 }
 ;
-aiCoreSummaryHost.replaceChildren(kpi(summary.totalApps??apps.length,"aplikací","applications"),kpi(summary.readyApps??0,"nasazeno na Core","deployed on Core"),kpi(summary.certifiedPendingApps??0,"certifikováno před nasazením","certified before deployment"),kpi(summary.notMigratedApps??0,"čeká na migraci","awaiting migration"));
+aiCoreSummaryHost.replaceChildren(kpi(summary.totalApps??apps.length,"aplikací","applications"),kpi(summary.readyApps??0,"nasazeno na Core","deployed on Core"),kpi(summary.certifiedPendingApps??0,"certifikováno před nasazením","certified before deployment"),kpi(summary.notMigratedApps??0,"čeká na migraci","awaiting migration"),kpi(summary.notApplicableApps??0,"mimo rozsah AI Core","outside AI Core scope"));
 const active=registry?.activeRelease,effectiveRuntime=runtime?.ai||readiness?.runtime||{
 }
 ;

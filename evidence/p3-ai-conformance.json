@@ -1,0 +1,82 @@
+{
+  "schema": "ghrab-ai-conformance-evidence-v1",
+  "stage": "P3",
+  "generatedAt": "2026-08-04T16:40:00.000Z",
+  "coreVersion": "1.0.0",
+  "contractVersion": "1",
+  "method": "Build manifest + immutable Core hash + operations registry + project regression suite; final test log status is refreshed during P3 packaging.",
+  "applications": [
+    {
+      "appId": "correspondence",
+      "appVersion": "5.9.17",
+      "coreVersion": "1.0.0",
+      "contractVersion": "1",
+      "coreSha256": "81acb93e1f17646ab2b58b3744fce38a6ed5c779e8d5e9cba2ae797816ecec44",
+      "operationsCount": 8,
+      "operationsSha256": "9ea5fd568cd1300dca149fb7bef8114d6e82bbc3b1f2e4e830a3ba428a14a10f",
+      "manifestSha256": "a2b5248356db9007d2ac720e4080892f08dd4adb623ffb87030cba4cb5c7ab3f",
+      "conformancePassed": true,
+      "projectTests": "pending-final-run"
+    },
+    {
+      "appId": "differentiator",
+      "appVersion": "1.3.10",
+      "coreVersion": "1.0.0",
+      "contractVersion": "1",
+      "coreSha256": "81acb93e1f17646ab2b58b3744fce38a6ed5c779e8d5e9cba2ae797816ecec44",
+      "operationsCount": 6,
+      "operationsSha256": "ef71e08b6e479d6337e0c3af2c4b8347deca0fcab8fab963cb0d5ac267c59c49",
+      "manifestSha256": "1a57374989d56994f1a5ccb1c2445674338717bbb037ef32a96178732eaa80f8",
+      "conformancePassed": true,
+      "projectTests": "pending-final-run"
+    },
+    {
+      "appId": "generator",
+      "appVersion": "7.1.10",
+      "coreVersion": "1.0.0",
+      "contractVersion": "1",
+      "coreSha256": "81acb93e1f17646ab2b58b3744fce38a6ed5c779e8d5e9cba2ae797816ecec44",
+      "operationsCount": 10,
+      "operationsSha256": "90d32c987be10d048aaf9d11c583d0cbf6fae3de2c9462db9e0f34b600aa9c65",
+      "manifestSha256": "323a17d071b7985818677c92e1371dceafcc2bd4620cabe05d67421cd77d30a7",
+      "conformancePassed": true,
+      "projectTests": "pending-final-run"
+    },
+    {
+      "appId": "essay-evaluator",
+      "appVersion": "1.5.8",
+      "coreVersion": "1.0.0",
+      "contractVersion": "1",
+      "coreSha256": "81acb93e1f17646ab2b58b3744fce38a6ed5c779e8d5e9cba2ae797816ecec44",
+      "operationsCount": 4,
+      "operationsSha256": "501f3701d8161a1efd801c84109727469f8d73141adc5d0458887f41b488c863",
+      "manifestSha256": "701e4c82152b6baa4eaf3867493b1fe6ac5dbdd99547171078535a5d124c14b5",
+      "conformancePassed": true,
+      "projectTests": "pending-final-run"
+    },
+    {
+      "appId": "activity-builder",
+      "appVersion": "0.5.7",
+      "coreVersion": "1.0.0",
+      "contractVersion": "1",
+      "coreSha256": "81acb93e1f17646ab2b58b3744fce38a6ed5c779e8d5e9cba2ae797816ecec44",
+      "operationsCount": 1,
+      "operationsSha256": "0858e4e3b75a59dbfa6aa6125c1585e087c790498c2ade984b4818abd290908f",
+      "manifestSha256": "3ec17ae92058bfd2fea7c49ba60e93b6dd54450abca81b5e7e4b83782be63bde",
+      "conformancePassed": true,
+      "projectTests": "pending-final-run"
+    },
+    {
+      "appId": "ludus",
+      "appVersion": "1.16.9",
+      "coreVersion": "1.0.0",
+      "contractVersion": "1",
+      "coreSha256": "81acb93e1f17646ab2b58b3744fce38a6ed5c779e8d5e9cba2ae797816ecec44",
+      "operationsCount": 2,
+      "operationsSha256": "edc6366c55c0f2d25597ef893d1960ec564a3447b68050fbadaafe2f0163a95a",
+      "manifestSha256": "4d034d15724962c5d40e9955a0e287e936080905d1bc8747e073462702c8c19e",
+      "conformancePassed": true,
+      "projectTests": "pending-final-run"
+    }
+  ]
+}

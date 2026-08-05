@@ -1,39 +1,22 @@
-# Přesný postup nahrání AI Studio GHRAB 0.20.6 na GitHub
+# Přesný postup nahrání AI Studio GHRAB 0.20.14 na GitHub
 
-**Aktuální verze: 0.20.6**
+> Aktuální verze: **0.20.14** · etapa P3
 
-## Doporučené pořadí
+## Předpoklady
 
-1. Nejprve nasaďte aktuální chráněné verze dílčích aplikací:
-   - Generátor interaktivních testů 7.1.4,
-   - Diferenciátor 1.3.3,
-   - Hodnotitel maturitních slohů 1.5.2,
-   - Korespondenční asistent 5.9.9,
-   - LUDUS 1.16.3,
-   - ACTIVA 0.5.0,
-   - SORTIO 1.0.2,
-   - Lesson Hub 1.2.0.
-2. U Lesson Hubu nejprve ověřte živý manifest `/lesson-hub/studio-manifest.json` a interaktivní manuál `/lesson-hub/manual/`.
-3. Potom nahrajte obsah balíku AI Studio GHRAB 0.20.6 do kořene repozitáře `AI-Studio-GHRAB`.
-4. Zachovejte složky `.github`, `src`, `scripts` a soubory `package.json` a `package-lock.json`.
-5. Složku `dist` nenahrávejte. GitHub Actions ji vytvoří znovu při každém nasazení.
-6. Po commitu otevřete záložku **Actions** a ověřte zelený běh „Sync, certify and deploy AI Studio GHRAB“.
-7. Po nasazení zavřete staré otevřené karty Studia a znovu je otevřete. Nový service worker už nepřebírá rozpracovanou relaci násilně.
+Nejprve musí být nasazeny KS 5.9.17, SORTIO 1.0.9, Lesson Hub 1.2.6, Diferenciátor 1.3.10, ACTIVA 0.5.7, Hodnotitel 1.5.8, LUDUS 1.16.9 a Generátor 7.1.10. Jejich lokální reportér vypíná centrální instanci přes `errorReporter: false`.
 
-## Co se děje automaticky
+## Nahrání
 
-- manifesty aplikací se načtou ze zdrojových repozitářů,
-- proběhnou bezpečnostní a regresní testy,
-- vygeneruje se changelog, produkční `dist/`, PWA precache a `build-info.json`,
-- výsledek se nasadí na GitHub Pages.
+1. Stáhněte a rozbalte `ai-studio-ghrab-0.20.14-source.zip`.
+2. Do kořene repozitáře `AI-Studio-GHRAB` nahrajte přímo všechny soubory a složky z rozbaleného archivu.
+3. Commit pojmenujte například `AI Studio 0.20.14 – jednotný reportér chyb`.
+4. Vyčkejte na dokončení GitHub Actions. Workflow instaluje závislosti, synchronizuje manifesty, spustí regresi reportéru, celý GHRAB QA release gate, sestaví `dist` a až poté nasadí GitHub Pages.
 
-## Kontrola verze
+## Kontrola po nasazení
 
-V patičce Studia a v `dist/build-info.json` musí být verze **0.20.6**.
-
-## Pořadí pro Core
-
-1. Nejprve nasaďte KS 5.9.3 s `aiCore` manifestem a `ai-operations.json`.
-2. Potom nasaďte AI Studio 0.20.6; jeho workflow načte živý manifest KS během synchronizace.
-3. Ve Správě ověřte stav KS „Nasazeno“.
-4. Teprve potom migrujte další aplikace pomocí Migration Kitu 1.0.2.
+- `dist/build-info.json`, PWA manifest a service worker musí uvádět 0.20.14.
+- Registr musí uvádět všech osm aktuálních verzí aplikací.
+- V každé aplikaci musí být právě jedno tlačítko **Nahlásit chybu**.
+- Hlavní akce musí znít **Stáhnout ZIP a otevřít Gmail** a před kliknutím obsahovat příjemce `balaz@ghrabuvka.cz`.
+- Ověřte systémový picker snímání, otevření nové karty Gmailu a ruční přiložení ZIPu.

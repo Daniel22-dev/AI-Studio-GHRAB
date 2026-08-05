@@ -126,6 +126,9 @@ textarea {
 }
 .skip-link:focus {
   top: 18px;
+  outline: 3px solid #5ce1ff;
+  outline-offset: 3px;
+  box-shadow: 0 0 0 6px rgba(92, 225, 255, 0.18);
 }
 .site-header {
   position: sticky;
@@ -1453,8 +1456,8 @@ textarea {
 }
 @media (max-width: 650px) {
   :root {
-    --shell: min(100% - 22px, 1180px);
-    --shell-wide: min(100% - 18px, 1440px);
+    --shell: min(calc(100% - 22px), 1180px);
+    --shell-wide: min(calc(100% - 18px), 1440px);
   }
   .site-header {
     padding-inline: 10px;
@@ -3752,4 +3755,12 @@ html[data-motion="off"] .premium-launch-content {
   .ai-readiness-table {
     min-width: 720px;
   }
+}
+
+.ghrab-visually-hidden{position:absolute!important;width:1px!important;height:1px!important;padding:0!important;margin:-1px!important;overflow:hidden!important;clip:rect(0,0,0,0)!important;white-space:nowrap!important;border:0!important}
+
+/* P5 R2: native file inputs must not exceed narrow mobile panels. */
+input[type="file"] {
+  max-width: 100%;
+  min-width: 0;
 }

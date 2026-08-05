@@ -4,7 +4,6 @@ import {
   requiredTraining,
   formatReason,
 } from "./access-control.js";
-import { setupErrorReporter } from "./error-reporter.js";
 
 const LIVE_LAUNCHES_KEY = "ghrab.pilot.launches";
 const LIVE_EVENTS_KEY = "ghrab.pilot.events.v2";
@@ -47,6 +46,41 @@ function text(cs, en) {
 }
 function studioHref(options) {
   return new URL(options.studioUrl || "../", location.href).href;
+}
+
+export function startErrorReporterBestEffort(appId, options = {}) {
+  if (!appId || options.errorReporter === false) return Promise.resolve(null);
+  const timeoutMs = Math.max(250, Number(options.reporterTimeoutMs || 4000));
+  let timer;
+  const timeout = new Promise((_, reject) => {
+    timer = window.setTimeout(() => {
+      const error = new Error("Časový limit načtení diagnostického reportéru.");
+      error.name = "ReporterTimeoutError";
+      reject(error);
+    }, timeoutMs);
+  });
+  const reporterModuleUrl = options.reporterModuleUrl
+    ? new URL(options.reporterModuleUrl, import.meta.url).href
+    : new URL("./error-reporter.js", import.meta.url).href;
+  return Promise.race([import(reporterModuleUrl), timeout])
+    .then(({ setupErrorReporter }) => setupErrorReporter({
+      appId,
+      appName: options.appName,
+      appVersion: options.appVersion,
+      studioUrl: studioHref(options),
+      supportEmail: options.supportEmail,
+      guideUrl: options.guideUrl,
+      themeResolver: options.themeResolver,
+      launcherRight: options.launcherRight,
+      launcherBottom: options.launcherBottom,
+      captureRight: options.captureRight,
+      captureBottom: options.captureBottom,
+    }))
+    .catch((error) => {
+      console.warn(`GHRAB reportér (${appId}) nebyl načten; přístupová brána i aplikace pokračují.`, error);
+      return null;
+    })
+    .finally(() => window.clearTimeout(timer));
 }
 function readJson(key, fallback) {
   try {
@@ -366,6 +400,34 @@ function startActiveTimeTracker(appId, keys) {
   timer = window.setInterval(tick, ACTIVE_TICK_MS);
 }
 
+
+async function copyGateDiagnostics(appId, access) {
+  const payload = [
+    "AI Studio GHRAB – diagnostika přístupové brány",
+    `Aplikace: ${appId}`,
+    `Důvod: ${access?.reason || "unknown"}`,
+    `Stránka: ${location.href}`,
+    `Čas: ${new Date().toISOString()}`,
+    `Online: ${navigator.onLine ? "ano" : "ne"}`,
+    `Prohlížeč: ${navigator.userAgent}`,
+  ].join("\n");
+  try {
+    await navigator.clipboard.writeText(payload);
+    return true;
+  } catch {
+    const textarea = document.createElement("textarea");
+    textarea.value = payload;
+    textarea.setAttribute("readonly", "");
+    textarea.style.position = "fixed";
+    textarea.style.opacity = "0";
+    document.body.append(textarea);
+    textarea.select();
+    const copied = document.execCommand?.("copy") === true;
+    textarea.remove();
+    return copied;
+  }
+}
+
 function renderGate(appId, access, options = {}) {
   const training = requiredTraining(appId);
   const appName = training?.label?.[language()] || training?.label?.cs || appId;
@@ -412,13 +474,61 @@ function renderGate(appId, access, options = {}) {
   accessPage.href = new URL("access/", studioHref(options)).href;
   accessPage.textContent = text("Aktivovat přístup", "Activate access");
   accessPage.className = "ghrab-access-gate-secondary";
-  actions.append(back, accessPage);
+  const copyDiagnostics = document.createElement("button");
+  copyDiagnostics.type = "button";
+  copyDiagnostics.className = "ghrab-access-gate-secondary";
+  copyDiagnostics.textContent = text(
+    "Zkopírovat diagnostiku",
+    "Copy diagnostics",
+  );
+  copyDiagnostics.addEventListener("click", async () => {
+    const copied = await copyGateDiagnostics(appId, access);
+    copyDiagnostics.textContent = copied
+      ? text("Diagnostika zkopírována", "Diagnostics copied")
+      : text("Kopírování se nezdařilo", "Copy failed");
+  });
+  actions.append(back, accessPage, copyDiagnostics);
   main.append(actions);
   document.body.append(main);
 }
 
+
+function renderPlatformCompatibilityGate(platform) {
+  document.documentElement.dataset.ghrabAccess = "denied";
+  document.body.replaceChildren();
+  document.body.className = "ghrab-access-gate-body";
+  const main = document.createElement("main");
+  main.className = "ghrab-access-gate";
+  const mark = document.createElement("div");
+  mark.className = "ghrab-access-gate-mark";
+  mark.textContent = "⬡";
+  const eyebrow = document.createElement("p");
+  eyebrow.className = "ghrab-access-gate-eyebrow";
+  eyebrow.textContent = "AI STUDIO GHRAB";
+  const title = document.createElement("h1");
+  title.textContent = "Aplikace vyžaduje aktualizaci platformy";
+  const message = document.createElement("p");
+  message.textContent = `Požadována je platforma ${platform.compatibility.requiredRange}; načtena je verze ${platform.compatibility.platformVersion}. Nejprve aktualizujte AI Studio GHRAB a poté tuto aplikaci.`;
+  main.append(mark, eyebrow, title, message);
+  document.body.append(main);
+  platform.mountFooter?.();
+}
+
+export function unlockProtectedScripts(options = {}) {
+  const helper = globalThis.GHRAB_PLATFORM?.unlockProtectedScripts;
+  if (typeof helper !== "function") {
+    throw new Error("GHRAB platform unlock helper is unavailable or incompatible.");
+  }
+  return helper(options);
+}
+
 export async function protectApp(appId, options = {}) {
   document.documentElement.dataset.ghrabAccess = "checking";
+  const localPlatform = globalThis.GHRAB_PLATFORM;
+  if (localPlatform?.contract === "ghrab-platform-v1" && localPlatform.compatibility?.ok === false) {
+    renderPlatformCompatibilityGate(localPlatform);
+    return false;
+  }
   const snapshot = await initialiseAccess(options);
   const access = hasAppAccess(appId);
   if (snapshot.ready && access.enabled) {
@@ -431,7 +541,21 @@ export async function protectApp(appId, options = {}) {
       startActiveTimeTracker(appId, keys);
     }
     if (options.errorReporter !== false)
-      setupErrorReporter({ appId, studioUrl: studioHref(options) });
+      void startErrorReporterBestEffort(appId, options);
+    if (options.platformRuntime !== false) {
+      try {
+        const { initialisePlatformRuntime } = await import("./platform-runtime.js");
+        await initialisePlatformRuntime({
+          appId,
+          appVersion: options.appVersion || document.documentElement.dataset.appVersion || "unknown",
+          accessSnapshot: snapshot,
+          mountControls: options.privacyControls !== false,
+        });
+      } catch (error) {
+        console.warn(`GHRAB platform runtime (${appId}) nebyl načten.`, error);
+        document.documentElement.dataset.ghrabPlatformRuntime = "unavailable";
+      }
+    }
     document.dispatchEvent(
       new CustomEvent("ghrab:app-access-granted", {
         detail: { appId, permit: access.permit, telemetryMode: mode },
@@ -440,5 +564,12 @@ export async function protectApp(appId, options = {}) {
     return true;
   }
   renderGate(appId, access, options);
+  if (options.errorReporterOnDenied !== false) {
+    void startErrorReporterBestEffort(appId, {
+      ...options,
+      errorReporter: true,
+      launcherBottom: options.deniedReporterBottom || "24px",
+    });
+  }
   return false;
 }

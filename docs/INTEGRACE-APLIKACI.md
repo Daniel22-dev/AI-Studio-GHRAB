@@ -1,8 +1,8 @@
-# Integrace samostatných aplikací — AI Studio 0.6.3
+# Integrace samostatných aplikací — AI Studio 0.20.9
 
 ## Aktuální stav
 
-Integrace je dokončena v Generátoru 7.1.4, Diferenciátoru 1.3.3, Hodnotiteli maturitních slohů 1.5.2, LUDUSu 1.16.3, Korespondenčním asistentovi 5.5.1, ACTIVA 0.5.0 a SORTIO 1.0.2. Ochrana se nevztahuje jen na karty ve Studiu; probíhá také při přímém otevření každé aplikace.
+Integrace je dokončena v Generátoru 7.1.6, Diferenciátoru 1.3.6, Hodnotiteli maturitních slohů 1.5.4, LUDUSu 1.16.5, Korespondenčním asistentovi 5.9.13, ACTIVA 0.5.3, SORTIO 1.0.5 a Lesson Hubu 1.2.2. Ochrana se nevztahuje jen na karty ve Studiu; probíhá také při přímém otevření každé aplikace.
 
 ## Jak funguje jednotné přihlášení
 
@@ -24,6 +24,9 @@ Aplikační JavaScript je v distribučním HTML inertní. Bootstrap nejprve nač
 - `essay-evaluator`
 - `ludus`
 - `correspondence`
+- `activity-builder`
+- `sortio`
+- `lesson-hub`
 
 Identifikátor musí být shodný v manifestu, přístupové politice, oprávnění a bootstrapu.
 
@@ -42,3 +45,7 @@ Pro každé vydání ověřit: přímou URL bez přístupu, správce, učitele s
 ## Hodnotitel
 
 Hodnotitel používá ID `essay-evaluator`, školení `HOD-01` a rizikovou úroveň `high`. Učitel potřebuje nový podepsaný přístup obsahující toto ID; staré přístupy se automaticky nerozšíří.
+
+## Jediná instance technického reportéru
+
+Samostatná aplikace volá `protectApp(appId, { errorReporter: false })` a následně načte jednu lokální synchronizovanou kopii reportéru. Tím je zachována samostatná a offline funkčnost bez souběhu s centrální instancí. Lokální manuál reportér nespouští a odkazuje na centrální návod AI Studia.

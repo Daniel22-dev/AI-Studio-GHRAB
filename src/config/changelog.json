@@ -1,7 +1,127 @@
 {
   "schema": "ai-studio-changelog-v1",
-  "current": "0.20.6",
+  "current": "0.20.14",
   "items": [
+    {
+      "version": "0.20.14",
+      "date": "2026-08-04",
+      "title": {
+        "cs": "Platformní P3: modularizace, výkon, přístupnost a provozní důkazy",
+        "en": "Platform P3: modularisation, performance, accessibility and operational evidence"
+      },
+      "changes": [
+        {
+          "cs": "GHRAB Platform 1.1.0 zavádí společné kontrakty přístupnosti, výkonových rozpočtů a lazy modulů.",
+          "en": "GHRAB Platform 1.1.0 introduces shared accessibility, performance-budget and lazy-module contracts."
+        },
+        {
+          "cs": "Registry a volitelné portálové efekty byly odděleny do samostatných modulů bez změny pracovního prostoru Studia.",
+          "en": "Registry handling and optional portal effects were split into dedicated modules without changing the Studio workspace."
+        },
+        {
+          "cs": "Všech devět projektů má jednotnou statickou, klávesnicovou a CI axe bránu a měřený výkonový rozpočet.",
+          "en": "All nine projects now share static, keyboard and CI axe gates plus measured performance budgets."
+        },
+        {
+          "cs": "Registry satelitů, AI readiness a certifikační důkazy odpovídají přesným verzím P3.",
+          "en": "Satellite registries, AI readiness and certification evidence match the exact P3 versions."
+        },
+        {
+          "cs": "P3 uzavírá safe distribuci LUDUS médií a kapacitní baseline Lesson Hubu.",
+          "en": "P3 closes safe LUDUS media distribution and the Lesson Hub capacity baseline."
+        }
+      ]
+    },
+    {
+      "version": "0.20.9",
+      "date": "2026-08-04",
+      "title": {
+        "cs": "Platformní P1: školní relace, AI Gateway a jednotná datová ochrana",
+        "en": "Platform P1: school session, AI Gateway and unified data protection"
+      },
+      "changes": [
+        {
+          "cs": "Školní profil používá serverem řízenou relaci s HttpOnly/Secure/SameSite cookie a krátkodobým request tokenem pouze v paměti; GitHub Pages nadále zachovávají podepsaný serverless přístup.",
+          "en": "The school profile uses a server-authoritative session with an HttpOnly/Secure/SameSite cookie and a short-lived request token kept in memory only; GitHub Pages retain signed serverless access."
+        },
+        {
+          "cs": "GHRAB AI Core 1.0.0 je certifikován v šesti AI aplikacích. Společný registr obsahuje 31 pojmenovaných operací a školní gateway autoritativně eviduje provider requesty, tokeny, limity, náklady a vícefázová workflow.",
+          "en": "GHRAB AI Core 1.0.0 is certified in six AI applications. The shared registry contains 31 named operations and the school gateway authoritatively records provider requests, tokens, limits, cost and multi-stage workflows."
+        },
+        {
+          "cs": "Provider API klíče se ve školním profilu nikdy neposílají ani neukládají v prohlížeči. Přímý Gemini režim zůstává dostupný jen v GitHub profilu a staré trvalé klíče jsou migrovány do dočasné relace nebo odstraněny.",
+          "en": "Provider API keys are never sent to or stored in the browser in the school profile. Direct Gemini remains available only in the GitHub profile, while legacy persistent keys are migrated to temporary session storage or removed."
+        },
+        {
+          "cs": "Devět aplikací sdílí deployment, CSP, datové a privacy kontrakty, společný health/version handshake, bezpečnou diagnostiku bez obsahu a ovládání pro sdílené školní zařízení.",
+          "en": "All nine applications share deployment, CSP, data and privacy contracts, a common health/version handshake, content-free diagnostics and shared-school-device controls."
+        },
+        {
+          "cs": "Lesson Hub je napojen přes centrální reverzní proxy bez bearer tokenu v úložišti prohlížeče. Registr Studia je synchronizován s KS 5.9.14, SORTIO 1.0.6, Lesson Hub 1.2.3, Diferenciátor 1.3.7, ACTIVA 0.5.4, Hodnotitel 1.5.5, LUDUS 1.16.6 a Generátor 7.1.7.",
+          "en": "Lesson Hub is connected through the central reverse proxy without a bearer token in browser storage. The Studio registry is synchronised with KS 5.9.14, SORTIO 1.0.6, Lesson Hub 1.2.3, Differentiator 1.3.7, ACTIVA 0.5.4, Evaluator 1.5.5, LUDUS 1.16.6 and Generator 7.1.7."
+        }
+      ]
+    },
+    {
+      "version": "0.20.8",
+      "date": "2026-08-04",
+      "title": {
+        "cs": "Platformní P0: odolný start a server-ready základ",
+        "en": "Platform P0: resilient startup and server-ready foundation"
+      },
+      "changes": [
+        {
+          "cs": "Centrální Access Guard už nemá statickou závislost na reportéru. Portál, satelitní aplikace i zamykací obrazovka načítají diagnostiku best-effort a výpadek reportéru nesmí zablokovat aplikaci ani být vydáván za chybu oprávnění.",
+          "en": "The central Access Guard no longer has a static reporter dependency. The portal, satellite applications and denied gate load diagnostics on a best-effort basis, and reporter failure must not block an application or masquerade as an access error."
+        },
+        {
+          "cs": "Zaveden společný deployment kontrakt pro současné GitHub Pages a P0 kompatibilní hosting na školním serveru. Profil neobsahuje tajné údaje a poctivě ponechává serverovou relaci a AI gateway do etapy P1.",
+          "en": "A shared deployment contract now supports current GitHub Pages and P0-compatible school-server hosting. The profile contains no secrets and explicitly leaves server sessions and the AI gateway for phase P1."
+        },
+        {
+          "cs": "Service workery a nouzové čištění cache chrání čerstvost sdílené přístupové vrstvy včetně policy, revokací, veřejného klíče a deployment konfigurace; identifikátor čištění se řídí verzí společné vrstvy.",
+          "en": "Service workers and emergency cache cleanup protect freshness of the shared access layer, including policy, revocations, the public key and deployment configuration; cleanup is keyed by the shared-layer version."
+        },
+        {
+          "cs": "Kanonický reportér 1.1.0 omezuje skutečnou zakódovanou Gmail/mailto adresu, zachovává plné údaje v ZIPu a kopírování, uzavírá fokus v dialogu, obnovuje fokus a přiděluje nové ID každému novému hlášení.",
+          "en": "Canonical reporter 1.1.0 limits the actual encoded Gmail/mailto URL, preserves full details in ZIP and copy output, traps and restores focus, and assigns a fresh ID to each new report."
+        },
+        {
+          "cs": "Registr Studia byl synchronizován s verzemi KS 5.9.13, SORTIO 1.0.5, Lesson Hub 1.2.2, Diferenciátor 1.3.6, ACTIVA 0.5.3, Hodnotitel 1.5.4, LUDUS 1.16.5 a Generátor 7.1.6.",
+          "en": "The Studio registry was synchronised with KS 5.9.13, SORTIO 1.0.5, Lesson Hub 1.2.2, Differentiator 1.3.6, ACTIVA 0.5.3, Evaluator 1.5.4, LUDUS 1.16.5 and Generator 7.1.6."
+        }
+      ]
+    },
+    {
+      "version": "0.20.7",
+      "date": "2026-08-03",
+      "title": {
+        "cs": "Jednotný reportér chyb v celém ekosystému",
+        "en": "Unified error reporter across the ecosystem"
+      },
+      "changes": [
+        {
+          "cs": "AI Studio a osm samostatných aplikací používají jeden synchronizovaný základ reportéru s ochranou identifikátorem ghrab-error-reporter; lokální aplikace výslovně vypínají centrální instanci v app-guard.js.",
+          "en": "AI Studio and eight standalone applications use one synchronised reporter base protected by the ghrab-error-reporter identifier; standalone applications explicitly disable the central app-guard.js instance."
+        },
+        {
+          "cs": "Reportér živě sleduje skutečný světlý nebo tmavý motiv aplikace, nabízí výhradně explicitní přechod do aplikace a podporuje až pět snímků přes responzivní plovoucí panel.",
+          "en": "The reporter tracks each application’s actual light or dark theme live, uses an explicit transition into the application and supports up to five screenshots through a responsive floating panel."
+        },
+        {
+          "cs": "Křížek, Zavřít, kliknutí mimo dialog i Escape používají stejnou ochranu konceptu; úplné smazání odstraní text, snímky, ZIP, technické chyby, původní ID i aktivní stream.",
+          "en": "Close icon, Close button, backdrop click and Escape share the same draft protection; full deletion removes text, screenshots, ZIP, technical errors, the original ID and any active capture stream."
+        },
+        {
+          "cs": "Hlavní akce je skutečný předem připravený Gmail odkaz a současné stažení soukromí respektujícího ZIPu; aktualizován byl také společný návod a záložní e-mailové akce.",
+          "en": "The primary action is a genuine precomputed Gmail link combined with downloading a privacy-safe ZIP; the shared guide and fallback email actions were updated as well."
+        },
+        {
+          "cs": "Registr Studia byl synchronizován s verzemi KS 5.9.12, SORTIO 1.0.4, Lesson Hub 1.2.1, Diferenciátor 1.3.5, ACTIVA 0.5.2, Hodnotitel 1.5.3, LUDUS 1.16.4 a Generátor 7.1.5.",
+          "en": "The Studio registry was synchronised with KS 5.9.12, SORTIO 1.0.4, Lesson Hub 1.2.1, Differentiator 1.3.5, ACTIVA 0.5.2, Evaluator 1.5.3, LUDUS 1.16.4 and Generator 7.1.5."
+        }
+      ]
+    },
     {
       "version": "0.20.6",
       "date": "2026-08-03",

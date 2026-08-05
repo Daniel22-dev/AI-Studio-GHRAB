@@ -3,6 +3,12 @@ import {
   hasAppAccess,
   formatReason,
 } from "../access/access-control.js";
+import {
+  applyDeploymentToAppRegistry,
+  loadDeploymentConfig,
+} from "../access/deployment-config.js";
+
+const deploymentReady = loadDeploymentConfig({ appId: "ai-studio" });
 
 const language = (() => {
   try {
@@ -274,7 +280,10 @@ async function fetchApps() {
   ]) {
     try {
       const response = await fetch(path, { cache: "no-store" });
-      if (response.ok) return await response.json();
+      if (response.ok) {
+        const deployment = await deploymentReady;
+        return applyDeploymentToAppRegistry(deployment, await response.json());
+      }
     } catch {
       /* try fallback */
     }

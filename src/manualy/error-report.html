@@ -1,5 +1,5 @@
 <!doctype html>
-<html lang="cs" data-theme="dark">
+<html lang="cs" data-theme="dark" data-ghrab-app-id="ai-studio" data-ghrab-app-version="0.20.14">
   <head>
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width,initial-scale=1" />
@@ -14,7 +14,7 @@
     <link rel="stylesheet" href="../styles.css" />
     <link rel="stylesheet" href="../polish.css" />
     <link rel="stylesheet" href="./error-report.css" />
-  </head>
+</head>
   <body
     data-page="manualy"
     data-title-cs="Jak nahlásit chybu · AI Studio GHRAB"
@@ -89,10 +89,13 @@
           <div>
             <h2>Zobrazte chybu a pořiďte snímky</h2>
             <p>
-              Hlášení se skryje a vpravo dole zůstane kompaktní panel
+              Po povolení sdílení zůstane hlášení otevřené. Klikněte na jasně
+              označené tlačítko <strong>Přejít do aplikace</strong>; teprve poté
+              se dialog skryje a vpravo dole zůstane kompaktní panel
               <strong>Pořídit snímek · Zpět k hlášení · Ukončit snímání</strong>.
-              Zobrazte chybu a pořiďte až pět snímků. Panel se při samotném
-              zachycení na okamžik skryje, aby nebyl na výsledném obrázku.
+              Zobrazte chybu a pořiďte až pět snímků. Panel respektuje bezpečný
+              okraj nad systémovou lištou sdílení a při samotném zachycení se na
+              okamžik skryje, aby nebyl na výsledném obrázku.
             </p>
           </div>
         </article>
@@ -136,10 +139,12 @@
       <section class="guide-limit">
         <strong>Co se stane při zavření hlášení?</strong>
         <p>
-          Obsahuje-li formulář text, snímky nebo už připravený ZIP, aplikace se
-          před zavřením zeptá. Volba <strong>Smazat hlášení a zavřít</strong>
-          odstraní snímky i poslední výstup; volba
-          <strong>Ponechat rozepsané a zavřít</strong> je zachová pro návrat.
+          Obsahuje-li formulář text, snímky nebo už připravený ZIP, všechny
+          způsoby zavření — křížek, tlačítko Zavřít, kliknutí mimo dialog i
+          Escape — zobrazí stejnou volbu. <strong>Ponechat rozepsané a
+          zavřít</strong> zachová celý koncept. <strong>Smazat hlášení a
+          zavřít</strong> odstraní text, snímky, připravený ZIP, technické chyby
+          tohoto konceptu i jeho ID; další otevření začne čistým hlášením.
         </p>
       </section>
       <section class="guide-explainer">

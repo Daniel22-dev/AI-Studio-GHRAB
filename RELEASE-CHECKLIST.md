@@ -1,10 +1,13 @@
-# Release checklist AI Studio GHRAB 0.20.6
+# Release checklist AI Studio GHRAB 0.20.9
 
-**Aktuální verze: 0.20.6**
+> Aktuální verze: **0.20.14** · etapa P2
+
+
+**Aktuální verze: 0.20.9**
 
 ## Veřejný balík
 
-- [x] Verze 0.20.6 je shodná v package, buildu, dokumentaci a changelogu; PWA manifest nepoužívá nestandardní pole `version`.
+- [x] Verze 0.20.9 je shodná v package, PWA manifestu, QA manifestu, buildu, dokumentaci a changelogu.
 - [x] Všechny aplikace jsou ve výchozím stavu uzamčené.
 - [x] Veřejný balík obsahuje pouze veřejný ověřovací klíč.
 - [x] Ve zdroji ani buildu není soukromý klíč ani `.ghrab-access.json`.
@@ -59,4 +62,13 @@
 - [x] Runtime povoluje pouze `direct-gemini` a zakazuje automatický fallback.
 - [x] Migrační stav se odvozuje z živých manifestů; lokální certifikace se nezobrazuje jako nasazená.
 - [x] Regresní test akceptuje pravdivý přechodový stav i živý stav `ready` a kontroluje konzistenci souhrnných počtů.
-- [x] Migration Kit 1.0.2 obsahuje kontrakt, Core, konformitní sadu, prompt a consumer workflow.
+- [x] Migration Kit 1.0.3 obsahuje kontrakt, neměnný Core, konformitní sadu, opravený integrační prompt a bezpečný consumer workflow.
+
+## Jednotný reportér chyb
+
+- [x] Centrální základ a synchronizované lokální kopie jsou shodné.
+- [x] Samostatné aplikace používají `errorReporter: false` a vytvářejí právě jednu lokální instanci.
+- [x] Service worker cachuje JS a CSS reportéru.
+- [x] Automatická sada ověřuje motivy, koncept, pět screenshotů, Gmail odkaz, novou kartu, ZIP, soukromí a iframe AI Studia.
+- [ ] Ručně ověřit skutečný systémový picker sdílení obrazovky a lištu Chromu.
+- [ ] Ručně ověřit přihlášený Gmail a přiložení ZIPu.
