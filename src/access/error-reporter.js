@@ -823,6 +823,7 @@ export function setupErrorReporter(options = {}) {
   }
   const launcher = button(t("Nahlásit chybu", "Report an issue"), "launcher");
   launcher.setAttribute("aria-haspopup", "dialog");
+  launcher.setAttribute("aria-label", t("Nahlásit chybu", "Report an issue"));
   launcher.innerHTML = `<span aria-hidden="true">!</span><strong>${t("Nahlásit chybu", "Report an issue")}</strong>`;
   const backdrop = element("div", "ghrab-report-backdrop");
   backdrop.hidden = true;

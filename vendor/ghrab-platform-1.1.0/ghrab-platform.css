@@ -15,7 +15,7 @@
   border: 1px solid var(--ghrab-platform-border);
   border-radius: 14px;
   background: var(--ghrab-platform-surface);
-  color: inherit;
+  color: CanvasText;
   font: 500 12px/1.45 system-ui, -apple-system, "Segoe UI", sans-serif;
 }
 .ghrab-platform-footer__brand,

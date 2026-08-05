@@ -528,6 +528,7 @@ async function runBrowserTests() {
       return {
         roots: document.querySelectorAll('#ghrab-error-reporter').length,
         launchers: root.querySelectorAll('.ghrab-report-button.launcher').length,
+        launcherLabel: root.querySelector('.ghrab-report-button.launcher')?.getAttribute('aria-label') || '',
         panels: root.querySelectorAll('.ghrab-report-panel').length,
         duplicateIds: [...new Set(ids.filter((id, index) => ids.indexOf(id) !== index))],
         listeners: window.__listenerCounts,
@@ -535,6 +536,7 @@ async function runBrowserTests() {
       };
     })()`);
     check('Právě jedna instance, jedno tlačítko a jeden dialog', initial.roots === 1 && initial.launchers === 1 && initial.panels === 1, JSON.stringify(initial));
+    check('Spouštěcí tlačítko má přístupný název', Boolean(initial.launcherLabel.trim()), initial.launcherLabel);
     check('Právě jedna sada posluchačů technických chyb', initial.listeners.error === 1 && initial.listeners.unhandledrejection === 1 && initial.fetchWrappedOnce === true, JSON.stringify(initial.listeners));
     check('Žádná duplicitní ID v reportéru', initial.duplicateIds.length === 0, initial.duplicateIds.join(', '));
 

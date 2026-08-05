@@ -63,9 +63,11 @@ function validate(app, expectedId, source) {
     throw new Error("nepodporovaný platformní kontrakt");
   if (!semver.test(platform.platformVersion || "") || platform.brandVersion !== "1.0.0")
     throw new Error("neplatná verze platformy nebo brandu");
-  if (platform.themeContract !== 1 || platform.swContract !== 1 || platform.artifactEnvelope !== 1)
+  const themeContractOk = ["ghrab-theme-v1", 1].includes(platform.themeContract);
+  const artifactEnvelopeOk = ["ghrab-artifact-envelope-v1", 1].includes(platform.artifactEnvelope);
+  if (!themeContractOk || platform.swContract !== 1 || !artifactEnvelopeOk)
     throw new Error("nekompatibilní společné kontrakty P2");
-  if (![2, "not-applicable"].includes(platform.studioBridge))
+  if (!["ghrab-studio-handoff-v2", 2, "not-applicable"].includes(platform.studioBridge))
     throw new Error("neplatná verze Studio Bridge");
   if (platform.storagePrefix !== `ghrab.${app.id}.`)
     throw new Error("neplatný namespace úložiště");
