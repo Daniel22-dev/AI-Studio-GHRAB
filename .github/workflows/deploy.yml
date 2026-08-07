@@ -52,6 +52,8 @@ jobs:
         run: |
           npx playwright install --with-deps chromium
           node -e "console.log('CHROMIUM_PATH=' + require('playwright').chromium.executablePath())" >> "$GITHUB_ENV"
+      - name: Build application for reporter regression
+        run: npm run build
       - name: Run unified error reporter regression
         run: npm run test:reporter
       - name: Run GHRAB QA release gate
@@ -85,6 +87,7 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - name: Download QA evidence
+        continue-on-error: true
         uses: actions/download-artifact@v4
         with:
           name: ghrab-qa-${{ github.sha }}
