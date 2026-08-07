@@ -162,11 +162,16 @@ export function mimeFor(file) {
     }[ext] || "application/octet-stream"
   );
 }
-export async function startStaticServer(rootDir) {
+export async function startStaticServer(rootDir, { deploymentBasePath = "" } = {}) {
+  const normalizedBasePath = String(deploymentBasePath || "")
+    .replace(/^\/+|\/+$/g, "");
   const server = createServer(async (req, res) => {
     try {
       const u = new URL(req.url, "http://localhost");
       let rel = decodeURIComponent(u.pathname).replace(/^\/+/, "");
+      if (normalizedBasePath && (rel === normalizedBasePath || rel.startsWith(`${normalizedBasePath}/`))) {
+        rel = rel.slice(normalizedBasePath.length).replace(/^\/+/, "");
+      }
       if (!rel) rel = "index.html";
       let target = path.resolve(rootDir, rel);
       if (!target.startsWith(path.resolve(rootDir))) {

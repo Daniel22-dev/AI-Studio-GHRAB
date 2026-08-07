@@ -82,5 +82,6 @@
       "public"
     ],
     "disallowRegexLookbehind": true
-  }
+  },
+  "deploymentBasePath": "/AI-Studio-GHRAB/"
 }
