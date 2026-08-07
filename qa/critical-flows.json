@@ -29,7 +29,7 @@
       "assertions": [
         {
           "file": "src/sw.js",
-          "regex": "startsWith\\(\"ai-studio-ghrab-v\"\\)",
+          "regex": "CACHE_PREFIXES\\s*=\\s*\\[[\\s\\S]*ghrab-ai-studio-v[\\s\\S]*\\][\\s\\S]*CACHE_PREFIXES\\.some\\(\\(prefix\\)\\s*=>\\s*key\\.startsWith\\(prefix\\)\\)",
           "message": "Aktivace service workeru není omezena na vlastní prefix."
         }
       ]

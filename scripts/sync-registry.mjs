@@ -6,6 +6,17 @@ const here = path.dirname(fileURLToPath(import.meta.url));
 const root = path.resolve(here, "..");
 const configDir = path.join(root, "src", "config");
 const offline = process.argv.includes("--offline");
+let previousFallbackConfirmed = false;
+try {
+  const [previousReport, previousGenerated, currentFallback] = await Promise.all([
+    readFile(path.join(configDir, "sync-report.json"), "utf8").then(JSON.parse),
+    readFile(path.join(configDir, "apps.generated.json"), "utf8"),
+    readFile(path.join(configDir, "apps.fallback.json"), "utf8"),
+  ]);
+  previousFallbackConfirmed =
+    previousReport?.fallbackSnapshotConfirmed === true &&
+    previousGenerated === currentFallback;
+} catch {}
 const sources = JSON.parse(
   await readFile(path.join(configDir, "sources.json"), "utf8"),
 );
@@ -231,7 +242,7 @@ const report = {
   generated: true,
   generatedAt: new Date().toISOString(),
   mode,
-  fallbackSnapshotConfirmed: mode === "fallback" && offline,
+  fallbackSnapshotConfirmed: mode === "fallback" && (offline || previousFallbackConfirmed),
   sources: reportSources,
 };
 await writeFile(

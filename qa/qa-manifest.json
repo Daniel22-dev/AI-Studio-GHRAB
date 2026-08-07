@@ -56,7 +56,7 @@
     },
     {
       "file": "dist/sw.js",
-      "regex": "ai-studio-ghrab-v([0-9.]+)",
+      "regex": "ghrab-ai-studio-v([0-9.]+)",
       "expected": "0.20.14"
     }
   ],
@@ -66,7 +66,7 @@
       "root": "dist",
       "manifest": "manifest.webmanifest",
       "serviceWorker": "sw.js",
-      "cachePrefix": "ai-studio-ghrab-v"
+      "cachePrefix": "ghrab-ai-studio-v"
     }
   ],
   "security": {

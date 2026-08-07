@@ -167,6 +167,7 @@ for (const p of files.filter(
     /(?:import\s+(?:[^"']+?\s+from\s+)?|import\()(["'])(\.\.?\/[^"']+)\1/g,
   )) {
     if (rel.startsWith("tests/") || rel.startsWith("test/")) continue;
+    if (isInsideJsLiteral(text, match.index ?? 0)) continue;
     let target = path.resolve(path.dirname(p), match[2]);
     if (!path.extname(target)) target += ".js";
     let generatedTarget = "";
@@ -271,3 +272,33 @@ await writeFile(
 );
 console.log(`TECHNICAL ${result.status}: ${f.length} nálezů`);
 if (result.status === "FAIL") process.exitCode = 1;
+function isInsideJsLiteral(text, index) {
+  let state = "code";
+  let escaped = false;
+  for (let i = 0; i < index; i++) {
+    const ch = text[i];
+    const next = text[i + 1];
+    if (state === "line-comment") {
+      if (ch === "\n") state = "code";
+      continue;
+    }
+    if (state === "block-comment") {
+      if (ch === "*" && next === "/") { state = "code"; i++; }
+      continue;
+    }
+    if (state !== "code") {
+      if (escaped) { escaped = false; continue; }
+      if (ch === "\\") { escaped = true; continue; }
+      if ((state === "single" && ch === "'") ||
+          (state === "double" && ch === '"') ||
+          (state === "template" && ch === "`")) state = "code";
+      continue;
+    }
+    if (ch === "/" && next === "/") { state = "line-comment"; i++; continue; }
+    if (ch === "/" && next === "*") { state = "block-comment"; i++; continue; }
+    if (ch === "'") state = "single";
+    else if (ch === '"') state = "double";
+    else if (ch === "`") state = "template";
+  }
+  return state !== "code";
+}

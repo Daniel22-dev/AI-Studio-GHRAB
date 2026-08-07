@@ -1,13 +1,5 @@
 # Changelog
 
-
-## 0.20.14 — P5 R2
-
-- P5 R2 runtime audit spouští skutečné portálové UI přes lokální HTTP.
-- Produkční reportér je povinně ověřován mimo testovací strom.
-- Lockfile a CI používají explicitní veřejný npm registr.
-
-
 > Tento soubor se generuje ze `src/config/changelog.json`. Neupravujte jej ručně.
 
 ## 0.20.14 — 2026-08-04

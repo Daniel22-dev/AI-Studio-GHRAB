@@ -184,8 +184,15 @@ export async function startStaticServer(rootDir) {
       res.writeHead(200, {
         "content-type": mimeFor(target),
         "cache-control": "no-store",
-        "access-control-allow-origin": "*",
       });
+      if (path.extname(target).toLowerCase() === ".html") {
+        let html = await readFile(target, "utf8");
+        html = html.replace(
+          /<meta[^>]+http-equiv=["']Content-Security-Policy["'][^>]*>/gi,
+          "",
+        );
+        return res.end(html);
+      }
       res.end(await readFile(target));
     } catch (e) {
       res.writeHead(500);
@@ -205,38 +212,17 @@ export async function setLocalDocument(page, rootDir, urlPath, baseUrl) {
   let target = path.join(rootDir, clean);
   if ((await stat(target)).isDirectory())
     target = path.join(target, "index.html");
-  let html = await readFile(target, "utf8");
-  html = html.replace(
-    /<meta[^>]+http-equiv=["']Content-Security-Policy["'][^>]*>/gi,
-    "",
-  );
-  const basePath = path.posix.dirname("/" + clean).replace(/\/$/, "") + "/";
-  const base = `<base href="${baseUrl}${basePath}">`;
-  html = /<head[^>]*>/i.test(html)
-    ? html.replace(/<head([^>]*)>/i, `<head$1>${base}`)
-    : base + html;
+  if (!(await exists(target))) throw new Error(`Chybí lokální dokument ${clean}`);
   await page.addInitScript(() => {
     const makeStorage = () => {
       const values = new Map();
       return {
-        get length() {
-          return values.size;
-        },
-        key(i) {
-          return [...values.keys()][i] ?? null;
-        },
-        getItem(k) {
-          return values.has(String(k)) ? values.get(String(k)) : null;
-        },
-        setItem(k, v) {
-          values.set(String(k), String(v));
-        },
-        removeItem(k) {
-          values.delete(String(k));
-        },
-        clear() {
-          values.clear();
-        },
+        get length() { return values.size; },
+        key(i) { return [...values.keys()][i] ?? null; },
+        getItem(k) { return values.has(String(k)) ? values.get(String(k)) : null; },
+        setItem(k, v) { values.set(String(k), String(v)); },
+        removeItem(k) { values.delete(String(k)); },
+        clear() { values.clear(); },
       };
     };
     try {
@@ -262,7 +248,8 @@ export async function setLocalDocument(page, rootDir, urlPath, baseUrl) {
       });
     }
   });
-  await page.setContent(html, { waitUntil: "load", timeout: 20000 });
+  const url = new URL(`/${clean}`, baseUrl).href;
+  await page.goto(url, { waitUntil: "load", timeout: 20000 });
   return target;
 }
 

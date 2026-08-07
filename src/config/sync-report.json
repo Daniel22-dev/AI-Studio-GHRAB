@@ -1,7 +1,7 @@
 {
   "schema": "ai-studio-sync-report-v1",
   "generated": true,
-  "generatedAt": "2026-08-04T13:33:05.908Z",
+  "generatedAt": "2026-08-07T17:05:23.670Z",
   "mode": "fallback",
   "fallbackSnapshotConfirmed": true,
   "sources": [
@@ -9,57 +9,57 @@
       "id": "generator",
       "url": "https://daniel22-dev.github.io/generator-testu/studio-manifest.json",
       "ok": false,
-      "version": "7.1.7",
-      "error": "offline režim"
+      "version": "7.1.10",
+      "error": "forced offline for QA"
     },
     {
       "id": "differentiator",
       "url": "https://daniel22-dev.github.io/diferenciator/studio-manifest.json",
       "ok": false,
-      "version": "1.3.7",
-      "error": "offline režim"
+      "version": "1.3.10",
+      "error": "forced offline for QA"
     },
     {
       "id": "essay-evaluator",
       "url": "https://daniel22-dev.github.io/Hodnotitel-maturitnich-slohu/studio-manifest.json",
       "ok": false,
-      "version": "1.5.5",
-      "error": "offline režim"
+      "version": "1.5.8",
+      "error": "forced offline for QA"
     },
     {
       "id": "correspondence",
       "url": "https://daniel22-dev.github.io/korespondencni-asistent/studio-manifest.json",
       "ok": false,
-      "version": "5.9.14",
-      "error": "offline režim"
+      "version": "5.9.17",
+      "error": "forced offline for QA"
     },
     {
       "id": "ludus",
       "url": "https://daniel22-dev.github.io/Ludus/studio-manifest.json",
       "ok": false,
-      "version": "1.16.6",
-      "error": "offline režim"
+      "version": "1.16.9",
+      "error": "forced offline for QA"
     },
     {
       "id": "activity-builder",
       "url": "https://daniel22-dev.github.io/Sestavovac-aktivit/studio-manifest.json",
       "ok": false,
-      "version": "0.5.4",
-      "error": "offline režim"
+      "version": "0.5.7",
+      "error": "forced offline for QA"
     },
     {
       "id": "sortio",
       "url": "https://daniel22-dev.github.io/SORTIO/studio-manifest.json",
       "ok": false,
-      "version": "1.0.6",
-      "error": "offline režim"
+      "version": "1.0.9",
+      "error": "forced offline for QA"
     },
     {
       "id": "lesson-hub",
       "url": "https://daniel22-dev.github.io/lesson-hub/studio-manifest.json",
       "ok": false,
-      "version": "1.2.3",
-      "error": "offline režim"
+      "version": "1.2.6",
+      "error": "forced offline for QA"
     }
   ]
 }

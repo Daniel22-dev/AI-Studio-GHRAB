@@ -147,7 +147,7 @@ export async function validateSecurity({ root, finding }) {
     );
 
   const readme = await readFile(path.join(root, "README.md"), "utf8");
-  const readmeVersion = readme.match(/Aktuální verze:\s*([0-9.]+)/)?.[1];
+  const readmeVersion = readme.match(/Aktuální verze:\*{0,2}\s*([0-9.]+)/)?.[1];
   if (readmeVersion !== pkg.version)
     add(
       "MAJOR",

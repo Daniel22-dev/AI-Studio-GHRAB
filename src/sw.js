@@ -79,7 +79,7 @@ self.addEventListener('fetch', (event) => {
   const scopePath = new URL('./', self.location.href).pathname;
   if (!url.pathname.startsWith(scopePath) || request.cache === 'no-store' || isRuntimeRequest(url, scopePath)) return;
   if (request.mode === 'navigate') {
-    const fallback = url.pathname.includes('/manual/') ? './manual/index.html' : './index.html';
+    const fallback = url.pathname.includes('/manualy/') ? './manualy/index.html' : './index.html';
     event.respondWith(networkFirst(request, fallback));
     return;
   }
