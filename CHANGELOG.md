@@ -2,6 +2,13 @@
 
 > Tento soubor se generuje ze `src/config/changelog.json`. Neupravujte jej ručně.
 
+## 0.20.18 — 2026-08-09
+**Korespondenční asistent: opraven skutečný embedded bootstrap**
+
+- Produkční reprodukce odhalila skutečnou příčinu obecné hlášky o nedostupné přístupové službě: KS 5.9.20 při startu uvnitř Studia četl `geminiModel` ještě před inicializací lexikálního bindingu a skončil TDZ výjimkou.
+- Registr Studia je srovnán s opraveným KS 5.9.21 a cache `ghrab-correspondence-v5.9.21`; launch URL zůstává stejná a nevyžaduje nový přístupový token.
+- Regresní ověření KS nyní před skutečným GHRAB unlockem simuluje centrální `createAiRuntimeConfig()` a vyžaduje plný `ksShellReady` + `ksAppReady` bez runtime výjimky.
+
 ## 0.20.17 — 2026-08-09
 **Stabilní spouštění vložených aplikací přes AI Studio**
 

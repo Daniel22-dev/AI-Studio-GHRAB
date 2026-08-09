@@ -1,7 +1,29 @@
 {
   "schema": "ai-studio-changelog-v1",
-  "current": "0.20.17",
+  "current": "0.20.18",
   "items": [
+    {
+      "version": "0.20.18",
+      "date": "2026-08-09",
+      "title": {
+        "cs": "Korespondenční asistent: opraven skutečný embedded bootstrap",
+        "en": "Correspondence Assistant: actual embedded bootstrap fixed"
+      },
+      "changes": [
+        {
+          "cs": "Produkční reprodukce odhalila skutečnou příčinu obecné hlášky o nedostupné přístupové službě: KS 5.9.20 při startu uvnitř Studia četl `geminiModel` ještě před inicializací lexikálního bindingu a skončil TDZ výjimkou.",
+          "en": "Production-path reproduction identified the real cause behind the generic access-service error: KS 5.9.20 read `geminiModel` before its lexical binding was initialised when launched inside Studio, causing a TDZ exception."
+        },
+        {
+          "cs": "Registr Studia je srovnán s opraveným KS 5.9.21 a cache `ghrab-correspondence-v5.9.21`; launch URL zůstává stejná a nevyžaduje nový přístupový token.",
+          "en": "The Studio registry is aligned with fixed KS 5.9.21 and cache `ghrab-correspondence-v5.9.21`; the launch URL is unchanged and no new access token is required."
+        },
+        {
+          "cs": "Regresní ověření KS nyní před skutečným GHRAB unlockem simuluje centrální `createAiRuntimeConfig()` a vyžaduje plný `ksShellReady` + `ksAppReady` bez runtime výjimky.",
+          "en": "KS regression coverage now simulates central `createAiRuntimeConfig()` before the real GHRAB unlock and requires full `ksShellReady` + `ksAppReady` without runtime exceptions."
+        }
+      ]
+    },
     {
       "version": "0.20.17",
       "date": "2026-08-09",
