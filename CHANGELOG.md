@@ -2,6 +2,14 @@
 
 > Tento soubor se generuje ze `src/config/changelog.json`. Neupravujte jej ručně.
 
+## 0.20.16 — 2026-08-09
+**Mobilní nastavení: obnovení přepínače CZ/EN**
+
+- Opraven konflikt responzivních CSS pravidel, který na displejích do 650 px po otevření Nastavení skryl přepínač CZ/EN, přestože samotný panel nastavení zůstal viditelný.
+- Kritický browser flow zůstává beze změny a nyní funguje jako regresní ochrana skutečné uživatelské cesty: otevřít menu, otevřít Nastavení, přepnout do EN a zpět do CS.
+- Patch používá novou verzi 0.20.16, aby PWA cache nemohla ponechat starý mobilní CSS soubor z 0.20.15.
+- Do běžného `npm test` přibyla statická regresní kontrola, která odmítne návrat mobilního pravidla skrývajícího jazykový přepínač uvnitř panelu Nastavení.
+
 ## 0.20.15 — 2026-08-09
 **Odolnost ovládání: oprava nereagujících tlačítek a PWA cache**
 

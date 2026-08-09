@@ -1141,6 +1141,18 @@ const accessSummaryRule =
 if (!accessSummaryRule || /margin(?:-top)?\s*:\s*-/.test(accessSummaryRule))
   fail("Panel stavu přístupu se znovu překrývá se spodními kartami brány.");
 if (
+  !portalPolishText.includes(".header-actions > .segmented") ||
+  !/\.settings-menu\s+\.segmented\s*\{[\s\S]*?display\s*:\s*flex/i.test(
+    portalPolishText,
+  ) ||
+  /\.header-actions\s+\.segmented\s*\{[^}]*display\s*:\s*none/i.test(
+    portalPolishText,
+  )
+)
+  fail(
+    "Mobilní CSS znovu skrývá jazykový přepínač uvnitř panelu Nastavení.",
+  );
+if (
   !portalHomeHtml.includes("portal-ring-assembly") ||
   !portalHomeHtml.includes("portal-mechanical-ring ring-outer") ||
   !portalHomeHtml.includes("portal-lock-sequence")

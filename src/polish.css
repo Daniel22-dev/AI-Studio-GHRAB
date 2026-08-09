@@ -2506,7 +2506,7 @@ body {
 @media (max-width: 650px) {
   /* Jazyk zůstává dostupný v nabídce nastavení; v hlavičce se nesmí vrátit
      ovládání, které bylo v dřívějším responsivním bloku skryto. */
-  .header-actions .segmented {
+  .header-actions > .segmented {
     display: none;
     transform: none;
   }

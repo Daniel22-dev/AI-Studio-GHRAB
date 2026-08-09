@@ -1,15 +1,16 @@
 # AI Studio GHRAB
 
-**Aktuální verze:** 0.20.15  
+**Aktuální verze:** 0.20.16  
 **Platforma:** GHRAB Platform 1.1.0 · etapa P3
 
 
-**Verze 0.20.15 – opravná verze odolnosti ovládání a PWA cache nad GHRAB Platform 1.1.0.**
+**Verze 0.20.16 – hotfix mobilního Nastavení a přepínače jazyka nad opravou ovládání/PWA cache z 0.20.15.**
 
 AI Studio GHRAB je centrální brána školních digitálních a AI nástrojů. Jednotlivé aplikace zůstávají v samostatných repozitářích; Studio zajišťuje společnou navigaci, Top 4, synchronizaci verzí, bezpečnostní rámec, pracovní materiály, pilotní měření, správu podepsaných přístupů a kanonický základ technického reportéru.
 
-## Hlavní novinky 0.20.15
+## Hlavní novinky 0.20.16
 
+- Na mobilním rozložení je po otevření Nastavení znovu viditelný a kliknutelný přepínač CZ/EN; opraven byl konflikt dvou responzivních CSS pravidel.
 - Build verzí označuje všechny lokální JS/CSS vstupy i relativní modulové importy, takže nový HTML shell nemůže běžet se starým JavaScriptem z předchozí PWA cache.
 - Service worker při požadavku na jinou verzi obchází vlastní statickou cache a pro svou verzi zachovává správný offline fallback.
 - Úvodní překryv má nezávislý fail-open watchdog; případná chyba při startu už nemůže ponechat celé Studio v trvale inertním stavu.
@@ -53,7 +54,7 @@ Ochranný bootstrap je určen pro Generátor 7.1.8, Diferenciátor 1.3.8, Hodnot
 
 ## Doporučené pořadí nasazení P2
 
-1. AI Studio GHRAB 0.20.15 jako zpětně kompatibilní platformní základ.
+1. AI Studio GHRAB 0.20.16 jako zpětně kompatibilní platformní základ.
 2. Korespondenční asistent 5.9.15.
 3. Diferenciátor 1.3.8.
 4. Generátor testů 7.1.8.

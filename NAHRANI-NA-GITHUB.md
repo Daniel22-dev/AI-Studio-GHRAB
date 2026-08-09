@@ -1,6 +1,6 @@
-# Nahrání AI Studio GHRAB 0.20.15
+# Nahrání AI Studio GHRAB 0.20.16
 
-> Aktuální verze: **0.20.15** · etapa P3
+> Aktuální verze: **0.20.16** · etapa P3
 
 Tato opravná verze řeší stav, kdy se po aktualizaci PWA mohl nový HTML shell spojit se starým JavaScriptem a tlačítka přestala reagovat. Současně přidává fail-open ochranu úvodního překryvu. AI Studio se nadále nasazuje jako poslední, po všech samostatných aplikacích.
 
@@ -14,7 +14,7 @@ Tato opravná verze řeší stav, kdy se po aktualizaci PWA mohl nový HTML shel
 6. Hodnotitel maturitních slohů 1.5.8
 7. LUDUS 1.16.9
 8. Generátor interaktivních testů 7.1.10
-9. AI Studio GHRAB 0.20.15
+9. AI Studio GHRAB 0.20.16
 
 ## GitHub
 
