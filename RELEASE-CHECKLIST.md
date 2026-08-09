@@ -1,13 +1,10 @@
-# Release checklist AI Studio GHRAB 0.20.9
+# Release checklist AI Studio GHRAB 0.20.15
 
-> Aktuální verze: **0.20.14** · etapa P2
-
-
-**Aktuální verze: 0.20.9**
+> Aktuální verze: **0.20.15** · etapa P3
 
 ## Veřejný balík
 
-- [x] Verze 0.20.9 je shodná v package, PWA manifestu, QA manifestu, buildu, dokumentaci a changelogu.
+- [x] Verze 0.20.15 je shodná v package, PWA manifestu, QA manifestu, buildu, dokumentaci a changelogu.
 - [x] Všechny aplikace jsou ve výchozím stavu uzamčené.
 - [x] Veřejný balík obsahuje pouze veřejný ověřovací klíč.
 - [x] Ve zdroji ani buildu není soukromý klíč ani `.ghrab-access.json`.
@@ -18,6 +15,8 @@
 - [x] Import materiálů má hloubkovou validaci a limity.
 - [x] Pilotní metriky jsou přesně označeny jako místní.
 - [x] PWA cache se generuje automaticky z produkčního stromu a neobsahuje neplatné cesty.
+- [x] Všechny lokální JS/CSS vstupy a relativní modulové importy mají ve výsledném buildu revizi `?v=0.20.15`.
+- [x] Úvodní překryv má nezávislý fail-open watchdog a při selhání uvolní inertní stav rozhraní.
 - [x] `npm test` prochází bez chyby.
 
 ## Soukromý administrátorský balík

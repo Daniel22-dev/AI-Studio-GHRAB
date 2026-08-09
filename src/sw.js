@@ -1,5 +1,6 @@
 const GHRAB_SW_CONTRACT='ghrab-service-worker-v1';
 /* GHRAB service-worker contract v1 · update activation is user-controlled. */
+const APP_VERSION = "__APP_VERSION__";
 const CACHE = "ghrab-ai-studio-v__APP_VERSION__";
 const CACHE_PREFIXES = ["ghrab-ai-studio-v", "ai-studio-ghrab-v"];
 const CORE_REQUIRED = [/*__CORE_REQUIRED__*/
@@ -55,7 +56,14 @@ async function networkFirst(request, fallbackUrl = '') {
 
 async function cacheFirst(request) {
   const cache = await caches.open(CACHE);
-  const cached = await cache.match(request);
+  const url = new URL(request.url);
+  const requestedVersion = url.searchParams.get("v");
+  if (requestedVersion && requestedVersion !== APP_VERSION) {
+    return fetch(request, { cache: "no-store" });
+  }
+  const cached = await cache.match(request, {
+    ignoreSearch: requestedVersion === APP_VERSION,
+  });
   if (cached) return cached;
   const response = await fetch(request);
   if (response?.ok) await cache.put(request, response.clone());

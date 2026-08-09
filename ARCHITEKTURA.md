@@ -1,9 +1,10 @@
-# Architektura AI Studio GHRAB 0.20.9
+# Architektura AI Studio GHRAB 0.20.15
 
-> Aktuální verze: **0.20.14** · etapa P2
+> Aktuální verze: **0.20.15** · etapa P3
 
+## Koherence aktualizace PWA
 
-**Aktuální verze: 0.20.9**
+Produkční build přidává `?v=<verze>` ke všem lokálním JS/CSS vstupům a k relativním modulovým importům. Aktivní service worker obslouží z vlastní cache jen asset požadovaný pro svou verzi; při požadavku na jinou verzi jde přímo na síť. Tím se při čekající aktualizaci nesmí spojit nové HTML se starým JavaScriptem. Úvodní překryv má navíc samostatný fail-open watchdog, takže chyba hlavního modulu nesmí ponechat zbytek rozhraní inertní.
 
 ## Federovaný portál
 

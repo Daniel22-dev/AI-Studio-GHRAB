@@ -1,7 +1,33 @@
 {
   "schema": "ai-studio-changelog-v1",
-  "current": "0.20.14",
+  "current": "0.20.15",
   "items": [
+    {
+      "version": "0.20.15",
+      "date": "2026-08-09",
+      "title": {
+        "cs": "Odolnost ovládání: oprava nereagujících tlačítek a PWA cache",
+        "en": "Control resilience: non-responsive buttons and PWA cache fix"
+      },
+      "changes": [
+        {
+          "cs": "Build nyní přidává verzi ke všem lokálním JS/CSS vstupům i relativním modulovým importům, aby se nové HTML nikdy nespárovalo se starým JavaScriptem z předchozí PWA cache.",
+          "en": "The build now revisions every local JS/CSS entry and relative module import so new HTML cannot be paired with stale JavaScript from a previous PWA cache."
+        },
+        {
+          "cs": "Service worker při požadavku na jinou verzi obchází vlastní statickou cache; u své verze naopak zachovává offline fallback na správný přednačtený asset.",
+          "en": "The service worker bypasses its static cache when a different asset version is requested while retaining offline fallback to the correct precached asset for its own version."
+        },
+        {
+          "cs": "Úvodní překryv dostal nezávislý fail-open watchdog a bezpečné uvolnění inertního stavu, takže chyba při startu už nemůže trvale zablokovat všechna tlačítka Studia.",
+          "en": "The startup overlay now has an independent fail-open watchdog and safe inert-state cleanup, so a startup error can no longer permanently block all Studio controls."
+        },
+        {
+          "cs": "QA nově kontroluje verzování celého modulového grafu a browser flow skutečně kliká na navigaci, nastavení a přepínač jazyka; současně byly zpevněny okrajové handlery navigace a klávesnice.",
+          "en": "QA now verifies revisioning across the full module graph and a browser flow actually clicks navigation, settings and language controls; navigation and keyboard edge handlers were hardened as well."
+        }
+      ]
+    },
     {
       "version": "0.20.14",
       "date": "2026-08-04",

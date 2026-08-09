@@ -23,6 +23,53 @@
       ]
     },
     {
+      "id": "STUDIO-CHROME-CONTROLS",
+      "name": "Sdílená tlačítka navigace, nastavení a jazyka reagují",
+      "type": "browser",
+      "url": "/index.html",
+      "viewport": {
+        "width": 390,
+        "height": 844
+      },
+      "expectedText": "AI Studio GHRAB",
+      "steps": [
+        {
+          "action": "click",
+          "selector": ".nav-toggle"
+        },
+        {
+          "action": "assertVisible",
+          "selector": ".main-nav.open"
+        },
+        {
+          "action": "click",
+          "selector": ".settings-toggle"
+        },
+        {
+          "action": "assertVisible",
+          "selector": ".settings-panel"
+        },
+        {
+          "action": "click",
+          "selector": "[data-lang=\"en\"]"
+        },
+        {
+          "action": "assertText",
+          "selector": "body",
+          "text": "Applications"
+        },
+        {
+          "action": "click",
+          "selector": "[data-lang=\"cs\"]"
+        },
+        {
+          "action": "assertText",
+          "selector": "body",
+          "text": "Aplikace"
+        }
+      ]
+    },
+    {
       "id": "STUDIO-CACHE-ISOLATION",
       "name": "Service worker nemaže cizí cache",
       "type": "static",

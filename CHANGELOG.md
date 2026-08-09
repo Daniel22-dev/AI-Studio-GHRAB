@@ -2,6 +2,14 @@
 
 > Tento soubor se generuje ze `src/config/changelog.json`. Neupravujte jej ručně.
 
+## 0.20.15 — 2026-08-09
+**Odolnost ovládání: oprava nereagujících tlačítek a PWA cache**
+
+- Build nyní přidává verzi ke všem lokálním JS/CSS vstupům i relativním modulovým importům, aby se nové HTML nikdy nespárovalo se starým JavaScriptem z předchozí PWA cache.
+- Service worker při požadavku na jinou verzi obchází vlastní statickou cache; u své verze naopak zachovává offline fallback na správný přednačtený asset.
+- Úvodní překryv dostal nezávislý fail-open watchdog a bezpečné uvolnění inertního stavu, takže chyba při startu už nemůže trvale zablokovat všechna tlačítka Studia.
+- QA nově kontroluje verzování celého modulového grafu a browser flow skutečně kliká na navigaci, nastavení a přepínač jazyka; současně byly zpevněny okrajové handlery navigace a klávesnice.
+
 ## 0.20.14 — 2026-08-04
 **Platformní P3: modularizace, výkon, přístupnost a provozní důkazy**
 

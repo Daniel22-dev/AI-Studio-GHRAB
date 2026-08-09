@@ -1,6 +1,6 @@
-# Přesný postup nahrání AI Studio GHRAB 0.20.14 na GitHub
+# Přesný postup nahrání AI Studio GHRAB 0.20.15 na GitHub
 
-> Aktuální verze: **0.20.14** · etapa P3
+> Aktuální verze: **0.20.15** · etapa P3
 
 ## Předpoklady
 
@@ -8,14 +8,14 @@ Nejprve musí být nasazeny KS 5.9.17, SORTIO 1.0.9, Lesson Hub 1.2.6, Diferenci
 
 ## Nahrání
 
-1. Stáhněte a rozbalte `ai-studio-ghrab-0.20.14-source.zip`.
+1. Stáhněte a rozbalte `ai-studio-ghrab-0.20.15-source.zip`.
 2. Do kořene repozitáře `AI-Studio-GHRAB` nahrajte přímo všechny soubory a složky z rozbaleného archivu.
-3. Commit pojmenujte například `AI Studio 0.20.14 – jednotný reportér chyb`.
+3. Commit pojmenujte například `AI Studio 0.20.15 – oprava tlačítek a PWA cache`.
 4. Vyčkejte na dokončení GitHub Actions. Workflow instaluje závislosti, synchronizuje manifesty, spustí regresi reportéru, celý GHRAB QA release gate, sestaví `dist` a až poté nasadí GitHub Pages.
 
 ## Kontrola po nasazení
 
-- `dist/build-info.json`, PWA manifest a service worker musí uvádět 0.20.14.
+- `dist/build-info.json`, PWA manifest a service worker musí uvádět 0.20.15.
 - Registr musí uvádět všech osm aktuálních verzí aplikací.
 - V každé aplikaci musí být právě jedno tlačítko **Nahlásit chybu**.
 - Hlavní akce musí znít **Stáhnout ZIP a otevřít Gmail** a před kliknutím obsahovat příjemce `balaz@ghrabuvka.cz`.

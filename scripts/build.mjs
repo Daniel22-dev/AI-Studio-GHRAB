@@ -8,6 +8,45 @@ const src = path.join(root, "src");
 const dist = path.join(root, "dist");
 const pkg = JSON.parse(await readFile(path.join(root, "package.json"), "utf8"));
 
+function appendRevision(ref, version) {
+  if (!ref || /^(?:[a-z]+:|\/\/|#|data:|blob:)/i.test(ref)) return ref;
+  if (/(?:[?&])v=/.test(ref)) return ref;
+  const hashIndex = ref.indexOf("#");
+  const hash = hashIndex >= 0 ? ref.slice(hashIndex) : "";
+  const baseRef = hashIndex >= 0 ? ref.slice(0, hashIndex) : ref;
+  return `${baseRef}${baseRef.includes("?") ? "&" : "?"}v=${version}${hash}`;
+}
+
+function revisionHtmlAssets(content, version) {
+  return content
+    .replace(
+      /(<script\b[^>]*\bsrc=["'])([^"']+\.js(?:\?[^"']*)?)(["'])/gi,
+      (whole, prefix, ref, suffix) => `${prefix}${appendRevision(ref, version)}${suffix}`,
+    )
+    .replace(
+      /(<link\b(?=[^>]*\brel=["']stylesheet["'])[^>]*\bhref=["'])([^"']+\.css(?:\?[^"']*)?)(["'])/gi,
+      (whole, prefix, ref, suffix) => `${prefix}${appendRevision(ref, version)}${suffix}`,
+    );
+}
+
+function revisionModuleImports(content, version) {
+  const revise = (whole, prefix, ref, suffix) =>
+    `${prefix}${appendRevision(ref, version)}${suffix}`;
+  return content
+    .replace(
+      /(\bfrom\s*["'])(\.{1,2}\/[^"']+?\.js(?:\?[^"']*)?)(["'])/g,
+      revise,
+    )
+    .replace(
+      /(\bimport\s*["'])(\.{1,2}\/[^"']+?\.js(?:\?[^"']*)?)(["'])/g,
+      revise,
+    )
+    .replace(
+      /(\bimport\s*\(\s*["'])(\.{1,2}\/[^"']+?\.js(?:\?[^"']*)?)(["']\s*\))/g,
+      revise,
+    );
+}
+
 async function walk(dir) {
   const entries = await readdir(dir, { withFileTypes: true });
   const files = [];
@@ -166,3 +205,14 @@ console.log(`AI Studio GHRAB ${pkg.version} built to dist/`);
 
 // P2: canonical cross-application platform post-processing.
 await import("./apply-ghrab-platform.mjs");
+
+// Revision every executable/style entry after all postprocessors have injected assets.
+// This prevents a waiting/old service worker from combining new HTML with stale JS.
+for (const file of await walk(dist)) {
+  if (!/\.(?:html|js)$/.test(file)) continue;
+  const content = await readFile(file, "utf8");
+  const revised = file.endsWith(".html")
+    ? revisionHtmlAssets(content, pkg.version)
+    : revisionModuleImports(content, pkg.version);
+  if (revised !== content) await writeFile(file, revised, "utf8");
+}

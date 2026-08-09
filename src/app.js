@@ -646,10 +646,12 @@ function setupFullscreenControl(button) {
 function setupNavigation() {
   const navToggle = document.querySelector(".nav-toggle");
   const nav = document.querySelector(".main-nav");
-  navToggle?.addEventListener("click", () => {
-    const open = nav.classList.toggle("open");
-    navToggle.setAttribute("aria-expanded", String(open));
-  });
+  if (navToggle && nav) {
+    navToggle.addEventListener("click", () => {
+      const open = nav.classList.toggle("open");
+      navToggle.setAttribute("aria-expanded", String(open));
+    });
+  }
   document.querySelectorAll(".main-nav a").forEach((a) =>
     a.addEventListener("click", () => {
       nav?.classList.remove("open");
@@ -1570,6 +1572,7 @@ function portalAppCard(app, index, permissions) {
         launchApp(app, article);
     });
     article.addEventListener("keydown", (event) => {
+      if (event.target.closest("button,a,input,select,textarea,label")) return;
       if (["Enter", " "].includes(event.key)) {
         event.preventDefault();
         launchApp(app, article);
@@ -1953,6 +1956,10 @@ function updatePresentationFit() {
 }
 
 function releaseStartupPrepaint(intro) {
+  if (typeof globalThis.__GHRAB_RELEASE_STARTUP_GATE__ === "function") {
+    globalThis.__GHRAB_RELEASE_STARTUP_GATE__();
+    return;
+  }
   root.classList.remove(
     "startup-prepaint",
     "startup-intro-pending",
@@ -2022,13 +2029,23 @@ function setupStartupIntro() {
       root.classList.add("startup-intro-skip");
       releaseIsolation();
       releaseIsolation = () => {};
+      globalThis.__GHRAB_STARTUP_RELEASE_ISOLATION__ = null;
+      globalThis.__GHRAB_CLEAR_STARTUP_WATCHDOG__?.();
     }, 520);
   };
 
   releaseIsolation = activateModalIsolation(intro, { onEscape: close });
-  skip.focus({ preventScroll: true });
+  globalThis.__GHRAB_STARTUP_RELEASE_ISOLATION__ = () => {
+    releaseIsolation();
+    releaseIsolation = () => {};
+  };
   skip.addEventListener("click", close, { once: true });
   timer = setTimeout(close, 3300);
+  try {
+    skip.focus({ preventScroll: true });
+  } catch {
+    /* The timer and click handler already guarantee a fail-open path. */
+  }
 }
 
 async function registerPwa() {
@@ -2163,6 +2180,7 @@ window.GHRAB = {
   issuedAccessBackup,
   accessReady,
 };
+setupStartupIntro();
 setupChrome();
 updatePresentationFit();
 addEventListener("resize", updatePresentationFit);
@@ -2170,7 +2188,6 @@ applyTheme();
 applyLanguage();
 applyMotion();
 renderHome();
-setupStartupIntro();
 void import('./modules/portal-effects.js')
   .then(({ setupPortalEffects }) => setupPortalEffects({ root }))
   .catch((error) => console.warn('Volitelne portalove efekty nebyly nacteny.', error));

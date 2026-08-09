@@ -1399,7 +1399,9 @@ if (
   !sourceSwText.includes("networkFirst") ||
   !/fetch\(request,\s*\{\s*cache:\s*["']no-store["']\s*\}\)/.test(sourceSwText) ||
   !sourceSwText.includes("isRuntimeRequest") ||
-  !sourceSwText.includes("Promise.allSettled")
+  !sourceSwText.includes("Promise.allSettled") ||
+  !sourceSwText.includes('requestedVersion !== APP_VERSION') ||
+  !sourceSwText.includes('ignoreSearch: requestedVersion === APP_VERSION')
 )
   fail(
     "Service worker nemá generovaný precache a oddělené strategie pro statiku a runtime konfiguraci.",
@@ -1414,6 +1416,17 @@ if (
   !sourceSwText.includes("clients.claim")
 )
   fail("Service worker nemá uživatelem řízený aktualizační protokol P2.");
+
+const startupPrepaintText = await readFile(
+  path.join(src, "startup-prepaint.js"),
+  "utf8",
+);
+if (
+  !startupPrepaintText.includes("WATCHDOG_MS") ||
+  !startupPrepaintText.includes("__GHRAB_RELEASE_STARTUP_GATE__") ||
+  !startupPrepaintText.includes("__GHRAB_STARTUP_RELEASE_ISOLATION__")
+)
+  fail("Startovací překryv nemá nezávislý fail-open watchdog proti mrtvému UI.");
 
 const directStorageWriters = sourceFiles.filter(
   (file) =>
@@ -1515,6 +1528,32 @@ for (const rel of required)
   if (!distFiles.includes(path.join(dist, rel)))
     fail(`Build neobsahuje ${rel}`);
 const builtSw = await readFile(path.join(dist, "sw.js"), "utf8");
+
+const localRevision = `v=${pkg.version}`;
+for (const file of distFiles.filter((item) => item.endsWith(".html"))) {
+  const text = await readFile(file, "utf8");
+  const assetRefs = [
+    ...text.matchAll(/<script\b[^>]*\bsrc=["']([^"']+\.js(?:\?[^"']*)?)["']/gi),
+    ...text.matchAll(/<link\b(?=[^>]*\brel=["']stylesheet["'])[^>]*\bhref=["']([^"']+\.css(?:\?[^"']*)?)["']/gi),
+  ].map((match) => match[1]);
+  for (const ref of assetRefs) {
+    if (/^(?:[a-z]+:|\/\/|data:|blob:)/i.test(ref)) continue;
+    if (!ref.includes(localRevision))
+      fail(`Build nemá verzovaný JS/CSS asset ${path.relative(dist, file)} -> ${ref}`);
+  }
+}
+for (const file of distFiles.filter((item) => item.endsWith(".js"))) {
+  const text = await readFile(file, "utf8");
+  const importRefs = [
+    ...text.matchAll(/\bfrom\s*["'](\.{1,2}\/[^"']+?\.js(?:\?[^"']*)?)["']/g),
+    ...text.matchAll(/\bimport\s*["'](\.{1,2}\/[^"']+?\.js(?:\?[^"']*)?)["']/g),
+    ...text.matchAll(/\bimport\s*\(\s*["'](\.{1,2}\/[^"']+?\.js(?:\?[^"']*)?)["']\s*\)/g),
+  ].map((match) => match[1]);
+  for (const ref of importRefs) {
+    if (!ref.includes(localRevision))
+      fail(`Build nemá verzovaný modulární import ${path.relative(dist, file)} -> ${ref}`);
+  }
+}
 const requiredBlock =
   builtSw.match(/const CORE_REQUIRED = \[([\s\S]*?)\];/)?.[1] || "";
 const optionalBlock =
