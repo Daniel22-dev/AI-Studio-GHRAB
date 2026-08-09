@@ -1418,6 +1418,17 @@ if (
   fail(
     "Service worker nemá generovaný precache a oddělené strategie pro statiku a runtime konfiguraci.",
   );
+const swFetchSection = sourceSwText.slice(
+  sourceSwText.indexOf("addEventListener('fetch'"),
+);
+if (
+  /url\.pathname\.startsWith\(scopePath\)[^\n]*request\.cache\s*===\s*["']no-store["']/.test(swFetchSection) ||
+  !/request\.cache\s*===\s*["']no-store["'][\s\S]{0,180}respondWith\(networkFirst\(request\)\)/.test(swFetchSection)
+)
+  fail(
+    "Service worker znovu obchází offline fallback pro statické no-store registry.",
+  );
+
 const installSection = sourceSwText.slice(
   sourceSwText.indexOf("addEventListener('install'"),
   sourceSwText.indexOf("addEventListener('activate'"),

@@ -1,7 +1,29 @@
 {
   "schema": "ai-studio-changelog-v1",
-  "current": "0.20.19",
+  "current": "0.20.20",
   "items": [
+    {
+      "version": "0.20.20",
+      "date": "2026-08-09",
+      "title": {
+        "cs": "Hotfix offline startu registru aplikací",
+        "en": "Application registry offline-start hotfix"
+      },
+      "changes": [
+        {
+          "cs": "Statické registry načítané s cache: 'no-store' nyní používají přes service worker network-first s cache fallbackem, takže se po online warm-upu vykreslí karty aplikací i bez sítě.",
+          "en": "Static registries requested with cache: 'no-store' now use service-worker network-first with a cache fallback, so application cards render after an online warm-up even without network access."
+        },
+        {
+          "cs": "API, autentizační, session, health a deployment runtime požadavky zůstávají mimo service worker a nejsou touto opravou cachovány.",
+          "en": "API, authentication, session, health, and deployment runtime requests remain outside the service worker and are not cached by this fix."
+        },
+        {
+          "cs": "Přidána statická regresní pojistka, která zakáže návrat k obcházení no-store registrů mimo offline fallback; stávající Playwright offline-start test zůstává koncovou kontrolou.",
+          "en": "A static regression guard now prevents no-store registries from bypassing the offline fallback; the existing Playwright offline-start test remains the end-to-end check."
+        }
+      ]
+    },
     {
       "version": "0.20.19",
       "date": "2026-08-09",

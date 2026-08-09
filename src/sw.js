@@ -92,7 +92,7 @@ self.addEventListener('fetch', (event) => {
   const url = new URL(request.url);
   if (url.origin !== self.location.origin) return;
   const scopePath = new URL('./', self.location.href).pathname;
-  if (!url.pathname.startsWith(scopePath) || request.cache === 'no-store' || isRuntimeRequest(url, scopePath)) return;
+  if (!url.pathname.startsWith(scopePath) || isRuntimeRequest(url, scopePath)) return;
   if (isRuntimeNetworkFirst(url, scopePath)) {
     event.respondWith(networkFirst(request));
     return;
@@ -100,6 +100,13 @@ self.addEventListener('fetch', (event) => {
   if (request.mode === 'navigate') {
     const fallback = url.pathname.includes('/manualy/') ? './manualy/index.html' : './index.html';
     event.respondWith(networkFirst(request, fallback));
+    return;
+  }
+  // Static metadata intentionally requested with cache: 'no-store' still needs
+  // an application-cache fallback when the browser is offline. Runtime API,
+  // auth/session/health and deployment requests remain excluded above.
+  if (request.cache === 'no-store') {
+    event.respondWith(networkFirst(request));
     return;
   }
   if (url.pathname.endsWith('/manifest.webmanifest') || url.pathname.endsWith('/build-info.json')) {

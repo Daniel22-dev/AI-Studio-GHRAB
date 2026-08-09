@@ -2,6 +2,13 @@
 
 > Tento soubor se generuje ze `src/config/changelog.json`. Neupravujte jej ručně.
 
+## 0.20.20 — 2026-08-09
+**Hotfix offline startu registru aplikací**
+
+- Statické registry načítané s cache: 'no-store' nyní používají přes service worker network-first s cache fallbackem, takže se po online warm-upu vykreslí karty aplikací i bez sítě.
+- API, autentizační, session, health a deployment runtime požadavky zůstávají mimo service worker a nejsou touto opravou cachovány.
+- Přidána statická regresní pojistka, která zakáže návrat k obcházení no-store registrů mimo offline fallback; stávající Playwright offline-start test zůstává koncovou kontrolou.
+
 ## 0.20.19 — 2026-08-09
 **Auditní opravy: offline režim, release brány a school-server build**
 

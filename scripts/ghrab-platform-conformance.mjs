@@ -102,7 +102,11 @@ if (fs.existsSync(swPath)) {
   const firstActivate = sw.indexOf("addEventListener('activate'");
   const installBody = firstInstall >= 0 && firstActivate > firstInstall ? sw.slice(firstInstall, firstActivate) : '';
   check(!installBody.includes('skipWaiting'), 'no automatic skipWaiting during install');
-  check(sw.includes("request.cache === 'no-store'"), 'service worker no-store bypass');
+  check(
+    !/url\.pathname\.startsWith\(scopePath\)[^\n]*request\.cache\s*===\s*["']no-store["']/.test(sw) &&
+      /request\.cache\s*===\s*["']no-store["'][\s\S]{0,220}respondWith\(networkFirst\(request\)\)/.test(sw),
+    'service worker no-store offline fallback',
+  );
   check(consumer.appId === 'ai-studio' || !/["']\.\/platform\/(?:ghrab-platform-config\.js|ghrab-platform\.js|ghrab-platform\.css|ghrab-platform-manifest-1\.0\.0\.json|ghrab-artifact-envelope-v1\.schema\.json|ghrab-app-registry-v2\.schema\.json)["']/.test(sw), 'service worker no obsolete satellite platform asset');
 }
 const sourceManifest = readJson(path.join(root, 'src', 'manifest.webmanifest'));
