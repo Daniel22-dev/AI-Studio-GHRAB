@@ -264,4 +264,4 @@ fs.writeFileSync(path.join(dist, 'platform-build-info.json'), `${JSON.stringify(
   builtAt: new Date().toISOString(),
 }, null, 2)}\n`);
 
-console.log(`[P3] ${consumer.appId} ${consumer.appVersion}: platform ${consumer.platform.version}, HTML ${htmlCount}, cache ${consumer.cache.name}`);
+console.log(`[${consumer.quality?.stage || 'P5'}] ${consumer.appId} ${consumer.appVersion}: platform ${consumer.platform.version}, HTML ${htmlCount}, cache ${consumer.cache.name}`);

@@ -2,6 +2,16 @@
 
 > Tento soubor se generuje ze `src/config/changelog.json`. Neupravujte jej ručně.
 
+## 0.20.19 — 2026-08-09
+**Auditní opravy: offline režim, release brány a school-server build**
+
+- Přístupové runtime moduly používají network-first s cache fallbackem, takže Studio zůstává použitelné offline a online zároveň dostává čerstvou bránu.
+- Release brána odmítá failed reporty bez vakuové podmínky a CI vyžaduje skutečně provedený axe audit; přibyly samokontroly, že brány umějí selhat.
+- School-server build čistí precache po profilových úpravách, odvozuje P5 a feature flagy z kontraktu a odstraňuje nepoužívané serverové šablony.
+- Serverová CSP je srovnána s aplikací bez unsafe-inline, přidán HSTS a automatická kontrola shody bezpečnostních hlaviček.
+- Opraveno zachování volby animací, opakovaný překlad souhrnu, metadata platformy v PWA, chybějící položky changelogu a dokumentační verze aplikací.
+- Vizuální QA zahrnuje 390×844, dokumentační a auditní regrese jsou automatizované a redundantní CI workflow byla omezena na jeden plný běh podle typu události.
+
 ## 0.20.18 — 2026-08-09
 **Korespondenční asistent: opraven skutečný embedded bootstrap**
 
@@ -43,6 +53,29 @@
 - Všech devět projektů má jednotnou statickou, klávesnicovou a CI axe bránu a měřený výkonový rozpočet.
 - Registry satelitů, AI readiness a certifikační důkazy odpovídají přesným verzím P3.
 - P3 uzavírá safe distribuci LUDUS médií a kapacitní baseline Lesson Hubu.
+
+## 0.20.13 — 2026-08-04
+**P5: předprodukční akceptace a runtime-only předání**
+
+- Doplněn kontrakt `ghrab-release-acceptance-v1` a předprodukční P5 brána se zachováním samostatného GitHub Pages provozu.
+- Přidán runtime-only předávací režim pro školu bez zdrojových repozitářů; školní server zůstává připravený, ale nepřipojený.
+
+## 0.20.12 — 2026-08-04
+**P4: finální certifikační etapa**
+
+- Doplněna finální certifikační etapa, lokální browserová a11y brána a požadavek na zelené `qa:p4:ci` před nasazením.
+- Čistá reprodukovatelná instalace už nemá tvrdou závislost na nedostupném registru axe-core.
+
+## 0.20.11 — 2026-08-04
+**P3: GHRAB Platform 1.1.0 a výkonnostní kontrakty**
+
+- Aktualizována GHRAB Platform na 1.1.0 a sjednoceny kontrakty přístupnosti, výkonnostních rozpočtů a lazy modulů.
+
+## 0.20.10 — 2026-08-04
+**P2: sjednocení s ekosystémem GHRAB**
+
+- Zavedena GHRAB Platform 1.0.0, jednotná patička a motivový kontrakt, vratná migrace dat a Studio Bridge 2.0.
+- PWA přešla na kanonickou cache `ghrab-ai-studio-v__APP_VERSION__` s řízenou aktualizací `GHRAB_SKIP_WAITING`.
 
 ## 0.20.9 — 2026-08-04
 **Platformní P1: školní relace, AI Gateway a jednotná datová ochrana**

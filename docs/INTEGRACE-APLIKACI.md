@@ -1,8 +1,8 @@
-# Integrace samostatných aplikací — AI Studio 0.20.9
+# Integrace samostatných aplikací — aktuální registr
 
 ## Aktuální stav
 
-Integrace je dokončena v Generátoru 7.1.6, Diferenciátoru 1.3.6, Hodnotiteli maturitních slohů 1.5.4, LUDUSu 1.16.5, Korespondenčním asistentovi 5.9.13, ACTIVA 0.5.3, SORTIO 1.0.5 a Lesson Hubu 1.2.2. Ochrana se nevztahuje jen na karty ve Studiu; probíhá také při přímém otevření každé aplikace.
+Integrace je dokončena v Generátoru 7.1.10, Diferenciátoru 1.3.10, Hodnotiteli maturitních slohů 1.5.8, LUDUSu 1.16.9, Korespondenčním asistentovi 5.9.21, ACTIVA 0.5.7, SORTIO 1.0.9 a Lesson Hubu 1.2.6. Ochrana se nevztahuje jen na karty ve Studiu; probíhá také při přímém otevření každé aplikace.
 
 ## Jak funguje jednotné přihlášení
 

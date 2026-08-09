@@ -58,6 +58,7 @@ export async function validateSecurity({ root, finding }) {
     readJson(path.join(config, "sync-report.json")),
     readJson(path.join(root, "package.json")),
   ]);
+  const consumer = await readJson(path.join(root, "ghrab-platform.consumer.json"));
 
   const guardModule = await import(
     pathToFileURL(path.join(src, "access", "app-guard.js")).href +
@@ -146,6 +147,24 @@ export async function validateSecurity({ root, finding }) {
       "Hlavní brána nemá zachovanou desktopovou optickou korekci vycentrování.",
     );
 
+  const securityHeaders = await readJson(path.join(config, "security-headers.json"));
+  const distIndex = await readFile(path.join(root, "dist", "index.html"), "utf8");
+  const cspMetaTag = distIndex.match(/<meta\b[^>]*http-equiv=["']Content-Security-Policy["'][^>]*>/i)?.[0] || "";
+  const metaCsp = cspMetaTag.match(/\bcontent=(["'])([\s\S]*?)\1/i)?.[2]?.trim() || "";
+  const staticCsp = String(securityHeaders.staticProfile?.contentSecurityPolicy || "").trim();
+  if (!metaCsp || metaCsp !== staticCsp)
+    add(
+      "MAJOR",
+      "CSP_PROFILE_MISMATCH",
+      "Statický profil CSP neodpovídá meta CSP v dist/index.html.",
+      `meta=${metaCsp || "missing"}; profile=${staticCsp || "missing"}`,
+    );
+  const schoolCsp = String(securityHeaders.schoolServerProfile?.headers?.["Content-Security-Policy"] || "");
+  if (/script-src[^;]*'unsafe-inline'/i.test(schoolCsp))
+    add("MAJOR", "CSP_UNSAFE_INLINE_SCRIPT", "School-server CSP znovu povoluje unsafe-inline pro skripty.");
+  if (!String(securityHeaders.schoolServerProfile?.headers?.["Strict-Transport-Security"] || "").trim())
+    add("MINOR", "HSTS_MISSING", "School-server profil neobsahuje Strict-Transport-Security.");
+
   const readme = await readFile(path.join(root, "README.md"), "utf8");
   const readmeVersion = readme.match(/Aktuální verze:\*{0,2}\s*([0-9.]+)/)?.[1];
   if (readmeVersion !== pkg.version)
@@ -195,11 +214,12 @@ export async function validateSecurity({ root, finding }) {
             `Položka precache ${asset} má ${Math.round(size / 1024)} KB; limit je 300 KB.`,
           );
       }
-      if (total > 1.5 * 1024 * 1024)
+      const precacheBudget = Number(consumer.quality?.performanceBudget?.precacheBytes || 0);
+      if (precacheBudget > 0 && total > precacheBudget)
         add(
           "MINOR",
           "PRECACHE_TOTAL_BUDGET",
-          `Precache má ${Math.round(total / 1024)} KB; doporučený limit je 1536 KB.`,
+          `Precache má ${Math.round(total / 1024)} KB; kontrakt povoluje ${Math.round(precacheBudget / 1024)} KB.`,
         );
     }
   } catch (error) {

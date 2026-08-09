@@ -86,7 +86,7 @@ async function fetchWithTimeout(url, init = {}, timeoutMs = 5000) {
 async function fetchJson(url, timeoutMs = 5000) {
   const response = await fetchWithTimeout(url, {
     cache: "no-store",
-    credentials: "include",
+    credentials: "same-origin",
     headers: { Accept: "application/json" },
   }, timeoutMs);
   if (!response.ok) {

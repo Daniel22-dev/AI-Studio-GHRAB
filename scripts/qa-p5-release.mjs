@@ -4,10 +4,29 @@ import fsp from 'node:fs/promises';
 import path from 'node:path';
 import crypto from 'node:crypto';
 
+
+function acceptsReport(report, required) {
+  return report?.status === 'passed' || (!required && report?.status === 'not-ready-environment');
+}
+function browserReportHasNoFailures(report) {
+  return Number(report?.result?.failed?.length || 0) === 0;
+}
+if (process.argv.includes('--policy-self-test')) {
+  const cases = [
+    ['required failed status is rejected', !acceptsReport({ status: 'failed' }, true)],
+    ['required not-ready is rejected', !acceptsReport({ status: 'not-ready-environment' }, true)],
+    ['optional not-ready is tolerated', acceptsReport({ status: 'not-ready-environment' }, false)],
+    ['browser failed list is rejected', !browserReportHasNoFailures({ result: { failed: ['STUDIO-CHROME-CONTROLS'] } })],
+  ];
+  const failed = cases.filter(([, ok]) => !ok);
+  console.log(JSON.stringify({ schema: 'ghrab-p5-release-policy-self-test-v1', cases: cases.map(([id, ok]) => ({ id, ok })), status: failed.length ? 'failed' : 'passed' }, null, 2));
+  process.exit(failed.length ? 1 : 0);
+}
+
 const root=path.resolve('.'),dist=path.join(root,'dist');
 const pkg=JSON.parse(await fsp.readFile(path.join(root,'package.json'),'utf8'));
 const consumer=JSON.parse(await fsp.readFile(path.join(root,'ghrab-platform.consumer.json'),'utf8'));
-const requireAxe=process.env.AXE_REQUIRED==='1';
+const requireAxe=process.argv.includes('--require-axe')||process.env.AXE_REQUIRED==='1';
 const checks=[];const check=(id,ok,detail='')=>checks.push({id,ok:Boolean(ok),detail});
 const exists=p=>fs.existsSync(p);const readJson=async p=>JSON.parse(await fsp.readFile(p,'utf8'));const hash=p=>crypto.createHash('sha256').update(fs.readFileSync(p)).digest('hex');
 async function walk(dir){if(!exists(dir))return[];const out=[];for(const e of await fsp.readdir(dir,{withFileTypes:true})){const p=path.join(dir,e.name);e.isDirectory()?out.push(...await walk(p)):out.push(p)}return out}
@@ -18,7 +37,8 @@ check('dependencies.axe-pinned',pkg.devDependencies?.['axe-core']==='4.12.1',pkg
 check('dependencies.playwright-pinned',pkg.devDependencies?.playwright==='1.61.1',pkg.devDependencies?.playwright||'missing');
 const lock=await readJson(path.join(root,'package-lock.json'));check('lock.has-packages',Object.keys(lock.packages||{}).length>1,Object.keys(lock.packages||{}).length);check('lock.version',lock.version===pkg.version,lock.version||'missing');
 check('dist.exists',exists(dist));
-for(const [id,rel,required] of [['quality','quality-report.json',true],['browser','qa-p3-browser-report.json',true],['runtime','qa-p5-runtime-report.json',true],['xss','qa-p5-xss-sinks-report.json',true],['axe','qa-p5-axe-runtime-report.json',requireAxe]]){const p=path.join(dist,rel);check(`report.${id}.exists`,!required||exists(p),rel);if(exists(p)){const r=await readJson(p);check(`report.${id}.passed`,r.status==='passed'||Number(r.summary?.failed||0)===0||(!required&&r.status==='not-ready-environment'),r.status||JSON.stringify(r.summary||{})||'missing');check(`report.${id}.version`,!r.appVersion||r.appVersion===pkg.version,r.appVersion||'n/a');if(id==='xss'){check('xss.no-regression',Number(r.failures?.length||0)===0,JSON.stringify(r.failures||[]));}
+for(const [id,rel,required] of [['quality','quality-report.json',true],['browser','qa-p3-browser-report.json',true],['runtime','qa-p5-runtime-report.json',true],['xss','qa-p5-xss-sinks-report.json',true],['axe','qa-p5-axe-runtime-report.json',requireAxe]]){const p=path.join(dist,rel);check(`report.${id}.exists`,!required||exists(p),rel);if(exists(p)){const r=await readJson(p);const accepted=acceptsReport(r,required);check(`report.${id}.accepted`,accepted,r.status||'missing');if(!required&&r.status==='not-ready-environment')checks.push({id:`report.${id}.environment-tolerated`,ok:true,detail:r.status});check(`report.${id}.version`,!r.appVersion||r.appVersion===pkg.version,r.appVersion||'n/a');if(id==='browser'){check('browser.no-failures',browserReportHasNoFailures(r),JSON.stringify(r.result?.failed||[]));}
+if(id==='xss'){check('xss.no-regression',Number(r.failures?.length||0)===0,JSON.stringify(r.failures||[]));}
 if(id==='runtime'){check('runtime.scripts-executed',r.scriptsExecuted===true,String(r.scriptsExecuted));check('runtime.local-http',r.transport==='local-http',r.transport||'missing');check('runtime.no-blockers',Number(r.summary?.blockers||0)===0,JSON.stringify(r.summary||{}));}if(id==='axe'&&required){check('axe.scripts-executed',r.scriptsExecuted===true,String(r.scriptsExecuted));check('axe.no-blockers',Number(r.summary?.blockers||0)===0,JSON.stringify(r.summary||{}));}}}
 const platform=path.join(dist,'ghrab','ghrab-platform.js'),platformCss=path.join(dist,'ghrab','ghrab-platform.css');check('platform.js',exists(platform),exists(platform)?hash(platform):'missing');check('platform.css',exists(platformCss),exists(platformCss)?hash(platformCss):'missing');
 if(consumer.appId!=='ai-studio'){check('source.no-src-platform',!exists(path.join(root,'src','platform')));check('source.no-public-platform',!exists(path.join(root,'public','platform')));check('source.vendor-platform',exists(path.join(root,'vendor','ghrab-platform-1.1.0','ghrab-platform.js')))}

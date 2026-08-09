@@ -10,7 +10,7 @@ const root=path.resolve('.'), dist=path.join(root,'dist');
 const consumer=JSON.parse(await fsp.readFile(path.join(root,'ghrab-platform.consumer.json'),'utf8'));
 const requestedVersion='4.12.1';
 const configuredPages=Array.isArray(consumer?.quality?.runtimeAudit?.pages)?consumer.quality.runtimeAudit.pages:[];
-const required=process.env.AXE_REQUIRED==='1';
+const required=process.argv.includes('--required')||process.env.AXE_REQUIRED==='1';
 const pkgPath=path.join(root,'node_modules','axe-core','package.json');
 const axePath=path.join(root,'node_modules','axe-core','axe.min.js');
 const out=path.join(dist,'qa-p5-axe-runtime-report.json');

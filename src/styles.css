@@ -3521,7 +3521,7 @@ html[data-motion="off"] .premium-launch-content {
   opacity: 0;
   animation: startup-rise 0.7s 1.15s ease-out forwards;
 }
-.studio-startup-core h1 {
+.studio-startup-core h2 {
   font-size: clamp(2.6rem, 6vw, 5.4rem);
   line-height: 0.95;
   margin: 4px 0 10px;
@@ -3530,7 +3530,7 @@ html[data-motion="off"] .premium-launch-content {
   transform: translateY(18px);
   animation: startup-rise 0.8s 1.3s ease-out forwards;
 }
-.studio-startup-core h1 span {
+.studio-startup-core h2 span {
   background: linear-gradient(110deg, #7df5ff, #29bff0 48%, #b985ff);
   background-clip: text;
   -webkit-background-clip: text;

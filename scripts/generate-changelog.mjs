@@ -1,4 +1,4 @@
-import { readFile, writeFile } from "node:fs/promises";
+import { readFile, writeFile, readdir } from "node:fs/promises";
 import path from "node:path";
 import { fileURLToPath } from "node:url";
 
@@ -13,6 +13,17 @@ if (
   !Array.isArray(source.items)
 ) {
   throw new Error("src/config/changelog.json has an unsupported structure.");
+}
+
+const changelogVersions = new Set(source.items.map((item) => String(item.version || "")));
+const releaseNoteVersions = new Set(
+  (await readdir(root))
+    .map((name) => name.match(/^RELEASE-NOTES-(\d+\.\d+\.\d+)(?:-|\.md$)/)?.[1])
+    .filter(Boolean),
+);
+const missingReleaseNotes = [...releaseNoteVersions].filter((version) => !changelogVersions.has(version)).sort();
+if (missingReleaseNotes.length) {
+  throw new Error(`Changelog neobsahuje položky pro release notes: ${missingReleaseNotes.join(", ")}.`);
 }
 
 const lines = [

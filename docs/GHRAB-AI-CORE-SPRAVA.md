@@ -18,3 +18,7 @@ AI Studio je zdrojem pravdy pro vydaný GHRAB AI Core, runtime politiku a stav m
 ## Distribuce
 
 Core release v `src/ai-core/releases/1.0.0/` je neměnný. `verify-ai-core.mjs` kontroluje manifest a SHA-256. `distribute-ai-core.yml` je ve výchozím stavu dry-run a ostrý dispatch vyžaduje tajný `GHRAB_CORE_SYNC_TOKEN`.
+
+## Podpis přístupového svazku
+
+Správcovský nástroj `scripts/sign-access-bundle.mjs` je záměrně ponechán mimo běžný build. Spouští se explicitně příkazem `npm run access:sign`; nejde o automatickou release bránu.

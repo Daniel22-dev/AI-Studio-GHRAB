@@ -61,6 +61,10 @@ async function walk(dir) {
 await rm(dist, { recursive: true, force: true });
 await mkdir(dist, { recursive: true });
 await cp(src, dist, { recursive: true });
+// The root consumer is the single source of truth; copy it before precache validation instead of relying on a stale src/ duplicate.
+await cp(path.join(root, 'ghrab-platform.consumer.json'), path.join(dist, 'ghrab-platform.consumer.json'));
+// Historical platform sources remain in src/ for rollback/audit, but the live build uses the canonical dist/ghrab platform bundle.
+await rm(path.join(dist, 'platform'), { recursive: true, force: true });
 
 for (const file of await walk(dist)) {
   if (!/\.(?:html|js|json|webmanifest|css|md)$/.test(file)) continue;
@@ -130,11 +134,11 @@ const requiredCacheFiles = [
   "./app/viewer.js",
   "./app/viewer.css",
   "./app/embed-overrides.css",
+  "./access/app-guard.js",
   "./access/access-control.js",
   "./access/deployment-config.js",
   "./access/platform-runtime.js",
   "./access/access-gate.css",
-  "./config/deployment.json",
   "./shared/material-validator.js",
   "./shared/safe-export.js",
   "./config/apps.generated.json",
@@ -176,6 +180,8 @@ const excludedOptionalPrefixes = [
 const optionalCacheFiles = allCacheFiles.filter(
   (file) =>
     !requiredCacheFiles.includes(file) &&
+    file !== "./config/changelog.json" &&
+    !file.startsWith("./config/deployment") &&
     !excludedOptionalPrefixes.some((prefix) => file.startsWith(prefix)),
 );
 const swPath = path.join(dist, "sw.js");

@@ -2,7 +2,7 @@
   "schema": "ghrab-platform-consumer-v1",
   "appId": "ai-studio",
   "appName": "AI Studio GHRAB",
-  "appVersion": "0.20.18",
+  "appVersion": "0.20.19",
   "platform": {
     "version": "1.1.0",
     "contract": "ghrab-platform-v1",
@@ -19,7 +19,6 @@
   },
   "theme": {
     "supported": [
-      "light",
       "dark"
     ],
     "default": "dark"
@@ -66,7 +65,7 @@
     ]
   },
   "cache": {
-    "name": "ghrab-ai-studio-v0.20.18",
+    "name": "ghrab-ai-studio-v0.20.19",
     "updateMessage": "GHRAB_SKIP_WAITING"
   },
   "html": {

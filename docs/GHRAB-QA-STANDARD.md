@@ -187,3 +187,7 @@ Tyto body nejsou všechny univerzální pro každou aplikaci. Společné jádro 
 
 `qa:release` před projektovými kontrolami odstraní deklarovaný build adresář. Každý příkaz uvedený v `qa-manifest.json` proto musí fungovat ze zdrojového repozitáře bez starého `dist/`. Test nebo headless kontrola, která build potřebuje, musí mít vlastní `pretest` / `pretest:headless` krok nebo build výslovně spustit. Tím se zabrání falešnému PASS založenému na zastaralém lokálním výstupu.
 
+
+## Projektové jazykové rozhodnutí AI Studia
+
+Správcovské obrazovky AI Studia (`access-issuer`, `access-registry`) mohou zůstat pouze v češtině. Dvojjazyčnost CZ/EN je povinná pro běžné uživatelské rozhraní Studia; toto rozhodnutí brání opakovanému hlášení těchto dvou interních správcovských nástrojů jako lokalizační vady.

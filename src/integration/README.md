@@ -1,17 +1,17 @@
 # Ochrana samostatných aplikací bez serveru
 
-## Stav ve verzi 0.20.9
+## Aktuální stav registru
 
 Ochranná vrstva je integrována v těchto vydáních:
 
-- Generátor interaktivních testů 7.1.7 — ID `generator`,
-- Diferenciátor 1.3.7 — ID `differentiator`,
-- Hodnotitel maturitních slohů 1.5.5 — ID `essay-evaluator`,
-- LUDUS 1.16.6 — ID `ludus`,
-- Korespondenční asistent 5.9.14 — ID `correspondence`,
-- ACTIVA 0.5.4 — ID `activity-builder`,
-- SORTIO 1.0.6 — ID `sortio`,
-- Lesson Hub 1.2.3 — ID `lesson-hub`.
+- Generátor interaktivních testů 7.1.10 — ID `generator`,
+- Diferenciátor 1.3.10 — ID `differentiator`,
+- Hodnotitel maturitních slohů 1.5.8 — ID `essay-evaluator`,
+- LUDUS 1.16.9 — ID `ludus`,
+- Korespondenční asistent 5.9.21 — ID `correspondence`,
+- ACTIVA 0.5.7 — ID `activity-builder`,
+- SORTIO 1.0.9 — ID `sortio`,
+- Lesson Hub 1.2.6 — ID `lesson-hub`.
 
 Přímé otevření jejich veřejných adres používá stejné podepsané oprávnění jako spuštění z AI Studia.
 
@@ -19,7 +19,7 @@ Přímé otevření jejich veřejných adres používá stejné podepsané oprá
 
 1. Stránka začíná ve stavu kontroly přístupu.
 2. Vlastní aplikační skripty se nespustí před ověřením.
-3. Bootstrap načte `/AI-Studio-GHRAB/access/app-guard.js`.
+3. Bootstrap načte lokální deployment kontrakt (nebo explicitní `__GHRAB_STUDIO_URL__`) a z `studioBaseUrl` odvodí cestu k `access/app-guard.js`; URL není natvrdo svázaná s GitHub Pages.
 4. Centrální modul načte veřejný klíč, politiku a revokační seznam.
 5. Ověří podpis ECDSA P-256, vydavatele, publikum, časovou platnost, JTI, roli a ID aplikace.
 6. Teprve při úspěchu se spustí vlastní aplikace.

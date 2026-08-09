@@ -19,6 +19,23 @@ function walk(dir) {
 }
 function readJson(file) { return JSON.parse(fs.readFileSync(file, "utf8")); }
 function writeJson(file, value) { fs.writeFileSync(file, `${JSON.stringify(value, null, 2)}\n`); }
+function prunePrecache(swFile) {
+  let sw = fs.readFileSync(swFile, "utf8");
+  for (const name of ["CORE_REQUIRED", "CORE_OPTIONAL"]) {
+    const pattern = new RegExp(`const ${name} = \\[([\\s\\S]*?)\\];`);
+    const match = sw.match(pattern);
+    if (!match) throw new Error(`Nelze načíst ${name} ze school-server service workeru.`);
+    const entries = JSON.parse(`[${match[1]}]`);
+    const kept = entries.filter((asset) => {
+      if (asset === "./") return true;
+      const target = path.join(targetDist, String(asset).replace(/^\.\//, ""));
+      return fs.existsSync(target);
+    });
+    const serialised = kept.map((asset) => `  ${JSON.stringify(asset)}`).join(",\n");
+    sw = sw.replace(pattern, `const ${name} = [\n${serialised}\n];`);
+  }
+  fs.writeFileSync(swFile, sw);
+}
 function trailingSlash(value) { return String(value || "/").replace(/\/+$/, "") + "/"; }
 function rewriteApp(manifest, deployment) {
   const base = trailingSlash(deployment.appBaseUrls?.[manifest.id]);
@@ -43,9 +60,6 @@ if (deployment.appId !== "ai-studio" || deployment.profile !== "school-server" |
 }
 
 files = walk(targetDist);
-for (const runtimeProfile of files.filter((file) => file.endsWith(`${path.sep}runtime-config.school-server.js`))) {
-  fs.copyFileSync(runtimeProfile, path.join(path.dirname(runtimeProfile), "runtime-config.js"));
-}
 for (const manifestPath of files.filter((file) => file.endsWith(`${path.sep}manifest.webmanifest`))) {
   const manifest = readJson(manifestPath);
   manifest.id = "./"; manifest.start_url = "./"; manifest.scope = "./";
@@ -92,15 +106,20 @@ if (fs.existsSync(aiCoreFile)) {
   aiCore.migrationKitUrl = "ai-core/migration/ghrab-ai-migration-kit-1.0.3.zip";
   writeJson(aiCoreFile, aiCore);
 }
-for (const stale of files.filter((file) => file.endsWith(`${path.sep}deployment.school-server-p0.json`))) fs.rmSync(stale, { force: true });
+for (const stale of files.filter((file) =>
+  file.endsWith(`${path.sep}deployment.school-server-p0.json`) ||
+  file.endsWith(`${path.sep}deployment.school-server.example.json`)
+)) fs.rmSync(stale, { force: true });
+prunePrecache(path.join(targetDist, "sw.js"));
 
 const pkg = readJson(path.join(root, "package.json"));
+const consumer = readJson(path.join(root, "ghrab-platform.consumer.json"));
 writeJson(path.join(targetDist, "server-ready-build-info.json"), {
   schema: "ghrab-server-ready-build-v1",
   app: pkg.name,
   appId: deployment.appId,
   version: pkg.version,
-  phase: "P3",
+  phase: consumer.quality?.stage || "P5",
   profile: "school-server",
   builtAt: new Date().toISOString(),
   activeAuthMode: deployment.authMode,
@@ -109,11 +128,23 @@ writeJson(path.join(targetDist, "server-ready-build-info.json"), {
   appBaseUrl: trailingSlash(deployment.appBaseUrl),
   apiBaseUrl: deployment.apiBaseUrl,
   containsSecrets: false,
-  localProviderKeysAllowed: false,
+  localProviderKeysAllowed: deployment.features?.allowLocalProviderKeys === true,
   serverSessionReady: deployment.features?.serverSessionReady === true,
-  schoolGatewayReady: false,
+  schoolGatewayReady: deployment.features?.schoolGatewayReady === true,
   aiCoreVersion: "1.0.0",
   contractVersion: "1",
   localRegistryUrls: true,
 });
-console.log(`${pkg.name} ${pkg.version}: dist-school-server/ sestaven s lokálním registrem P3.`);
+const buildInfo = readJson(path.join(targetDist, "server-ready-build-info.json"));
+if (buildInfo.phase !== (consumer.quality?.stage || "P5")) throw new Error("School-server build-info má chybnou etapu.");
+const schoolSw = fs.readFileSync(path.join(targetDist, "sw.js"), "utf8");
+if (/runtime-config\.js|deployment\.school-server-(?:p0|example)\.json/.test(schoolSw)) {
+  throw new Error("School-server service worker stále odkazuje na mrtvý runtime/profile soubor.");
+}
+for (const forbidden of [
+  path.join(configDir, "deployment.school-server-p0.json"),
+  path.join(configDir, "deployment.school-server.example.json"),
+]) {
+  if (fs.existsSync(forbidden)) throw new Error(`School-server build obsahuje zakázanou šablonu ${path.basename(forbidden)}.`);
+}
+console.log(`${pkg.name} ${pkg.version}: dist-school-server/ sestaven s lokálním registrem ${buildInfo.phase}.`);

@@ -38,7 +38,10 @@
   watchdog = setTimeout(releaseStartupGate, WATCHDOG_MS);
 
   try {
-    const motion = localStorage.getItem("ghrab.motion") || "auto";
+    const motion =
+      localStorage.getItem("ghrab.ai-studio.motion.v1") ||
+      localStorage.getItem("ghrab.motion") ||
+      "auto";
     const alreadySeen =
       sessionStorage.getItem(`ghrab.startup-intro.${version}`) === "seen";
     showIntro = motion !== "off" && !alreadySeen;

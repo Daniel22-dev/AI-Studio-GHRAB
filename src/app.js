@@ -1762,7 +1762,7 @@ async function renderHome() {
       }
     };
     update();
-    document.addEventListener("ghrab:language", update, { once: true });
+    document.addEventListener("ghrab:language", update);
   }
 }
 

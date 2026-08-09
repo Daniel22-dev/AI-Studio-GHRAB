@@ -1590,7 +1590,6 @@ for (const rel of [
   "access/access-control.js",
   "access/deployment-config.js",
   "config/access-policy.json",
-  "config/deployment.json",
   "config/ai-core.json",
   "config/ai-runtime.json",
   "config/ai-readiness.generated.json",
@@ -1601,6 +1600,8 @@ for (const rel of [
   if (!requiredPrecache.includes(rel))
     fail(`Kritický PWA shell neobsahuje ${rel}`);
 }
+if (precache.includes("config/deployment.json"))
+  fail("Runtime deployment profil nesmí být v PWA precache.");
 for (const prefix of ["tools/", "tests/", "integration/", "schemas/", "ai-core/"]) {
   if (optionalPrecache.some((rel) => rel.startsWith(prefix)))
     fail(`Volitelný precache nemá obsahovat ${prefix}`);

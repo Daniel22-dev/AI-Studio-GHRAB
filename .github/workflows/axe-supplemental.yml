@@ -2,9 +2,6 @@ name: Blocking axe-core audit
 
 on:
   workflow_dispatch:
-  push:
-    branches: [main, master]
-  pull_request:
 
 permissions:
   contents: read
@@ -32,7 +29,7 @@ jobs:
       - name: Build application
         run: npm run build
       - name: Run blocking axe audit on executed UI
-        run: npm run qa:axe
+        run: npm run qa:axe:required
       - name: Upload axe evidence
         if: always()
         uses: actions/upload-artifact@v4

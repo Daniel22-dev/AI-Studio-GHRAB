@@ -1,7 +1,41 @@
 {
   "schema": "ai-studio-changelog-v1",
-  "current": "0.20.18",
+  "current": "0.20.19",
   "items": [
+    {
+      "version": "0.20.19",
+      "date": "2026-08-09",
+      "title": {
+        "cs": "Auditní opravy: offline režim, release brány a school-server build",
+        "en": "Audit fixes: offline mode, release gates and school-server build"
+      },
+      "changes": [
+        {
+          "cs": "Přístupové runtime moduly používají network-first s cache fallbackem, takže Studio zůstává použitelné offline a online zároveň dostává čerstvou bránu.",
+          "en": "Access runtime modules now use network-first with a cache fallback, keeping Studio usable offline while still refreshing the gate online."
+        },
+        {
+          "cs": "Release brána odmítá failed reporty bez vakuové podmínky a CI vyžaduje skutečně provedený axe audit; přibyly samokontroly, že brány umějí selhat.",
+          "en": "The release gate rejects failed reports without a vacuous condition and CI requires an actually executed axe audit; self-tests now verify that gates can fail."
+        },
+        {
+          "cs": "School-server build čistí precache po profilových úpravách, odvozuje P5 a feature flagy z kontraktu a odstraňuje nepoužívané serverové šablony.",
+          "en": "The school-server build cleans precache after profile changes, derives P5 and feature flags from the contract, and removes unused server templates."
+        },
+        {
+          "cs": "Serverová CSP je srovnána s aplikací bez unsafe-inline, přidán HSTS a automatická kontrola shody bezpečnostních hlaviček.",
+          "en": "Server CSP now matches the application without unsafe-inline, HSTS was added, and security-header consistency is checked automatically."
+        },
+        {
+          "cs": "Opraveno zachování volby animací, opakovaný překlad souhrnu, metadata platformy v PWA, chybějící položky changelogu a dokumentační verze aplikací.",
+          "en": "Motion preference persistence, repeated summary translation, PWA platform metadata, missing changelog entries, and documented app versions were corrected."
+        },
+        {
+          "cs": "Vizuální QA zahrnuje 390×844, dokumentační a auditní regrese jsou automatizované a redundantní CI workflow byla omezena na jeden plný běh podle typu události.",
+          "en": "Visual QA now includes 390×844, documentation and audit regressions are automated, and redundant CI workflows were reduced to one full run per event type."
+        }
+      ]
+    },
     {
       "version": "0.20.18",
       "date": "2026-08-09",
@@ -137,6 +171,74 @@
         {
           "cs": "P3 uzavírá safe distribuci LUDUS médií a kapacitní baseline Lesson Hubu.",
           "en": "P3 closes safe LUDUS media distribution and the Lesson Hub capacity baseline."
+        }
+      ]
+    },
+    {
+      "version": "0.20.13",
+      "date": "2026-08-04",
+      "title": {
+        "cs": "P5: předprodukční akceptace a runtime-only předání",
+        "en": "P5: pre-production acceptance and runtime-only handoff"
+      },
+      "changes": [
+        {
+          "cs": "Doplněn kontrakt `ghrab-release-acceptance-v1` a předprodukční P5 brána se zachováním samostatného GitHub Pages provozu.",
+          "en": "Added the `ghrab-release-acceptance-v1` contract and P5 pre-production gate while retaining standalone GitHub Pages operation."
+        },
+        {
+          "cs": "Přidán runtime-only předávací režim pro školu bez zdrojových repozitářů; školní server zůstává připravený, ale nepřipojený.",
+          "en": "Added a runtime-only school handoff mode without source repositories; the school server profile remains prepared but disconnected."
+        }
+      ]
+    },
+    {
+      "version": "0.20.12",
+      "date": "2026-08-04",
+      "title": {
+        "cs": "P4: finální certifikační etapa",
+        "en": "P4: final certification stage"
+      },
+      "changes": [
+        {
+          "cs": "Doplněna finální certifikační etapa, lokální browserová a11y brána a požadavek na zelené `qa:p4:ci` před nasazením.",
+          "en": "Added the final certification stage, local browser accessibility gate, and green `qa:p4:ci` requirement before deployment."
+        },
+        {
+          "cs": "Čistá reprodukovatelná instalace už nemá tvrdou závislost na nedostupném registru axe-core.",
+          "en": "Clean reproducible installation no longer has a hard dependency on an unavailable axe-core registry."
+        }
+      ]
+    },
+    {
+      "version": "0.20.11",
+      "date": "2026-08-04",
+      "title": {
+        "cs": "P3: GHRAB Platform 1.1.0 a výkonnostní kontrakty",
+        "en": "P3: GHRAB Platform 1.1.0 and performance contracts"
+      },
+      "changes": [
+        {
+          "cs": "Aktualizována GHRAB Platform na 1.1.0 a sjednoceny kontrakty přístupnosti, výkonnostních rozpočtů a lazy modulů.",
+          "en": "Updated GHRAB Platform to 1.1.0 and unified accessibility, performance-budget, and lazy-module contracts."
+        }
+      ]
+    },
+    {
+      "version": "0.20.10",
+      "date": "2026-08-04",
+      "title": {
+        "cs": "P2: sjednocení s ekosystémem GHRAB",
+        "en": "P2: GHRAB ecosystem alignment"
+      },
+      "changes": [
+        {
+          "cs": "Zavedena GHRAB Platform 1.0.0, jednotná patička a motivový kontrakt, vratná migrace dat a Studio Bridge 2.0.",
+          "en": "Introduced GHRAB Platform 1.0.0, unified footer and theme contracts, reversible data migration, and Studio Bridge 2.0."
+        },
+        {
+          "cs": "PWA přešla na kanonickou cache `ghrab-ai-studio-v__APP_VERSION__` s řízenou aktualizací `GHRAB_SKIP_WAITING`.",
+          "en": "The PWA moved to canonical `ghrab-ai-studio-v__APP_VERSION__` caching with controlled `GHRAB_SKIP_WAITING` updates."
         }
       ]
     },

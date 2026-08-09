@@ -105,12 +105,17 @@ if (fs.existsSync(swPath)) {
   check(sw.includes("request.cache === 'no-store'"), 'service worker no-store bypass');
   check(consumer.appId === 'ai-studio' || !/["']\.\/platform\/(?:ghrab-platform-config\.js|ghrab-platform\.js|ghrab-platform\.css|ghrab-platform-manifest-1\.0\.0\.json|ghrab-artifact-envelope-v1\.schema\.json|ghrab-app-registry-v2\.schema\.json)["']/.test(sw), 'service worker no obsolete satellite platform asset');
 }
+const sourceManifest = readJson(path.join(root, 'src', 'manifest.webmanifest'));
+check(sourceManifest.ghrab_platform?.version === consumer.platform.version, 'source PWA platform version', `${sourceManifest.ghrab_platform?.version || 'missing'} / ${consumer.platform.version}`);
+check(sourceManifest.ghrab_platform?.required_range === consumer.platform.requiredRange, 'source PWA required platform range', `${sourceManifest.ghrab_platform?.required_range || 'missing'} / ${consumer.platform.requiredRange}`);
 const manifestPath = path.join(dist, 'manifest.webmanifest');
 check(fs.existsSync(manifestPath), 'PWA manifest exists');
 if (fs.existsSync(manifestPath)) {
   const manifest = readJson(manifestPath);
   check(manifest.version === consumer.appVersion, 'PWA version');
   check(manifest.ghrab_platform?.contract === consumer.platform.contract, 'PWA platform contract');
+  check(manifest.ghrab_platform?.platform_version === consumer.platform.version, 'built PWA platform version', `${manifest.ghrab_platform?.platform_version || 'missing'} / ${consumer.platform.version}`);
+  check(manifest.ghrab_platform?.required_range === consumer.platform.requiredRange, 'PWA required platform range', `${manifest.ghrab_platform?.required_range || 'missing'} / ${consumer.platform.requiredRange}`);
   check(manifest.ghrab_platform?.cache_name === consumer.cache.name, 'PWA cache metadata');
   check(manifest.ghrab_platform?.app_id === consumer.appId, 'PWA app identity');
 }

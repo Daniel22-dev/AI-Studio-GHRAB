@@ -70,15 +70,19 @@ async function cacheFirst(request) {
   return response;
 }
 
+const RUNTIME_NETWORK_FIRST = Object.freeze([
+  'access/app-guard.js',
+  'access/access-control.js',
+  'access/platform-runtime.js',
+]);
+
+function isRuntimeNetworkFirst(url, scopePath) {
+  return RUNTIME_NETWORK_FIRST.includes(url.pathname.slice(scopePath.length));
+}
+
 function isRuntimeRequest(url, scopePath) {
   const relative = url.pathname.slice(scopePath.length);
-  return relative === 'runtime-config.js' ||
-    relative === 'access/app-guard.js' ||
-    relative === 'access/access-control.js' ||
-    relative === 'access/platform-runtime.js' ||
-    relative === 'config/deployment.json' ||
-    relative === 'config/deployment.school-server-p0.json' ||
-    relative === 'config/deployment.school-server.example.json' ||
+  return relative === 'config/deployment.json' ||
     /^(?:api|auth|session|health)(?:\/|$)/.test(relative);
 }
 
@@ -89,6 +93,10 @@ self.addEventListener('fetch', (event) => {
   if (url.origin !== self.location.origin) return;
   const scopePath = new URL('./', self.location.href).pathname;
   if (!url.pathname.startsWith(scopePath) || request.cache === 'no-store' || isRuntimeRequest(url, scopePath)) return;
+  if (isRuntimeNetworkFirst(url, scopePath)) {
+    event.respondWith(networkFirst(request));
+    return;
+  }
   if (request.mode === 'navigate') {
     const fallback = url.pathname.includes('/manualy/') ? './manualy/index.html' : './index.html';
     event.respondWith(networkFirst(request, fallback));
