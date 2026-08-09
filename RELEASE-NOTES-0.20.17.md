@@ -23,3 +23,9 @@ Příčinou byl závod při startu chráněné satelitní aplikace. Satelit nač
 ## Dopad
 
 Oprava je centrální v AI Studiu. Korespondenční asistent není nutné kvůli tomuto problému znovu vydávat: jeho produkční bootstrap už načítá `app-guard.js` přímo z `/AI-Studio-GHRAB/access/`, takže po nasazení AI Studia 0.20.17 automaticky použije opravený startovací mechanismus. Stejná ochrana platí i pro další chráněné satelitní aplikace používající centrální guard.
+
+## CI stabilizace po prvním uploadu 0.20.17
+
+První samostatný P3/P5 GitHub Actions běh prošel všemi statickými platformními a quality kontrolami, ale zastavil se ještě před browser asercemi v `qa-p3-browser.mjs` na `Chromium debug timeout`. Šlo o chybu testovací infrastruktury: test ručně spouštěl prohlížeč přes `--remote-debugging-port` a čekal na CDP HTTP endpoint, přestože projekt už používá přesně připnutý Playwright.
+
+Browser gate nyní používá `playwright.chromium.launch()` přímo. Tím Playwright sám řídí kompatibilní spuštění staženého Chromium/Chrome for Testing a test už nezávisí na ručně vytvořeném debug portu. Samotné P3 kontroly přístupnosti, dialogu, focus trapu, výkonu a lazy modulu zůstaly zachované; změnil se pouze způsob připojení k prohlížeči.

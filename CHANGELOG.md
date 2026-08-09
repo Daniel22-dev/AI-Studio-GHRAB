@@ -10,6 +10,7 @@
 - Přidán regresní test se záměrně zpožděným načtením platformy, který potvrzuje, že přístupová brána skutečně čeká a nepokračuje s neúplným GHRAB_PLATFORM objektem.
 - Registr Korespondenčního asistenta byl srovnán s aktuálně nasazenou verzí 5.9.20 a odpovídajícím názvem cache.
 - Pracovní prostor před vložením satelitní aplikace aktivuje čekající novou verzi service workeru Studia a centrální přístupové moduly jsou vyřazeny ze statické PWA cache, takže ani přechod ze staré verze Studia nemůže dodat starý app-guard.
+- CI stabilizace: platformní browser gate už nespouští Chromium ručně přes ladicí port, ale používá přímo připnutý Playwright. Tím se odstraňuje falešný GitHub Actions pád „Chromium debug timeout“ ještě před provedením skutečných browser kontrol.
 
 ## 0.20.16 — 2026-08-09
 **Mobilní nastavení: obnovení přepínače CZ/EN**

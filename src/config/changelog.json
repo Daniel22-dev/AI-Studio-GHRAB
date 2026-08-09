@@ -29,6 +29,10 @@
         {
           "cs": "Pracovní prostor před vložením satelitní aplikace aktivuje čekající novou verzi service workeru Studia a centrální přístupové moduly jsou vyřazeny ze statické PWA cache, takže ani přechod ze staré verze Studia nemůže dodat starý app-guard.",
           "en": "Before embedding a satellite app, the workspace activates a waiting Studio service worker update and central access modules are excluded from the static PWA cache, so even an upgrade from an older Studio release cannot serve a stale app guard."
+        },
+        {
+          "cs": "CI stabilizace: platformní browser gate už nespouští Chromium ručně přes ladicí port, ale používá přímo připnutý Playwright. Tím se odstraňuje falešný GitHub Actions pád „Chromium debug timeout“ ještě před provedením skutečných browser kontrol.",
+          "en": "CI stabilisation: the platform browser gate no longer launches Chromium manually through a debugging port and instead uses the pinned Playwright runtime directly, removing the false GitHub Actions “Chromium debug timeout” failure before real browser checks run."
         }
       ]
     },
