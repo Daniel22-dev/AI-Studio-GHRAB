@@ -316,7 +316,7 @@
       "cs": "Korespondenční asistent",
       "en": "Correspondence Assistant"
     },
-    "version": "5.9.17",
+    "version": "5.9.20",
     "status": {
       "cs": "Pracovní pilotní verze",
       "en": "Working pilot release"
@@ -392,7 +392,7 @@
       "studioBridge": "ghrab-studio-handoff-v2",
       "artifactEnvelope": "ghrab-artifact-envelope-v1",
       "storagePrefix": "ghrab.correspondence.",
-      "cacheName": "ghrab-correspondence-v5.9.17",
+      "cacheName": "ghrab-correspondence-v5.9.20",
       "accessibilityContract": "ghrab-a11y-v1",
       "performanceContract": "ghrab-performance-v1",
       "moduleContract": "ghrab-lazy-modules-v1"

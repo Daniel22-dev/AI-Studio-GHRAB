@@ -2,6 +2,15 @@
 
 > Tento soubor se generuje ze `src/config/changelog.json`. Neupravujte jej ručně.
 
+## 0.20.17 — 2026-08-09
+**Stabilní spouštění vložených aplikací přes AI Studio**
+
+- Centrální app-guard nyní u chráněných satelitních aplikací před ověřením přístupu počká, až jejich lokální GHRAB Platform skutečně zpřístupní unlockProtectedScripts; tím se odstraňuje závod, který mohl v iframe zobrazit falešnou chybu „Přístup nelze ověřit“.
+- Čekání je omezené časovým limitem, reaguje na ghrab:platform-ready i load/error lokálního platformního loaderu a zapisuje diagnostický stav do data-ghrab-platform-unlock-wait.
+- Přidán regresní test se záměrně zpožděným načtením platformy, který potvrzuje, že přístupová brána skutečně čeká a nepokračuje s neúplným GHRAB_PLATFORM objektem.
+- Registr Korespondenčního asistenta byl srovnán s aktuálně nasazenou verzí 5.9.20 a odpovídajícím názvem cache.
+- Pracovní prostor před vložením satelitní aplikace aktivuje čekající novou verzi service workeru Studia a centrální přístupové moduly jsou vyřazeny ze statické PWA cache, takže ani přechod ze staré verze Studia nemůže dodat starý app-guard.
+
 ## 0.20.16 — 2026-08-09
 **Mobilní nastavení: obnovení přepínače CZ/EN**
 

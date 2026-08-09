@@ -305,6 +305,60 @@ function showError(title, copy) {
   errorCopy.textContent = copy;
 }
 
+async function ensureCurrentStudioServiceWorker() {
+  if (!("serviceWorker" in navigator)) return;
+  const scopeUrl = new URL("../", location.href);
+  let registration;
+  try {
+    registration = await navigator.serviceWorker.getRegistration(scopeUrl.href);
+    if (!registration) return;
+    await registration.update().catch(() => {});
+  } catch {
+    return;
+  }
+
+  const waitForState = (worker, timeoutMs = 5000) =>
+    new Promise((resolve) => {
+      if (!worker || ["installed", "activated", "redundant"].includes(worker.state)) {
+        resolve();
+        return;
+      }
+      let timer = 0;
+      const done = () => {
+        window.clearTimeout(timer);
+        worker.removeEventListener("statechange", onState);
+        resolve();
+      };
+      const onState = () => {
+        if (["installed", "activated", "redundant"].includes(worker.state)) done();
+      };
+      worker.addEventListener("statechange", onState);
+      timer = window.setTimeout(done, timeoutMs);
+    });
+
+  if (registration.installing) await waitForState(registration.installing);
+  await registration.update().catch(() => {});
+  const waiting = registration.waiting;
+  if (!waiting) return;
+
+  const previousController = navigator.serviceWorker.controller;
+  waiting.postMessage({ type: "GHRAB_SKIP_WAITING" });
+  await new Promise((resolve) => {
+    if (!previousController) {
+      resolve();
+      return;
+    }
+    let timer = 0;
+    const done = () => {
+      window.clearTimeout(timer);
+      navigator.serviceWorker.removeEventListener("controllerchange", done);
+      resolve();
+    };
+    navigator.serviceWorker.addEventListener("controllerchange", done, { once: true });
+    timer = window.setTimeout(done, 5000);
+  });
+}
+
 function openSeparately() {
   if (!currentApp?.launchUrl) return;
   const url = frameUrl()?.href || currentApp.launchUrl;
@@ -411,6 +465,7 @@ errorExternalButton.addEventListener("click", openSeparately);
       );
       return;
     }
+    await ensureCurrentStudioServiceWorker();
     setApp(app);
   } catch (error) {
     showError(

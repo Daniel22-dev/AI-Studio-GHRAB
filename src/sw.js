@@ -73,6 +73,9 @@ async function cacheFirst(request) {
 function isRuntimeRequest(url, scopePath) {
   const relative = url.pathname.slice(scopePath.length);
   return relative === 'runtime-config.js' ||
+    relative === 'access/app-guard.js' ||
+    relative === 'access/access-control.js' ||
+    relative === 'access/platform-runtime.js' ||
     relative === 'config/deployment.json' ||
     relative === 'config/deployment.school-server-p0.json' ||
     relative === 'config/deployment.school-server.example.json' ||

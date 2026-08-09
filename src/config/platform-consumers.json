@@ -2,7 +2,7 @@
   {
     "id": "ai-studio",
     "name": "AI Studio GHRAB",
-    "version": "0.20.16",
+    "version": "0.20.17",
     "slug": "ai-studio-ghrab",
     "paths": {
       "app": "https://daniel22-dev.github.io/AI-Studio-GHRAB/",
@@ -31,7 +31,7 @@
       "performanceContract": "ghrab-performance-v1",
       "moduleContract": "ghrab-lazy-modules-v1"
     },
-    "cacheName": "ghrab-ai-studio-v0.20.16",
+    "cacheName": "ghrab-ai-studio-v0.20.17",
     "theme": {
       "supported": [
         "light",
@@ -43,7 +43,7 @@
   {
     "id": "correspondence",
     "name": "Korespondenční asistent",
-    "version": "5.9.17",
+    "version": "5.9.20",
     "slug": "korespondencni-asistent",
     "paths": {
       "app": "https://daniel22-dev.github.io/korespondencni-asistent/",
@@ -72,7 +72,7 @@
       "performanceContract": "ghrab-performance-v1",
       "moduleContract": "ghrab-lazy-modules-v1"
     },
-    "cacheName": "ghrab-correspondence-v5.9.17",
+    "cacheName": "ghrab-correspondence-v5.9.20",
     "theme": {
       "supported": [
         "light",

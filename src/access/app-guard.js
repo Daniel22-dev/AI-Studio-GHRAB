@@ -514,6 +514,72 @@ function renderPlatformCompatibilityGate(platform) {
   platform.mountFooter?.();
 }
 
+function localPlatformUnlockReady() {
+  return typeof globalThis.GHRAB_PLATFORM?.unlockProtectedScripts === "function";
+}
+
+export async function waitForLocalPlatformUnlock(options = {}) {
+  const protectedScripts = document.querySelectorAll("script[data-ghrab-protected]");
+  if (!protectedScripts.length || localPlatformUnlockReady())
+    return globalThis.GHRAB_PLATFORM || null;
+
+  const loader = document.querySelector("script[data-ghrab-platform-loader]");
+  if (!loader) {
+    throw new Error(
+      "GHRAB platform loader is missing for a protected application.",
+    );
+  }
+
+  const timeoutMs = Math.max(500, Number(options.platformReadyTimeoutMs || 8000));
+  document.documentElement.dataset.ghrabPlatformUnlockWait = "waiting";
+
+  return new Promise((resolve, reject) => {
+    let timer = 0;
+    let poll = 0;
+    let settled = false;
+
+    const cleanup = () => {
+      window.clearTimeout(timer);
+      window.clearInterval(poll);
+      document.removeEventListener("ghrab:platform-ready", checkReady);
+      loader.removeEventListener("load", checkReady);
+      loader.removeEventListener("error", onLoaderError);
+    };
+    const finish = (platform) => {
+      if (settled) return;
+      settled = true;
+      cleanup();
+      document.documentElement.dataset.ghrabPlatformUnlockWait = "ready";
+      resolve(platform);
+    };
+    const fail = (message) => {
+      if (settled) return;
+      settled = true;
+      cleanup();
+      document.documentElement.dataset.ghrabPlatformUnlockWait = "failed";
+      reject(new Error(message));
+    };
+    const checkReady = () => {
+      if (localPlatformUnlockReady()) finish(globalThis.GHRAB_PLATFORM);
+    };
+    const onLoaderError = () =>
+      fail("GHRAB platform loader failed before protected application startup.");
+
+    document.addEventListener("ghrab:platform-ready", checkReady);
+    loader.addEventListener("load", checkReady);
+    loader.addEventListener("error", onLoaderError);
+    poll = window.setInterval(checkReady, 25);
+    timer = window.setTimeout(
+      () =>
+        fail(
+          `GHRAB platform unlock helper was not ready within ${timeoutMs} ms.`,
+        ),
+      timeoutMs,
+    );
+    checkReady();
+  });
+}
+
 export function unlockProtectedScripts(options = {}) {
   const helper = globalThis.GHRAB_PLATFORM?.unlockProtectedScripts;
   if (typeof helper !== "function") {
@@ -524,6 +590,7 @@ export function unlockProtectedScripts(options = {}) {
 
 export async function protectApp(appId, options = {}) {
   document.documentElement.dataset.ghrabAccess = "checking";
+  await waitForLocalPlatformUnlock(options);
   const localPlatform = globalThis.GHRAB_PLATFORM;
   if (localPlatform?.contract === "ghrab-platform-v1" && localPlatform.compatibility?.ok === false) {
     renderPlatformCompatibilityGate(localPlatform);
