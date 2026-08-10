@@ -1,13 +1,17 @@
 # AI Studio GHRAB
 
-**Aktuální verze:** 0.21.3
+**Aktuální verze:** 0.21.4
 **Platforma:** GHRAB Platform 1.1.0 · etapa P5
 
-**Verze 0.21.3 – role-specific manuál AI Studia a nenápadný první průvodce.**
+**Verze 0.21.4 – bezpečnostní hotfix XSS regresní brány; zachovává manuály podle role, server-ready Materiály a zobrazení všech 8 aplikací.**
 
 AI Studio GHRAB je centrální brána školních digitálních a AI nástrojů. Jednotlivé aplikace zůstávají v samostatných repozitářích; Studio zajišťuje společnou navigaci, Top 4, synchronizaci verzí, bezpečnostní rámec, pilotní měření, správu podepsaných přístupů a kanonický základ technického reportéru. Materiály jsou znovu viditelnou součástí portálu, ale v dnešním bezserverovém režimu se vlastní obsah ukládá pouze místně.
 
-## Hlavní novinky 0.21.3
+## Hlavní novinky 0.21.4
+
+- XSS regresní audit už nepadá na nových stavech Materiálů: `innerHTML` sinky v knihovně byly nahrazeny DOM API + `textContent`.
+- Celkový bezpečnostní baseline byl zpřísněn z 12 na 8 evidovaných `innerHTML` sinků.
+- Offline/browser oprava 0.21.3 zůstává zachována: katalog zobrazuje všech 8 aplikací.
 
 - **Manuál samotného AI Studia** je rozdělen podle role: učitel dostává běžný provoz, administrátor navíc Správu, přístupy, reporting, prezentaci a release workflow.
 - Domovská stránka má pouze drobný role-aware odkaz **Poprvé v AI Studiu?**; hlavní launcher zůstává bez dalšího panelu.
@@ -69,7 +73,7 @@ Ochranný bootstrap je určen pro Generátor 7.1.8, Diferenciátor 1.3.8, Hodnot
 
 ## Doporučené pořadí nasazení P2
 
-1. AI Studio GHRAB 0.21.3 jako zpětně kompatibilní platformní základ.
+1. AI Studio GHRAB 0.21.4 jako zpětně kompatibilní platformní základ.
 2. Korespondenční asistent 5.9.15.
 3. Diferenciátor 1.3.8.
 4. Generátor testů 7.1.8.

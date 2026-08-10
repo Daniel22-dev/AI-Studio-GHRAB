@@ -30,6 +30,13 @@ const option = (value, text) => {
   return element;
 };
 
+function setEmptyState(host, text) {
+  const empty = document.createElement("div");
+  empty.className = "empty-state";
+  empty.textContent = text;
+  host.replaceChildren(empty);
+}
+
 function uniqueOptions(key, labelKey) {
   const map = new Map();
   catalog.items.forEach((item) => map.set(item[key], label(item[labelKey])));
@@ -151,7 +158,10 @@ function render() {
           .includes(query)),
   );
   if (!items.length) {
-    grid.innerHTML = `<div class="empty-state">${G.t("Žádný materiál neodpovídá filtrům.", "No resource matches the filters.")}</div>`;
+    setEmptyState(
+      grid,
+      G.t("Žádný materiál neodpovídá filtrům.", "No resource matches the filters."),
+    );
     return;
   }
   grid.replaceChildren(...items.map(card));
@@ -197,7 +207,10 @@ function localShareButton(material) {
 function renderWorkspace() {
   const list = G.getWorkspace();
   if (!list.length) {
-    workspace.innerHTML = `<div class="empty-state">${G.t("Pracovní prostor je zatím prázdný.", "The workspace is empty.")}</div>`;
+    setEmptyState(
+      workspace,
+      G.t("Pracovní prostor je zatím prázdný.", "The workspace is empty."),
+    );
     return;
   }
   workspace.replaceChildren(
@@ -341,18 +354,33 @@ function sharedMaterialCard(record) {
 
 async function renderSharedMaterials() {
   if (!serverCaps.connected || !selectedCommissionId) return;
-  sharedGrid.innerHTML = `<div class="empty-state">${G.t("Načítám materiály komise…", "Loading department resources…")}</div>`;
+  setEmptyState(
+    sharedGrid,
+    G.t("Načítám materiály komise…", "Loading department resources…"),
+  );
   try {
     const items = await repository.listSharedMaterials({
       commissionId: selectedCommissionId,
     });
     if (!items.length) {
-      sharedGrid.innerHTML = `<div class="empty-state">${G.t("Tato komise zatím nemá sdílené materiály.", "This department has no shared resources yet.")}</div>`;
+      setEmptyState(
+        sharedGrid,
+        G.t(
+          "Tato komise zatím nemá sdílené materiály.",
+          "This department has no shared resources yet.",
+        ),
+      );
       return;
     }
     sharedGrid.replaceChildren(...items.map(sharedMaterialCard));
   } catch (error) {
-    sharedGrid.innerHTML = `<div class="empty-state">${G.t("Serverový katalog se nepodařilo načíst.", "The server catalogue could not be loaded.")}</div>`;
+    setEmptyState(
+      sharedGrid,
+      G.t(
+        "Serverový katalog se nepodařilo načíst.",
+        "The server catalogue could not be loaded.",
+      ),
+    );
     console.warn("Material catalogue load failed", error);
   }
 }
@@ -423,7 +451,10 @@ fetch("../library/catalog.json")
     render();
   })
   .catch(() => {
-    grid.innerHTML = `<div class="empty-state">${G.t("Katalog se nepodařilo načíst.", "The catalogue could not be loaded.")}</div>`;
+    setEmptyState(
+      grid,
+      G.t("Katalog se nepodařilo načíst.", "The catalogue could not be loaded."),
+    );
   });
 
 [subject, type, search].forEach((element) =>

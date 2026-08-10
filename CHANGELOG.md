@@ -2,6 +2,13 @@
 
 > Tento soubor se generuje ze `src/config/changelog.json`. Neupravujte jej ručně.
 
+## 0.21.4 — 2026-08-10
+**Hotfix XSS regresní brány**
+
+- GitHub Actions správně zastavily 0.21.3, protože počet použití innerHTML vzrostl nad schválený bezpečnostní baseline 12 na 14. Nešlo o chybu offline režimu ani vykreslení aplikací; předchozí oprava 8/8 karet prošla.
+- Knihovna Materiály už pro prázdné, načítací a chybové stavy neskládá HTML řetězce přes innerHTML. Stavy se vytvářejí DOM API a text se zapisuje přes textContent.
+- Počet evidovaných innerHTML sinků klesl z 14 na 8 a XSS baseline byl zpřísněn na 8, aby jejich opětovné přidání znovu zastavilo release gate.
+
 ## 0.21.3 — 2026-08-10
 **Hotfix zobrazení všech osmi aplikací**
 

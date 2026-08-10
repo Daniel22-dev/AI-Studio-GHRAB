@@ -10,7 +10,7 @@ const studioUrl = new URL(deployment?.studioBaseUrl || '/AI-Studio-GHRAB/', glob
 setupErrorReporter({
   appId: 'ai-studio-reporter',
   appName: 'AI Studio GHRAB – centrální reportér',
-  appVersion: '0.21.3',
+  appVersion: '0.21.4',
   studioUrl,
   supportEmail: 'balaz@ghrabuvka.cz',
   guideUrl: deployment?.access?.guideUrl || new URL('manualy/error-report.html', studioUrl).href,

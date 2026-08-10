@@ -1,7 +1,29 @@
 {
   "schema": "ai-studio-changelog-v1",
-  "current": "0.21.3",
+  "current": "0.21.4",
   "items": [
+    {
+      "version": "0.21.4",
+      "date": "2026-08-10",
+      "title": {
+        "cs": "Hotfix XSS regresní brány",
+        "en": "XSS regression gate hotfix"
+      },
+      "changes": [
+        {
+          "cs": "GitHub Actions správně zastavily 0.21.3, protože počet použití innerHTML vzrostl nad schválený bezpečnostní baseline 12 na 14. Nešlo o chybu offline režimu ani vykreslení aplikací; předchozí oprava 8/8 karet prošla.",
+          "en": "GitHub Actions correctly blocked 0.21.3 because innerHTML usage increased above the approved security baseline from 12 to 14. This was not an offline or application-rendering failure; the previous 8/8 card fix passed."
+        },
+        {
+          "cs": "Knihovna Materiály už pro prázdné, načítací a chybové stavy neskládá HTML řetězce přes innerHTML. Stavy se vytvářejí DOM API a text se zapisuje přes textContent.",
+          "en": "The Resources library no longer builds empty, loading or error states through innerHTML strings. States are created with DOM APIs and text is assigned through textContent."
+        },
+        {
+          "cs": "Počet evidovaných innerHTML sinků klesl z 14 na 8 a XSS baseline byl zpřísněn na 8, aby jejich opětovné přidání znovu zastavilo release gate.",
+          "en": "The recorded innerHTML sink count dropped from 14 to 8 and the XSS baseline was tightened to 8 so reintroducing them will block the release gate again."
+        }
+      ]
+    },
     {
       "version": "0.21.3",
       "date": "2026-08-10",
