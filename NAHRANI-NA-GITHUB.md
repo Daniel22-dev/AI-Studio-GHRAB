@@ -1,6 +1,6 @@
-# Nahrání AI Studio GHRAB 0.20.20
+# Nahrání AI Studio GHRAB 0.20.21
 
-> Aktuální verze: **0.20.20** · etapa P5
+> Aktuální verze: **0.20.21** · etapa P5
 
 Tato opravná verze řeší CI regresi offline startu z 0.20.19: statické registry požadované s `cache: 'no-store'` používají network-first s cache fallbackem, zatímco runtime API, auth/session/health a deployment konfigurace zůstávají mimo service worker. Ostatní auditní opravy z 0.20.19 jsou zachovány. AI Studio se nadále nasazuje jako poslední, po všech samostatných aplikacích.
 

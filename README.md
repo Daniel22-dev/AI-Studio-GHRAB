@@ -1,13 +1,13 @@
 # AI Studio GHRAB
 
-**Aktuální verze:** 0.20.20
+**Aktuální verze:** 0.20.21
 **Platforma:** GHRAB Platform 1.1.0 · etapa P5
 
-**Verze 0.20.20 – cílený CI hotfix offline startu registru aplikací.**
+**Verze 0.20.21 – cílený CI hotfix offline startu registru aplikací.**
 
 AI Studio GHRAB je centrální brána školních digitálních a AI nástrojů. Jednotlivé aplikace zůstávají v samostatných repozitářích; Studio zajišťuje společnou navigaci, Top 4, synchronizaci verzí, bezpečnostní rámec, pracovní materiály, pilotní měření, správu podepsaných přístupů a kanonický základ technického reportéru.
 
-## Hlavní novinky 0.20.20
+## Hlavní novinky 0.20.21
 
 - Opraven skutečný blokátor offline startu: statické registry požadované s `cache: 'no-store'` už service worker neobcházejí a při výpadku použijí cache fallback.
 - Runtime API, auth/session/health a deployment konfigurace zůstávají záměrně mimo service-worker cache.
@@ -69,7 +69,7 @@ Ochranný bootstrap je určen pro Generátor 7.1.8, Diferenciátor 1.3.8, Hodnot
 
 ## Doporučené pořadí nasazení P2
 
-1. AI Studio GHRAB 0.20.20 jako zpětně kompatibilní platformní základ.
+1. AI Studio GHRAB 0.20.21 jako zpětně kompatibilní platformní základ.
 2. Korespondenční asistent 5.9.15.
 3. Diferenciátor 1.3.8.
 4. Generátor testů 7.1.8.

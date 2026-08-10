@@ -5,7 +5,7 @@
   "schema": "ghrab-platform-app-config-v1",
   "appId": "ai-studio",
   "appName": "AI Studio GHRAB",
-  "appVersion": "0.20.20",
+  "appVersion": "0.20.21",
   "requiredPlatformRange": ">=1.1.0 <2.0.0",
   "autoFooter": true,
   "bridgeWriteLegacy": true,

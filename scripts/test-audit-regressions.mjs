@@ -58,6 +58,9 @@ check('School build derives gateway flag', schoolBuild.includes('deployment.feat
 check('School build removes example profile', schoolBuild.includes('deployment.school-server.example.json'));
 check('School build validates stale SW references', /runtime-config\\\.js|runtime-config\\?\.js|runtime-config/.test(schoolBuild) && schoolBuild.includes('deployment\\.school-server'));
 
+const qualityScript = read('scripts/qa-p3-quality.mjs');
+check('P3 quality report exposes release status', /status:\s*failedChecks\.length\s*\?\s*'failed'\s*:\s*'passed'/.test(qualityScript));
+
 const validator = read('qa/project-validator.mjs');
 check('Precache budget comes from consumer', validator.includes('performanceBudget?.precacheBytes'));
 check('No legacy 1536 KiB precache constant', !validator.includes('1536 * 1024'));

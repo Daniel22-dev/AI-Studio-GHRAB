@@ -2,7 +2,7 @@
   {
     "id": "ai-studio",
     "name": "AI Studio GHRAB",
-    "version": "0.20.20",
+    "version": "0.20.21",
     "slug": "ai-studio-ghrab",
     "paths": {
       "app": "https://daniel22-dev.github.io/AI-Studio-GHRAB/",
@@ -31,7 +31,7 @@
       "performanceContract": "ghrab-performance-v1",
       "moduleContract": "ghrab-lazy-modules-v1"
     },
-    "cacheName": "ghrab-ai-studio-v0.20.20",
+    "cacheName": "ghrab-ai-studio-v0.20.21",
     "theme": {
       "supported": [
         "light",

@@ -1,6 +1,6 @@
-# Architektura AI Studio GHRAB 0.20.20
+# Architektura AI Studio GHRAB 0.20.21
 
-> Aktuální verze: **0.20.20** · etapa P5
+> Aktuální verze: **0.20.21** · etapa P5
 
 ## Koherence aktualizace PWA
 

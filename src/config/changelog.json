@@ -1,7 +1,29 @@
 {
   "schema": "ai-studio-changelog-v1",
-  "current": "0.20.20",
+  "current": "0.20.21",
   "items": [
+    {
+      "version": "0.20.21",
+      "date": "2026-08-09",
+      "title": {
+        "cs": "Hotfix P5 quality reportu",
+        "en": "P5 quality-report contract hotfix"
+      },
+      "changes": [
+        {
+          "cs": "P3 quality report nyní vždy zapisuje explicitní status passed/failed, který finální P5 release gate vyžaduje.",
+          "en": "The P3 quality report now always writes an explicit passed/failed status required by the final P5 release gate."
+        },
+        {
+          "cs": "Výpočet statusu i souhrnných počtů používá stejný seznam neúspěšných kontrol, aby se report nemohl dostat do vnitřně nekonzistentního stavu.",
+          "en": "Status and summary counts now use the same failed-check list so the report cannot become internally inconsistent."
+        },
+        {
+          "cs": "Přidána regresní kontrola kontraktu quality-reportu; offline-start hotfix z 0.20.20 zůstává beze změny.",
+          "en": "A regression guard now covers the quality-report contract; the 0.20.20 offline-start hotfix remains unchanged."
+        }
+      ]
+    },
     {
       "version": "0.20.20",
       "date": "2026-08-09",

@@ -2,6 +2,13 @@
 
 > Tento soubor se generuje ze `src/config/changelog.json`. Neupravujte jej ručně.
 
+## 0.20.21 — 2026-08-09
+**Hotfix P5 quality reportu**
+
+- P3 quality report nyní vždy zapisuje explicitní status passed/failed, který finální P5 release gate vyžaduje.
+- Výpočet statusu i souhrnných počtů používá stejný seznam neúspěšných kontrol, aby se report nemohl dostat do vnitřně nekonzistentního stavu.
+- Přidána regresní kontrola kontraktu quality-reportu; offline-start hotfix z 0.20.20 zůstává beze změny.
+
 ## 0.20.20 — 2026-08-09
 **Hotfix offline startu registru aplikací**
 

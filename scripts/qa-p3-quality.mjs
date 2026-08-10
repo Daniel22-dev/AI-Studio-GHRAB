@@ -159,10 +159,13 @@ for (const [key, limit] of Object.entries(budget)) {
 }
 if (quality.requireBudget === true) check(Object.keys(budget).length >= 5, 'budget.minimum-count', Object.keys(budget).length);
 
+const failedChecks = checks.filter((item) => !item.ok);
+
 const result = {
   schema: 'ghrab-p3-quality-result-v1',
   appId: consumer.appId,
   appVersion: consumer.appVersion,
+  status: failedChecks.length ? 'failed' : 'passed',
   contracts: {
     accessibility: quality.accessibilityContract,
     performance: quality.performanceContract,
@@ -176,8 +179,8 @@ const result = {
   warnings,
   summary: {
     total: checks.length,
-    passed: checks.filter((item) => item.ok).length,
-    failed: checks.filter((item) => !item.ok).length,
+    passed: checks.length - failedChecks.length,
+    failed: failedChecks.length,
     warnings: warnings.length,
   },
 };
@@ -194,4 +197,4 @@ fs.writeFileSync(path.join(dist, 'config', 'quality-manifest.json'), `${JSON.str
   status: result.summary.failed ? 'failed' : 'passed',
 }, null, 2)}\n`);
 console.log(JSON.stringify(result, null, 2));
-if (result.summary.failed) process.exit(1);
+if (failedChecks.length) process.exit(1);
