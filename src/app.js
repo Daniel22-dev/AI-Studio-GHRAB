@@ -1617,7 +1617,10 @@ function renderExtraApps(apps) {
     grid.append(card);
   });
   section.append(heading, grid);
-  document.querySelector(".mission-strip")?.before(section);
+  const main = document.querySelector("main");
+  const anchor = document.querySelector(".value-section");
+  if (anchor) anchor.before(section);
+  else main?.append(section);
 }
 
 let homeContext = null;

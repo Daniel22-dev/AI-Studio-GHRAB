@@ -1,6 +1,6 @@
-# Bezpečnostní hranice AI Studio GHRAB 0.21.2
+# Bezpečnostní hranice AI Studio GHRAB 0.21.3
 
-> Aktuální verze: **0.21.2** · etapa P5
+> Aktuální verze: **0.21.3** · etapa P5
 
 
 ## Rychlá kontrola dat v portálu

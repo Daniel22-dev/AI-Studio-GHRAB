@@ -2,6 +2,13 @@
 
 > Tento soubor se generuje ze `src/config/changelog.json`. Neupravujte jej ručně.
 
+## 0.21.3 — 2026-08-10
+**Hotfix zobrazení všech osmi aplikací**
+
+- Opravena regresní chyba domovské stránky: po odstranění starého bloku mission-strip se sekce Další aplikace stále vkládala vůči tomuto již neexistujícímu prvku, takže se vykreslila pouze Top 4 a zbývající čtyři aplikace se do DOM vůbec nepřipojily.
+- Sekce Další aplikace se nyní vkládá před stabilní blok value-section a má bezpečný fallback do main. Tím se znovu zobrazuje všech osm aplikací online i po offline startu; model Top 4 + další aplikace zůstává zachován.
+- Přidána regresní kontrola, která zakazuje opětovnou závislost renderu dalších aplikací na odstraněném mission-strip. Browserový offline kontrakt nadále vyžaduje 8 karet online i offline.
+
 ## 0.21.2 — 2026-08-10
 **Manuál AI Studia podle role**
 

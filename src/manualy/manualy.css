@@ -356,7 +356,7 @@
 }
 
 
-/* 0.21.2 — the Studio manual comes first, but does not compete with app manuals */
+/* 0.21.3 — the Studio manual comes first, but does not compete with app manuals */
 .studio-manual-entry{
   border-color:rgba(80,232,255,.28);
   background:linear-gradient(135deg,rgba(49,87,255,.12),rgba(13,37,58,.75));

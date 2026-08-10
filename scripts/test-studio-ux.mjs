@@ -45,6 +45,8 @@ const appJs = await text("src/app.js");
 check(appJs.includes('if (page === "changelog") return;'), "Katalog zmen nema runtime kompatibilitu pro starsi podepsany policy bundle.");
 check(appJs.includes('[data-teacher-only]'), "Chybi role teacher-only.");
 check(appJs.includes('snapshot.valid && snapshot.permit?.role !== "admin"'), "Teacher-only prvky nejsou vazany na platny nespravcovsky pristup.");
+check(/function renderExtraApps\(apps\)[\s\S]{0,1400}const anchor = document\.querySelector\("\.value-section"\)[\s\S]{0,220}anchor\.before\(section\)[\s\S]{0,120}main\?\.append\(section\)/.test(appJs), "Dalsi aplikace se po odstraneni mission-strip nemaji kam vlozit.");
+check(!appJs.includes('document.querySelector(".mission-strip")?.before(section)'), "Render dalsich aplikaci stale zavisi na odstranene mission-strip.");
 const accessHtml = await text("src/access/index.html");
 check(/data-teacher-only[^>]*hidden[\s\S]*?ANONYMN[IÍ]/.test(accessHtml), "Mesicni souhrn v Muj pristup neni teacher-only.");
 const manualsHtml = await text("src/manualy/index.html");
@@ -100,7 +102,7 @@ globalThis.fetch = async () => {
 };
 try {
   const localRepository = materialModule.createMaterialRepository({
-    VERSION: "0.21.2",
+    VERSION: "0.21.3",
     deploymentReady: Promise.resolve({
       profile: "github-pages",
       apiBaseUrl: "",
@@ -165,7 +167,7 @@ const context = {
   location: { href: "https://example.test/AI-Studio-GHRAB/" },
   document: {
     currentScript: { src: "https://example.test/AI-Studio-GHRAB/ghrab/ghrab-platform.js" },
-    documentElement: { dataset: { ghrabAppId: "ai-studio", ghrabAppVersion: "0.21.2" } },
+    documentElement: { dataset: { ghrabAppId: "ai-studio", ghrabAppVersion: "0.21.3" } },
     getElementById() { return null; },
     readyState: "loading",
     addEventListener() {},
@@ -176,7 +178,7 @@ vm.createContext(context);
 vm.runInContext(platformCode, context, { filename: "ghrab-platform.js" });
 const material = { schema: "ghrab-material-v1", id: "ux-contract-test", content: { sourceText: "test" } };
 const created = context.GHRAB_PLATFORM.bridge.create({
-  target: "generator", sourceAppId: "ai-studio", sourceAppVersion: "0.21.2",
+  target: "generator", sourceAppId: "ai-studio", sourceAppVersion: "0.21.3",
   targetVersionRange: ">=0.0.0 <100.0.0", ttlMs: 5 * 60 * 1000, material, writeLegacy: true,
 });
 check(created?.target === "generator", "Bridge v2 create nevratil cil generator.");

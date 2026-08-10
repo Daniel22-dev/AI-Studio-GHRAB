@@ -1,7 +1,29 @@
 {
   "schema": "ai-studio-changelog-v1",
-  "current": "0.21.2",
+  "current": "0.21.3",
   "items": [
+    {
+      "version": "0.21.3",
+      "date": "2026-08-10",
+      "title": {
+        "cs": "Hotfix zobrazení všech osmi aplikací",
+        "en": "Hotfix for displaying all eight applications"
+      },
+      "changes": [
+        {
+          "cs": "Opravena regresní chyba domovské stránky: po odstranění starého bloku mission-strip se sekce Další aplikace stále vkládala vůči tomuto již neexistujícímu prvku, takže se vykreslila pouze Top 4 a zbývající čtyři aplikace se do DOM vůbec nepřipojily.",
+          "en": "Fixed a home-page regression: after the old mission-strip block was removed, the More applications section was still inserted relative to that missing element, so only the Top 4 rendered and the remaining four applications were never attached to the DOM."
+        },
+        {
+          "cs": "Sekce Další aplikace se nyní vkládá před stabilní blok value-section a má bezpečný fallback do main. Tím se znovu zobrazuje všech osm aplikací online i po offline startu; model Top 4 + další aplikace zůstává zachován.",
+          "en": "The More applications section is now inserted before the stable value-section block with a safe fallback to main. All eight applications are therefore visible again online and after offline start while the Top 4 + more applications model remains intact."
+        },
+        {
+          "cs": "Přidána regresní kontrola, která zakazuje opětovnou závislost renderu dalších aplikací na odstraněném mission-strip. Browserový offline kontrakt nadále vyžaduje 8 karet online i offline.",
+          "en": "A regression check now prevents the additional-app renderer from depending on the removed mission-strip again. The browser offline contract continues to require eight cards both online and offline."
+        }
+      ]
+    },
     {
       "version": "0.21.2",
       "date": "2026-08-10",
