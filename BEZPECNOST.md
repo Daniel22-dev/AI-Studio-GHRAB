@@ -1,6 +1,11 @@
-# Bezpečnostní hranice AI Studio GHRAB 0.20.21
+# Bezpečnostní hranice AI Studio GHRAB 0.21.2
 
-> Aktuální verze: **0.20.21** · etapa P5
+> Aktuální verze: **0.21.2** · etapa P5
+
+
+## Rychlá kontrola dat v portálu
+
+Záložka **Bezpečnost** obsahuje jednoduchý semafor a volitelnou pomůcku **Nejsem si jistý → rychle posoudit**. Uživatel do ní nevkládá dokument ani text; pouze označí typy údajů. Kontrola běží lokálně, nic neposílá a nepoužívá AI. Není povinná před každým použitím aplikace; slouží jen pro situace, kdy si učitel není jistý, zda má materiál nejprve anonymizovat nebo jej do externí AI nevkládat vůbec.
 
 ## Co serverless portál zajišťuje
 

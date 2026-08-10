@@ -40,7 +40,9 @@
     "health": "health",
     "telemetry": "telemetry",
     "aiGenerate": "ai/generate",
-    "aiHealth": "ai/health"
+    "aiHealth": "ai/health",
+    "materials": "materials",
+    "commissions": "commissions"
   },
   "features": {
     "schoolServerReady": true,
@@ -50,7 +52,13 @@
     "sharedDeviceControls": true,
     "dataDeletion": true,
     "schoolServerConnected": false,
-    "liveServerValidationRequired": false
+    "liveServerValidationRequired": false,
+    "sharedMaterialLibraryReady": true,
+    "commissionSharingReady": true,
+    "materialVersioningReady": true,
+    "classroomValidationReady": true,
+    "commissionReviewReady": true,
+    "sharedMaterialLibrary": false
   },
   "appId": "ai-studio",
   "appBaseUrl": "/AI-Studio-GHRAB/",

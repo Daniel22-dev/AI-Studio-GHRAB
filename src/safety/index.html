@@ -1,5 +1,5 @@
 <!doctype html>
-<html lang="cs" data-theme="dark" data-ghrab-app-id="ai-studio" data-ghrab-app-version="0.20.21">
+<html lang="cs" data-theme="dark" data-ghrab-app-id="ai-studio" data-ghrab-app-version="0.21.2">
   <head>
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width,initial-scale=1" />
@@ -51,56 +51,15 @@
       >
         ☰
       </button>
-      <nav id="main-nav" class="main-nav" aria-label="Hlavní navigace">
-        <a href="../" data-nav="home" data-cs="Aplikace" data-en="Applications"
-          >Aplikace</a
-        ><a
-          href="../workflow/"
-          data-nav="workflow"
-          data-cs="Tvorba materiálů"
-          data-en="Resource builder"
-          >Tvorba materiálů</a
-        ><a
-          href="../library/"
-          data-nav="library"
-          data-cs="Materiály"
-          data-en="Resources"
-          >Materiály</a
-        ><a
-          href="../manualy/"
-          data-nav="manualy"
-          data-cs="Manuály"
-          data-en="Manuals"
-          >Manuály</a
-        ><a
-          href="../safety/"
-          data-nav="safety"
-          data-cs="Bezpečnost"
-          data-en="Safety"
-          >Bezpečnost</a
-        ><a
-          href="../access/"
-          data-nav="access"
-          data-cs="Můj přístup"
-          data-en="My access"
-          >Můj přístup</a
-        ><a
-          href="../automation/"
-          data-admin-nav
-          hidden
-          data-nav="automation"
-          data-cs="Správa"
-          data-en="Administration"
-          >Správa</a
-        ><a
-          href="../demo/"
-          data-admin-nav
-          hidden
-          data-nav="demo"
-          data-cs="Prezentace"
-          data-en="Presentation"
-          >Prezentace</a
-        >
+      <nav id="main-nav" class="main-nav" aria-label="Hlavn&#237; navigace">
+        <a href="../" data-nav="home" data-cs="Aplikace" data-en="Applications">Aplikace</a
+        ><a href="../library/" data-nav="library" data-cs="Materi&#225;ly" data-en="Resources">Materi&#225;ly</a
+        ><a href="../manualy/" data-nav="manualy" data-cs="Manu&#225;ly" data-en="Manuals">Manu&#225;ly</a
+        ><a href="../safety/" data-nav="safety" data-cs="Bezpe&#269;nost" data-en="Safety">Bezpe&#269;nost</a
+        ><a href="../access/" data-nav="access" data-cs="M&#367;j p&#345;&#237;stup" data-en="My access">M&#367;j p&#345;&#237;stup</a
+        ><a href="../changelog/" data-nav="changelog" data-cs="Katalog zm&#283;n" data-en="Change catalogue">Katalog zm&#283;n</a
+        ><a href="../automation/" data-admin-nav hidden data-nav="automation" data-cs="Spr&#225;va" data-en="Administration">Spr&#225;va</a
+        ><a href="../demo/" data-admin-nav hidden data-nav="demo" data-cs="Prezentace" data-en="Presentation">Prezentace</a>
       </nav>
       <div class="header-actions">
         <div class="segmented" aria-label="Jazyk">
@@ -224,305 +183,162 @@
         </div>
       </section>
       <section class="section muted-section">
-        <div class="shell content-grid">
-          <div class="panel">
+        <div class="shell">
+          <div class="safety-helper-intro panel">
             <p
               class="eyebrow"
-              data-cs="Rychlé posouzení"
-              data-en="Quick assessment"
+              data-cs="KDY TO POUŽÍT"
+              data-en="WHEN TO USE IT"
             >
-              Rychlé posouzení
+              KDY TO POUŽÍT
             </p>
             <h2
-              data-cs="Co materiál obsahuje?"
-              data-en="What does the material contain?"
+              data-cs="Nemusíte kontrolu otevírat před každým použitím AI."
+              data-en="You do not need to open the check before every AI use."
             >
-              Co materiál obsahuje?
+              Nemusíte kontrolu otevírat před každým použitím AI.
             </h2>
             <p
-              data-cs="Zaškrtněte pouze typy údajů. Nic nevkládejte. Výsledek vzniká pouze ve vašem prohlížeči."
-              data-en="Select data types only. Do not paste anything. The result is produced only in your browser."
+              data-cs="Semafor výše stačí pro běžné situace. Rychlou kontrolu otevřete jen tehdy, když si nejste jistí, zda konkrétní studentská práce, školní zpráva nebo jiný reálný obsah potřebuje anonymizaci nebo se do externí AI nemá vložit vůbec."
+              data-en="The traffic light above is enough for normal situations. Open the quick check only when you are unsure whether specific student work, a school message or other real content needs anonymisation or should not be entered into an external AI service at all."
             >
-              Zaškrtněte pouze typy údajů. Nic nevkládejte. Výsledek vzniká
-              pouze ve vašem prohlížeči.
+              Semafor výše stačí pro běžné situace. Rychlou kontrolu otevřete
+              jen tehdy, když si nejste jistí, zda konkrétní studentská práce,
+              školní zpráva nebo jiný reálný obsah potřebuje anonymizaci nebo se
+              do externí AI nemá vložit vůbec.
             </p>
-            <div class="check-list" id="risk-options">
-              <label class="check-option"
-                ><input type="checkbox" value="name" /><span
-                  data-cs="Celé jméno, e-mail, třída nebo jiný přímý identifikátor"
-                  data-en="Full name, email, class or another direct identifier"
-                  >Celé jméno, e-mail, třída nebo jiný přímý identifikátor</span
-                ></label
-              >
-              <label class="check-option"
-                ><input type="checkbox" value="studentwork" /><span
-                  data-cs="Autentická práce žáka nebo reálná školní korespondence"
-                  data-en="Authentic student work or real school correspondence"
-                  >Autentická práce žáka nebo reálná školní korespondence</span
-                ></label
-              >
-              <label class="check-option"
-                ><input type="checkbox" value="sensitive" /><span
-                  data-cs="Zdravotní, sociální, kázeňské nebo podpůrné údaje"
-                  data-en="Health, social, disciplinary or support data"
-                  >Zdravotní, sociální, kázeňské nebo podpůrné údaje</span
-                ></label
-              >
-              <label class="check-option"
-                ><input type="checkbox" value="secret" /><span
-                  data-cs="Heslo, API klíč, rodné číslo nebo přístupový údaj"
-                  data-en="Password, API key, national ID or access credential"
-                  >Heslo, API klíč, rodné číslo nebo přístupový údaj</span
-                ></label
-              >
-              <label class="check-option"
-                ><input type="checkbox" value="anonymous" /><span
-                  data-cs="Materiál je smyšlený, veřejný nebo už bezpečně anonymizovaný"
-                  data-en="The material is fictional, public or already safely anonymised"
-                  >Materiál je smyšlený, veřejný nebo už bezpečně
-                  anonymizovaný</span
-                ></label
-              >
+          </div>
+          <details class="panel safety-check-details">
+            <summary
+              data-cs="Nejsem si jistý → rychle posoudit"
+              data-en="I am not sure → quick assessment"
+            >
+              Nejsem si jistý → rychle posoudit
+            </summary>
+            <div class="content-grid safety-check-content">
+              <div>
+                <p
+                  class="eyebrow"
+                  data-cs="Rychlá kontrola dat"
+                  data-en="Quick data check"
+                >
+                  Rychlá kontrola dat
+                </p>
+                <h2
+                  data-cs="Jaký typ dat se chystáte použít?"
+                  data-en="What type of data are you about to use?"
+                >
+                  Jaký typ dat se chystáte použít?
+                </h2>
+                <p
+                  data-cs="Zaškrtněte pouze typy údajů. Nic nevkládejte. Jde o místní rozhodovací pomůcku, ne o sken dokumentu ani AI analýzu obsahu."
+                  data-en="Select data types only. Do not paste anything. This is a local decision aid, not a document scan or AI content analysis."
+                >
+                  Zaškrtněte pouze typy údajů. Nic nevkládejte. Jde o místní
+                  rozhodovací pomůcku, ne o sken dokumentu ani AI analýzu
+                  obsahu.
+                </p>
+                <div class="check-list" id="risk-options">
+                  <label class="check-option"
+                    ><input type="checkbox" value="name" /><span
+                      data-cs="Celé jméno, e-mail, třída nebo jiný přímý identifikátor"
+                      data-en="Full name, email, class or another direct identifier"
+                      >Celé jméno, e-mail, třída nebo jiný přímý
+                      identifikátor</span
+                    ></label
+                  >
+                  <label class="check-option"
+                    ><input type="checkbox" value="studentwork" /><span
+                      data-cs="Autentická práce žáka nebo reálná školní korespondence"
+                      data-en="Authentic student work or real school correspondence"
+                      >Autentická práce žáka nebo reálná školní
+                      korespondence</span
+                    ></label
+                  >
+                  <label class="check-option"
+                    ><input type="checkbox" value="sensitive" /><span
+                      data-cs="Zdravotní, sociální, kázeňské nebo podpůrné údaje"
+                      data-en="Health, social, disciplinary or support data"
+                      >Zdravotní, sociální, kázeňské nebo podpůrné údaje</span
+                    ></label
+                  >
+                  <label class="check-option"
+                    ><input type="checkbox" value="secret" /><span
+                      data-cs="Heslo, API klíč, rodné číslo nebo přístupový údaj"
+                      data-en="Password, API key, national ID or access credential"
+                      >Heslo, API klíč, rodné číslo nebo přístupový údaj</span
+                    ></label
+                  >
+                  <label class="check-option"
+                    ><input type="checkbox" value="anonymous" /><span
+                      data-cs="Materiál je smyšlený, veřejný nebo už bezpečně anonymizovaný"
+                      data-en="The material is fictional, public or already safely anonymised"
+                      >Materiál je smyšlený, veřejný nebo už bezpečně
+                      anonymizovaný</span
+                    ></label
+                  >
+                </div>
+                <div
+                  id="risk-result"
+                  class="result-box"
+                  data-level="green"
+                  aria-live="polite"
+                  hidden
+                ></div>
+                <button
+                  id="risk-reset"
+                  class="button ghost safety-reset"
+                  type="button"
+                  data-cs="Vymazat volby"
+                  data-en="Clear choices"
+                >
+                  Vymazat volby
+                </button>
+              </div>
+              <aside>
+                <h2
+                  data-cs="Co s výsledkem udělat"
+                  data-en="What to do with the result"
+                >
+                  Co s výsledkem udělat
+                </h2>
+                <ol>
+                  <li
+                    data-cs="Zelená: materiál lze použít, pokud je opravdu veřejný, smyšlený nebo bezpečně anonymizovaný."
+                    data-en="Green: the resource can be used if it is genuinely public, fictional or safely anonymised."
+                  >
+                    Zelená: materiál lze použít, pokud je opravdu veřejný,
+                    smyšlený nebo bezpečně anonymizovaný.
+                  </li>
+                  <li
+                    data-cs="Oranžová: nejprve odstraňte identifikátory a vše, co není pro úkol nutné."
+                    data-en="Orange: first remove identifiers and anything not needed for the task."
+                  >
+                    Oranžová: nejprve odstraňte identifikátory a vše, co není
+                    pro úkol nutné.
+                  </li>
+                  <li
+                    data-cs="Červená: obsah do externí AI nevkládejte a zvolte jiný pracovní postup."
+                    data-en="Red: do not enter the content into an external AI service and use another workflow."
+                  >
+                    Červená: obsah do externí AI nevkládejte a zvolte jiný
+                    pracovní postup.
+                  </li>
+                </ol>
+                <p>
+                  <strong data-cs="Zásada:" data-en="Principle:"
+                    >Zásada:</strong
+                  >
+                  <span
+                    data-cs="AI pomáhá učiteli; nenahrazuje jeho odbornou odpovědnost."
+                    data-en="AI supports the teacher; it does not replace professional responsibility."
+                    >AI pomáhá učiteli; nenahrazuje jeho odbornou
+                    odpovědnost.</span
+                  >
+                </p>
+              </aside>
             </div>
-            <div
-              id="risk-result"
-              class="result-box"
-              data-level="green"
-              aria-live="polite"
-            >
-              <strong
-                data-cs="Výchozí doporučení:"
-                data-en="Default recommendation:"
-                >Výchozí doporučení:</strong
-              >
-              <span
-                data-cs="Před použitím vždy zkontrolujte, že materiál neobsahuje identifikovatelné osoby."
-                data-en="Before use, always check that the material does not contain identifiable people."
-                >Před použitím vždy zkontrolujte, že materiál neobsahuje
-                identifikovatelné osoby.</span
-              >
-            </div>
-          </div>
-          <aside class="panel">
-            <h2
-              data-cs="Před každým odesláním"
-              data-en="Before every submission"
-            >
-              Před každým odesláním
-            </h2>
-            <ol>
-              <li
-                data-cs="Odstraňte jména a kontakty."
-                data-en="Remove names and contact details."
-              >
-                Odstraňte jména a kontakty.
-              </li>
-              <li
-                data-cs="Nahraďte konkrétní osoby neutrálními značkami."
-                data-en="Replace specific people with neutral labels."
-              >
-                Nahraďte konkrétní osoby neutrálními značkami.
-              </li>
-              <li
-                data-cs="Nevkládejte informace, které nejsou pro úkol nutné."
-                data-en="Do not enter information that is not needed for the task."
-              >
-                Nevkládejte informace, které nejsou pro úkol nutné.
-              </li>
-              <li
-                data-cs="Zkontrolujte výstup AI před použitím."
-                data-en="Review the AI output before use."
-              >
-                Zkontrolujte výstup AI před použitím.
-              </li>
-            </ol>
-            <p>
-              <strong data-cs="Zásada:" data-en="Principle:">Zásada:</strong>
-              <span
-                data-cs="AI pomáhá učiteli; nenahrazuje jeho odbornou odpovědnost."
-                data-en="AI supports the teacher; it does not replace professional responsibility."
-                >AI pomáhá učiteli; nenahrazuje jeho odbornou odpovědnost.</span
-              >
-            </p>
-          </aside>
-        </div>
-      </section>
-      <section class="section shell-wide quality-centre">
-        <div class="section-heading">
-          <div>
-            <p
-              class="eyebrow"
-              data-cs="OZNAČENÍ KVALITY"
-              data-en="QUALITY LABELS"
-            >
-              OZNAČENÍ KVALITY
-            </p>
-            <h2
-              data-cs="AI navrhne. Učitel ověří. Škola může doporučit."
-              data-en="AI drafts. Teachers review. The school may recommend."
-            >
-              AI navrhne. Učitel ověří. Škola může doporučit.
-            </h2>
-          </div>
-          <p
-            data-cs="Štítek neříká, že je materiál dokonalý. Transparentně ukazuje, jakou kontrolou prošel a kdo může udělit další stupeň."
-            data-en="A label does not claim perfection. It transparently shows which review has taken place and who may award the next level."
-          >
-            Štítek neříká, že je materiál dokonalý. Transparentně ukazuje, jakou
-            kontrolou prošel a kdo může udělit další stupeň.
-          </p>
-        </div>
-        <div class="quality-ladder">
-          <article class="quality-level draft">
-            <span>01</span>
-            <h3 data-cs="Návrh AI" data-en="AI draft">Návrh AI</h3>
-            <p
-              data-cs="Obsah vznikl nebo byl významně upraven AI. Není určen k okamžitému použití bez odborné kontroly."
-              data-en="The content was created or substantially edited by AI. It is not for immediate use without professional review."
-            >
-              Obsah vznikl nebo byl významně upraven AI. Není určen k okamžitému
-              použití bez odborné kontroly.
-            </p>
-            <small
-              data-cs="Udělí systém automaticky"
-              data-en="Assigned automatically"
-              >Udělí systém automaticky</small
-            >
-          </article>
-          <article class="quality-level reviewed">
-            <span>02</span>
-            <h3 data-cs="Zkontrolováno učitelem" data-en="Teacher-reviewed">
-              Zkontrolováno učitelem
-            </h3>
-            <p
-              data-cs="Učitel ověřil věcnou správnost, řešení, přiměřenost úrovni a technickou použitelnost."
-              data-en="A teacher checked factual accuracy, answers, level suitability and technical usability."
-            >
-              Učitel ověřil věcnou správnost, řešení, přiměřenost úrovni a
-              technickou použitelnost.
-            </p>
-            <small
-              data-cs="Potvrzuje autor nebo jiný učitel"
-              data-en="Confirmed by the author or another teacher"
-              >Potvrzuje autor nebo jiný učitel</small
-            >
-          </article>
-          <article class="quality-level tested">
-            <span>03</span>
-            <h3 data-cs="Vyzkoušeno ve výuce" data-en="Classroom-tested">
-              Vyzkoušeno ve výuce
-            </h3>
-            <p
-              data-cs="Materiál byl použit s reálnou skupinou a byly zaznamenány zkušenosti, čas a případné úpravy."
-              data-en="The resource was used with a real group and experience, timing and changes were recorded."
-            >
-              Materiál byl použit s reálnou skupinou a byly zaznamenány
-              zkušenosti, čas a případné úpravy.
-            </p>
-            <small
-              data-cs="Potvrzuje učitel po použití"
-              data-en="Confirmed by the teacher after use"
-              >Potvrzuje učitel po použití</small
-            >
-          </article>
-          <article class="quality-level commission">
-            <span>04</span>
-            <h3
-              data-cs="Ověřeno předmětovou komisí"
-              data-en="Commission-reviewed"
-            >
-              Ověřeno předmětovou komisí
-            </h3>
-            <p
-              data-cs="Jiný oprávněný kolega zkontroloval obsah a materiál lze doporučit pro širší školní použití."
-              data-en="Another authorised colleague reviewed the content and it can be recommended for wider school use."
-            >
-              Jiný oprávněný kolega zkontroloval obsah a materiál lze doporučit
-              pro širší školní použití.
-            </p>
-            <small
-              data-cs="Udílí pouze oprávněná osoba"
-              data-en="Awarded by an authorised person only"
-              >Udílí pouze oprávněná osoba</small
-            >
-          </article>
-        </div>
-      </section>
-      <section class="section muted-section">
-        <div class="shell-wide content-grid">
-          <div class="panel">
-            <p
-              class="eyebrow"
-              data-cs="MINIMÁLNÍ KONTROLA"
-              data-en="MINIMUM REVIEW"
-            >
-              MINIMÁLNÍ KONTROLA
-            </p>
-            <h2
-              data-cs="Před označením „Zkontrolováno učitelem“"
-              data-en="Before marking “Teacher-reviewed”"
-            >
-              Před označením „Zkontrolováno učitelem“
-            </h2>
-            <ul class="standard-checklist">
-              <li
-                data-cs="Výukový cíl je jasný a odpovídá úlohám."
-                data-en="The learning objective is clear and matches the tasks."
-              >
-                Výukový cíl je jasný a odpovídá úlohám.
-              </li>
-              <li
-                data-cs="Správné odpovědi a bodování byly ručně ověřeny."
-                data-en="Correct answers and scoring were checked manually."
-              >
-                Správné odpovědi a bodování byly ručně ověřeny.
-              </li>
-              <li
-                data-cs="Jazyk, obtížnost a délka odpovídají cílové skupině."
-                data-en="Language, difficulty and length suit the target group."
-              >
-                Jazyk, obtížnost a délka odpovídají cílové skupině.
-              </li>
-              <li
-                data-cs="Materiál neobsahuje osobní ani citlivé údaje."
-                data-en="The resource contains no personal or sensitive data."
-              >
-                Materiál neobsahuje osobní ani citlivé údaje.
-              </li>
-              <li
-                data-cs="Export nebo interaktivní funkce byly prakticky vyzkoušeny."
-                data-en="Export or interactive functions were tested in practice."
-              >
-                Export nebo interaktivní funkce byly prakticky vyzkoušeny.
-              </li>
-            </ul>
-          </div>
-          <aside class="panel">
-            <p class="eyebrow" data-cs="VERZOVÁNÍ" data-en="VERSIONING">
-              VERZOVÁNÍ
-            </p>
-            <h2
-              data-cs="Zásadní změna ruší vyšší ověření"
-              data-en="A major change invalidates higher review"
-            >
-              Zásadní změna ruší vyšší ověření
-            </h2>
-            <p
-              data-cs="Pokud se změní zadání, řešení, bodování nebo větší část obsahu, materiál se vrací minimálně na stav „Zkontrolováno učitelem“ a musí projít novým ověřením."
-              data-en="If prompts, answers, scoring or a substantial part of the content changes, the resource returns at least to “Teacher-reviewed” and must be reviewed again."
-            >
-              Pokud se změní zadání, řešení, bodování nebo větší část obsahu,
-              materiál se vrací minimálně na stav „Zkontrolováno učitelem“ a
-              musí projít novým ověřením.
-            </p>
-            <a
-              class="button primary"
-              href="../workflow/"
-              data-cs="Otevřít kontrolovaný pracovní tok"
-              data-en="Open controlled workflow"
-              >Otevřít kontrolovaný pracovní tok</a
-            >
-          </aside>
+          </details>
         </div>
       </section>
     </main>
@@ -538,27 +354,6 @@
             Ostrava-Hrabůvka · verze __APP_VERSION__
           </p>
         </div>
-        <nav class="footer-links" aria-label="Doplňková navigace">
-          <a href="../safety/" data-cs="Bezpečnost" data-en="Safety"
-            >Bezpečnost</a
-          ><a href="../access/" data-cs="Můj přístup" data-en="My access"
-            >Můj přístup</a
-          ><a
-            href="../changelog/"
-            data-admin-link
-            hidden
-            data-cs="Změny"
-            data-en="Changes"
-            >Změny</a
-          ><a
-            href="../tests/"
-            data-admin-link
-            hidden
-            data-cs="Kontrola Studia"
-            data-en="Studio check"
-            >Kontrola Studia</a
-          >
-        </nav>
       </div>
     </footer>
     <script src="../app.js" type="module"></script>

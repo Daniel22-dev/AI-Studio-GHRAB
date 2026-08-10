@@ -1,136 +1,75 @@
 <!DOCTYPE html>
-<html data-theme="dark" lang="cs" data-ghrab-app-id="ai-studio" data-ghrab-app-version="0.20.21">
+<html data-theme="dark" lang="cs" data-ghrab-app-id="ai-studio" data-ghrab-app-version="0.21.2">
  <head>
   <meta charset="utf-8"/>
   <meta content="width=device-width,initial-scale=1" name="viewport"/>
   <meta content="#030915" name="theme-color"/>
   <meta content="default-src 'self'; script-src 'self'; style-src 'self'; img-src 'self' data:; connect-src 'self'; object-src 'none'; base-uri 'self'; form-action 'self'" http-equiv="Content-Security-Policy"/>
-  <title>
-   Společná příručka · AI Studio GHRAB
-  </title>
+  <title>Spole&#269;n&#225; p&#345;&#237;ru&#269;ka &#183; AI Studio GHRAB</title>
   <link href="../styles.css" rel="stylesheet"/>
   <link href="../polish.css" rel="stylesheet"/>
   <link href="./ecosystem-guide.css" rel="stylesheet"/>
-</head>
+ </head>
  <body>
-  <a class="skip-link" href="#main">Přejít na obsah</a>
+  <a class="skip-link" href="#main">P&#345;ej&#237;t na obsah</a>
   <main id="main" class="guide">
    <div class="top">
-    <a href="./">
-     ← Centrum manuálů
-    </a>
-    <strong>
-     AI Studio GHRAB · společná příručka · verze 0.19.0
-    </strong>
+    <a href="./">&#8592; Centrum manu&#225;l&#367;</a>
+    <strong>AI Studio GHRAB &#183; spole&#269;n&#225; p&#345;&#237;ru&#269;ka &#183; verze 0.21.2</strong>
    </div>
    <section class="hero">
-    <p class="eyebrow">
-     SEDM APLIKACÍ · JEDEN PROVOZNÍ STANDARD
-    </p>
-    <h1>
-     Společné postupy celého ekosystému
-    </h1>
-    <p>
-     Tato příručka doplňuje manuály jednotlivých aplikací. Popisuje témata, která se mají provádět stejně v GITu, Diferenciátoru, Hodnotiteli, Korespondenčním asistentovi, LUDUSu, ACTIVA, SORTIO i Lesson Hubu.
-    </p>
+    <p class="eyebrow">OSM APLIKAC&#205; &#183; JEDEN PROVOZN&#205; STANDARD</p>
+    <h1>Spole&#269;n&#233; postupy cel&#233;ho ekosyst&#233;mu</h1>
+    <p>Tato p&#345;&#237;ru&#269;ka dopl&#328;uje manu&#225;ly jednotliv&#253;ch aplikac&#237;. Plat&#237; pro Gener&#225;tor interaktivn&#237;ch test&#367;, Diferenci&#225;tor, Hodnotitel maturitn&#237;ch sloh&#367;, Koresponden&#269;n&#237;ho asistenta, LUDUS, ACTIVA, SORTIO i Lesson Hub.</p>
    </section>
    <nav class="toc">
-    <a href="#api">
-     API a modely
-    </a>
-    <a href="#privacy">
-     Soukromí
-    </a>
-    <a href="#print">
-     PDF a tisk
-    </a>
-    <a href="#backup">
-     Zálohy
-    </a>
-    <a href="#pwa">
-     PWA
-    </a>
-    <a href="#diagnostics">
-     Diagnostika
-    </a>
+    <a href="#api">API a modely</a>
+    <a href="#access">P&#345;&#237;stup a sd&#237;len&#233; za&#345;&#237;zen&#237;</a>
+    <a href="#privacy">Soukrom&#237;</a>
+    <a href="#print">PDF a tisk</a>
+    <a href="#backup">Z&#225;lohy</a>
+    <a href="#pwa">PWA</a>
+    <a href="#diagnostics">Hl&#225;&#353;en&#237; chyby</a>
    </nav>
    <section class="section" id="api">
-    <h2>
-     API klíče a modely
-    </h2>
+    <h2>API kl&#237;&#269;e a modely</h2>
     <ol class="steps">
-     <li>
-      API klíč vkládejte pouze do nastavení konkrétní aplikace.
-     </li>
-     <li>
-      Klíč neposílejte e-mailem a nevkládejte jej do projektu, screenshotu ani diagnostického protokolu.
-     </li>
-     <li>
-      Rychlý model používejte pro běžnou tvorbu, důkladný režim pro náročné podklady.
-     </li>
-     <li>
-      Při chybě limitu zkontrolujte stav klíče a až potom opakujte požadavek.
-     </li>
+     <li>Pokud konkr&#233;tn&#237; aplikace v sou&#269;asn&#233;m pilotn&#237;m profilu nab&#237;z&#237; vlo&#382;en&#237; poskytovatelsk&#233;ho API kl&#237;&#269;e, vkl&#225;dejte jej pouze do jej&#237;ho ofici&#225;ln&#237;ho nastaven&#237;.</li>
+     <li>Kl&#237;&#269; nepos&#237;lejte e-mailem a nevkl&#225;dejte jej do projektu, screenshotu, diagnostick&#233;ho protokolu ani do AI Studia jako materi&#225;l.</li>
+     <li>Na pl&#225;novan&#233;m &#353;koln&#237;m serveru m&#367;&#382;e lok&#225;ln&#237; zad&#225;v&#225;n&#237; kl&#237;&#269;e zcela zmizet a AI po&#382;adavky bude zprost&#345;edkov&#225;vat server. V takov&#233;m profilu se &#345;i&#271;te serverov&#253;m nastaven&#237;m, ne star&#253;m lok&#225;ln&#237;m postupem.</li>
+     <li>AI v&#253;stup v&#382;dy kontroluje u&#269;itel; model nenahrazuje odbornou ani pedagogickou odpov&#283;dnost.</li>
     </ol>
-    <div class="callout">
-     AI výstup vždy kontroluje učitel. Připojení modelu nenahrazuje odbornou ani pedagogickou odpovědnost.
-    </div>
+   </section>
+   <section class="section" id="access">
+    <h2>P&#345;&#237;stup, &#353;kolen&#237; a sd&#237;len&#233; za&#345;&#237;zen&#237;</h2>
+    <p>U&#382;ivatel vid&#237; ekosyst&#233;m, ale spust&#237; pouze aplikace obsa&#382;en&#233; v jeho platn&#233;m podepsan&#233;m opr&#225;vn&#283;n&#237;. Spr&#225;vcovsk&#233; n&#225;stroje jsou nav&#237;c odd&#283;len&#233; rol&#237; spr&#225;vce.</p>
+    <div class="callout">Na sd&#237;len&#233;m po&#269;&#237;ta&#269;i pou&#382;ijte vlevo dole <strong>Soukrom&#237; a ukon&#269;en&#237; pr&#225;ce</strong>. Volba <strong>Ukon&#269;it pr&#225;ci</strong> odstran&#237; do&#269;asn&#225; data a relaci; p&#345;i za&#353;krtnut&#237; sd&#237;len&#233;ho za&#345;&#237;zen&#237; odstran&#237; i lok&#225;ln&#237; data aplikace. <strong>Smazat moje data</strong> je siln&#283;j&#353;&#237; z&#225;sah podle datov&#233;ho manifestu aplikace.</div>
    </section>
    <section class="section" id="privacy">
-    <h2>
-     Soukromí a anonymizace
-    </h2>
-    <p>
-     Nevkládejte celá jména žáků, osobní e-maily, adresy, rodná čísla, zdravotní údaje ani citlivé rodinné informace. Používejte anonymní označení typu ŽÁK_01. Kontrola aplikace je pomocná; konečnou kontrolu provádí učitel.
-    </p>
+    <h2>Soukrom&#237; a anonymizace</h2>
+    <p>Nevkl&#225;dejte cel&#225; jm&#233;na &#382;&#225;k&#367;, osobn&#237; e-maily, adresy, rodn&#225; &#269;&#237;sla, zdravotn&#237; &#250;daje ani citliv&#233; rodinn&#233; informace. Pou&#382;&#237;vejte neutr&#225;ln&#237; ozna&#269;en&#237; typu &#381;&#193;K_01. Rychl&#225; kontrola v AI Studiu pracuje pouze s typem dat, ne&#269;te obsah dokumentu a nenahrazuje lidskou kontrolu.</p>
    </section>
    <section class="section" id="print">
-    <h2>
-     PDF, tisk a náhled
-    </h2>
-    <p>
-     Před exportem zkontrolujte řešení, dělení stran, velikost písma, variantu a režim žák/učitel. Pro běžné kopírování volte úsporný černobílý režim. Systémové „Uložit jako PDF“ zachová přesnou sazbu náhledu.
-    </p>
+    <h2>PDF, tisk a n&#225;hled</h2>
+    <p>P&#345;ed exportem zkontrolujte &#345;e&#353;en&#237;, d&#283;len&#237; stran, velikost p&#237;sma, variantu a re&#382;im &#382;&#225;k/u&#269;itel. Pokud aplikace nab&#237;z&#237; vlastn&#237; PDF export, pou&#382;ijte jej p&#345;ednostn&#283;; jinak ov&#283;&#345;te syst&#233;mov&#253; n&#225;hled tisku.</p>
    </section>
    <section class="section" id="backup">
-    <h2>
-     Lokální data, zálohy a obnova
-    </h2>
-    <p>
-     Bezserverové aplikace ukládají část dat do konkrétního prohlížeče. Důležitý materiál proto exportujte jako projekt nebo knihovní balíček. Vymazání dat prohlížeče může místní projekty odstranit. API klíče do záloh nepatří.
-    </p>
+    <h2>Lok&#225;ln&#237; data, z&#225;lohy a obnova</h2>
+    <p>V bezserverov&#233;m pilotu ukl&#225;daj&#237; aplikace &#269;&#225;st dat do konkr&#233;tn&#237;ho prohl&#237;&#382;e&#269;e. D&#367;le&#382;it&#253; projekt proto p&#345;ed smaz&#225;n&#237;m dat exportujte v nativn&#237;m form&#225;tu dan&#233; aplikace. API kl&#237;&#269;e, p&#345;&#237;stupov&#233; tokeny a jin&#225; tajemstv&#237; do z&#225;loh nepat&#345;&#237;.</p>
    </section>
    <section class="section" id="pwa">
-    <h2>
-     Instalace PWA a aktualizace
-    </h2>
-    <p>
-     AI Studio lze v Chrome nebo Edge nainstalovat jako aplikaci. Po vydání nové verze zavřete stará okna a znovu spusťte Studio. Pokud se zobrazuje stará verze, použijte obnovení aplikace v pracovním prostoru nebo vyčkejte na dokončení aktualizace offline cache.
-    </p>
+    <h2>Instalace PWA a aktualizace</h2>
+    <p>AI Studio a aplikace, kter&#233; PWA podporuj&#237;, instalujte jen z ofici&#225;ln&#237; &#353;koln&#237; nebo GitHub Pages adresy. Po vyd&#225;n&#237; nov&#233; verze zav&#345;ete star&#225; okna a aplikaci znovu spus&#357;te; offline cache se aktualizuje podle pravidel konkr&#233;tn&#237; aplikace.</p>
    </section>
    <section class="section" id="diagnostics">
-    <h2>
-     Testy, diagnostika a hlášení chyby
-    </h2>
+    <h2>Diagnostika a hl&#225;&#353;en&#237; chyby</h2>
     <ol class="steps">
-     <li>
-      Zopakujte chybu a poznamenejte přesný krok.
-     </li>
-     <li>
-      Otevřete interní testy nebo diagnostiku aplikace.
-     </li>
-     <li>
-      Zkontrolujte a anonymizujte snímek obrazovky.
-     </li>
-     <li>
-      Přiložte verzi aplikace, technický protokol a stručný popis očekávaného chování.
-     </li>
+     <li>Zopakujte chybu a stru&#269;n&#283; popi&#353;te, co jste ud&#283;lali a co jste o&#269;ek&#225;vali.</li>
+     <li>Pou&#382;ijte plovouc&#237; tla&#269;&#237;tko <strong>Nahl&#225;sit chybu</strong>; nen&#237; pot&#345;eba fotografovat monitor telefonem.</li>
+     <li>P&#345;ed odesl&#225;n&#237;m zkontrolujte screenshot a odstra&#328;te nebo zakryjte citliv&#233; &#250;daje.</li>
+     <li>Intern&#237; diagnostika a Kontrola Studia jsou spr&#225;vcovsk&#233; n&#225;stroje; b&#283;&#382;n&#253; kolega je nepot&#345;ebuje spou&#353;t&#283;t.</li>
     </ol>
-    <div class="callout">
-     Nefotografujte monitor telefonem. Použijte snímek obrazovky a před odesláním začerněte citlivé údaje.
-    </div>
    </section>
   </main>
  </body>
 </html>
-

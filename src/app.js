@@ -660,20 +660,27 @@ function setupNavigation() {
   );
   const activeNavPage = ["issuer", "access-registry"].includes(page)
     ? "automation"
-    : page;
+    : ["manual-teacher", "manual-admin"].includes(page)
+      ? "manualy"
+      : page;
   document
     .querySelector(`.main-nav a[data-nav="${activeNavPage}"]`)
     ?.setAttribute("aria-current", "page");
 }
 
 function updateAdminVisibility() {
+  const snapshot = getAccessSnapshot();
   const admin = isAdmin();
+  const teacher = Boolean(snapshot.valid && snapshot.permit?.role !== "admin");
   root.classList.toggle("access-admin", admin);
   document
     .querySelectorAll("[data-admin-nav],[data-admin-link],[data-admin-only]")
     .forEach((node) => {
       node.hidden = !admin;
     });
+  document.querySelectorAll("[data-teacher-only]").forEach((node) => {
+    node.hidden = !teacher;
+  });
 }
 
 function setupChrome() {
@@ -2059,6 +2066,9 @@ async function registerPwa() {
 }
 
 function renderPageAccessGate() {
+  // Changelog was made public in 0.21.0. Keep that route public even when an
+  // older still-valid signed access bundle is cached on the device.
+  if (page === "changelog") return;
   const administratorPages = new Set(
     getAccessSnapshot().policy?.administratorPages || [],
   );

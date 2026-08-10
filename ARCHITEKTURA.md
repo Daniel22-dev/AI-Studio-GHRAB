@@ -1,6 +1,6 @@
-# Architektura AI Studio GHRAB 0.20.21
+# Architektura AI Studio GHRAB 0.21.2
 
-> Aktuální verze: **0.20.21** · etapa P5
+> Aktuální verze: **0.21.2** · etapa P5
 
 ## Koherence aktualizace PWA
 
@@ -15,10 +15,28 @@ samostatné aplikace ─ manifesty ─► AI Studio
                                    ├─ Top 4 a katalog
                                    ├─ učitelské rozhraní
                                    ├─ správcovské rozhraní
-                                   ├─ materiály a handoff
+                                   ├─ volitelný materiálový handoff (podporované aplikace)
                                    ├─ bezpečnost a diagnostika
                                    └─ pilot a report
 ```
+
+## Server-ready katalog materiálů
+
+Záložka **Materiály** má dva pravdivě oddělené režimy:
+
+- **GitHub/serverless profil:** ukázkové balíčky, místní import a místní pracovní prostor. Nic se nesdílí mezi kolegy.
+- **School-server profil:** po skutečném připojení serveru se aktivuje repository adapter pro komise, serverové verze a quality events.
+
+Klientská vrstva `src/library/material-service.js` se nesmí aktivovat jen podle existence UI. Vyžaduje `profile=school-server`, `features.schoolServerConnected=true` a `features.sharedMaterialLibrary=true`. Kontrakt počítá s načtením komisí, publikací anonymizovaného materiálu, vytvořením vlastní kopie a serverově autorizovanými událostmi `classroom-tested` a `commission-reviewed`. Materiál s `provenance.containsPersonalData=true` klient k publikaci odmítne.
+
+```text
+aplikace -> GHRAB Material v1 -> Moje materiály
+                              -> Komise (server) -> verze / vlastní kopie
+                                                -> Ověřeno ve výuce
+                                                -> Doporučeno komisí
+```
+
+Studio tedy není devátý editor. Materiál vzniká v konkrétní aplikaci; Studio je katalog, úložiště, místo sdílení a předávací bod.
 
 ## Role rozhraní
 

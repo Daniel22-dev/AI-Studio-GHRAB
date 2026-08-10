@@ -34,7 +34,13 @@
     "serverSessionReady": false,
     "schoolGatewayReady": false,
     "schoolServerConnected": false,
-    "liveServerValidationRequired": false
+    "liveServerValidationRequired": false,
+    "sharedMaterialLibraryReady": true,
+    "commissionSharingReady": true,
+    "materialVersioningReady": true,
+    "classroomValidationReady": true,
+    "commissionReviewReady": true,
+    "sharedMaterialLibrary": false
   },
   "appId": "ai-studio",
   "appBaseUrl": "/ai-studio/",
@@ -45,5 +51,15 @@
     "serverRequired": false,
     "githubUpload": "pending",
     "postUploadValidationRequired": true
+  },
+  "endpoints": {
+    "session": "session",
+    "logout": "session/logout",
+    "health": "health",
+    "telemetry": "telemetry",
+    "aiGenerate": "ai/generate",
+    "aiHealth": "ai/health",
+    "materials": "materials",
+    "commissions": "commissions"
   }
 }

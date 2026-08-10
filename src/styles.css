@@ -796,7 +796,7 @@ textarea {
 }
 .site-footer {
   border-top: 1px solid var(--line);
-  background: rgba(1, 5, 11, 0.72);
+  background: linear-gradient(180deg, rgba(8, 29, 50, 0.94), rgba(4, 20, 36, 0.96));
   padding: 26px 0;
 }
 .footer-inner {

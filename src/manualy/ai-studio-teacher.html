@@ -1,0 +1,91 @@
+<!DOCTYPE html>
+<html lang="cs" data-theme="dark" data-ghrab-app-id="ai-studio" data-ghrab-app-version="0.21.2">
+<head>
+ <meta charset="utf-8"/>
+ <meta name="viewport" content="width=device-width,initial-scale=1"/>
+ <meta name="theme-color" content="#030915"/>
+ <meta http-equiv="Content-Security-Policy" content="default-src 'self'; script-src 'self'; style-src 'self'; img-src 'self' data:; connect-src 'self'; object-src 'none'; base-uri 'self'; form-action 'self'"/>
+ <title>AI Studio GHRAB – manuál učitele · AI Studio GHRAB</title>
+ <link href="../manifest.webmanifest" rel="manifest"/>
+ <link href="../assets/brand/icon-32.png" rel="icon" sizes="32x32"/>
+ <link href="../styles.css" rel="stylesheet"/>
+ <link href="../polish.css" rel="stylesheet"/>
+ <link href="./studio-guide.css" rel="stylesheet"/>
+</head>
+<body data-page="manual-teacher" data-title-cs="AI Studio GHRAB – manuál učitele · AI Studio GHRAB" data-title-en="AI Studio GHRAB – manuál učitele · AI Studio GHRAB">
+ <a class="skip-link" href="#main">Přejít na obsah</a>
+ <header class="site-header cosmic-header">
+  <a class="brand" href="../" aria-label="AI Studio GHRAB — domů"><span class="brand-orbit"><img src="../assets/brand/brand-mark.svg" alt="" width="46" height="46"/></span><span><strong>AI Studio <em>GHRAB</em></strong><small>Praktická příručka pro běžnou práci učitele</small></span></a>
+  <button class="nav-toggle" type="button" aria-expanded="false" aria-controls="main-nav" aria-label="Otevřít navigaci">☰</button>
+  <nav id="main-nav" class="main-nav" aria-label="Hlavní navigace">
+   <a href="../" data-nav="home">Aplikace</a><a href="../library/" data-nav="library">Materiály</a><a href="../manualy/" data-nav="manualy">Manuály</a><a href="../safety/" data-nav="safety">Bezpečnost</a><a href="../access/" data-nav="access">Můj přístup</a><a href="../changelog/" data-nav="changelog">Katalog změn</a><a href="../automation/" data-admin-nav hidden data-nav="automation">Správa</a><a href="../demo/" data-admin-nav hidden data-nav="demo">Prezentace</a>
+  </nav>
+ </header>
+ <main id="main" class="studio-guide">
+  <div class="top"><a href="./">← Centrum manuálů</a><strong>AI Studio GHRAB · Učitel · běžný provoz · verze 0.21.2</strong></div>
+  <section class="hero">
+   <span class="role-badge">Učitel · běžný provoz</span>
+   <h1>AI Studio GHRAB – manuál učitele</h1>
+   <p>Tento manuál popisuje pouze to, co potřebuje běžný učitel. Správcovské funkce jsou záměrně mimo tento průvodce.</p>
+  </section>
+  <div class="quick-path"><div><b>1 · APLIKACE</b><span>Vyberu nástroj, na který jsem školený.</span></div><div><b>2 · PRÁCE</b><span>Výstup vytvářím uvnitř konkrétní aplikace.</span></div><div><b>3 · KONTROLA</b><span>Před použitím zkontroluji obsah a citlivá data.</span></div><div><b>4 · KONEC</b><span>Na sdíleném zařízení bezpečně ukončím práci.</span></div></div>
+  <nav class="toc"><a href="#start">Jak začít</a><a href="#navigation">Záložky</a><a href="#materials">Materiály</a><a href="#safety">Bezpečnost</a><a href="#access-report">Můj přístup</a><a href="#shared-device">Sdílený počítač</a><a href="#support">Chyby</a><a href="#not-needed">Co nemusím řešit</a></nav>
+
+   <section class="section" id="start">
+    <h2>Nejkratší správný postup</h2>
+    <ol class="steps">
+     <li>Otevřete <strong>Aplikace</strong> a vyberte nástroj, pro který máte školení a platný přístup.</li>
+     <li>Vlastní práci proveďte uvnitř konkrétní aplikace. AI Studio je portál a společná infrastruktura, ne devátý generátor obsahu.</li>
+     <li>Pokud si nejste jistí citlivostí vstupu, použijte <strong>Bezpečnost → Nejsem si jistý → rychle posoudit</strong>. Do kontroly se nevkládá text ani dokument.</li>
+     <li>Na sdíleném počítači po práci použijte vlevo dole <strong>Soukromí a ukončení práce</strong>.</li>
+    </ol>
+   </section>
+   <section class="section" id="navigation">
+    <h2>Co znamenají záložky nahoře</h2>
+    <div class="nav-map">
+     <article><h3>Aplikace</h3><p>Hlavní vstup do nástrojů. Vidíte ekosystém, ale spustíte pouze aplikace povolené vaším oprávněním a školením.</p></article>
+     <article><h3>Materiály</h3><p>Dnes místní pracovní prostor a ukázky. Po připojení školního serveru zde bude osobní a komisní katalog sdílených materiálů.</p></article>
+     <article><h3>Manuály</h3><p>Manuál AI Studia, společné postupy a interaktivní návody konkrétních aplikací, které máte odemčené.</p></article>
+     <article><h3>Bezpečnost</h3><p>Pravidla pro anonymizaci a volitelná rychlá kontrola dat pro situace, kdy si nejste jistí.</p></article>
+     <article><h3>Můj přístup</h3><p>Stav oprávnění, role a školení. U učitele také vytvoření měsíčního anonymního souhrnu pro správce.</p></article>
+     <article><h3>Katalog změn</h3><p>Přehled změn AI Studia. Changelog už není schovaný ve Správě a je dostupný všem přihlášeným.</p></article>
+    </div>
+   </section>
+   <section class="section" id="materials">
+    <h2>Materiály: co funguje dnes a co přinese server</h2>
+    <p><strong>Dnes bez serveru</strong> zůstávají pracovní materiály lokálně v konkrétním prohlížeči. Nic se samo nepublikuje kolegům a Studio nepředstírá, že existuje společná databáze.</p>
+    <div class="server-note"><span>SERVER</span><p>Po připojení školního serveru má záložka Materiály nabídnout <strong>Moje materiály</strong>, <strong>materiály předmětové komise</strong>, vlastní kopie bez přepsání originálu, verzování a stavy <strong>Ověřeno ve výuce</strong> / <strong>Doporučeno komisí</strong>. Například angličtináři tak budou moci sdílet ověřené testy, pracovní listy a další výstupy uvnitř své komise.</p></div>
+    <p>Obsah se má nadále tvořit primárně v jednotlivých aplikacích. AI Studio bude sloužit jako katalog, bezpečný předávací bod a po serveru také jako společný repozitář.</p>
+   </section>
+   <section class="section" id="safety">
+    <h2>Bezpečnost: kdy ji skutečně použít</h2>
+    <p>Bezpečnost není povinná zastávka před každým použitím AI. Pokud je materiál běžný, veřejný, smyšlený nebo už bezpečně anonymizovaný, pokračujte do aplikace.</p>
+    <div class="callout">Když si nejste jistí, otevřete rychlou kontrolu dat a označte pouze <strong>typ údajů</strong>. Studio nic nečte, nepoužívá AI a nic neodesílá. Výsledek je lokální doporučení zelená / oranžová / červená.</div>
+   </section>
+   <section class="section" id="access-report">
+    <h2>Můj přístup a měsíční anonymní souhrn</h2>
+    <p>V Můj přístup vidíte svou roli a oprávnění k aplikacím. Běžný učitel zde jednou měsíčně stáhne anonymní JSON souhrn z hlavního zařízení a pošle jej správci. Souhrn není studentská databáze a nemá obsahovat výukový obsah ani osobní údaje žáků.</p>
+   </section>
+   <section class="section" id="shared-device">
+    <h2>Sdílený školní počítač</h2>
+    <p>Na sdíleném zařízení neponechávejte otevřenou relaci ani pracovní koncepty. Vlevo dole použijte <strong>Soukromí a ukončení práce</strong>. Volba Ukončit práci odstraní dočasnou relaci; při označení sdíleného zařízení může podle datového manifestu odstranit i lokální data aplikace.</p>
+   </section>
+   <section class="section" id="support">
+    <h2>Když něco nefunguje</h2>
+    <ol class="steps">
+     <li>Zkuste chybu zopakovat a stručně si poznamenejte očekávaný a skutečný výsledek.</li>
+     <li>Použijte plovoucí nástroj <strong>Nahlásit chybu</strong>; není třeba fotografovat monitor telefonem.</li>
+     <li>Před odesláním screenshotu zkontrolujte, že neobsahuje osobní nebo citlivé údaje.</li>
+    </ol>
+   </section>
+
+   <section class="section" id="not-needed">
+    <h2>Co běžný učitel nemusí řešit</h2>
+    <div class="not-needed">Nemusíte spravovat vydávání oprávnění, revokační seznamy, Pilotní dashboard, souhrnný report kolegů, interní testy Studia, release gate ani prezentační režim. Tyto části patří správci. Pro běžnou práci stačí Aplikace, případně Materiály, Manuály, Bezpečnost, Můj přístup a Katalog změn.</div>
+   </section>
+
+ </main>
+ <footer class="site-footer"><div class="shell-wide footer-inner"><div><strong>AI Studio GHRAB</strong><p>Autor a vývojový garant: Daniel Baláž · Školní projekt Gymnázia, Ostrava-Hrabůvka · verze 0.21.2</p></div></div></footer>
+ <script src="../app.js" type="module"></script>
+</body>
+</html>

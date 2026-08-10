@@ -800,6 +800,9 @@ if (
   deploymentSchool?.aiTransport !== "not-applicable" ||
   deploymentSchool?.features?.allowLocalProviderKeys !== false ||
   deploymentSchool?.features?.serverSessionReady !== true ||
+  deploymentSchool?.features?.sharedMaterialLibrary !== true ||
+  deploymentSchool?.features?.sharedMaterialLibraryReady !== true ||
+  deploymentSchool?.features?.commissionSharingReady !== true ||
   deploymentSchool?.profile !== "school-server"
 )
   fail("Aktivní P1 serverový profil nemá bezpečný kontrakt.");
@@ -807,7 +810,9 @@ if (
   deploymentSchoolExample?.authMode !== "server-session" ||
   deploymentSchoolExample?.aiTransport !== "not-applicable" ||
   deploymentSchoolExample?.features?.allowLocalProviderKeys !== false ||
-  deploymentSchoolExample?.features?.serverSessionReady !== true
+  deploymentSchoolExample?.features?.serverSessionReady !== true ||
+  deploymentSchoolExample?.features?.sharedMaterialLibrary !== true ||
+  deploymentSchoolExample?.features?.sharedMaterialLibraryReady !== true
 )
   fail("Cílová serverová šablona nemá bezpečný P1 profil.");
 
@@ -874,6 +879,12 @@ for (const file of sourceFiles.filter((f) => f.endsWith(".html"))) {
       fail(`Chybí záložka Manuály v ${rel}`);
     if (!html.includes('data-nav="safety"'))
       fail(`Chybí platná záložka Bezpečnost v ${rel}`);
+    if (!html.includes('data-nav="changelog"'))
+      fail(`Chybí záložka Katalog změn v ${rel}`);
+    if (!html.includes('data-nav="library"'))
+      fail(`Běžná navigace neobsahuje server-ready Materiály v ${rel}`);
+    if (html.includes('data-nav="workflow"'))
+      fail(`Běžná navigace znovu obsahuje centrální Tvorbu materiálů v ${rel}`);
     if (/<\/a>\.{1,2}\/\s+data-/i.test(html))
       fail(`Poškozená HTML navigace v ${rel}`);
   }
@@ -894,7 +905,6 @@ for (const file of [
   "pilot/pilot.js",
   "report/report.js",
   "demo/demo.js",
-  "changelog/changelog.js",
   "tests/tests.js",
 ]) {
   const text = await readFile(path.join(src, file), "utf8");
@@ -1114,6 +1124,8 @@ if (
   );
 if (!policy?.administratorPages?.includes("access-registry"))
   fail("Evidence přístupů není označena jako správcovská stránka.");
+if (policy?.administratorPages?.includes("changelog"))
+  fail("Katalog změn nesmí být správcovská stránka.");
 if (/recordLaunch\(app\.id\)/.test(mainAppText))
   fail(
     "Studio stále počítá kliknutí před otevřením aplikace a mohlo by spuštění zdvojit.",

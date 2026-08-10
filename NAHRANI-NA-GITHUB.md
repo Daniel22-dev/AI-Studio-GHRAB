@@ -1,8 +1,8 @@
-# Nahrání AI Studio GHRAB 0.20.21
+# Nahrání AI Studio GHRAB 0.21.2
 
-> Aktuální verze: **0.20.21** · etapa P5
+> Aktuální verze: **0.21.2** · etapa P5
 
-Tato opravná verze řeší CI regresi offline startu z 0.20.19: statické registry požadované s `cache: 'no-store'` používají network-first s cache fallbackem, zatímco runtime API, auth/session/health a deployment konfigurace zůstávají mimo service worker. Ostatní auditní opravy z 0.20.19 jsou zachovány. AI Studio se nadále nasazuje jako poslední, po všech samostatných aplikacích.
+Tato verze navazuje na zjednodušené Studio 0.21.0 a vrací do horní navigace **Materiály** v nové roli: dnes jako pravdivě místní katalog a pracovní prostor, do budoucna jako připravený serverový katalog předmětových komisí s verzemi a stavem ověření. Rychlá kontrola dat je nově rozbalovací pomocník pro nejisté situace. P5, offline-start a role učitel/správce zůstávají zachovány. AI Studio se nadále nasazuje jako poslední, po všech samostatných aplikacích.
 
 ## Povinné pořadí
 

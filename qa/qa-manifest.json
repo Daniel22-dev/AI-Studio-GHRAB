@@ -2,7 +2,7 @@
   "standard": "GHRAB-QA-1.0.2",
   "appId": "ai-studio-ghrab",
   "appName": "AI Studio GHRAB",
-  "appVersion": "0.20.21",
+  "appVersion": "0.21.2",
   "entryPoint": "dist/index.html",
   "serveRoot": "dist",
   "buildRoot": "dist",
@@ -51,17 +51,17 @@
     {
       "file": "src/config/changelog.json",
       "regex": "\"current\"\\s*:\\s*\"([0-9.]+)\"",
-      "expected": "0.20.21"
+      "expected": "0.21.2"
     },
     {
       "file": "dist/build-info.json",
       "regex": "\"version\"\\s*:\\s*\"([0-9.]+)\"",
-      "expected": "0.20.21"
+      "expected": "0.21.2"
     },
     {
       "file": "dist/sw.js",
       "regex": "ghrab-ai-studio-v([0-9.]+)",
-      "expected": "0.20.21"
+      "expected": "0.21.2"
     }
   ],
   "pwaTargets": [

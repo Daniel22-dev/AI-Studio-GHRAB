@@ -1,9 +1,16 @@
 const options = document.querySelector("#risk-options");
 const result = document.querySelector("#risk-result");
+const reset = document.querySelector("#risk-reset");
+
 function update() {
   const values = [...options.querySelectorAll("input:checked")].map(
-    (i) => i.value,
+    (input) => input.value,
   );
+  if (!values.length) {
+    result.hidden = true;
+    result.replaceChildren();
+    return;
+  }
   let level = "green";
   let cs =
     "Materiál lze použít, pokud je skutečně veřejný, smyšlený nebo bezpečně anonymizovaný.";
@@ -15,22 +22,31 @@ function update() {
       "Tento obsah do externí AI nevkládejte. Zvolte jiný pracovní postup nebo konzultaci s odpovědnou osobou.";
     en =
       "Do not enter this content into an external AI service. Use another workflow or consult the responsible person.";
-  } else if (values.some((v) => ["name", "studentwork"].includes(v))) {
+  } else if (values.some((value) => ["name", "studentwork"].includes(value))) {
     level = "orange";
     cs =
       "Nejprve materiál anonymizujte a odstraňte vše, co není pro úkol nezbytné.";
     en =
       "Anonymise the material first and remove everything that is not necessary for the task.";
-  } else if (!values.length) {
-    cs =
-      "Před použitím vždy zkontrolujte, že materiál neobsahuje identifikovatelné osoby.";
-    en =
-      "Before use, always check that the material does not contain identifiable people.";
   }
   result.dataset.level = level;
-  result.innerHTML = `<strong>${window.GHRAB.state.language === "cs" ? "Doporučení:" : "Recommendation:"}</strong> ${window.GHRAB.state.language === "cs" ? cs : en}`;
+  result.hidden = false;
+  const strong = document.createElement("strong");
+  strong.textContent =
+    window.GHRAB.state.language === "cs" ? "Doporučení: " : "Recommendation: ";
+  result.replaceChildren(
+    strong,
+    document.createTextNode(window.GHRAB.state.language === "cs" ? cs : en),
+  );
 }
+
 options.addEventListener("change", update);
+reset.addEventListener("click", () => {
+  options.querySelectorAll("input:checked").forEach((input) => {
+    input.checked = false;
+  });
+  update();
+});
 document.addEventListener("ghrab:language", update);
 update();
 document

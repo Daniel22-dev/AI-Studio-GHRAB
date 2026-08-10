@@ -1,5 +1,4 @@
 await window.GHRAB.accessReady;
-if (window.GHRAB.isAdmin()) {
   const list = document.querySelector("#changelog-list");
   const T = window.GHRAB;
   function loc(value) {
@@ -47,4 +46,3 @@ if (window.GHRAB.isAdmin()) {
   }
   document.addEventListener("ghrab:language", render);
   render();
-}

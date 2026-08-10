@@ -1,0 +1,79 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://ghrabuvka.cz/schemas/ghrab-shared-material-record-v1.schema.json",
+  "title": "GHRAB Shared Material Record v1",
+  "description": "Serverovy zaznam materialu sdileneho v ramci predmetove komise.",
+  "type": "object",
+  "required": [
+    "schema",
+    "id",
+    "materialId",
+    "materialVersion",
+    "title",
+    "subject",
+    "owner",
+    "visibility",
+    "quality",
+    "createdAt",
+    "updatedAt"
+  ],
+  "properties": {
+    "schema": { "const": "ghrab-shared-material-record-v1" },
+    "id": { "type": "string", "minLength": 3 },
+    "materialId": { "type": "string", "minLength": 3 },
+    "materialVersion": { "type": "integer", "minimum": 1 },
+    "title": { "type": "string", "minLength": 1 },
+    "subject": { "type": "string", "minLength": 1 },
+    "level": { "type": "string" },
+    "yearGroup": { "type": "string" },
+    "owner": {
+      "type": "object",
+      "required": ["id", "displayName"],
+      "properties": {
+        "id": { "type": "string", "minLength": 1 },
+        "displayName": { "type": "string", "minLength": 1 }
+      },
+      "additionalProperties": true
+    },
+    "visibility": {
+      "type": "object",
+      "required": ["scope"],
+      "properties": {
+        "scope": { "enum": ["private", "commission", "school"] },
+        "commissionId": { "type": ["string", "null"] }
+      },
+      "additionalProperties": false
+    },
+    "quality": {
+      "type": "object",
+      "required": ["status", "classroomTests"],
+      "properties": {
+        "status": {
+          "enum": [
+            "draft",
+            "shared",
+            "teacher-reviewed",
+            "classroom-tested",
+            "commission-reviewed"
+          ]
+        },
+        "classroomTests": { "type": "integer", "minimum": 0 },
+        "lastClassroomTestedAt": { "type": ["string", "null"] },
+        "commissionReviewedAt": { "type": ["string", "null"] }
+      },
+      "additionalProperties": true
+    },
+    "permissions": {
+      "type": "object",
+      "properties": {
+        "canFork": { "type": "boolean" },
+        "canMarkClassroomTested": { "type": "boolean" },
+        "canCommissionReview": { "type": "boolean" }
+      },
+      "additionalProperties": true
+    },
+    "createdAt": { "type": "string", "format": "date-time" },
+    "updatedAt": { "type": "string", "format": "date-time" }
+  },
+  "additionalProperties": true
+}

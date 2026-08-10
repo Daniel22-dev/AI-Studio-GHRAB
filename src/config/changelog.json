@@ -1,7 +1,89 @@
 {
   "schema": "ai-studio-changelog-v1",
-  "current": "0.20.21",
+  "current": "0.21.2",
   "items": [
+    {
+      "version": "0.21.2",
+      "date": "2026-08-10",
+      "title": {
+        "cs": "Manuál AI Studia podle role",
+        "en": "Role-specific AI Studio manual"
+      },
+      "changes": [
+        {
+          "cs": "Centrum Manuálů má nově samostatný vstup do manuálu AI Studia. Učitel vidí praktickou verzi pro běžný provoz, administrátor rozšířenou verzi se Správou, přístupy, pilotním reportingem, prezentací a release workflow.",
+          "en": "The Manuals centre now has a dedicated AI Studio guide. Teachers see a practical everyday version; administrators see an extended version covering Administration, access, pilot reporting, presentation and release workflows."
+        },
+        {
+          "cs": "Administrátorský manuál má vlastní runtime kontrolu platné role admin a jeho vstup je v centru Manuálů zobrazen pouze správci. Běžný učitel při přímém otevření dostane odkaz na svůj učitelský manuál.",
+          "en": "The administrator manual has its own runtime check for a valid admin role and its entry in the Manuals centre is shown only to administrators. A teacher opening the URL directly is redirected to the teacher guide."
+        },
+        {
+          "cs": "Na domovské stránce je pouze drobný role-aware odkaz „Poprvé v AI Studiu?“ pod stavem Studia. Nezabírá samostatnou kartu ani nový navigační blok a manuál zůstává kdykoli dostupný přes záložku Manuály.",
+          "en": "The home page now shows only a small role-aware “First time in AI Studio?” link below Studio status. It does not add a separate card or navigation block, and the guide remains available from Manuals."
+        }
+      ]
+    },
+    {
+      "version": "0.21.1",
+      "date": "2026-08-10",
+      "title": {
+        "cs": "Server-ready sdílení materiálů a jednodušší bezpečnostní kontrola",
+        "en": "Server-ready resource sharing and a simpler safety check"
+      },
+      "changes": [
+        {
+          "cs": "Záložka Materiály je znovu součástí horní navigace. V bezserverovém režimu pravdivě pracuje jen s místními ukázkami a pracovním prostorem; zároveň přímo vysvětluje budoucí sdílení v předmětových komisích.",
+          "en": "Resources is back in the top navigation. In serverless mode it truthfully works only with local samples and workspace data while directly explaining future subject-department sharing."
+        },
+        {
+          "cs": "Přibyl server-ready material repository adapter, kontrakt API a schema sdíleného záznamu. Po skutečném připojení školního serveru může klient načíst komise, publikovat anonymizovaný materiál, vytvořit vlastní kopii a zapisovat stavy Ověřeno ve výuce / Doporučeno komisí podle serverových oprávnění.",
+          "en": "A server-ready material repository adapter, API contract and shared-record schema were added. Once the school server is genuinely connected, the client can load departments, publish anonymised resources, create personal copies and record Classroom-tested / Department-recommended states according to server permissions."
+        },
+        {
+          "cs": "Sdílení se nesmí aktivovat jen přítomností UI: vyžaduje school-server profil, explicitní schoolServerConnected a sharedMaterialLibrary. Materiál označený jako obsahující osobní údaje klient odmítne publikovat.",
+          "en": "Sharing cannot activate merely because the UI exists: it requires the school-server profile plus explicit schoolServerConnected and sharedMaterialLibrary flags. The client rejects publication of resources marked as containing personal data."
+        },
+        {
+          "cs": "Rychlá kontrola dat v Bezpečnosti je nově schovaná pod volbou „Nejsem si jistý → rychle posoudit“ a stránka výslovně říká, že ji kolega nemusí používat před každým použitím AI.",
+          "en": "The quick data check in Safety is now hidden under “I am not sure → quick assessment”, and the page explicitly states that colleagues do not need to use it before every AI interaction."
+        }
+      ]
+    },
+    {
+      "version": "0.21.0",
+      "date": "2026-08-10",
+      "title": {
+        "cs": "Zjednodušené Studio a jasné role",
+        "en": "Simplified Studio and clearer roles"
+      },
+      "changes": [
+        {
+          "cs": "Horní navigace je jediná hlavní navigace: přibyl veřejný Katalog změn a z běžného pilotu zmizely duplicitní Tvorba materiálů a Materiály; jejich technický základ zůstává zachován pro budoucí interoperabilitu.",
+          "en": "The top bar is now the single primary navigation: a public Change catalogue was added and the duplicated Resource builder and Resources entries were removed from the normal pilot; their technical foundation remains available for future interoperability."
+        },
+        {
+          "cs": "Domovská stránka už neduplikuje navigaci, nevyčleňuje Korespondenčního asistenta a nezobrazuje druhý správcovský rozcestník.",
+          "en": "The home page no longer duplicates navigation, singles out the Correspondence Assistant, or shows a second administrator launcher."
+        },
+        {
+          "cs": "Správa má jediný vstup do pilotního reportingu: Pilotní dashboard vede na souhrnný report kolegů. Odstraněny byly duplicitní karty Anonymní report, Prezentační režim a Historie změn.",
+          "en": "Administration now has a single entry into pilot reporting: the Pilot dashboard leads to the colleagues aggregate report. Duplicate Anonymous report, Presentation mode, and Change history cards were removed."
+        },
+        {
+          "cs": "Měsíční anonymní souhrn a jeho návod jsou zobrazeny jen učitelům; správce používá import a agregaci v pilotním reportu. Katalog změn je naopak dostupný všem přihlášeným uživatelům.",
+          "en": "The monthly anonymous summary and its guide are shown to teachers only; the administrator uses import and aggregation in the pilot report. The Change catalogue is now available to all authenticated users."
+        },
+        {
+          "cs": "Bezpečnost byla zúžena na ochranu dat a rychlou lokální kontrolu; nesouvisející značení kvality a verzování materiálů bylo odstraněno. Společný manuál byl aktualizován pro všech osm aplikací, sdílená zařízení i plánovaný školní server.",
+          "en": "Safety was narrowed to data protection and a quick local check; unrelated resource quality labels and versioning were removed. The shared guide was updated for all eight applications, shared devices, and the planned school server."
+        },
+        {
+          "cs": "Patička používá modrý povrch Studia a neobsahuje duplicitní navigační odkazy.",
+          "en": "The footer now uses the Studio blue surface and contains no duplicate navigation links."
+        }
+      ]
+    },
     {
       "version": "0.20.21",
       "date": "2026-08-09",

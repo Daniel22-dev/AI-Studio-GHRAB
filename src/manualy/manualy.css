@@ -354,3 +354,20 @@
 }
 @media(max-width:480px){.ecosystem-guide-grid{grid-template-columns:1fr}
 }
+
+
+/* 0.21.2 — the Studio manual comes first, but does not compete with app manuals */
+.studio-manual-entry{
+  border-color:rgba(80,232,255,.28);
+  background:linear-gradient(135deg,rgba(49,87,255,.12),rgba(13,37,58,.75));
+}
+.studio-manual-entry .studio-manual-entry-icon{
+  border-color:rgba(80,232,255,.35);
+  background:rgba(80,232,255,.08);
+  color:var(--cyan);
+}
+.studio-manual-entry .studio-manual-entry-icon.admin{
+  border-color:rgba(255,193,91,.35);
+  background:rgba(255,193,91,.08);
+  color:var(--gold);
+}

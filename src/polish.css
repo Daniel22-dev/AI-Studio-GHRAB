@@ -2556,3 +2556,114 @@ body {
     height: 100%;
   }
 }
+
+/* 0.21.1 — server-ready material sharing and progressive safety helper */
+.server-material-panel {
+  display: grid;
+  gap: 16px;
+}
+.server-material-head {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: 18px;
+}
+.server-material-grid {
+  display: grid;
+  grid-template-columns: repeat(4, minmax(0, 1fr));
+  gap: 12px;
+}
+.server-material-grid article {
+  display: grid;
+  gap: 8px;
+  padding: 16px;
+  border: 1px solid var(--line);
+  border-radius: 16px;
+  background: rgba(7, 24, 40, 0.72);
+}
+.server-material-grid strong {
+  color: var(--cyan);
+}
+.server-material-grid span {
+  color: var(--soft);
+  font-size: 0.84rem;
+  line-height: 1.55;
+}
+.library-intro-badge[data-mode="server"] {
+  border-color: rgba(62, 230, 143, 0.34);
+  color: var(--green);
+  background: rgba(62, 230, 143, 0.08);
+}
+.server-commission-field {
+  min-width: min(320px, 100%);
+}
+.server-share-button:disabled {
+  cursor: not-allowed;
+  opacity: 0.58;
+}
+.shared-material-card p {
+  color: var(--muted);
+}
+.safety-helper-intro {
+  margin-bottom: 16px;
+}
+.safety-check-details {
+  padding: 0;
+  overflow: hidden;
+}
+.safety-check-details > summary {
+  cursor: pointer;
+  list-style: none;
+  padding: 18px 22px;
+  font-weight: 900;
+  color: var(--cyan);
+  background: rgba(75, 226, 255, 0.06);
+}
+.safety-check-details > summary::-webkit-details-marker {
+  display: none;
+}
+.safety-check-details > summary::after {
+  content: "+";
+  float: right;
+  font-size: 1.2rem;
+}
+.safety-check-details[open] > summary::after {
+  content: "−";
+}
+.safety-check-content {
+  padding: 22px;
+}
+.safety-reset {
+  margin-top: 12px;
+}
+@media (max-width: 1000px) {
+  .server-material-grid {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+}
+@media (max-width: 650px) {
+  .server-material-grid {
+    grid-template-columns: 1fr;
+  }
+  .server-material-head {
+    display: block;
+  }
+}
+
+
+/* 0.21.2 — role-specific AI Studio guides */
+.first-run-guide{
+  margin:10px 0 0;
+  text-align:center;
+  color:var(--muted);
+  font-size:.72rem;
+  line-height:1.35;
+}
+.first-run-guide a{
+  margin-left:.35rem;
+  color:var(--cyan);
+  font-weight:800;
+  text-decoration:none;
+  border-bottom:1px dotted rgba(80,232,255,.48);
+}
+.first-run-guide a:hover{color:var(--text);border-bottom-color:var(--text)}

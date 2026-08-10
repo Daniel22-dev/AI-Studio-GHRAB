@@ -1,24 +1,24 @@
 # AI Studio GHRAB
 
-**Aktuální verze:** 0.20.21
+**Aktuální verze:** 0.21.2
 **Platforma:** GHRAB Platform 1.1.0 · etapa P5
 
-**Verze 0.20.21 – cílený CI hotfix offline startu registru aplikací.**
+**Verze 0.21.2 – role-specific manuál AI Studia a nenápadný první průvodce.**
 
-AI Studio GHRAB je centrální brána školních digitálních a AI nástrojů. Jednotlivé aplikace zůstávají v samostatných repozitářích; Studio zajišťuje společnou navigaci, Top 4, synchronizaci verzí, bezpečnostní rámec, pracovní materiály, pilotní měření, správu podepsaných přístupů a kanonický základ technického reportéru.
+AI Studio GHRAB je centrální brána školních digitálních a AI nástrojů. Jednotlivé aplikace zůstávají v samostatných repozitářích; Studio zajišťuje společnou navigaci, Top 4, synchronizaci verzí, bezpečnostní rámec, pilotní měření, správu podepsaných přístupů a kanonický základ technického reportéru. Materiály jsou znovu viditelnou součástí portálu, ale v dnešním bezserverovém režimu se vlastní obsah ukládá pouze místně.
 
-## Hlavní novinky 0.20.21
+## Hlavní novinky 0.21.2
 
-- Opraven skutečný blokátor offline startu: statické registry požadované s `cache: 'no-store'` už service worker neobcházejí a při výpadku použijí cache fallback.
-- Runtime API, auth/session/health a deployment konfigurace zůstávají záměrně mimo service-worker cache.
-- Přidána regresní pojistka pro `no-store` registry; stávající Playwright offline-start test ověřuje vykreslení všech 8 karet.
-- Zachovány jsou auditní a release-gate opravy z 0.20.19.
-- Release gate už nemůže propustit neúspěšný browser report přes chybějící `summary.failed`; CI axe běží povinně a fail-closed.
-- School-server build po profilových změnách znovu čistí precache, odvozuje P5 a feature flagy z kontraktu a neobsahuje mrtvé serverové šablony.
-- CSP serverového profilu odpovídá aplikaci bez `unsafe-inline`; přidána automatická kontrola shody a HSTS pro školní HTTPS host.
-- Opraveno zachování volby vypnutých animací, opakované překládání souhrnu synchronizace a platformní metadata PWA.
-- Doplněny chybějící verze changelogu, automatická kontrola verzí aplikací v dokumentaci a viewport 390×844 ve vizuální bráně.
-- CI už nespouští pět redundantních plných auditů na stejný commit; historické/ruční vstupy zůstávají dostupné bez automatického duplikování.
+- **Manuál samotného AI Studia** je rozdělen podle role: učitel dostává běžný provoz, administrátor navíc Správu, přístupy, reporting, prezentaci a release workflow.
+- Domovská stránka má pouze drobný role-aware odkaz **Poprvé v AI Studiu?**; hlavní launcher zůstává bez dalšího panelu.
+
+- **Materiály** jsou znovu v horní navigaci jako jasně označený server-ready katalog. Dnes pracují jen s místními ukázkami/importem; po připojení školního serveru jsou připraveny na sdílení v předmětových komisích.
+- Přibyl `material-service.js`, serverový API kontrakt a schema `ghrab-shared-material-record-v1`. Aktivace vyžaduje skutečný `school-server` profil, `schoolServerConnected=true` a `sharedMaterialLibrary=true`.
+- Budoucí katalog počítá s verzemi, vytvářením vlastních kopií, stavem **Ověřeno ve výuce** a vyšším stavem **Doporučeno komisí**, který může udělit pouze serverem oprávněná role komise.
+- Klient odmítne serverově publikovat materiál označený `provenance.containsPersonalData=true`; sdílení je určeno pouze pro bezpečně anonymizované výukové materiály.
+- **Bezpečnost → Rychlá kontrola dat** je nyní progresivní pomocník pod volbou „Nejsem si jistý → rychle posoudit“. Není to povinný krok před každým použitím AI.
+- **Tvorba materiálů** zůstává mimo hlavní navigaci: samotný obsah má vznikat v konkrétních aplikacích, zatímco Studio má být katalogem, pracovním prostorem a bezpečným předávacím bodem.
+- Zachovány jsou role učitel/správce, Katalog změn, sjednocený pilotní reporting, P5 release gate, offline režim a GHRAB Platform 1.1.0.
 
 ## Předchozí vydání 0.20.18
 
@@ -69,7 +69,7 @@ Ochranný bootstrap je určen pro Generátor 7.1.8, Diferenciátor 1.3.8, Hodnot
 
 ## Doporučené pořadí nasazení P2
 
-1. AI Studio GHRAB 0.20.21 jako zpětně kompatibilní platformní základ.
+1. AI Studio GHRAB 0.21.2 jako zpětně kompatibilní platformní základ.
 2. Korespondenční asistent 5.9.15.
 3. Diferenciátor 1.3.8.
 4. Generátor testů 7.1.8.

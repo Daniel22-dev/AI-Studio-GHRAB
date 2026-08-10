@@ -1,21 +1,25 @@
-# Release checklist AI Studio GHRAB 0.20.21
+# Release checklist AI Studio GHRAB 0.21.2
 
-> Aktuální verze: **0.20.21** · etapa P5
+> Aktuální verze: **0.21.2** · etapa P5
 
 ## Veřejný balík
 
-- [x] Verze 0.20.21 je shodná v package, PWA manifestu, QA manifestu, buildu, dokumentaci a changelogu.
+- [x] Verze 0.21.2 je shodná v package, PWA manifestu, QA manifestu, buildu, dokumentaci a changelogu.
 - [x] Všechny aplikace jsou ve výchozím stavu uzamčené.
 - [x] Veřejný balík obsahuje pouze veřejný ověřovací klíč.
 - [x] Ve zdroji ani buildu není soukromý klíč ani `.ghrab-access.json`.
 - [x] Učitelské a správcovské rozhraní jsou oddělené.
 - [x] Správcovské moduly se bez role admin nespouštějí.
 - [x] Top 4 a sci-fi herní styl jsou zachovány.
-- [x] Komunikace je oddělena od výukového workflow.
-- [x] Import materiálů má hloubkovou validaci a limity.
+- [x] Katalog změn je dostupný všem přihlášeným uživatelům jen v horní navigaci.
+- [x] Materiály jsou v běžné navigaci jako server-ready katalog; centrální Tvorba materiálů v navigaci není. Bez serveru zůstává sdílení viditelně neaktivní.
 - [x] Pilotní metriky jsou přesně označeny jako místní.
 - [x] PWA cache se generuje automaticky z produkčního stromu a neobsahuje neplatné cesty.
-- [x] Všechny lokální JS/CSS vstupy a relativní modulové importy mají ve výsledném buildu revizi `?v=0.20.21`.
+- [x] Všechny lokální JS/CSS vstupy a relativní modulové importy mají ve výsledném buildu revizi `?v=0.21.2`.
+- [x] Serverový katalog se aktivuje pouze při `school-server` + `schoolServerConnected` + `sharedMaterialLibrary`; GitHub profil nemůže omylem publikovat materiál.
+- [x] Rychlá kontrola dat je rozbalovací pomocník pro nejisté situace, ne povinný krok před každým použitím AI.
+- [x] AI Studio má samostatný manuál učitele a rozšířený manuál administrátora; admin verze má vlastní runtime kontrolu role.
+- [x] Domovský odkaz „Poprvé v AI Studiu?“ je pouze drobný role-aware text pod stavem Studia, nikoli další panel.
 - [x] Úvodní překryv má nezávislý fail-open watchdog a při selhání uvolní inertní stav rozhraní.
 - [x] V mobilním Nastavení (do 650 px) je přepínač CZ/EN viditelný a kritický browser flow jej fyzicky přepne EN → CS.
 - [x] `npm test` prochází bez chyby.

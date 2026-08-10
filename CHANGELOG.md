@@ -2,6 +2,31 @@
 
 > Tento soubor se generuje ze `src/config/changelog.json`. Neupravujte jej ručně.
 
+## 0.21.2 — 2026-08-10
+**Manuál AI Studia podle role**
+
+- Centrum Manuálů má nově samostatný vstup do manuálu AI Studia. Učitel vidí praktickou verzi pro běžný provoz, administrátor rozšířenou verzi se Správou, přístupy, pilotním reportingem, prezentací a release workflow.
+- Administrátorský manuál má vlastní runtime kontrolu platné role admin a jeho vstup je v centru Manuálů zobrazen pouze správci. Běžný učitel při přímém otevření dostane odkaz na svůj učitelský manuál.
+- Na domovské stránce je pouze drobný role-aware odkaz „Poprvé v AI Studiu?“ pod stavem Studia. Nezabírá samostatnou kartu ani nový navigační blok a manuál zůstává kdykoli dostupný přes záložku Manuály.
+
+## 0.21.1 — 2026-08-10
+**Server-ready sdílení materiálů a jednodušší bezpečnostní kontrola**
+
+- Záložka Materiály je znovu součástí horní navigace. V bezserverovém režimu pravdivě pracuje jen s místními ukázkami a pracovním prostorem; zároveň přímo vysvětluje budoucí sdílení v předmětových komisích.
+- Přibyl server-ready material repository adapter, kontrakt API a schema sdíleného záznamu. Po skutečném připojení školního serveru může klient načíst komise, publikovat anonymizovaný materiál, vytvořit vlastní kopii a zapisovat stavy Ověřeno ve výuce / Doporučeno komisí podle serverových oprávnění.
+- Sdílení se nesmí aktivovat jen přítomností UI: vyžaduje school-server profil, explicitní schoolServerConnected a sharedMaterialLibrary. Materiál označený jako obsahující osobní údaje klient odmítne publikovat.
+- Rychlá kontrola dat v Bezpečnosti je nově schovaná pod volbou „Nejsem si jistý → rychle posoudit“ a stránka výslovně říká, že ji kolega nemusí používat před každým použitím AI.
+
+## 0.21.0 — 2026-08-10
+**Zjednodušené Studio a jasné role**
+
+- Horní navigace je jediná hlavní navigace: přibyl veřejný Katalog změn a z běžného pilotu zmizely duplicitní Tvorba materiálů a Materiály; jejich technický základ zůstává zachován pro budoucí interoperabilitu.
+- Domovská stránka už neduplikuje navigaci, nevyčleňuje Korespondenčního asistenta a nezobrazuje druhý správcovský rozcestník.
+- Správa má jediný vstup do pilotního reportingu: Pilotní dashboard vede na souhrnný report kolegů. Odstraněny byly duplicitní karty Anonymní report, Prezentační režim a Historie změn.
+- Měsíční anonymní souhrn a jeho návod jsou zobrazeny jen učitelům; správce používá import a agregaci v pilotním reportu. Katalog změn je naopak dostupný všem přihlášeným uživatelům.
+- Bezpečnost byla zúžena na ochranu dat a rychlou lokální kontrolu; nesouvisející značení kvality a verzování materiálů bylo odstraněno. Společný manuál byl aktualizován pro všech osm aplikací, sdílená zařízení i plánovaný školní server.
+- Patička používá modrý povrch Studia a neobsahuje duplicitní navigační odkazy.
+
 ## 0.20.21 — 2026-08-09
 **Hotfix P5 quality reportu**
 

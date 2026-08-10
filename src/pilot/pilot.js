@@ -184,7 +184,6 @@ if (window.GHRAB.isAdmin()) {
   }
   $("#pilot-phase").value = G.safeGetItem(PHASE_KEY) || "1";
   $("#pilot-phase").addEventListener("input", renderTimeline);
-  $("#export-pilot").addEventListener("click", () => G.downloadPilotSummary());
   $("#reset-pilot").addEventListener("click", () => {
     if (
       confirm(

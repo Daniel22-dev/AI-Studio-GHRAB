@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<html data-theme="dark" lang="cs" data-ghrab-app-id="ai-studio" data-ghrab-app-version="0.20.21">
+<html data-theme="dark" lang="cs" data-ghrab-app-id="ai-studio" data-ghrab-app-version="0.21.2">
  <head>
   <meta charset="utf-8"/>
   <meta content="width=device-width,initial-scale=1" name="viewport"/>
@@ -38,32 +38,16 @@
    <button aria-controls="main-nav" aria-expanded="false" class="nav-toggle" data-cs-aria="Otevřít navigaci" data-en-aria="Open navigation" type="button">
     ☰
    </button>
-   <nav aria-label="Hlavní navigace" class="main-nav" id="main-nav">
-    <a data-cs="Aplikace" data-en="Applications" data-nav="home" href="../">
-     Aplikace
-    </a>
-    <a data-cs="Tvorba materiálů" data-en="Resource builder" data-nav="workflow" href="../workflow/">
-     Tvorba materiálů
-    </a>
-    <a data-cs="Materiály" data-en="Resources" data-nav="library" href="../library/">
-     Materiály
-    </a>
-    <a data-cs="Manuály" data-en="Manuals" data-nav="manualy" href="../manualy/">
-     Manuály
-    </a>
-    <a data-cs="Bezpečnost" data-en="Safety" data-nav="safety" href="../safety/">
-     Bezpečnost
-    </a>
-    <a data-cs="Můj přístup" data-en="My access" data-nav="access" href="../access/">
-     Můj přístup
-    </a>
-    <a data-admin-nav="" data-cs="Správa" data-en="Administration" data-nav="automation" hidden="" href="../automation/">
-     Správa
-    </a>
-    <a data-admin-nav="" data-cs="Prezentace" data-en="Presentation" data-nav="demo" hidden="" href="../demo/">
-     Prezentace
-    </a>
-   </nav>
+   <nav id="main-nav" class="main-nav" aria-label="Hlavn&#237; navigace">
+        <a href="../" data-nav="home" data-cs="Aplikace" data-en="Applications">Aplikace</a
+        ><a href="../library/" data-nav="library" data-cs="Materi&#225;ly" data-en="Resources">Materi&#225;ly</a
+        ><a href="../manualy/" data-nav="manualy" data-cs="Manu&#225;ly" data-en="Manuals">Manu&#225;ly</a
+        ><a href="../safety/" data-nav="safety" data-cs="Bezpe&#269;nost" data-en="Safety">Bezpe&#269;nost</a
+        ><a href="../access/" data-nav="access" data-cs="M&#367;j p&#345;&#237;stup" data-en="My access">M&#367;j p&#345;&#237;stup</a
+        ><a href="../changelog/" data-nav="changelog" data-cs="Katalog zm&#283;n" data-en="Change catalogue">Katalog zm&#283;n</a
+        ><a href="../automation/" data-admin-nav hidden data-nav="automation" data-cs="Spr&#225;va" data-en="Administration">Spr&#225;va</a
+        ><a href="../demo/" data-admin-nav hidden data-nav="demo" data-cs="Prezentace" data-en="Presentation">Prezentace</a>
+      </nav>
    <div class="header-actions">
     <div aria-label="Jazyk" class="segmented">
      <button aria-pressed="true" data-lang="cs" type="button">
@@ -115,7 +99,45 @@
       </p>
      </div>
     </div>
-    <article class="manual-utility-card panel">
+    <article class="manual-utility-card studio-manual-entry panel" data-teacher-only hidden>
+     <span aria-hidden="true" class="manual-utility-icon studio-manual-entry-icon">
+      ◉
+     </span>
+     <div>
+      <p class="eyebrow" data-cs="AI STUDIO · UČITEL" data-en="AI STUDIO · TEACHER">
+       AI STUDIO · UČITEL
+      </p>
+      <h2 data-cs="AI Studio GHRAB – jak začít a jak v něm pracovat" data-en="AI Studio GHRAB – how to get started and work in it">
+       AI Studio GHRAB – jak začít a jak v něm pracovat
+      </h2>
+      <p data-cs="Krátký průvodce běžným workflow učitele: aplikace, Materiály, Bezpečnost, Můj přístup, měsíční souhrn, hlášení chyb a bezpečné ukončení práce." data-en="A short guide to the teacher workflow: applications, Resources, Safety, My access, monthly summary, issue reporting and safe end-of-work handling.">
+       Krátký průvodce běžným workflow učitele: aplikace, Materiály, Bezpečnost, Můj přístup, měsíční souhrn, hlášení chyb a bezpečné ukončení práce.
+      </p>
+     </div>
+     <a class="button primary" data-cs="Otevřít manuál učitele →" data-en="Open teacher manual →" href="./ai-studio-teacher.html">
+      Otevřít manuál učitele →
+     </a>
+    </article>
+    <article class="manual-utility-card studio-manual-entry panel" data-admin-only hidden>
+     <span aria-hidden="true" class="manual-utility-icon studio-manual-entry-icon admin">
+      ◆
+     </span>
+     <div>
+      <p class="eyebrow" data-cs="AI STUDIO · ADMINISTRÁTOR" data-en="AI STUDIO · ADMINISTRATOR">
+       AI STUDIO · ADMINISTRÁTOR
+      </p>
+      <h2 data-cs="AI Studio GHRAB – manuál administrátora" data-en="AI Studio GHRAB – administrator manual">
+       AI Studio GHRAB – manuál administrátora
+      </h2>
+      <p data-cs="Obsahuje běžné workflow Studia a navíc správu přístupů, pilotní reporting, prezentační režim, kontrolu vydání a přípravu serverového sdílení materiálů." data-en="Covers the normal Studio workflow plus access administration, pilot reporting, presentation mode, release checks and server-ready resource sharing.">
+       Obsahuje běžné workflow Studia a navíc správu přístupů, pilotní reporting, prezentační režim, kontrolu vydání a přípravu serverového sdílení materiálů.
+      </p>
+     </div>
+     <a class="button primary" data-cs="Otevřít manuál administrátora →" data-en="Open administrator manual →" href="./ai-studio-admin.html">
+      Otevřít manuál administrátora →
+     </a>
+    </article>
+    <article class="manual-utility-card panel" data-teacher-only hidden>
      <span aria-hidden="true" class="manual-utility-icon">
       ▤
      </span>
@@ -205,6 +227,14 @@
         Anonymizace a citlivé údaje
        </small>
       </a>
+      <a href="./ecosystem-guide.html#access">
+       <b>
+        P&#345;&#237;stup a sd&#237;len&#233; za&#345;&#237;zen&#237;
+       </b>
+       <small>
+        Opr&#225;vn&#283;n&#237;, ukon&#269;en&#237; pr&#225;ce, smaz&#225;n&#237; dat
+       </small>
+      </a>
       <a href="./ecosystem-guide.html#print">
        <b>
         PDF a tisk
@@ -267,20 +297,6 @@
             Ostrava-Hrabůvka · verze __APP_VERSION__
      </p>
     </div>
-    <nav aria-label="Doplňková navigace" class="footer-links">
-     <a data-cs="Bezpečnost" data-en="Safety" href="../safety/">
-      Bezpečnost
-     </a>
-     <a data-cs="Můj přístup" data-en="My access" href="../access/">
-      Můj přístup
-     </a>
-     <a data-admin-link="" data-cs="Změny" data-en="Changes" hidden="" href="../changelog/">
-      Změny
-     </a>
-     <a data-admin-link="" data-cs="Kontrola Studia" data-en="Studio check" hidden="" href="../tests/">
-      Kontrola Studia
-     </a>
-    </nav>
    </div>
   </footer>
   <script src="../app.js" type="module">
