@@ -2,6 +2,13 @@
 
 > Tento soubor se generuje ze `src/config/changelog.json`. Neupravujte jej ručně.
 
+## 0.21.9 — 2026-08-11
+**Hotfix synchronizace dokumentace po živém registru**
+
+- GitHub Actions 0.21.8 ověřily všech osm zdrojových repozitářů a bezpečnostní, technické, PWA, kombinatorické, vizuální i kritické brány prošly. Release zastavil pouze project test, protože živá synchronizace aktualizovala verze aplikací v registru, ale dokumentace zůstala na balíčkovém snapshotu.
+- Příkaz npm run sync nyní po registru a AI readiness automaticky spustí synchronizaci dokumentačních verzí. Stejné pravidlo platí pro sync:offline, takže každý způsob obnovy registru udržuje šest kontrolovaných dokumentů ve shodě.
+- Kontrolní brána qa:doc-versions zůstává přísná; nebyla vypnuta ani oslabena. Přidána regresní pojistka, že oba synchronizační příkazy musí volat sync-doc-app-versions.mjs.
+
 ## 0.21.8 — 2026-08-11
 **Hotfix ověření zdrojového registru**
 

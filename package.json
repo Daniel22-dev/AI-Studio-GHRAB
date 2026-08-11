@@ -1,12 +1,12 @@
 {
   "name": "ai-studio-ghrab",
-  "version": "0.21.8",
+  "version": "0.21.9",
   "private": true,
   "description": "Profesionální federované PWA osmi chráněných školních aplikací včetně Lesson Hubu, manuálů, řízeného přístupu a jednotné GHRAB QA brány",
   "type": "module",
   "scripts": {
-    "sync": "node scripts/sync-registry.mjs && node scripts/generate-ai-readiness.mjs",
-    "sync:offline": "node scripts/sync-registry.mjs --offline && node scripts/generate-ai-readiness.mjs",
+    "sync": "node scripts/sync-registry.mjs && node scripts/generate-ai-readiness.mjs && node scripts/sync-doc-app-versions.mjs",
+    "sync:offline": "node scripts/sync-registry.mjs --offline && node scripts/generate-ai-readiness.mjs && node scripts/sync-doc-app-versions.mjs",
     "build": "npm run generate:changelog && node scripts/verify-ai-core.mjs && node scripts/generate-ai-readiness.mjs && node scripts/build.mjs",
     "test": "npm run generate:changelog && npm run qa:doc-versions && npm run format:check && node scripts/verify-ai-core.mjs && node scripts/generate-ai-readiness.mjs && node scripts/test.mjs && node scripts/test-platform-bootstrap.mjs && npm run test:audit-regressions && npm run test:release-policy && npm run test:studio-ux",
     "check": "node scripts/verify-ai-core.mjs && node scripts/generate-ai-readiness.mjs && node scripts/test.mjs",

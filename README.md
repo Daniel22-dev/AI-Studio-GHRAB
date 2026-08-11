@@ -1,18 +1,19 @@
 # AI Studio GHRAB
 
-**Aktuální verze:** 0.21.8
+**Aktuální verze:** 0.21.9
 **Platforma:** GHRAB Platform 1.1.0 · etapa P5
 
-**Verze 0.21.8 – CI/security hotfix zdrojového registru po běhu 0.21.7; funkční změny Studia zůstávají beze změny.**
+**Verze 0.21.9 – CI hotfix automatického srovnání dokumentace po živé synchronizaci registru; funkční změny 0.21.7–0.21.8 zůstávají beze změny.**
 
 AI Studio GHRAB je centrální brána školních digitálních a AI nástrojů. Jednotlivé aplikace zůstávají v samostatných repozitářích; Studio zajišťuje společnou navigaci, Top 4, synchronizaci verzí, bezpečnostní rámec, pilotní měření, správu podepsaných přístupů a kanonický základ technického reportéru. Materiály jsou viditelnou součástí portálu, ale v dnešním bezserverovém režimu se vlastní obsah ukládá pouze místně.
 
-## Hlavní novinky 0.21.8
+## Hlavní novinky 0.21.9
 
-- Opraven repository fallback synchronizace: po úspěšném ověření veřejného GitHub zdroje se do `apps.generated.json` použije právě ověřený manifest místo staršího lokálního snapshotu.
-- Bezpečnostní validátor při identickém generated/fallback registru nově vyžaduje buď explicitně potvrzený offline snapshot, nebo úplnou a přesnou shodu verzí všech ověřených zdrojů.
-- Přidána regresní kontrola proti situaci, kdy je zdroj označen jako ověřený, ale generovaný registr stále obsahuje jinou/starší verzi.
-- Uživatelské změny 0.21.7 — modrá samostatná patička, rozšířený semafor, zástupce správce, zdrojová diagnostika a opravy Prezentace/showcase filmu — zůstávají beze změny.
+- `npm run sync` po živé obnově registru automaticky synchronizuje verze v kontrolované dokumentaci, takže následná `qa:doc-versions` kontroluje skutečnou shodu místo zastaralého balíčkového snapshotu.
+- Stejná dokumentační synchronizace je součástí `sync:offline`, aby online i offline cesta používaly jeden deterministický kontrakt.
+- `qa:doc-versions` zůstává přísnou release bránou; hotfix ji neobchází a přidává regresní test, že synchronizační příkazy dokumentaci skutečně aktualizují.
+- Uživatelské funkce 0.21.7 a oprava zdrojového registru 0.21.8 zůstávají beze změny.
+
 
 
 ## Předchozí vydání 0.20.18
@@ -64,7 +65,7 @@ Ochranný bootstrap je určen pro Generátor 7.1.8, Diferenciátor 1.3.8, Hodnot
 
 ## Doporučené pořadí nasazení P2
 
-1. AI Studio GHRAB 0.21.8 jako zpětně kompatibilní platformní základ.
+1. AI Studio GHRAB 0.21.9 jako zpětně kompatibilní platformní základ.
 2. Korespondenční asistent 5.9.15.
 3. Diferenciátor 1.3.8.
 4. Generátor testů 7.1.8.

@@ -13,6 +13,10 @@ const check = (condition, message) => {
 };
 const text = (rel) => readFile(path.join(root, rel), "utf8");
 
+const packageMeta = JSON.parse(await text("package.json"));
+check(packageMeta.scripts?.sync?.includes("sync-doc-app-versions.mjs"), "Live synchronizace registru neaktualizuje dokumentacni verze pred QA.");
+check(packageMeta.scripts?.["sync:offline"]?.includes("sync-doc-app-versions.mjs"), "Offline synchronizace registru neudrzuje dokumentacni verze ve shode.");
+
 const home = await text("src/index.html");
 for (const oldBlock of ["mission-strip", "workflow-home", "communication-lane", "admin-home"]) {
   check(!home.includes(oldBlock), `Domovska stranka stale obsahuje ${oldBlock}.`);
@@ -154,7 +158,7 @@ globalThis.fetch = async () => {
 };
 try {
   const localRepository = materialModule.createMaterialRepository({
-    VERSION: "0.21.8",
+    VERSION: "0.21.9",
     deploymentReady: Promise.resolve({
       profile: "github-pages",
       apiBaseUrl: "",
@@ -239,7 +243,7 @@ const context = {
   location: { href: "https://example.test/AI-Studio-GHRAB/" },
   document: {
     currentScript: { src: "https://example.test/AI-Studio-GHRAB/ghrab/ghrab-platform.js" },
-    documentElement: { dataset: { ghrabAppId: "ai-studio", ghrabAppVersion: "0.21.8" } },
+    documentElement: { dataset: { ghrabAppId: "ai-studio", ghrabAppVersion: "0.21.9" } },
     getElementById() { return null; },
     readyState: "loading",
     addEventListener() {},
@@ -250,7 +254,7 @@ vm.createContext(context);
 vm.runInContext(platformCode, context, { filename: "ghrab-platform.js" });
 const material = { schema: "ghrab-material-v1", id: "ux-contract-test", content: { sourceText: "test" } };
 const created = context.GHRAB_PLATFORM.bridge.create({
-  target: "generator", sourceAppId: "ai-studio", sourceAppVersion: "0.21.8",
+  target: "generator", sourceAppId: "ai-studio", sourceAppVersion: "0.21.9",
   targetVersionRange: ">=0.0.0 <100.0.0", ttlMs: 5 * 60 * 1000, material, writeLegacy: true,
 });
 check(created?.target === "generator", "Bridge v2 create nevratil cil generator.");
