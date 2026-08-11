@@ -2,6 +2,14 @@
 
 > Tento soubor se generuje ze `src/config/changelog.json`. Neupravujte jej ručně.
 
+## 0.21.8 — 2026-08-11
+**Hotfix ověření zdrojového registru**
+
+- GitHub Actions v 0.21.7 skutečně ověřily všech osm veřejných zdrojových repozitářů, ale synchronizace při nedostupném Pages manifestu ponechávala v generovaném registru starší snapshot. Bezpečnostní brána to správně zastavila jako REGISTRY_FALLBACK_UNCONFIRMED.
+- Při úspěšném ověření veřejného GitHub zdroje se nyní do apps.generated.json použije právě ověřený manifest a jeho aktuální verze; lokální ikona portálu se zachová.
+- Bezpečnostní validátor připouští identický generated/fallback registr jen tehdy, když je potvrzen offline snapshot, nebo když všech osm zdrojů bylo výslovně ověřeno a verze generated, reportu a zdroje se přesně shodují.
+- Doplněna regresní kontrola, která brání návratu chyby, kdy repository verification ověřila novější zdroj, ale generovaný registr ponechal starší snapshot.
+
 ## 0.21.7 — 2026-08-11
 **Provozní doladění Studia a opravy Prezentace**
 

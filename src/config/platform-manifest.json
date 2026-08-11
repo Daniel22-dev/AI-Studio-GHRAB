@@ -1,7 +1,7 @@
 {
   "schema": "ghrab-platform-app-integration-v1",
   "appId": "ai-studio",
-  "appVersion": "0.21.7",
+  "appVersion": "0.21.8",
   "contract": "ghrab-platform-v1",
   "requiredPlatformRange": ">=1.0.0 <2.0.0",
   "platformVersion": "1.0.0",
@@ -29,7 +29,7 @@
     ]
   },
   "storagePrefix": "ghrab.ai-studio.",
-  "cacheName": "ghrab-ai-studio-v0.21.7",
+  "cacheName": "ghrab-ai-studio-v0.21.8",
   "capabilities": [
     "access-management",
     "application-registry",

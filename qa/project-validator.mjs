@@ -176,17 +176,30 @@ export async function validateSecurity({ root, finding }) {
 
   const generatedBytes = await readFile(path.join(config, "apps.generated.json"));
   const fallbackBytes = await readFile(path.join(config, "apps.fallback.json"));
+  const generatedVersions = new Map(apps.map((app) => [app.id, app.version]));
+  const registryConfirmedBySource =
+    syncReport.generated === true &&
+    Array.isArray(syncReport.sources) &&
+    syncReport.sources.length === apps.length &&
+    syncReport.sources.every(
+      (source) =>
+        source.ok === true &&
+        ["deployment", "repository"].includes(source.verification) &&
+        generatedVersions.get(source.id) === source.version &&
+        source.version === source.sourceVersion,
+    );
   if (
     sameBytes(generatedBytes, fallbackBytes) &&
     !(
-      syncReport.mode === "fallback" &&
-      syncReport.fallbackSnapshotConfirmed === true
+      (syncReport.mode === "fallback" &&
+        syncReport.fallbackSnapshotConfirmed === true) ||
+      registryConfirmedBySource
     )
   )
     add(
       "MAJOR",
       "REGISTRY_FALLBACK_UNCONFIRMED",
-      "Generovaný a fallback registr jsou identické bez výslovného potvrzení offline snímku.",
+      "Generovaný a fallback registr jsou identické bez potvrzení offline snímku nebo přesné shody se všemi ověřenými zdroji.",
     );
 
   const distSw = path.join(root, "dist", "sw.js");

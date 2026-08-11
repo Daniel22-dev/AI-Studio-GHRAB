@@ -1,6 +1,6 @@
-# Architektura AI Studio GHRAB 0.21.7
+# Architektura AI Studio GHRAB 0.21.8
 
-> Aktuální verze: **0.21.7** · etapa P5
+> Aktuální verze: **0.21.8** · etapa P5
 
 ## Koherence aktualizace PWA
 
@@ -106,4 +106,4 @@ AI Studio neprovádí modelová volání. Vydává neměnný GHRAB AI Core, runt
 
 ## Provozní zastupitelnost
 
-Role `operator` je určena pro dlouhodobější nepřítomnost hlavního správce. Její oprávnění jsou záměrně menší než `admin`; plné pravomoci lze předat pouze samostatným správcovským permitem s krátkou expirací. Vydavatel 0.21.7 nabízí rychlé doby 7, 14 a 30 dní. Role ve Studiu a přístup ke zdrojovému kódu jsou oddělené: běžný zástupce GitHub přístup nepotřebuje. Pokud má zároveň technicky zastupovat vývoj/deploy, používá vlastní GitHub účet s nejmenší potřebnou rolí pro vybrané repozitáře; přihlašovací údaje hlavního správce se nikdy nesdílejí.
+Role `operator` je určena pro dlouhodobější nepřítomnost hlavního správce. Její oprávnění jsou záměrně menší než `admin`; plné pravomoci lze předat pouze samostatným správcovským permitem s krátkou expirací. Vydavatel 0.21.8 nabízí rychlé doby 7, 14 a 30 dní. Role ve Studiu a přístup ke zdrojovému kódu jsou oddělené: běžný zástupce GitHub přístup nepotřebuje. Pokud má zároveň technicky zastupovat vývoj/deploy, používá vlastní GitHub účet s nejmenší potřebnou rolí pro vybrané repozitáře; přihlašovací údaje hlavního správce se nikdy nesdílejí.

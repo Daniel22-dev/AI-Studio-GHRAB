@@ -210,6 +210,14 @@ if (apps?.slice(4).every((app) => app.id !== "ludus"))
   fail("LUDUS má zůstat ve výchozím katalogu mimo Top 4.");
 if (!syncScript.includes("const localIcon = fallbackById.get(source.id)?.icon"))
   fail("Synchronizace nezachovává lokální ikonu portálu.");
+if (
+  !/fetchRepositoryManifest\(source, snapshotApp\)[\s\S]{0,260}repository\.app/.test(
+    syncScript,
+  )
+)
+  fail(
+    "Ověřený GitHub zdroj se nepřenáší do generovaného registru; synchronizace by znovu mohla ponechat zastaralý snapshot.",
+  );
 if (!deployWorkflow.includes("app-updated"))
   fail("Workflow nepřijímá událost app-updated.");
 if (!deployWorkflow.includes("run: npm ci"))

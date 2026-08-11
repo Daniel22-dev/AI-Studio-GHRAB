@@ -1,7 +1,33 @@
 {
   "schema": "ai-studio-changelog-v1",
-  "current": "0.21.7",
+  "current": "0.21.8",
   "items": [
+    {
+      "version": "0.21.8",
+      "date": "2026-08-11",
+      "title": {
+        "cs": "Hotfix ověření zdrojového registru",
+        "en": "Source registry verification hotfix"
+      },
+      "changes": [
+        {
+          "cs": "GitHub Actions v 0.21.7 skutečně ověřily všech osm veřejných zdrojových repozitářů, ale synchronizace při nedostupném Pages manifestu ponechávala v generovaném registru starší snapshot. Bezpečnostní brána to správně zastavila jako REGISTRY_FALLBACK_UNCONFIRMED.",
+          "en": "GitHub Actions in 0.21.7 successfully verified all eight public source repositories, but when a Pages manifest was unavailable the synchroniser kept the older snapshot in the generated registry. The security gate correctly stopped this as REGISTRY_FALLBACK_UNCONFIRMED."
+        },
+        {
+          "cs": "Při úspěšném ověření veřejného GitHub zdroje se nyní do apps.generated.json použije právě ověřený manifest a jeho aktuální verze; lokální ikona portálu se zachová.",
+          "en": "When a public GitHub source is verified successfully, apps.generated.json now uses that verified manifest and its current version while preserving the portal-local icon."
+        },
+        {
+          "cs": "Bezpečnostní validátor připouští identický generated/fallback registr jen tehdy, když je potvrzen offline snapshot, nebo když všech osm zdrojů bylo výslovně ověřeno a verze generated, reportu a zdroje se přesně shodují.",
+          "en": "The security validator accepts identical generated/fallback registries only when the offline snapshot is explicitly confirmed, or when all eight sources are verified and the generated, report and source versions match exactly."
+        },
+        {
+          "cs": "Doplněna regresní kontrola, která brání návratu chyby, kdy repository verification ověřila novější zdroj, ale generovaný registr ponechal starší snapshot.",
+          "en": "A regression check now prevents the repository-verification path from validating a newer source while leaving an older snapshot in the generated registry."
+        }
+      ]
+    },
     {
       "version": "0.21.7",
       "date": "2026-08-11",

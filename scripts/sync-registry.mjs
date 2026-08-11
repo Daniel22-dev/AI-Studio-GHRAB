@@ -277,7 +277,10 @@ const resolveSource = async (source) => {
     if (!offline) {
       try {
         const repository = await fetchRepositoryManifest(source, snapshotApp);
-        const app = validate(snapshotApp, source.id, source);
+        const localIcon = fallbackById.get(source.id)?.icon;
+        const app = localIcon
+          ? { ...repository.app, icon: localIcon }
+          : repository.app;
         return {
           app,
           report: {

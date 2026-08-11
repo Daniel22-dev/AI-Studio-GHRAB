@@ -1,23 +1,18 @@
 # AI Studio GHRAB
 
-**Aktuální verze:** 0.21.7
+**Aktuální verze:** 0.21.8
 **Platforma:** GHRAB Platform 1.1.0 · etapa P5
 
-**Verze 0.21.7 – provozní doladění Studia: modrá patička, praktičtější semafor, přesnější kontrola zdrojů, bezpečné povýšení zástupce a opravy Prezentace.**
+**Verze 0.21.8 – CI/security hotfix zdrojového registru po běhu 0.21.7; funkční změny Studia zůstávají beze změny.**
 
 AI Studio GHRAB je centrální brána školních digitálních a AI nástrojů. Jednotlivé aplikace zůstávají v samostatných repozitářích; Studio zajišťuje společnou navigaci, Top 4, synchronizaci verzí, bezpečnostní rámec, pilotní měření, správu podepsaných přístupů a kanonický základ technického reportéru. Materiály jsou viditelnou součástí portálu, ale v dnešním bezserverovém režimu se vlastní obsah ukládá pouze místně.
 
-## Hlavní novinky 0.21.7
+## Hlavní novinky 0.21.8
 
-- Patička zůstává samostatným vizuálním blokem, ale používá vlastní modrý gradient místo černého/téměř černého pozadí.
-- Bezpečnostní semafor má deset praktických školních kategorií. Při více volbách rozhoduje nejvyšší riziko; bezpečná anonymní volba je vůči rizikovým volbám výlučná.
-- Kontrola zdrojů rozlišuje přímo ověřený nasazený manifest, ověřený veřejný GitHub zdroj a pouhý záložní snapshot. Offline QA už stav synchronizace nepřepisuje.
-- Souhrnný report vysvětluje, že vlastní místní provozní data z aktuálního prohlížeče/profilu se přidají automaticky a není potřeba je nahrávat jako soubor.
-- Existující proškolený učitel může dostat nový permit role Zástupce správce bez automatického přidání dalších aplikací; po ověření nového permitu lze starý učitelský JTI zneplatnit.
-- Portal sjednocuje historické pilotní popisky aplikací na „Připraveno k řízenému pilotu“; původní zdrojový text zůstává v registru/diagnostice.
-- Fullscreen Prezentace omezuje orbit aplikací i podle výšky viewportu, takže se krajní karty neodřezávají.
-- Showcase video propouští HTTP Range požadavky mimo PWA cache a má explicitní tlačítko přehrání se zvukem.
-- Materiály zůstávají lokální/server-ready; společnou integraci „Uložit do AI Studia“ do osmi aplikací budeme řešit až po dokončení Studia.
+- Opraven repository fallback synchronizace: po úspěšném ověření veřejného GitHub zdroje se do `apps.generated.json` použije právě ověřený manifest místo staršího lokálního snapshotu.
+- Bezpečnostní validátor při identickém generated/fallback registru nově vyžaduje buď explicitně potvrzený offline snapshot, nebo úplnou a přesnou shodu verzí všech ověřených zdrojů.
+- Přidána regresní kontrola proti situaci, kdy je zdroj označen jako ověřený, ale generovaný registr stále obsahuje jinou/starší verzi.
+- Uživatelské změny 0.21.7 — modrá samostatná patička, rozšířený semafor, zástupce správce, zdrojová diagnostika a opravy Prezentace/showcase filmu — zůstávají beze změny.
 
 
 ## Předchozí vydání 0.20.18
@@ -69,7 +64,7 @@ Ochranný bootstrap je určen pro Generátor 7.1.8, Diferenciátor 1.3.8, Hodnot
 
 ## Doporučené pořadí nasazení P2
 
-1. AI Studio GHRAB 0.21.7 jako zpětně kompatibilní platformní základ.
+1. AI Studio GHRAB 0.21.8 jako zpětně kompatibilní platformní základ.
 2. Korespondenční asistent 5.9.15.
 3. Diferenciátor 1.3.8.
 4. Generátor testů 7.1.8.
