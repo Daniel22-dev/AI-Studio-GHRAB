@@ -89,6 +89,8 @@ function isRuntimeRequest(url, scopePath) {
 self.addEventListener('fetch', (event) => {
   const request = event.request;
   if (request.method !== 'GET') return;
+  // HTML5 video/audio metadata and seeking use byte-range requests. CacheStorage cannot store 206 responses; let the browser handle them directly.
+  if (request.headers.has('range')) return;
   const url = new URL(request.url);
   if (url.origin !== self.location.origin) return;
   const scopePath = new URL('./', self.location.href).pathname;

@@ -1,7 +1,41 @@
 {
   "schema": "ai-studio-changelog-v1",
-  "current": "0.21.6",
+  "current": "0.21.7",
   "items": [
+    {
+      "version": "0.21.7",
+      "date": "2026-08-11",
+      "title": {
+        "cs": "Provozní doladění Studia a opravy Prezentace",
+        "en": "Studio operational polish and Presentation fixes"
+      },
+      "changes": [
+        {
+          "cs": "Patička zůstává samostatným blokem, ale používá vlastní modrý Studio gradient místo téměř černého pozadí.",
+          "en": "The footer remains a separate visual block but now uses its own blue Studio gradient instead of an almost-black background."
+        },
+        {
+          "cs": "Bezpečnostní semafor má deset praktických školních kategorií. Při více volbách rozhoduje nejvyšší riziko a bezpečná anonymní volba je výlučná s rizikovými položkami.",
+          "en": "The safety traffic light now has ten practical school-use categories. The highest selected risk wins and the safe anonymised option is exclusive with risk options."
+        },
+        {
+          "cs": "Kontrola zdrojů rozlišuje přímo ověřený nasazený manifest, ověřený veřejný GitHub zdroj a záložní snapshot. Offline QA už skutečný stav synchronizace nepřepisuje.",
+          "en": "Source Check distinguishes a directly verified deployed manifest, a verified public GitHub source and a fallback snapshot. Offline QA no longer overwrites the real synchronisation state."
+        },
+        {
+          "cs": "Souhrnný report vysvětluje automatické přidání místních dat aktuálního prohlížeče/profilu; existující proškolený učitel lze povýšit na Zástupce správce bez automatického rozšíření přístupu k aplikacím.",
+          "en": "Aggregate reporting now explains automatic inclusion of local data from the current browser/profile; an existing trained teacher can be promoted to Deputy administrator without automatically widening application access."
+        },
+        {
+          "cs": "Karty aplikací sjednocují historické pilotní formulace na jeden Studio-level popisek „Připraveno k řízenému pilotu“ bez změny oprávnění nebo zdrojových metadat.",
+          "en": "Application cards normalise historical pilot wording to one Studio-level “Ready for controlled pilot” label without changing permissions or source metadata."
+        },
+        {
+          "cs": "Fullscreen Prezentace omezuje orbit aplikací i podle výšky viewportu a showcase MP4 má opravené Range/206 načítání mimo PWA cache plus explicitní tlačítko přehrání se zvukem.",
+          "en": "Fullscreen Presentation now constrains the application orbit by viewport height, while the showcase MP4 correctly bypasses PWA caching for Range/206 requests and has an explicit play-with-sound button."
+        }
+      ]
+    },
     {
       "version": "0.21.6",
       "date": "2026-08-10",

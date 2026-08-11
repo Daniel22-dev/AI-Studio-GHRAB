@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<html lang="cs" data-theme="dark" data-ghrab-app-id="ai-studio" data-ghrab-app-version="0.21.6">
+<html lang="cs" data-theme="dark" data-ghrab-app-id="ai-studio" data-ghrab-app-version="0.21.7">
 <head>
  <meta charset="utf-8"/>
  <meta name="viewport" content="width=device-width,initial-scale=1"/>
@@ -41,12 +41,22 @@
    <article class="panel"><p class="eyebrow">ROLE</p>
    <h2>Co může zástupce správce</h2>
     <ul><li>otevřít Správu, diagnostiku a stav všech osmi aplikací,</li>
-     <li>kontrolovat registr, manifesty, synchronizaci a poslední živé ověření,</li>
+     <li>kontrolovat registr, nasazené manifesty, ověření veřejných zdrojů a stav záložního snapshotu,</li>
      <li>pracovat s Pilotním dashboardem a souhrnnými anonymními reporty,</li>
      <li>otevřít Evidenci přístupů, dohledat JTI a připravit zneplatnění,</li>
      <li>použít Pohled kolegy a ověřit, co vidí běžný proškolený učitel,</li>
      <li>na GitHubu zkontrolovat Actions, znovu spustit bezpečný workflow nebo nasadit předem připravenou opravu, pokud má přidělený omezený GitHub přístup.</li></ul>
    </article>
+   <article class="panel"><p class="eyebrow">POVÝŠENÍ STÁVAJÍCÍHO UČITELE</p>
+   <h2>Když už je kolega proškolený učitel</h2>
+   <ol>
+    <li>Ve <strong>Správě → Evidence přístupů</strong> otevřete jeho existující záznam.</li>
+    <li>Klikněte na <strong>Vydat nový přístup</strong>; jméno, interní ID a dosavadní aplikace se předvyplní.</li>
+    <li>Ve Vydavateli změňte roli na <strong>Zástupce správce</strong>. Dosavadní výběr aplikací zůstane zachován — role zástupce sama nepřidává nové aplikace ani školení.</li>
+    <li>Nastavte platnost, načtěte svůj soukromý podpisový klíč a vydejte nový podepsaný soubor.</li>
+    <li>Kolega nový soubor načte v <strong>Můj přístup</strong>. Teprve po ověření nového přístupu je vhodné starý učitelský JTI zneplatnit, aby nezůstaly dva paralelní platné přístupy.</li>
+   </ol>
+   <p><strong>Provozní přehled všech osmi aplikací zástupce vidí ve Správě i bez toho, aby mu byly automaticky odemčeny všechny aplikace k běžnému používání.</strong></p></article>
    <article class="panel danger-panel"><p class="eyebrow">BEZPEČNOSTNÍ HRANICE</p>
    <h2>Co zástupce správce nedělá</h2>
     <ul><li>nevydává správcovská oprávnění a nepovyšuje sebe ani jiné uživatele,</li>
@@ -64,7 +74,7 @@
      <li>Pokud je problém jen v oprávnění uživatele, otevřete Evidenci přístupů a ověřte platnost, JTI, roli a odemčené aplikace.</li></ol>
    </article>
    <article class="panel"><p class="eyebrow">SCÉNÁŘ A</p>
-   <h2>Studio hlásí fallback nebo neověřené manifesty</h2><p>Fallback znamená, že Studio má použitelný záložní snapshot, ale poslední synchronizace nepotvrdila živý zdroj. Nezaměňujte to automaticky za výpadek aplikací.</p><ol><li>Zkontrolujte počet živě ověřených manifestů a datum posledního kompletního ověření.</li>
+   <h2>Studio hlásí fallback nebo neověřené manifesty</h2><p>Kontrola zdrojů rozlišuje tři úrovně: přímo ověřený nasazený manifest, ověřený veřejný GitHub zdroj a samotný záložní snapshot. Snapshot tedy neznamená automaticky výpadek aplikace, ale znamená, že zdroj nebyl při poslední synchronizaci potvrzen.</p><ol><li>Zkontrolujte počet přímo ověřených nasazení, ověřených GitHub zdrojů a položek pouze na snapshotu.</li>
      <li>Spusťte diagnostiku.</li>
      <li>V GitHub Actions zkontrolujte poslední sync/build. Je-li to známá dočasná síťová chyba, lze workflow bezpečně opakovat.</li>
      <li>Pokud se chyba opakuje nebo manifest změnil strukturu, dále nezasahujte do bezpečnostní konfigurace a eskalujte.</li></ol>
@@ -88,14 +98,14 @@
    <h2>Když omezená role nestačí</h2><p>Hlavní správce může vystavit samostatné plné oprávnění s krátkou expirací, typicky 7, 14 nebo 30 dní. Jde o mimořádný režim. Po expiraci se práva automaticky ztratí a běžné oprávnění zástupce zůstává oddělené.</p><p><strong>Plné povýšení použijte jen tehdy, když je nezbytný zásah, který role Zástupce správce záměrně blokuje.</strong></p>
    </article>
    <article class="panel"><p class="eyebrow">GITHUB</p>
-   <h2>Doporučený externí přístup</h2><p>Zástupce má mít vlastní GitHub účet a pouze taková práva, která skutečně potřebuje pro kontrolu Actions, bezpečný rerun, commit schválené opravy a případný rollback. Nemá sdílet účet hlavního správce ani dostat vlastnictví organizace/repozitářů jen kvůli zastupitelnosti.</p>
+   <h2>Doporučený externí přístup</h2><p><strong>Běžná role Zástupce správce GitHub vůbec nepotřebuje.</strong> GitHub přístup přidělte jen tehdy, pokud má kolega současně technicky zastupovat vývoj nebo deploy. V takovém případě používá vlastní GitHub účet a pouze nejnižší potřebná práva k vybraným repozitářům. Nikdy nesdílí účet, heslo, token, SSH klíč ani 2FA hlavního správce a jen kvůli provozní roli ve Studiu nedostává vlastnictví organizace.</p>
    </article>
    <article class="panel"><p class="eyebrow">ESKALACE</p>
    <h2>Kdy přestat zasahovat</h2><p>Okamžitě eskalujte při podezření na kompromitaci podpisového klíče, úniku osobních údajů, problému se serverovými tajemstvími, nejasné revokaci správce, změně autentizace nebo situaci, kdy by oprava vyžadovala vypnout bezpečnostní kontrolu.</p>
    </article>
   </section>
  </main>
- <footer class="site-footer"><div class="shell-wide footer-inner"><div><strong>AI Studio GHRAB</strong><p>Autor a vývojový garant: Daniel Baláž · Školní projekt Gymnázia, Ostrava-Hrabůvka · verze 0.21.6</p></div></div></footer>
- <script src="../app.js?v=0.21.6" type="module"></script>
+ <footer class="site-footer"><div class="shell-wide footer-inner"><div><strong>AI Studio GHRAB</strong><p>Autor a vývojový garant: Daniel Baláž · Školní projekt Gymnázia, Ostrava-Hrabůvka · verze 0.21.7</p></div></div></footer>
+ <script src="../app.js?v=0.21.7" type="module"></script>
 </body>
 </html>

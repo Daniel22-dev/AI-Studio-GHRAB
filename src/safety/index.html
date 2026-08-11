@@ -1,5 +1,5 @@
 <!doctype html>
-<html lang="cs" data-theme="dark" data-ghrab-app-id="ai-studio" data-ghrab-app-version="0.21.6">
+<html lang="cs" data-theme="dark" data-ghrab-app-id="ai-studio" data-ghrab-app-version="0.21.7">
   <head>
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width,initial-scale=1" />
@@ -239,45 +239,20 @@
                   rozhodovací pomůcku, ne o sken dokumentu ani AI analýzu
                   obsahu.
                 </p>
+                <p class="notice safety-risk-rule" data-cs="Můžete označit více možností. Výslednou barvu vždy určuje nejrizikovější zaškrtnutá položka — červená má přednost před oranžovou a oranžová před zelenou." data-en="You can select more than one option. The final colour is always determined by the highest-risk selected item — red overrides orange and orange overrides green.">
+                  Můžete označit více možností. Výslednou barvu vždy určuje nejrizikovější zaškrtnutá položka — červená má přednost před oranžovou a oranžová před zelenou.
+                </p>
                 <div class="check-list" id="risk-options">
-                  <label class="check-option"
-                    ><input type="checkbox" value="name" /><span
-                      data-cs="Celé jméno, e-mail, třída nebo jiný přímý identifikátor"
-                      data-en="Full name, email, class or another direct identifier"
-                      >Celé jméno, e-mail, třída nebo jiný přímý
-                      identifikátor</span
-                    ></label
-                  >
-                  <label class="check-option"
-                    ><input type="checkbox" value="studentwork" /><span
-                      data-cs="Autentická práce žáka nebo reálná školní korespondence"
-                      data-en="Authentic student work or real school correspondence"
-                      >Autentická práce žáka nebo reálná školní
-                      korespondence</span
-                    ></label
-                  >
-                  <label class="check-option"
-                    ><input type="checkbox" value="sensitive" /><span
-                      data-cs="Zdravotní, sociální, kázeňské nebo podpůrné údaje"
-                      data-en="Health, social, disciplinary or support data"
-                      >Zdravotní, sociální, kázeňské nebo podpůrné údaje</span
-                    ></label
-                  >
-                  <label class="check-option"
-                    ><input type="checkbox" value="secret" /><span
-                      data-cs="Heslo, API klíč, rodné číslo nebo přístupový údaj"
-                      data-en="Password, API key, national ID or access credential"
-                      >Heslo, API klíč, rodné číslo nebo přístupový údaj</span
-                    ></label
-                  >
-                  <label class="check-option"
-                    ><input type="checkbox" value="anonymous" /><span
-                      data-cs="Materiál je smyšlený, veřejný nebo už bezpečně anonymizovaný"
-                      data-en="The material is fictional, public or already safely anonymised"
-                      >Materiál je smyšlený, veřejný nebo už bezpečně
-                      anonymizovaný</span
-                    ></label
-                  >
+                  <label class="check-option"><input type="checkbox" value="safe" data-risk="green" data-exclusive="true" /><span data-cs="Materiál je smyšlený, veřejný nebo už bezpečně anonymizovaný" data-en="The material is fictional, public or already safely anonymised">Materiál je smyšlený, veřejný nebo už bezpečně anonymizovaný</span></label>
+                  <label class="check-option"><input type="checkbox" value="identifier" data-risk="orange" /><span data-cs="Jméno, e-mail, třída, uživatelské jméno nebo jiný přímý identifikátor" data-en="Name, email, class, username or another direct identifier">Jméno, e-mail, třída, uživatelské jméno nebo jiný přímý identifikátor</span></label>
+                  <label class="check-option"><input type="checkbox" value="studentwork" data-risk="orange" /><span data-cs="Autentická práce žáka, jeho odpověď, sloh, test nebo domácí úkol" data-en="Authentic student work, answer, essay, test or homework">Autentická práce žáka, jeho odpověď, sloh, test nebo domácí úkol</span></label>
+                  <label class="check-option"><input type="checkbox" value="assessment" data-risk="orange" /><span data-cs="Známky, výsledky, docházka nebo individuální hodnocení žáka" data-en="Grades, results, attendance or individual student assessment">Známky, výsledky, docházka nebo individuální hodnocení žáka</span></label>
+                  <label class="check-option"><input type="checkbox" value="correspondence" data-risk="orange" /><span data-cs="Reálná komunikace s žákem, rodičem, kolegou nebo jinou konkrétní osobou" data-en="Real communication with a student, parent, colleague or another identifiable person">Reálná komunikace s žákem, rodičem, kolegou nebo jinou konkrétní osobou</span></label>
+                  <label class="check-option"><input type="checkbox" value="media" data-risk="orange" /><span data-cs="Fotografie, hlas, video, podpis nebo rukopis, podle kterého lze osobu poznat" data-en="Photo, voice, video, signature or handwriting that can identify a person">Fotografie, hlas, video, podpis nebo rukopis, podle kterého lze osobu poznat</span></label>
+                  <label class="check-option"><input type="checkbox" value="indirect" data-risk="orange" /><span data-cs="Kombinace detailů (čas, místo, událost, role), podle kterých lze člověka nepřímo určit" data-en="A combination of details (time, place, event, role) that can indirectly identify a person">Kombinace detailů (čas, místo, událost, role), podle kterých lze člověka nepřímo určit</span></label>
+                  <label class="check-option"><input type="checkbox" value="sensitive" data-risk="red" /><span data-cs="Zdravotní, psychologické, sociální, rodinné, podpůrné nebo citlivé kázeňské údaje" data-en="Health, psychological, social, family, support or sensitive disciplinary data">Zdravotní, psychologické, sociální, rodinné, podpůrné nebo citlivé kázeňské údaje</span></label>
+                  <label class="check-option"><input type="checkbox" value="secret" data-risk="red" /><span data-cs="Heslo, API klíč, token, rodné číslo nebo jiný přístupový či vysoce citlivý identifikátor" data-en="Password, API key, token, national ID or another access or highly sensitive identifier">Heslo, API klíč, token, rodné číslo nebo jiný přístupový či vysoce citlivý identifikátor</span></label>
+                  <label class="check-option"><input type="checkbox" value="confidential" data-risk="red" /><span data-cs="Důvěrný personální, bezpečnostní, incidentní nebo interně omezený dokument školy" data-en="Confidential personnel, security, incident or internally restricted school document">Důvěrný personální, bezpečnostní, incidentní nebo interně omezený dokument školy</span></label>
                 </div>
                 <div
                   id="risk-result"

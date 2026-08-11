@@ -21,8 +21,8 @@ function setTraffic(level) {
       en: ["GREEN · can be used", "Only if the content is genuinely public, fictional or safely anonymised."],
     },
     orange: {
-      cs: ["ORANŽOVÁ · nejprve anonymizovat", "Odstraňte identifikátory a vše, co pro úkol není nutné."],
-      en: ["ORANGE · anonymise first", "Remove identifiers and anything not needed for the task."],
+      cs: ["ORANŽOVÁ · nejprve anonymizovat", "Odstraňte identifikátory i nepotřebné kontextové detaily a použijte jen minimum nutných údajů."],
+      en: ["ORANGE · anonymise first", "Remove identifiers and unnecessary contextual details and use only the minimum data required."],
     },
     red: {
       cs: ["ČERVENÁ · do externí AI nevkládat", "Použijte jiný pracovní postup nebo konzultaci s odpovědnou osobou."],
@@ -36,54 +36,61 @@ function setTraffic(level) {
   traffic.setAttribute("aria-label", `${trafficLabel.textContent}. ${trafficNote.textContent}`);
 }
 
+function highestRisk(inputs) {
+  const weight = { green: 1, orange: 2, red: 3 };
+  return inputs.reduce((highest, input) =>
+    (weight[input.dataset.risk] || 0) > (weight[highest] || 0) ? input.dataset.risk : highest, "green");
+}
+
 function update() {
-  const values = [...options.querySelectorAll("input:checked")].map(
-    (input) => input.value,
-  );
-  if (!values.length) {
+  const selected = [...options.querySelectorAll("input:checked")];
+  if (!selected.length) {
     result.hidden = true;
     result.replaceChildren();
     setTraffic("idle");
     return;
   }
-  let level = "green";
-  let cs =
-    "Materiál lze použít, pokud je skutečně veřejný, smyšlený nebo bezpečně anonymizovaný.";
-  let en =
-    "The material can be used if it is genuinely public, fictional or safely anonymised.";
-  if (values.includes("sensitive") || values.includes("secret")) {
-    level = "red";
-    cs =
-      "Tento obsah do externí AI nevkládejte. Zvolte jiný pracovní postup nebo konzultaci s odpovědnou osobou.";
-    en =
-      "Do not enter this content into an external AI service. Use another workflow or consult the responsible person.";
-  } else if (values.some((value) => ["name", "studentwork"].includes(value))) {
-    level = "orange";
-    cs =
-      "Nejprve materiál anonymizujte a odstraňte vše, co není pro úkol nezbytné.";
-    en =
-      "Anonymise the material first and remove everything that is not necessary for the task.";
-  }
+  const level = highestRisk(selected);
+  const copy = {
+    green: {
+      cs: "Materiál lze použít, pokud je skutečně veřejný, smyšlený nebo bezpečně anonymizovaný.",
+      en: "The material can be used if it is genuinely public, fictional or safely anonymised.",
+    },
+    orange: {
+      cs: "Nejprve materiál anonymizujte. Odstraňte přímé i nepřímé identifikátory a vše, co není pro úkol nezbytné.",
+      en: "Anonymise the material first. Remove direct and indirect identifiers and everything that is not necessary for the task.",
+    },
+    red: {
+      cs: "Tento obsah do běžné externí AI nevkládejte. Zvolte jiný pracovní postup nebo konzultaci s odpovědnou osobou.",
+      en: "Do not enter this content into a normal external AI service. Use another workflow or consult the responsible person.",
+    },
+  };
   result.dataset.level = level;
   result.hidden = false;
   const strong = document.createElement("strong");
   strong.textContent = language() === "cs" ? "Doporučení: " : "Recommendation: ";
-  result.replaceChildren(
-    strong,
-    document.createTextNode(language() === "cs" ? cs : en),
-  );
+  result.replaceChildren(strong, document.createTextNode(copy[level][language()]));
   setTraffic(level);
 }
 
-options.addEventListener("change", update);
+options.addEventListener("change", (event) => {
+  const changed = event.target?.closest?.('input[type="checkbox"]');
+  if (changed?.checked) {
+    const safe = options.querySelector('input[data-exclusive="true"]');
+    if (changed === safe) {
+      options.querySelectorAll('input[type="checkbox"]:checked').forEach((input) => {
+        if (input !== safe) input.checked = false;
+      });
+    } else if (safe) {
+      safe.checked = false;
+    }
+  }
+  update();
+});
 reset.addEventListener("click", () => {
-  options.querySelectorAll("input:checked").forEach((input) => {
-    input.checked = false;
-  });
+  options.querySelectorAll("input:checked").forEach((input) => { input.checked = false; });
   update();
 });
 document.addEventListener("ghrab:language", update);
 update();
-document
-  .querySelector('[data-nav="safety"]')
-  ?.setAttribute("aria-current", "page");
+document.querySelector('[data-nav="safety"]')?.setAttribute("aria-current", "page");

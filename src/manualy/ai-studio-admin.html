@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<html lang="cs" data-theme="dark" data-ghrab-app-id="ai-studio" data-ghrab-app-version="0.21.6">
+<html lang="cs" data-theme="dark" data-ghrab-app-id="ai-studio" data-ghrab-app-version="0.21.7">
 <head>
  <meta charset="utf-8"/>
  <meta name="viewport" content="width=device-width,initial-scale=1"/>
@@ -30,7 +30,7 @@
   </nav>
  </header>
  <main id="main" class="studio-guide" hidden>
-  <div class="top"><a href="./">← Centrum manuálů</a><strong>AI Studio GHRAB · Administrátor · rozšířený manuál · verze 0.21.6</strong></div>
+  <div class="top"><a href="./">← Centrum manuálů</a><strong>AI Studio GHRAB · Administrátor · rozšířený manuál · verze 0.21.7</strong></div>
   <section class="hero admin">
    <span class="role-badge admin">Administrátor · rozšířený manuál</span>
    <h1>AI Studio GHRAB – manuál administrátora</h1>
@@ -104,19 +104,24 @@
     <h3>Pohled kolegy</h3>
     <p><strong>Pohled kolegy</strong> dočasně zobrazí Studio jako modelový proškolený učitel se všemi aktuálně dostupnými aplikacemi. Slouží ke kontrole toho, co kolega skutečně uvidí; nemění podepsané správcovské oprávnění ani se nevydává za konkrétního uživatele. Náhled se drží jen v aktuální relaci a lze jej kdykoli ukončit z informačního pruhu.</p>
     <h3>Pilotní reporting</h3>
-    <p>Kolegové generují měsíční anonymní souhrn ve svém Můj přístup. Administrátor jej sám sobě negeneruje: v <strong>Pilotním dashboardu / Souhrnném reportu</strong> importuje souhrny kolegů a pracuje s agregací.</p>
+    <p>Kolegové generují měsíční anonymní souhrn ve svém Můj přístup. Administrátor v <strong>Pilotním dashboardu / Souhrnném reportu</strong> importuje jejich JSON soubory. Svoje provozní údaje nemusí exportovat a znovu nahrávat: pokud nechá zapnuté <strong>Zahrnout moje místní data do celku</strong>, Studio automaticky přidá data uložená v aktuálním prohlížeči/profilu pro zvolené období. Jiné zařízení se tím nepřenese.</p>
     <h3>Prezentace</h3>
     <p>Prezentační režim je samostatná PR část pro projektor, dny otevřených dveří a další veřejné ukázky. Nabízí živou vizuální smyčku Studia, režim celé obrazovky a připravený playlist pro budoucí lokální videa definovaná v <code>presentation.json</code>. Není duplicitně ve Správě a neobsahuje provozní administrační kroky.</p>
    </section>
    <section class="section admin-extra" id="release">
     <span class="role-badge admin">Provoz a release</span>
     <h2>Kontrola vydání a serverová připravenost</h2>
-    <p>Správce řeší navíc release gate, aktuálnost registru aplikací, kompatibilitu přístupové brány a případný rollback. Katalog změn je veřejná uživatelská historie; interní QA a release kontroly zůstávají správcovské.</p>
+    <p>Správce řeší navíc release gate, aktuálnost registru aplikací, kompatibilitu přístupové brány a případný rollback.
+      V <strong>Správě → Kontrola zdrojů</strong> rozlišuje tři stavy: přímo ověřený nasazený manifest,
+      ověřený veřejný GitHub zdroj a samotný záložní snapshot. GitHub zdroj potvrzuje aktuálnost repozitáře,
+      ale Studio z bezpečnostních důvodů nepředstírá, že tato verze už musí být nasazená; do té doby používá
+      poslední známá metadata deploye. Katalog změn je veřejná uživatelská historie; interní QA a release kontroly
+      zůstávají správcovské.</p>
     <div class="callout admin">Serverové sdílení materiálů je v klientu připravené, ale aktivuje se až skutečně připojeným profilem school-server. Před zapnutím je nutné vyřešit školní identitu, komise, serverová oprávnění, audit, retenci, zálohy a API bránu.</div>
    </section>
 
  </main>
- <footer class="site-footer"><div class="shell-wide footer-inner"><div><strong>AI Studio GHRAB</strong><p>Autor a vývojový garant: Daniel Baláž · Školní projekt Gymnázia, Ostrava-Hrabůvka · verze 0.21.6</p></div></div></footer>
+ <footer class="site-footer"><div class="shell-wide footer-inner"><div><strong>AI Studio GHRAB</strong><p>Autor a vývojový garant: Daniel Baláž · Školní projekt Gymnázia, Ostrava-Hrabůvka · verze 0.21.7</p></div></div></footer>
  <script src="../app.js" type="module"></script>
  <script src="./ai-studio-admin.js" type="module"></script>
 </body>

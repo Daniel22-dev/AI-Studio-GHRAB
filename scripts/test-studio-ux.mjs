@@ -51,7 +51,7 @@ const polishCss = await text("src/polish.css");
 const platformConfig = await text("src/platform/ghrab-platform-config.js");
 check(platformConfig.includes('"autoFooter": false'), "Platforma stale muze prepsat sjednocenou paticku vlastnim boxem.");
 check(!/not\(\.access-ready\)[\s\S]{0,100}data-page="changelog"/.test(polishCss), "Katalog zmen je stale skryt access-ready gate a muze probliknout paticka.");
-check(polishCss.includes('.site-footer') && polishCss.includes('background: transparent'), "Paticka nema sjednoceny transparentni Studio styl.");
+check(polishCss.includes('.site-footer') && polishCss.includes('#0d4b78') && polishCss.includes('#0a355d'), "Paticka nema samostatny modry Studio blok bez cerneho pozadi.");
 
 const appJs = await text("src/app.js");
 check(appJs.includes('if (page === "changelog") return;'), "Katalog zmen nema runtime kompatibilitu pro starsi podepsany policy bundle.");
@@ -92,17 +92,25 @@ check(automationJs.includes('canAccessAdminPage?.("automation")'), "Sprava neuzn
 check(/preview-monthly-reminder[\s\S]{0,180}setupMonthlyReportReminder\(\{[\s\S]{0,40}force:\s*true/.test(automationJs), "Nahled mesicni prosby nespousti vynuceny nahled.");
 check(/function setupMonthlyReportReminder\(options = \{\}\)[\s\S]{0,500}const force = Boolean\(options\.force\)[\s\S]{0,500}!force/.test(appJs), "Mesicni reminder nema otestovanou force vetev mimo datum/roli.");
 const syncScript = await text("scripts/sync-registry.mjs");
-check(adminHtml.includes('id="sync-health-note"') && adminHtml.includes('Naposledy živě'), "Sprava nema srozumitelne vysvetleni a datum ziveho overeni zdroju.");
-check(automationJs.includes('živě ověřeno nyní') && automationJs.includes('ze záložního snapshotu') && automationJs.includes('lastFullLiveVerifiedAt'), "Sprava stale smesuje fallback registr a zive overene manifesty.");
-check(syncScript.includes('lastLiveVerifiedAt') && syncScript.includes('lastFullLiveVerifiedAt'), "Synchronizace neuchovava posledni zive overeni manifestu.");
+check(adminHtml.includes('id="sync-health-note"') && adminHtml.includes('Naposledy ověřeno'), "Sprava nema srozumitelne vysvetleni a datum overeni zdroju.");
+check(automationJs.includes('Zdrojový repozitář ověřen') && automationJs.includes('Záložní snapshot · zdroj neověřen') && automationJs.includes('lastFullSourceVerifiedAt') && automationJs.includes('lastFullLiveVerifiedAt'), "Sprava nerozlisuje nasazeny manifest, GitHub zdroj a zalozni snapshot.");
+check(syncScript.includes('verification: "repository"') && syncScript.includes('raw.githubusercontent.com') && syncScript.includes('lastFullSourceVerifiedAt') && syncScript.includes('lastFullLiveVerifiedAt'), "Synchronizace nema dvoustupnove overeni nasazeni/GitHub zdroje.");
+check(syncScript.includes('Promise.all(sources.map(resolveSource))'), "Synchronizace zdroju nebezi soubezne a muze zbytecne blokovat release.");
+check(syncScript.includes('if (!offline || writeOfflineOutputs)') && syncScript.includes('se nepřepisují'), "Offline QA muze prepsat publikovany stav Kontroly zdroju.");
 
 const issuerHtml = await text("src/tools/access-issuer/index.html");
 const issuerJs = await text("src/tools/access-issuer/issuer.js");
 check(issuerHtml.includes('<option value="operator">Zástupce správce</option>'), "Vydavatel neumoznuje vydat roli zastupce spravce.");
 check(["7", "14", "30"].every((days) => issuerHtml.includes(`data-admin-days="${days}"`)), "Vydavatel nema rychle expirace 7/14/30 dni pro docasneho admina.");
 check(issuerJs.includes('temporary.hidden = role !== "admin"') && issuerJs.includes('role !== "operator"'), "Vydavatel nerozlisuje operatora a docasneho plneho admina.");
+check(issuerJs.includes('if (role === "admin") $("#permit-all").checked = true;') && !issuerJs.includes('["admin", "operator"].includes(role)'), "Zastupce spravce se stale automaticky rozsiri na vsechny aplikace.");
+check(deputyGuide.includes('Vydat nový přístup') && deputyGuide.includes('starý učitelský JTI zneplatnit') && deputyGuide.includes('Dosavadní výběr aplikací zůstane zachován'), "Manual zastupce nepopisuje bezpecne povyseni existujiciho trained teacher.");
 const registryJs = await text("src/tools/access-registry/registry.js");
 check(registryJs.includes('canAccessAdminPage?.("access-registry")') && registryJs.includes('renew.hidden = !G.isAdmin()'), "Evidence pristupu nedodrzuje hranici zastupce proti Vydavateli.");
+
+const reportHtml = await text("src/report/index.html");
+check(reportHtml.includes('tomto prohlížeči a profilu') && reportHtml.includes('Není třeba nahrávat vlastní soubor'), "Souhrnny report nevysvetluje automaticke pridani mistnich dat aktualniho prohlizece/profilu.");
+check(appJs.includes('function portalStatusLabel(app)') && appJs.includes('Připraveno k řízenému pilotu'), "Portal nesjednocuje historicke pilotni statusy aplikaci.");
 
 const pilotHtml = await text("src/pilot/index.html");
 const pilotJs = await text("src/pilot/pilot.js");
@@ -118,6 +126,9 @@ check(!safetyHtml.includes("quality-centre") && !safetyHtml.includes("VERZOV\u00
 const safetyJs = await text("src/safety/safety.js");
 check(safetyHtml.includes('id="risk-traffic-light"') && safetyHtml.includes('risk-lamp-red') && safetyHtml.includes('risk-lamp-orange') && safetyHtml.includes('risk-lamp-green'), "Rychla kontrola nema viditelny tricolor semafor.");
 check(safetyJs.includes('setTraffic(level)') && safetyJs.includes('traffic.dataset.level'), "Semafor se neprepina podle vysledku rychle kontroly.");
+check((safetyHtml.match(/data-risk=/g) || []).length >= 10, "Rychla kontrola nema alespon deset praktickych skolnich kategorii.");
+check(safetyHtml.includes('data-exclusive="true"') && safetyHtml.includes('nejrizikovější zaškrtnutá položka'), "Rychla kontrola nevysvetluje pravidlo nejvyssiho rizika nebo nema vyhradni bezpecnou volbu.");
+check(safetyJs.includes('function highestRisk') && safetyJs.includes('changed === safe') && safetyJs.includes('safe.checked = false'), "Logika semaforu nepouziva nejvyssi riziko nebo neoddeli bezpecnou volbu od rizikovych.");
 
 const libraryHtml = await text("src/library/index.html");
 const materialService = await text("src/library/material-service.js");
@@ -143,7 +154,7 @@ globalThis.fetch = async () => {
 };
 try {
   const localRepository = materialModule.createMaterialRepository({
-    VERSION: "0.21.6",
+    VERSION: "0.21.7",
     deploymentReady: Promise.resolve({
       profile: "github-pages",
       apiBaseUrl: "",
@@ -184,6 +195,10 @@ const demoJs = await text("src/demo/demo.js");
 const presentationConfig = JSON.parse(await text("src/config/presentation.json"));
 check(demoHtml.includes('id="presentation-loop"') && demoHtml.includes('id="presentation-fullscreen"') && demoHtml.includes('id="presentation-kiosk"'), "Prezentace nema PR smycku/fullscreen showcase.");
 check(demoJs.includes('presentation.json') && demoJs.includes('playVideoAt') && demoJs.includes('scheduleSceneLoop'), "Prezentace nema video-ready playlist a zivy fallback reel.");
+check(demoJs.includes('presentation-video-play') && demoJs.includes('video.play()'), "Hlavni showcase film nema explicitni tlacitko prehrani s user gesture.");
+const serviceWorker = await text("src/sw.js");
+check(serviceWorker.includes("request.headers.has('range')"), "Service worker nepropousti Range/206 pozadavky velkeho showcase videa.");
+check(polishCss.includes('translateX(min(34vw, 32vh, 440px))'), "Fullscreen prezentace neomezuje orbit aplikaci i podle vysky viewportu.");
 check(Array.isArray(presentationConfig.videos), "Presentation config nema video playlist.");
 check(presentationConfig.videos.length >= 1 && presentationConfig.videos[0]?.muted === false, "PR prezentace nema hlavni showcase video se zvukem.");
 if (presentationConfig.videos[0]?.src) {
@@ -224,7 +239,7 @@ const context = {
   location: { href: "https://example.test/AI-Studio-GHRAB/" },
   document: {
     currentScript: { src: "https://example.test/AI-Studio-GHRAB/ghrab/ghrab-platform.js" },
-    documentElement: { dataset: { ghrabAppId: "ai-studio", ghrabAppVersion: "0.21.6" } },
+    documentElement: { dataset: { ghrabAppId: "ai-studio", ghrabAppVersion: "0.21.7" } },
     getElementById() { return null; },
     readyState: "loading",
     addEventListener() {},
@@ -235,7 +250,7 @@ vm.createContext(context);
 vm.runInContext(platformCode, context, { filename: "ghrab-platform.js" });
 const material = { schema: "ghrab-material-v1", id: "ux-contract-test", content: { sourceText: "test" } };
 const created = context.GHRAB_PLATFORM.bridge.create({
-  target: "generator", sourceAppId: "ai-studio", sourceAppVersion: "0.21.6",
+  target: "generator", sourceAppId: "ai-studio", sourceAppVersion: "0.21.7",
   targetVersionRange: ">=0.0.0 <100.0.0", ttlMs: 5 * 60 * 1000, material, writeLegacy: true,
 });
 check(created?.target === "generator", "Bridge v2 create nevratil cil generator.");

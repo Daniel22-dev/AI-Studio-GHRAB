@@ -1648,6 +1648,14 @@ function launchApp(app, article) {
   return true;
 }
 
+function portalStatusLabel(app) {
+  const raw = localised(app.status);
+  const pilotText = `${app.status?.cs || ""} ${app.status?.en || ""}`.toLowerCase();
+  if (/pilot|ověř|pracovní/.test(pilotText))
+    return t("Připraveno k řízenému pilotu", "Ready for controlled pilot");
+  return raw;
+}
+
 function portalAppCard(app, index, permissions) {
   const info = permissionInfoFor(app);
   const access = hasAppAccess(app.id);
@@ -1666,7 +1674,7 @@ function portalAppCard(app, index, permissions) {
   icon.src = app.icon?.startsWith("http") ? app.icon : `${base}${app.icon}`;
   icon.alt = "";
   const identityText = el("div");
-  identityText.append(el("span", "status", localised(app.status)));
+  identityText.append(el("span", "status", portalStatusLabel(app)));
   identity.append(icon, identityText);
   const headActions = el("div", "portal-card-actions");
   if (index >= 0 && index < 4) {

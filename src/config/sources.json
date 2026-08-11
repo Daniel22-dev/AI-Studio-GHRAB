@@ -1,34 +1,50 @@
 [
   {
     "id": "generator",
-    "url": "https://daniel22-dev.github.io/generator-testu/studio-manifest.json"
+    "url": "https://daniel22-dev.github.io/generator-testu/studio-manifest.json",
+    "repository": "daniel22-dev/generator-testu",
+    "branch": "main"
   },
   {
     "id": "differentiator",
-    "url": "https://daniel22-dev.github.io/diferenciator/studio-manifest.json"
+    "url": "https://daniel22-dev.github.io/diferenciator/studio-manifest.json",
+    "repository": "daniel22-dev/diferenciator",
+    "branch": "main"
   },
   {
     "id": "essay-evaluator",
-    "url": "https://daniel22-dev.github.io/Hodnotitel-maturitnich-slohu/studio-manifest.json"
+    "url": "https://daniel22-dev.github.io/Hodnotitel-maturitnich-slohu/studio-manifest.json",
+    "repository": "daniel22-dev/Hodnotitel-maturitnich-slohu",
+    "branch": "main"
   },
   {
     "id": "correspondence",
-    "url": "https://daniel22-dev.github.io/korespondencni-asistent/studio-manifest.json"
+    "url": "https://daniel22-dev.github.io/korespondencni-asistent/studio-manifest.json",
+    "repository": "daniel22-dev/korespondencni-asistent",
+    "branch": "main"
   },
   {
     "id": "ludus",
-    "url": "https://daniel22-dev.github.io/Ludus/studio-manifest.json"
+    "url": "https://daniel22-dev.github.io/Ludus/studio-manifest.json",
+    "repository": "daniel22-dev/Ludus",
+    "branch": "main"
   },
   {
     "id": "activity-builder",
-    "url": "https://daniel22-dev.github.io/Sestavovac-aktivit/studio-manifest.json"
+    "url": "https://daniel22-dev.github.io/Sestavovac-aktivit/studio-manifest.json",
+    "repository": "daniel22-dev/Sestavovac-aktivit",
+    "branch": "main"
   },
   {
     "id": "sortio",
-    "url": "https://daniel22-dev.github.io/SORTIO/studio-manifest.json"
+    "url": "https://daniel22-dev.github.io/SORTIO/studio-manifest.json",
+    "repository": "daniel22-dev/SORTIO",
+    "branch": "main"
   },
   {
     "id": "lesson-hub",
-    "url": "https://daniel22-dev.github.io/lesson-hub/studio-manifest.json"
+    "url": "https://daniel22-dev.github.io/lesson-hub/studio-manifest.json",
+    "repository": "daniel22-dev/lesson-hub",
+    "branch": "main"
   }
 ]

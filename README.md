@@ -1,31 +1,24 @@
 # AI Studio GHRAB
 
-**Aktuální verze:** 0.21.6
+**Aktuální verze:** 0.21.7
 **Platforma:** GHRAB Platform 1.1.0 · etapa P5
 
-**Verze 0.21.6 – provozní zastupitelnost: role Zástupce správce, krizový manuál a časově omezené plné zastoupení.**
+**Verze 0.21.7 – provozní doladění Studia: modrá patička, praktičtější semafor, přesnější kontrola zdrojů, bezpečné povýšení zástupce a opravy Prezentace.**
 
-AI Studio GHRAB je centrální brána školních digitálních a AI nástrojů. Jednotlivé aplikace zůstávají v samostatných repozitářích; Studio zajišťuje společnou navigaci, Top 4, synchronizaci verzí, bezpečnostní rámec, pilotní měření, správu podepsaných přístupů a kanonický základ technického reportéru. Materiály jsou znovu viditelnou součástí portálu, ale v dnešním bezserverovém režimu se vlastní obsah ukládá pouze místně.
+AI Studio GHRAB je centrální brána školních digitálních a AI nástrojů. Jednotlivé aplikace zůstávají v samostatných repozitářích; Studio zajišťuje společnou navigaci, Top 4, synchronizaci verzí, bezpečnostní rámec, pilotní měření, správu podepsaných přístupů a kanonický základ technického reportéru. Materiály jsou viditelnou součástí portálu, ale v dnešním bezserverovém režimu se vlastní obsah ukládá pouze místně.
 
-## Hlavní novinky 0.21.6
+## Hlavní novinky 0.21.7
 
-- **Zástupce správce (`operator`)** má provozní Správu, diagnostiku, Pilot, reporty, Evidenci přístupů a Pohled kolegy bez nejcitlivějších administrátorských pravomocí.
-- **Dočasný plný správce** lze vystavit s rychlou expirací 7, 14 nebo 30 dní.
-- Přibyl samostatný krizový manuál pro zastupitelnost a incidenty.
-- XSS regresní audit už nepadá na nových stavech Materiálů: `innerHTML` sinky v knihovně byly nahrazeny DOM API + `textContent`.
-- Celkový bezpečnostní baseline byl zpřísněn z 12 na 8 evidovaných `innerHTML` sinků.
-- Offline/browser oprava 0.21.3 zůstává zachována: katalog zobrazuje všech 8 aplikací.
+- Patička zůstává samostatným vizuálním blokem, ale používá vlastní modrý gradient místo černého/téměř černého pozadí.
+- Bezpečnostní semafor má deset praktických školních kategorií. Při více volbách rozhoduje nejvyšší riziko; bezpečná anonymní volba je vůči rizikovým volbám výlučná.
+- Kontrola zdrojů rozlišuje přímo ověřený nasazený manifest, ověřený veřejný GitHub zdroj a pouhý záložní snapshot. Offline QA už stav synchronizace nepřepisuje.
+- Souhrnný report vysvětluje, že vlastní místní provozní data z aktuálního prohlížeče/profilu se přidají automaticky a není potřeba je nahrávat jako soubor.
+- Existující proškolený učitel může dostat nový permit role Zástupce správce bez automatického přidání dalších aplikací; po ověření nového permitu lze starý učitelský JTI zneplatnit.
+- Portal sjednocuje historické pilotní popisky aplikací na „Připraveno k řízenému pilotu“; původní zdrojový text zůstává v registru/diagnostice.
+- Fullscreen Prezentace omezuje orbit aplikací i podle výšky viewportu, takže se krajní karty neodřezávají.
+- Showcase video propouští HTTP Range požadavky mimo PWA cache a má explicitní tlačítko přehrání se zvukem.
+- Materiály zůstávají lokální/server-ready; společnou integraci „Uložit do AI Studia“ do osmi aplikací budeme řešit až po dokončení Studia.
 
-- **Manuál samotného AI Studia** je rozdělen podle role: učitel dostává běžný provoz, administrátor navíc Správu, přístupy, reporting, prezentaci a release workflow.
-- Domovská stránka má pouze drobný role-aware odkaz **Poprvé v AI Studiu?**; hlavní launcher zůstává bez dalšího panelu.
-
-- **Materiály** jsou znovu v horní navigaci jako jasně označený server-ready katalog. Dnes pracují jen s místními ukázkami/importem; po připojení školního serveru jsou připraveny na sdílení v předmětových komisích.
-- Přibyl `material-service.js`, serverový API kontrakt a schema `ghrab-shared-material-record-v1`. Aktivace vyžaduje skutečný `school-server` profil, `schoolServerConnected=true` a `sharedMaterialLibrary=true`.
-- Budoucí katalog počítá s verzemi, vytvářením vlastních kopií, stavem **Ověřeno ve výuce** a vyšším stavem **Doporučeno komisí**, který může udělit pouze serverem oprávněná role komise.
-- Klient odmítne serverově publikovat materiál označený `provenance.containsPersonalData=true`; sdílení je určeno pouze pro bezpečně anonymizované výukové materiály.
-- **Bezpečnost → Rychlá kontrola dat** je nyní progresivní pomocník pod volbou „Nejsem si jistý → rychle posoudit“. Není to povinný krok před každým použitím AI.
-- **Tvorba materiálů** zůstává mimo hlavní navigaci: samotný obsah má vznikat v konkrétních aplikacích, zatímco Studio má být katalogem, pracovním prostorem a bezpečným předávacím bodem.
-- Zachovány jsou role učitel/správce a doplněna role zástupce správce, Katalog změn, sjednocený pilotní reporting, P5 release gate, offline režim a GHRAB Platform 1.1.0.
 
 ## Předchozí vydání 0.20.18
 
@@ -76,7 +69,7 @@ Ochranný bootstrap je určen pro Generátor 7.1.8, Diferenciátor 1.3.8, Hodnot
 
 ## Doporučené pořadí nasazení P2
 
-1. AI Studio GHRAB 0.21.6 jako zpětně kompatibilní platformní základ.
+1. AI Studio GHRAB 0.21.7 jako zpětně kompatibilní platformní základ.
 2. Korespondenční asistent 5.9.15.
 3. Diferenciátor 1.3.8.
 4. Generátor testů 7.1.8.

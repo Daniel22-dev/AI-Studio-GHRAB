@@ -6,18 +6,16 @@ const here = path.dirname(fileURLToPath(import.meta.url));
 const root = path.resolve(here, "..");
 const configDir = path.join(root, "src", "config");
 const offline = process.argv.includes("--offline");
-let previousFallbackConfirmed = false;
+const writeOfflineOutputs = process.argv.includes("--write-offline");
 let previousReport = null;
+let previousApps = [];
 try {
-  const [loadedReport, previousGenerated, currentFallback] = await Promise.all([
+  const [loadedReport, loadedApps] = await Promise.all([
     readFile(path.join(configDir, "sync-report.json"), "utf8").then(JSON.parse),
-    readFile(path.join(configDir, "apps.generated.json"), "utf8"),
-    readFile(path.join(configDir, "apps.fallback.json"), "utf8"),
+    readFile(path.join(configDir, "apps.generated.json"), "utf8").then(JSON.parse),
   ]);
   previousReport = loadedReport;
-  previousFallbackConfirmed =
-    previousReport?.fallbackSnapshotConfirmed === true &&
-    previousGenerated === currentFallback;
+  previousApps = Array.isArray(loadedApps) ? loadedApps : [];
 } catch {}
 const generatedAt = new Date().toISOString();
 const previousSources = new Map(
@@ -30,6 +28,7 @@ const fallback = JSON.parse(
   await readFile(path.join(configDir, "apps.fallback.json"), "utf8"),
 );
 const fallbackById = new Map(fallback.map((app) => [app.id, app]));
+const previousAppById = new Map(previousApps.map((app) => [app.id, app]));
 const required = [
   "schema",
   "id",
@@ -174,103 +173,217 @@ function validateOperationsManifest(operations, app) {
   return operations.operations.length;
 }
 
-async function fetchManifest(source) {
-  if (offline) throw new Error("offline režim");
+async function fetchUrl(url, { format = "json", timeoutMs = 12000 } = {}) {
   const controller = new AbortController();
-  const timer = setTimeout(() => controller.abort(), 12000);
+  const timer = setTimeout(() => controller.abort(), timeoutMs);
   try {
-    const response = await fetch(source.url, {
+    const response = await fetch(url, {
       signal: controller.signal,
       headers: { "user-agent": "AI-Studio-GHRAB-registry-sync" },
     });
     if (!response.ok) throw new Error(`HTTP ${response.status}`);
-    const app = validate(await response.json(), source.id, source);
-    let operationsCount = null;
-    if (app.aiCore?.serverReady) {
-      const operationsResponse = await fetch(app.aiCore.operationsManifestUrl, {
-        signal: controller.signal,
-        headers: { "user-agent": "AI-Studio-GHRAB-registry-sync" },
-      });
-      if (!operationsResponse.ok)
-        throw new Error(`ai-operations HTTP ${operationsResponse.status}`);
-      operationsCount = validateOperationsManifest(
-        await operationsResponse.json(),
-        app,
-      );
-    }
-    return { app, operationsCount };
+    return format === "text" ? response.text() : response.json();
   } finally {
     clearTimeout(timer);
   }
 }
 
-const apps = [];
-const reportSources = [];
-for (const source of sources) {
+async function fetchManifest(source) {
+  if (offline) throw new Error("offline režim");
+  const app = validate(await fetchUrl(source.url), source.id, source);
+  let operationsCount = null;
+  let operationsError = null;
+  if (app.aiCore?.serverReady) {
+    try {
+      operationsCount = validateOperationsManifest(
+        await fetchUrl(app.aiCore.operationsManifestUrl),
+        app,
+      );
+    } catch (error) {
+      operationsError = error.message;
+    }
+  }
+  return { app, operationsCount, operationsError };
+}
+
+async function fetchRepositoryManifest(source, fallbackApp) {
+  if (offline) throw new Error("offline režim");
+  const repository = source.repository || fallbackApp?.repository;
+  if (!repository || !/^[A-Za-z0-9_.-]+\/[A-Za-z0-9_.-]+$/.test(repository))
+    throw new Error("chybí veřejný zdrojový repozitář");
+  const branch = source.branch || "main";
+  const rootUrl = `https://raw.githubusercontent.com/${repository}/${encodeURIComponent(branch)}/`;
+  const pkg = await fetchUrl(`${rootUrl}package.json`);
+  if (!semver.test(pkg?.version || "")) throw new Error("package.json nemá platnou verzi");
+  const candidates = source.templatePaths || [
+    "src/studio-manifest.template.json",
+    "studio/app-manifest.template.json",
+    "studio-manifest.template.json",
+  ];
+  let lastError = null;
+  for (const candidate of candidates) {
+    try {
+      const encodedPath = candidate.split("/").map(encodeURIComponent).join("/");
+      const template = await fetchUrl(`${rootUrl}${encodedPath}`, { format: "text" });
+      const parsed = JSON.parse(
+        template
+          .replaceAll("__APP_VERSION__", pkg.version)
+          .replaceAll("__BUILD_TIME__", generatedAt),
+      );
+      if (fallbackApp?.publishedAt) parsed.publishedAt = fallbackApp.publishedAt;
+      return {
+        app: validate(parsed, source.id, source),
+        verificationUrl: `${rootUrl}${encodedPath}`,
+      };
+    } catch (error) {
+      lastError = error;
+    }
+  }
+  throw new Error(`zdrojový manifest nebyl ověřen: ${lastError?.message || "neznámá chyba"}`);
+}
+
+const resolveSource = async (source) => {
+  const fallbackApp = fallbackById.get(source.id);
+  if (!fallbackApp) throw new Error(`Chybí fallback pro ${source.id}`);
+  const previousSource = previousSources.get(source.id);
+  let snapshotApp = fallbackApp;
+  try {
+    const candidate = previousAppById.get(source.id);
+    if (candidate) snapshotApp = validate(candidate, source.id, source);
+  } catch {
+    snapshotApp = fallbackApp;
+  }
   try {
     const fetched = await fetchManifest(source);
     const localIcon = fallbackById.get(source.id)?.icon;
-    const app = localIcon
-      ? { ...fetched.app, icon: localIcon }
-      : fetched.app;
-    apps.push(app);
-    reportSources.push({
-      id: source.id,
-      url: source.url,
-      ok: true,
-      version: app.version,
-      aiOperations: fetched.operationsCount,
-      lastLiveVerifiedAt: generatedAt,
-    });
-  } catch (error) {
-    const app = fallbackById.get(source.id);
-    if (!app)
-      throw new Error(`Chybí fallback pro ${source.id}: ${error.message}`);
-    apps.push(validate(app, source.id, source));
-    const previousSource = previousSources.get(source.id);
-    reportSources.push({
-      id: source.id,
-      url: source.url,
-      ok: false,
-      version: app.version,
-      error: error.message,
-      lastLiveVerifiedAt:
-        previousSource?.lastLiveVerifiedAt ||
-        (previousSource?.ok ? previousReport?.generatedAt || null : null),
-    });
+    const app = localIcon ? { ...fetched.app, icon: localIcon } : fetched.app;
+    return {
+      app,
+      report: {
+        id: source.id,
+        url: source.url,
+        repository: source.repository || app.repository,
+        ok: true,
+        verification: "deployment",
+        version: app.version,
+        sourceVersion: app.version,
+        aiOperations: fetched.operationsCount,
+        operationsWarning: fetched.operationsError,
+        lastSourceVerifiedAt: generatedAt,
+        lastLiveVerifiedAt: generatedAt,
+      },
+    };
+  } catch (deploymentError) {
+    if (!offline) {
+      try {
+        const repository = await fetchRepositoryManifest(source, snapshotApp);
+        const app = validate(snapshotApp, source.id, source);
+        return {
+          app,
+          report: {
+            id: source.id,
+            url: source.url,
+            repository: source.repository || app.repository,
+            ok: true,
+            verification: "repository",
+            verificationUrl: repository.verificationUrl,
+            version: app.version,
+            sourceVersion: repository.app.version,
+            aiOperations: null,
+            deploymentWarning: deploymentError.message,
+            lastSourceVerifiedAt: generatedAt,
+            lastLiveVerifiedAt: previousSource?.lastLiveVerifiedAt || null,
+          },
+        };
+      } catch (repositoryError) {
+        const app = validate(snapshotApp, source.id, source);
+        return {
+          app,
+          report: {
+            id: source.id,
+            url: source.url,
+            repository: source.repository || app.repository,
+            ok: false,
+            verification: "snapshot",
+            version: app.version,
+            sourceVersion: null,
+            error: `nasazení: ${deploymentError.message}; repozitář: ${repositoryError.message}`,
+            lastSourceVerifiedAt: previousSource?.lastSourceVerifiedAt || previousSource?.lastLiveVerifiedAt || null,
+            lastLiveVerifiedAt: previousSource?.lastLiveVerifiedAt || null,
+          },
+        };
+      }
+    }
+    const app = validate(snapshotApp, source.id, source);
+    return {
+      app,
+      report: {
+        id: source.id,
+        url: source.url,
+        repository: source.repository || app.repository,
+        ok: false,
+        verification: "snapshot",
+        version: app.version,
+        sourceVersion: null,
+        error: deploymentError.message,
+        lastSourceVerifiedAt: previousSource?.lastSourceVerifiedAt || previousSource?.lastLiveVerifiedAt || null,
+        lastLiveVerifiedAt: previousSource?.lastLiveVerifiedAt || null,
+      },
+    };
   }
-}
+};
 
-const okCount = reportSources.filter((item) => item.ok).length;
-const mode =
-  okCount === reportSources.length
-    ? "live"
-    : okCount === 0
-      ? "fallback"
-      : "mixed";
+const resolvedSources = await Promise.all(sources.map(resolveSource));
+const apps = resolvedSources.map((item) => item.app);
+const reportSources = resolvedSources.map((item) => item.report);
+const verifiedCount = reportSources.filter((item) => item.ok).length;
+const deploymentCount = reportSources.filter((item) => item.verification === "deployment").length;
+const repositoryCount = reportSources.filter((item) => item.verification === "repository").length;
+const snapshotCount = reportSources.length - verifiedCount;
+const mode = deploymentCount === reportSources.length ? "live" : verifiedCount === 0 ? "fallback" : "mixed";
+const verificationMode =
+  deploymentCount === reportSources.length ? "deployment" :
+  repositoryCount === reportSources.length ? "repository" :
+  snapshotCount === reportSources.length ? "snapshot" : "mixed";
 const report = {
   schema: "ai-studio-sync-report-v1",
   generated: true,
   generatedAt,
   mode,
-  lastFullLiveVerifiedAt:
-    mode === "live"
+  verificationMode,
+  counts: {
+    verified: verifiedCount,
+    deployment: deploymentCount,
+    repository: repositoryCount,
+    snapshot: snapshotCount,
+    total: reportSources.length,
+  },
+  lastFullSourceVerifiedAt:
+    verifiedCount === reportSources.length
       ? generatedAt
-      : previousReport?.lastFullLiveVerifiedAt ||
-        (previousReport?.mode === "live" ? previousReport.generatedAt || null : null),
-  fallbackSnapshotConfirmed: mode === "fallback" && (offline || previousFallbackConfirmed),
+      : previousReport?.lastFullSourceVerifiedAt || null,
+  lastFullLiveVerifiedAt:
+    deploymentCount === reportSources.length
+      ? generatedAt
+      : previousReport?.lastFullLiveVerifiedAt || null,
+  fallbackSnapshotConfirmed: mode === "fallback",
   sources: reportSources,
 };
-await writeFile(
-  path.join(configDir, "apps.generated.json"),
-  JSON.stringify(apps, null, 2) + "\n",
-  "utf8",
-);
-await writeFile(
-  path.join(configDir, "sync-report.json"),
-  JSON.stringify(report, null, 2) + "\n",
-  "utf8",
-);
+
+if (!offline || writeOfflineOutputs) {
+  await writeFile(
+    path.join(configDir, "apps.generated.json"),
+    JSON.stringify(apps, null, 2) + "\n",
+    "utf8",
+  );
+  await writeFile(
+    path.join(configDir, "sync-report.json"),
+    JSON.stringify(report, null, 2) + "\n",
+    "utf8",
+  );
+} else {
+  console.log("Offline simulace: apps.generated.json ani sync-report.json se nepřepisují.");
+}
 console.log(
-  `Registr: ${apps.length} aplikací, režim ${mode}, ověřeno ${okCount}/${reportSources.length}.`,
+  `Registr: ${apps.length} aplikací, ověřeno ${verifiedCount}/${reportSources.length} (nasazení ${deploymentCount}, GitHub zdroj ${repositoryCount}, snapshot ${snapshotCount}).`,
 );

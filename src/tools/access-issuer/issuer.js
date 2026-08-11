@@ -283,7 +283,7 @@ if (window.GHRAB.isAdmin() && !window.GHRAB.isColleaguePreview?.()) {
     const operatorNote = $("#operator-role-note");
     temporary.hidden = role !== "admin";
     operatorNote.hidden = role !== "operator";
-    if (["admin", "operator"].includes(role)) $("#permit-all").checked = true;
+    if (role === "admin") $("#permit-all").checked = true;
     if (role === "admin") {
       const expiry = new Date(`${$("#permit-expiry").value || "2999-12-31"}T23:59:59`);
       const maxPreferred = Date.now() + 31 * 86400 * 1000;

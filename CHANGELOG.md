@@ -2,6 +2,16 @@
 
 > Tento soubor se generuje ze `src/config/changelog.json`. Neupravujte jej ručně.
 
+## 0.21.7 — 2026-08-11
+**Provozní doladění Studia a opravy Prezentace**
+
+- Patička zůstává samostatným blokem, ale používá vlastní modrý Studio gradient místo téměř černého pozadí.
+- Bezpečnostní semafor má deset praktických školních kategorií. Při více volbách rozhoduje nejvyšší riziko a bezpečná anonymní volba je výlučná s rizikovými položkami.
+- Kontrola zdrojů rozlišuje přímo ověřený nasazený manifest, ověřený veřejný GitHub zdroj a záložní snapshot. Offline QA už skutečný stav synchronizace nepřepisuje.
+- Souhrnný report vysvětluje automatické přidání místních dat aktuálního prohlížeče/profilu; existující proškolený učitel lze povýšit na Zástupce správce bez automatického rozšíření přístupu k aplikacím.
+- Karty aplikací sjednocují historické pilotní formulace na jeden Studio-level popisek „Připraveno k řízenému pilotu“ bez změny oprávnění nebo zdrojových metadat.
+- Fullscreen Prezentace omezuje orbit aplikací i podle výšky viewportu a showcase MP4 má opravené Range/206 načítání mimo PWA cache plus explicitní tlačítko přehrání se zvukem.
+
 ## 0.21.6 — 2026-08-10
 **Zástupce správce a provozní zastupitelnost**
 

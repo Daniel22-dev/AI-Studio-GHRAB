@@ -68,18 +68,24 @@ const date=new Date(value);
 if(Number.isNaN(date.getTime()))return "—";
 return date.toLocaleString(document.documentElement.lang==="en"?"en-GB":"cs-CZ")}
 
-  function syncModeLabel(mode){
-return ({live:t("živý registr","live registry"),mixed:t("smíšený režim","mixed mode"),fallback:t("záložní snapshot","fallback snapshot")})[mode]||mode||"—"}
+  function verificationLabel(source){
+if(source?.verification==="deployment")return t("Nasazený manifest ověřen živě","Deployed manifest verified live");
+if(source?.verification==="repository"){
+  const versionNote=source.sourceVersion&&source.sourceVersion!==source.version?` · ${t("zdroj","source")} v${source.sourceVersion}`:"";
+  return `${t("Zdrojový repozitář ověřen","Source repository verified")}${versionNote}`;
+}
+if(source?.verification==="unverified"||source?.ok==null)return t("Čeká na synchronizaci při buildu","Waiting for build synchronisation");
+return t("Záložní snapshot · zdroj neověřen","Fallback snapshot · source not verified")}
 
   function renderTable(report,apps){
 tableBody.replaceChildren();
 const byId=new Map(apps.map(a=>[a.id,a]));
 for(const source of report?.sources||[]){
-const tr=document.createElement("tr"),app=byId.get(source.id),values=[localised(app?.name)||source.id,source.url,source.ok?t("Živě ověřeno","Verified live"):t("Záložní snapshot · živě neověřeno","Fallback snapshot · not verified live"),source.version||app?.version||"—",formatSyncTime(source.lastLiveVerifiedAt)];
+const tr=document.createElement("tr"),app=byId.get(source.id),values=[localised(app?.name)||source.id,source.url,verificationLabel(source),source.version||app?.version||"—",formatSyncTime(source.lastSourceVerifiedAt||source.lastLiveVerifiedAt)];
 values.forEach((value,index)=>{
 const td=document.createElement("td");
 td.textContent=value;
-if(index===2)td.className=source.ok?"sync-ok":"sync-warn";
+if(index===2)td.className=source.ok===true?"sync-ok":source.ok===false?"sync-warn":"sync-neutral";
 tr.append(td)}
 );
 tableBody.append(tr)}
@@ -130,21 +136,42 @@ aiReadinessTableBody.append(tr)}
   async function render(){
 const [apps,report,coreRegistry,readiness,runtime]=await Promise.all([loadApps(),loadSyncReport(),loadAiCoreRegistry(),loadAiReadiness(),loadAiRuntime()]);
 appHost.replaceChildren(...apps.map(appRow));
-const ok=report?.sources?.filter(s=>s.ok).length||0,total=report?.sources?.length||apps.length,fallbackCount=Math.max(0,total-ok),time=formatSyncTime(report?.generatedAt),lastFullLive=formatSyncTime(report?.lastFullLiveVerifiedAt);
-summaryHost.replaceChildren(kpi(apps.length,"aplikací","applications"),kpi(`${ok}/${total}`,"živě ověřeno nyní","verified live now"),kpi(`${fallbackCount}/${total}`,"ze záložního snapshotu","from fallback snapshot"),kpi(syncModeLabel(report?.mode),"zdroj registru","registry source"),kpi(lastFullLive,"naposledy 8/8 živě","last 8/8 live"),kpi(time,"poslední synchronizace","latest synchronisation"));
+const total=report?.sources?.length||apps.length;
+const verified=report?.sources?.filter(s=>s.ok===true).length||0;
+const deploymentCount=report?.sources?.filter(s=>s.verification==="deployment").length||0;
+const repositoryCount=report?.sources?.filter(s=>s.verification==="repository").length||0;
+const snapshotCount=report?.sources?.filter(s=>s.verification==="snapshot").length||0;
+const unverifiedCount=report?.sources?.filter(s=>s.verification==="unverified"||s.ok==null).length||0;
+const time=formatSyncTime(report?.generatedAt),lastFullSource=formatSyncTime(report?.lastFullSourceVerifiedAt),lastFullLive=formatSyncTime(report?.lastFullLiveVerifiedAt);
+summaryHost.replaceChildren(
+  kpi(apps.length,"aplikací","applications"),
+  kpi(`${verified}/${total}`,"zdrojů ověřeno","sources verified"),
+  kpi(`${deploymentCount}/${total}`,"manifest nasazení","deployment manifests"),
+  kpi(`${repositoryCount}/${total}`,"ověřeno z GitHubu","verified from GitHub"),
+  kpi(`${snapshotCount}/${total}`,"jen snapshot","snapshot only"),
+  kpi(lastFullSource,"naposledy zdroje 8/8","last sources 8/8"),
+  kpi(lastFullLive,"naposledy nasazení 8/8","last deployment 8/8"),
+  kpi(time,"poslední synchronizace","latest synchronisation"),
+);
 const healthNote=document.querySelector("#sync-health-note");
 if(healthNote){
-  healthNote.className=`notice ${ok===total?"sync-health-ok":ok?"sync-health-warn":"sync-health-fallback"}`;
-  healthNote.textContent=ok===total
-    ? t("Všech osm manifestů bylo při této synchronizaci načteno a ověřeno přímo ze zdrojových aplikací.","All eight manifests were loaded and verified directly from the source applications during this synchronisation.")
-    : t(
-        `Studio má všech ${total} aplikací k dispozici, ale živě ověřilo ${ok}/${total}. ` +
-          `Zbývajících ${fallbackCount}/${total} používá poslední známý záložní snapshot. ` +
-          `To není totéž jako živé ověření. Poslední úplné ověření 8/8: ${lastFullLive}.`,
-        `Studio has all ${total} applications available, but verified ${ok}/${total} live. ` +
-          `The remaining ${fallbackCount}/${total} use the last known fallback snapshot. ` +
-          `This is not the same as live verification. Last complete 8/8 verification: ${lastFullLive}.`,
-      );
+  if(report?.generated===false||unverifiedCount===total){
+    healthNote.className="notice sync-neutral";
+    healthNote.textContent=t("Tento zdrojový balík ještě neobsahuje výsledek síťové synchronizace. Při GitHub Actions deployi se zdroje ověří a stav se zapíše do buildu.","This source package does not yet contain a network synchronisation result. GitHub Actions verifies the sources during deployment and writes the status into the build.");
+  }else{
+    healthNote.className=`notice ${verified===total?"sync-health-ok":verified?"sync-health-warn":"sync-health-fallback"}`;
+    healthNote.textContent=verified===total
+      ? t(
+          `Všech ${total} zdrojů je aktuálně ověřeno. Přímo z nasazeného manifestu ${deploymentCount}/${total}, z veřejného zdrojového repozitáře GitHub ${repositoryCount}/${total}. ` +
+            `U repozitářově ověřených položek Studio z bezpečnostních důvodů ponechává poslední známá metadata nasazení, dokud není dostupný manifest GitHub Pages.`,
+          `All ${total} sources are currently verified. Directly from deployed manifests ${deploymentCount}/${total}, from public GitHub source repositories ${repositoryCount}/${total}. ` +
+            `For repository-verified items Studio safely keeps the last known deployment metadata until the GitHub Pages manifest is reachable.`,
+        )
+      : t(
+          `Studio ověřilo ${verified}/${total} zdrojů. ${snapshotCount}/${total} zatím používá pouze poslední známý snapshot; podrobnost je v tabulce.`,
+          `Studio verified ${verified}/${total} sources. ${snapshotCount}/${total} currently use only the last known snapshot; see the table for details.`,
+        );
+  }
 }
 renderTable(report||{
 sources:[]}

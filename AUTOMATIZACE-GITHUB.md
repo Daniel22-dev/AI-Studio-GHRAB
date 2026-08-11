@@ -1,10 +1,10 @@
-# Automatizace aktualizací AI Studio GHRAB 0.21.6
+# Automatizace aktualizací AI Studio GHRAB 0.21.7
 
-> Aktuální verze: **0.21.6** · etapa P5
+> Aktuální verze: **0.21.7** · etapa P5
 
 ## Pravidelná synchronizace
 
-Workflow Studia se jako pojistka spouští jednou denně ve 3:17 UTC. Načte veřejné manifesty, ověří jejich schema, verzi, HTTPS adresy a pilotní status, provede testy a nasadí pouze ověřený build.
+Workflow Studia se jako pojistka spouští jednou denně ve 3:17 UTC. Nejprve zkouší přímo nasazené `studio-manifest.json` z GitHub Pages. Pokud konkrétní Pages manifest není dosažitelný, ověří veřejný zdrojový repozitář (package + manifestovou šablonu), ale do runtime ponechá poslední známá metadata nasazení. Pouhý snapshot bez ověřeného zdroje je ve Správě označen zvlášť. Offline QA synchronizační report nepřepisuje.
 
 GitHub může plánované workflow v dlouhodobě neaktivním veřejném repozitáři vypnout. Po prázdninové pauze proto zkontrolujte kartu Actions a případně použijte `Run workflow`.
 
@@ -15,7 +15,7 @@ Po nasazení dílčí aplikace může její repozitář odeslat `repository_disp
 ## Ověření vydání
 
 1. V Actions musí projít synchronizace, test a build.
-2. Ve Správě zkontrolujte živé manifesty a fallbacky.
+2. Ve Správě zkontrolujte počet ověřených nasazení, ověřených GitHub zdrojů a položek pouze na snapshotu.
 3. Spusťte Kontrolu Studia.
 4. V anonymním okně ověřte výchozí uzamčení.
 5. Se správcovským oprávněním ověřte odemčení a administraci.

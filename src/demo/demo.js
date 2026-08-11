@@ -189,7 +189,19 @@ function renderVideos() {
     title.textContent = item.title?.[language()] || item.title?.cs || item.title || "AI Studio GHRAB";
     const text = document.createElement("p");
     text.textContent = item.subtitle?.[language()] || item.subtitle?.cs || item.subtitle || "";
-    article.append(video, title, text);
+    const play = document.createElement("button");
+    play.type = "button";
+    play.className = "button secondary presentation-video-play";
+    play.textContent = G.t("▶ Přehrát film se zvukem", "▶ Play film with sound");
+    play.addEventListener("click", async () => {
+      video.muted = false;
+      try {
+        await video.play();
+      } catch {
+        G.showToast(G.t("Film se nepodařilo spustit. Zkontrolujte připojení a zkuste stránku obnovit.", "The film could not be started. Check the connection and reload the page."));
+      }
+    });
+    article.append(video, title, text, play);
     return article;
   }));
 }
