@@ -12,15 +12,10 @@ const loopButton = document.querySelector("#presentation-loop");
 const nextButton = document.querySelector("#presentation-next");
 const fullscreenButton = document.querySelector("#presentation-fullscreen");
 const videosHost = document.querySelector("#presentation-videos");
-const videoOverlay = document.querySelector("#presentation-video-overlay");
-const loopVideo = document.querySelector("#presentation-loop-video");
-const videoTitle = document.querySelector("#presentation-video-title");
-const videoSubtitle = document.querySelector("#presentation-video-subtitle");
 
 let apps = [];
 let config = { videos: [], sceneSeconds: 5, loopPlaylist: true };
 let sceneIndex = 0;
-let videoIndex = 0;
 let loopActive = false;
 let sceneTimer = null;
 
@@ -99,63 +94,30 @@ function showScene(index = sceneIndex) {
 
 function scheduleSceneLoop() {
   clearTimeout(sceneTimer);
-  if (!loopActive || config.videos?.length) return;
+  if (!loopActive) return;
   sceneTimer = setTimeout(() => {
     showScene(sceneIndex + 1);
     scheduleSceneLoop();
   }, Math.max(3, Number(config.sceneSeconds || 5)) * 1000);
 }
 
-function stopVideoPlaylist() {
-  if (!loopVideo) return;
-  loopVideo.pause();
-  loopVideo.removeAttribute("src");
-  loopVideo.load();
-  videoOverlay.hidden = true;
-  kiosk.classList.remove("is-video-mode");
-}
-
 function resolveMediaUrl(value) {
   if (!value) return "";
-  return /^https?:/i.test(value) ? value : new URL(`../${String(value).replace(/^\.?\//, "")}`, location.href).href;
-}
-
-async function playVideoAt(index) {
-  const videos = config.videos || [];
-  if (!loopActive || !videos.length) return;
-  videoIndex = ((index % videos.length) + videos.length) % videos.length;
-  const item = videos[videoIndex];
-  videoTitle.textContent = item.title?.[language()] || item.title?.cs || item.title || "AI Studio GHRAB";
-  videoSubtitle.textContent = item.subtitle?.[language()] || item.subtitle?.cs || item.subtitle || "";
-  loopVideo.src = resolveMediaUrl(item.src);
-  loopVideo.muted = item.muted !== false;
-  videoOverlay.hidden = false;
-  kiosk.classList.add("is-video-mode");
-  try {
-    await loopVideo.play();
-  } catch (error) {
-    console.warn("Presentation video could not start; falling back to the live reel.", error);
-    stopVideoPlaylist();
-    config = { ...config, videos: [] };
-    showScene(sceneIndex);
-    scheduleSceneLoop();
-  }
+  return /^https?:/i.test(value)
+    ? value
+    : new URL(`../${String(value).replace(/^\.?\//, "")}`, location.href).href;
 }
 
 function setLoop(active) {
   loopActive = Boolean(active);
   loopButton.setAttribute("aria-pressed", String(loopActive));
   loopButton.textContent = loopActive
-    ? G.t("■ Zastavit smyčku", "■ Stop loop")
-    : G.t("▶ Pustit nekonečnou smyčku", "▶ Start endless loop");
+    ? G.t("■ Zastavit smyčku prezentace", "■ Stop presentation loop")
+    : G.t("▶ Pustit nekonečnou smyčku prezentace", "▶ Start endless presentation loop");
   kiosk.classList.toggle("is-looping", loopActive);
   clearTimeout(sceneTimer);
-  if (!loopActive) {
-    stopVideoPlaylist();
-    return;
-  }
-  if (config.videos?.length) void playVideoAt(videoIndex);
-  else scheduleSceneLoop();
+  if (!loopActive) return;
+  scheduleSceneLoop();
 }
 
 function renderVideos() {
@@ -189,11 +151,26 @@ function renderVideos() {
     title.textContent = item.title?.[language()] || item.title?.cs || item.title || "AI Studio GHRAB";
     const text = document.createElement("p");
     text.textContent = item.subtitle?.[language()] || item.subtitle?.cs || item.subtitle || "";
+    const actions = document.createElement("div");
+    actions.className = "app-actions presentation-video-actions";
     const play = document.createElement("button");
     play.type = "button";
     play.className = "button secondary presentation-video-play";
     play.textContent = G.t("▶ Přehrát film se zvukem", "▶ Play film with sound");
+    const loopPlay = document.createElement("button");
+    loopPlay.type = "button";
+    loopPlay.className = "button primary presentation-video-loop";
+    loopPlay.setAttribute("aria-pressed", "false");
+    const syncVideoLoopLabel = () => {
+      loopPlay.setAttribute("aria-pressed", String(video.loop));
+      loopPlay.textContent = video.loop
+        ? G.t("■ Zastavit smyčku filmu", "■ Stop film loop")
+        : G.t("↻ Pustit film jako smyčku", "↻ Loop film endlessly");
+    };
+    syncVideoLoopLabel();
     play.addEventListener("click", async () => {
+      video.loop = false;
+      syncVideoLoopLabel();
       video.muted = false;
       try {
         await video.play();
@@ -201,7 +178,26 @@ function renderVideos() {
         G.showToast(G.t("Film se nepodařilo spustit. Zkontrolujte připojení a zkuste stránku obnovit.", "The film could not be started. Check the connection and reload the page."));
       }
     });
-    article.append(video, title, text, play);
+    loopPlay.addEventListener("click", async () => {
+      if (video.loop) {
+        video.loop = false;
+        video.pause();
+        syncVideoLoopLabel();
+        return;
+      }
+      video.loop = true;
+      video.muted = false;
+      syncVideoLoopLabel();
+      try {
+        await video.play();
+      } catch {
+        video.loop = false;
+        syncVideoLoopLabel();
+        G.showToast(G.t("Film se nepodařilo spustit. Zkontrolujte připojení a zkuste stránku obnovit.", "The film could not be started. Check the connection and reload the page."));
+      }
+    });
+    actions.append(play, loopPlay);
+    article.append(video, title, text, actions);
     return article;
   }));
 }
@@ -223,23 +219,11 @@ function updateFullscreenLabel() {
 
 loopButton.addEventListener("click", () => setLoop(!loopActive));
 nextButton.addEventListener("click", () => {
-  if (config.videos?.length && loopActive) void playVideoAt(videoIndex + 1);
-  else {
-    showScene(sceneIndex + 1);
-    if (loopActive) scheduleSceneLoop();
-  }
+  showScene(sceneIndex + 1);
+  if (loopActive) scheduleSceneLoop();
 });
 fullscreenButton.addEventListener("click", toggleFullscreen);
 document.addEventListener("fullscreenchange", updateFullscreenLabel);
-loopVideo.addEventListener("ended", () => {
-  if (!loopActive) return;
-  if (config.loopPlaylist === false && videoIndex >= (config.videos?.length || 1) - 1) setLoop(false);
-  else void playVideoAt(videoIndex + 1);
-});
-loopVideo.addEventListener("error", () => {
-  if (loopActive) void playVideoAt(videoIndex + 1);
-});
-
 document.addEventListener("ghrab:language", () => {
   renderOrbit();
   showScene(sceneIndex);

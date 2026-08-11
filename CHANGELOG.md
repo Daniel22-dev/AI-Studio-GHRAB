@@ -2,6 +2,14 @@
 
 > Tento soubor se generuje ze `src/config/changelog.json`. Neupravujte jej ručně.
 
+## 0.21.10 — 2026-08-11
+**Doladění výměny přístupů a oddělení prezentačních smyček**
+
+- Vydavatel přístupu má trvale viditelné tlačítko zpět do Evidence přístupů a po úspěšném vydání výraznou akci „Hotovo → zpět do evidence“. Při vydání náhrady ze stávajícího záznamu se původní přístup označí jako nahrazený novým JTI, ale automaticky se nezneplatní.
+- Tlačítko „Odstranit z evidence“ je přejmenováno na „Odstranit jen místní záznam“, aby bylo zřejmé, že tím nedojde ke zneplatnění přístupu.
+- Horní tlačítko nekonečné smyčky v Prezentaci nyní vždy cyklí živou showcase scénu s osmi aplikacemi a jejich stručnými popisy; hlavní film se už nahoře automaticky nespouští.
+- Hlavní showcase film má ve své vlastní kartě samostatné tlačítko pro jednorázové přehrání se zvukem a samostatné tlačítko „Pustit film jako smyčku“.
+
 ## 0.21.9 — 2026-08-11
 **Hotfix synchronizace dokumentace po živém registru**
 

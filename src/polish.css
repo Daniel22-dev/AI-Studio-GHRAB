@@ -2743,7 +2743,7 @@ body {
 }
 .first-run-guide a:hover{color:var(--text);border-bottom-color:var(--text)}
 
-/* 0.21.9 — footer remains a distinct block, but belongs to the Studio blue palette */
+/* 0.21.10 — footer remains a distinct block, but belongs to the Studio blue palette */
 .site-footer {
   border: 0;
   border-top: 1px solid rgba(112, 226, 255, 0.34);

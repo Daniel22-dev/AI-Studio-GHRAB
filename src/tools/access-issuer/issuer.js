@@ -8,6 +8,7 @@ if (window.GHRAB.isAdmin() && !window.GHRAB.isColleaguePreview?.()) {
   let policy = null;
   let publicKeyInfo = null;
   let privateKeyTimer = null;
+  let replacementRecord = null;
   const PRIVATE_KEY_TTL_MS = 10 * 60 * 1000;
 
   const $ = (selector) => document.querySelector(selector);
@@ -125,6 +126,7 @@ if (window.GHRAB.isAdmin() && !window.GHRAB.isColleaguePreview?.()) {
       (item) => item.subject === subject || item.jti === subject,
     );
     if (!record) return;
+    replacementRecord = record;
     $("#permit-name").value = record.displayName || "";
     $("#permit-subject").value = record.subject || "";
     $("#permit-role").value = ["admin", "operator"].includes(record.role) ? record.role : "teacher";
@@ -226,6 +228,9 @@ if (window.GHRAB.isAdmin() && !window.GHRAB.isColleaguePreview?.()) {
         source: "issued",
         createdAt: issuedFile.createdAt,
       });
+      if (saved.ok && replacementRecord?.jti && replacementRecord.jti !== payload.jti) {
+        G.updateIssuedAccessRecord(replacementRecord.jti, { supersededBy: payload.jti });
+      }
       $("#permit-output").value = token;
       $("#download-permit").disabled = false;
       $("#copy-permit").disabled = false;
@@ -233,7 +238,9 @@ if (window.GHRAB.isAdmin() && !window.GHRAB.isColleaguePreview?.()) {
       schedulePrivateKeyClear();
       feedback(
         saved.ok
-          ? `Přístup byl vytvořen a automaticky uložen do evidence. JTI: ${payload.jti}`
+          ? replacementRecord?.jti
+            ? `Nový přístup byl vytvořen a uložen do evidence. Původní přístup je označen jako nahrazený; až kolegyně potvrdí, že nový soubor funguje, připravte původní JTI ke zneplatnění. Nové JTI: ${payload.jti}`
+            : `Přístup byl vytvořen a automaticky uložen do evidence. JTI: ${payload.jti}`
           : `Přístup byl vytvořen, ale evidenci se nepodařilo uložit. JTI si zaznamenejte: ${payload.jti}`,
         saved.ok,
       );
