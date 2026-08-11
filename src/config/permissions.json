@@ -17,6 +17,18 @@
       "canViewInternalStats": true
     },
     {
+      "id": "operator",
+      "name": {
+        "cs": "Zástupce správce",
+        "en": "Deputy administrator"
+      },
+      "canUseAll": true,
+      "canManageTraining": false,
+      "canViewInternalStats": true,
+      "canIssueAdministrator": false,
+      "canChangeSigningKeys": false
+    },
+    {
       "id": "teacher",
       "name": {
         "cs": "Proškolený učitel",

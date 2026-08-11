@@ -7,16 +7,22 @@ const root = path.resolve(here, "..");
 const configDir = path.join(root, "src", "config");
 const offline = process.argv.includes("--offline");
 let previousFallbackConfirmed = false;
+let previousReport = null;
 try {
-  const [previousReport, previousGenerated, currentFallback] = await Promise.all([
+  const [loadedReport, previousGenerated, currentFallback] = await Promise.all([
     readFile(path.join(configDir, "sync-report.json"), "utf8").then(JSON.parse),
     readFile(path.join(configDir, "apps.generated.json"), "utf8"),
     readFile(path.join(configDir, "apps.fallback.json"), "utf8"),
   ]);
+  previousReport = loadedReport;
   previousFallbackConfirmed =
     previousReport?.fallbackSnapshotConfirmed === true &&
     previousGenerated === currentFallback;
 } catch {}
+const generatedAt = new Date().toISOString();
+const previousSources = new Map(
+  (previousReport?.sources || []).map((source) => [source.id, source]),
+);
 const sources = JSON.parse(
   await readFile(path.join(configDir, "sources.json"), "utf8"),
 );
@@ -214,18 +220,23 @@ for (const source of sources) {
       ok: true,
       version: app.version,
       aiOperations: fetched.operationsCount,
+      lastLiveVerifiedAt: generatedAt,
     });
   } catch (error) {
     const app = fallbackById.get(source.id);
     if (!app)
       throw new Error(`Chybí fallback pro ${source.id}: ${error.message}`);
     apps.push(validate(app, source.id, source));
+    const previousSource = previousSources.get(source.id);
     reportSources.push({
       id: source.id,
       url: source.url,
       ok: false,
       version: app.version,
       error: error.message,
+      lastLiveVerifiedAt:
+        previousSource?.lastLiveVerifiedAt ||
+        (previousSource?.ok ? previousReport?.generatedAt || null : null),
     });
   }
 }
@@ -240,8 +251,13 @@ const mode =
 const report = {
   schema: "ai-studio-sync-report-v1",
   generated: true,
-  generatedAt: new Date().toISOString(),
+  generatedAt,
   mode,
+  lastFullLiveVerifiedAt:
+    mode === "live"
+      ? generatedAt
+      : previousReport?.lastFullLiveVerifiedAt ||
+        (previousReport?.mode === "live" ? previousReport.generatedAt || null : null),
   fallbackSnapshotConfirmed: mode === "fallback" && (offline || previousFallbackConfirmed),
   sources: reportSources,
 };

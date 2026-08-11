@@ -900,16 +900,16 @@ for (const file of sourceFiles.filter((f) => f.endsWith(".html"))) {
       fail(`Neplatný lokální odkaz v ${rel}: ${url}`);
   }
 }
-for (const file of [
-  "automation/automation.js",
-  "pilot/pilot.js",
-  "report/report.js",
-  "demo/demo.js",
-  "tests/tests.js",
+for (const [file, guard] of [
+  ["automation/automation.js", "canAccessAdminPage"],
+  ["pilot/pilot.js", "canAccessAdminPage"],
+  ["report/report.js", "canAccessAdminPage"],
+  ["demo/demo.js", "isAdmin"],
+  ["tests/tests.js", "canAccessAdminPage"],
 ]) {
   const text = await readFile(path.join(src, file), "utf8");
-  if (!text.includes("accessReady") || !text.includes("isAdmin"))
-    fail(`${file} nemá správcovskou bránu.`);
+  if (!text.includes("accessReady") || !text.includes(guard))
+    fail(`${file} nemá odpovídající privilegovanou bránu.`);
 }
 for (const file of [
   "integration/generator-access-bootstrap.example.js",

@@ -1,7 +1,79 @@
 {
   "schema": "ai-studio-changelog-v1",
-  "current": "0.21.4",
+  "current": "0.21.6",
   "items": [
+    {
+      "version": "0.21.6",
+      "date": "2026-08-10",
+      "title": {
+        "cs": "Zástupce správce a provozní zastupitelnost",
+        "en": "Deputy administrator and operational continuity"
+      },
+      "changes": [
+        {
+          "cs": "Přibyla samostatná role Zástupce správce pro dlouhodobější nepřítomnost hlavního správce. Má Správu, diagnostiku, Pilot, souhrnný report, Evidenci přístupů a Pohled kolegy, ale ne Vydavatele oprávnění, Prezentaci ani správu podpisových klíčů.",
+          "en": "A dedicated Deputy administrator role was added for longer administrator absences. It has Administration, diagnostics, Pilot, aggregate reporting, Access registry and Colleague view, but not the permit issuer, Presentation or signing-key management."
+        },
+        {
+          "cs": "Vydavatel oprávnění umí vytvořit roli Zástupce správce a při plném správci nabízí bezpečné rychlé expirace 7, 14 nebo 30 dní pro mimořádné dočasné zastoupení.",
+          "en": "The permit issuer can create a Deputy administrator role and offers safe 7, 14 or 30 day expirations for temporary full-administrator cover."
+        },
+        {
+          "cs": "Zástupce nemůže obnovovat přístupy přes Vydavatele ani se sám povýšit. Přímé správcovské stránky používají stránková oprávnění a plný administrátor zůstává jedinou rolí pro citlivé zásahy.",
+          "en": "The deputy cannot renew access through the issuer or self-elevate. Privileged pages use page-level authorization and the full administrator remains the only role for sensitive operations."
+        },
+        {
+          "cs": "Centrum Manuálů obsahuje nový krizový a provozní manuál Zástupce správce s triáží výpadků, fallbacku manifestů, problémů s přístupy, GitHub Actions a jasnými eskalačními hranicemi.",
+          "en": "The Manuals centre now includes a deputy administrator incident and operations guide covering outages, manifest fallback, access problems, GitHub Actions and clear escalation boundaries."
+        },
+        {
+          "cs": "Budoucí serverová architektura nově počítá se samostatnou rolí zástupce a auditovaným časově omezeným nouzovým povýšením.",
+          "en": "The future server architecture now includes a dedicated deputy role and audited time-limited emergency elevation."
+        },
+        {
+          "cs": "Prezentace obsahuje dvouminutový Full HD showcase film se zvukem: dynamické profily všech osmi aplikací, materiály, bezpečnost, zastupitelnost a budoucí školní server. Film lze přehrát samostatně nebo v nekonečné smyčce a velký MP4 soubor se záměrně neukládá do offline PWA precache.",
+          "en": "Presentation now includes a two-minute Full HD showcase film with sound: dynamic profiles of all eight applications, resources, safety, operational continuity and the future school server. It can play on its own or in an endless loop, while the large MP4 is intentionally excluded from the offline PWA precache."
+        }
+      ]
+    },
+    {
+      "version": "0.21.5",
+      "date": "2026-08-10",
+      "title": {
+        "cs": "Pohled kolegy, PR prezentace a přesnější provozní stav",
+        "en": "Colleague view, PR presentation and clearer operational status"
+      },
+      "changes": [
+        {
+          "cs": "Top 4 lze přetahováním myší nebo šipkami přeskládat mezi čtyřmi pozicemi kolem brány; rozložení se ukládá v prohlížeči.",
+          "en": "The Top 4 can be rearranged between the four gateway positions by mouse drag or keyboard arrows; the layout is stored in the browser."
+        },
+        {
+          "cs": "Patička je sjednocena bez černého rámečku a automatická platformní patička je vypnutá. Katalog změn má stabilní načítací stav, takže při otevření neproblikává samotná patička.",
+          "en": "The footer is unified without a black frame and the automatic platform footer is disabled. The change catalogue has a stable loading state so the footer no longer flashes on its own."
+        },
+        {
+          "cs": "Bezpečnostní rychlá kontrola má skutečný tříbarevný semafor, který se rozsvítí současně s textovým doporučením a nespoléhá jen na barvu.",
+          "en": "The safety quick check now has a real three-light traffic signal that updates together with the text recommendation and does not rely on colour alone."
+        },
+        {
+          "cs": "Prezentace byla přepracována na PR showcase pro projektor a dny otevřených dveří: živá animační smyčka, celoobrazovkový režim a video playlist připravený přes presentation.json.",
+          "en": "Presentation was rebuilt as a PR showcase for projectors and open days with a live animated loop, full-screen mode and a video playlist configured through presentation.json."
+        },
+        {
+          "cs": "Správce má novou záložku Pohled kolegy. Náhled v session simuluje proškoleného učitele, skryje správcovské části a nemění skutečné podepsané oprávnění.",
+          "en": "Administrators now have a Colleague view tab. The session preview simulates a trained teacher, hides administrator areas and does not alter the real signed permit."
+        },
+        {
+          "cs": "Materiály přijímají Bridge v2 handoff s cílem ai-studio. Přibyl jednotný integrační kontrakt pro budoucí tlačítko Uložit do AI Studia ve všech osmi aplikacích; bez školního serveru zůstává uložení lokální.",
+          "en": "Resources can receive a Bridge v2 handoff targeted at ai-studio. A shared integration contract was added for a future Save to AI Studio button across all eight applications; without the school server, storage remains local."
+        },
+        {
+          "cs": "Kontrola zdrojů nově odděluje živě ověřené manifesty od záložního snapshotu a eviduje poslední živé ověření každé aplikace i poslední úplné ověření 8/8.",
+          "en": "Source check now separates live-verified manifests from the fallback snapshot and records the last live verification of each application plus the last complete 8/8 verification."
+        }
+      ]
+    },
     {
       "version": "0.21.4",
       "date": "2026-08-10",

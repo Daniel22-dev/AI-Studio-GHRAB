@@ -37,7 +37,9 @@ await window.GHRAB.accessReady;
         cache: "no-store",
       }).then((r) => r.json());
       list.replaceChildren(...(data.items || []).map(row));
+      list.setAttribute("aria-busy", "false");
     } catch {
+      list.setAttribute("aria-busy", "false");
       list.textContent = T.t(
         "Changelog se nepodařilo načíst.",
         "Could not load the changelog.",

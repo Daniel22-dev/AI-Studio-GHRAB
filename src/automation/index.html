@@ -1,5 +1,5 @@
 <!doctype html>
-<html lang="cs" data-theme="dark" data-ghrab-app-id="ai-studio" data-ghrab-app-version="0.21.4">
+<html lang="cs" data-theme="dark" data-ghrab-app-id="ai-studio" data-ghrab-app-version="0.21.6">
   <head>
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width,initial-scale=1" />
@@ -60,7 +60,8 @@
         ><a href="../safety/" data-nav="safety" data-cs="Bezpe&#269;nost" data-en="Safety">Bezpe&#269;nost</a
         ><a href="../access/" data-nav="access" data-cs="M&#367;j p&#345;&#237;stup" data-en="My access">M&#367;j p&#345;&#237;stup</a
         ><a href="../changelog/" data-nav="changelog" data-cs="Katalog zm&#283;n" data-en="Change catalogue">Katalog zm&#283;n</a
-        ><a href="../automation/" data-admin-nav hidden data-nav="automation" data-cs="Spr&#225;va" data-en="Administration">Spr&#225;va</a
+        ><a href="../?view=teacher" data-ops-nav hidden data-colleague-preview-link data-nav="colleague-preview" data-cs="Pohled kolegy" data-en="Colleague view">Pohled kolegy</a
+        ><a href="../automation/" data-ops-nav hidden data-nav="automation" data-cs="Spr&#225;va" data-en="Administration">Spr&#225;va</a
         ><a href="../demo/" data-admin-nav hidden data-nav="demo" data-cs="Prezentace" data-en="Presentation">Prezentace</a>
       </nav>
       <div class="header-actions">
@@ -98,9 +99,17 @@
           nikdy nenahrávejte na GitHub.
         </p>
       </section>
+      <section class="section shell-wide" data-operator-only hidden>
+        <article class="panel deputy-scope-note">
+          <p class="eyebrow">ZÁSTUPCE SPRÁVCE</p>
+          <h2>Provozní pravomoci bez nejcitlivějších zásahů</h2>
+          <p>Máte přístup k diagnostice, stavu aplikací, pilotním reportům a evidenci přístupů. Nemůžete vydávat správcovská oprávnění, měnit podpisové klíče ani zasahovat do bezpečnostní politiky. Při závažném incidentu použijte krizový manuál.</p>
+          <a class="button secondary" href="../manualy/deputy-admin.html">Otevřít krizový manuál zástupce</a>
+        </article>
+      </section>
       <section class="section shell-wide">
         <div class="admin-command-grid">
-          <a class="admin-command-card" href="../tools/access-issuer/"
+          <a class="admin-command-card" href="../tools/access-issuer/" data-full-admin-only hidden
             ><span>◆</span>
             <div>
               <strong data-cs="Vydat přístup" data-en="Issue access"
@@ -366,19 +375,21 @@
                   <th data-cs="Načtená verze" data-en="Loaded version">
                     Načtená verze
                   </th>
+                  <th data-cs="Naposledy živě" data-en="Last live verification">
+                    Naposledy živě
+                  </th>
                 </tr>
               </thead>
               <tbody id="sync-table-body"></tbody>
             </table>
           </div>
           <p
+            id="sync-health-note"
             class="notice"
-            data-cs="Zelený výsledek znamená živě ověřený manifest. Záložní registr zachová dostupnost, ale správce má před dalším vydáním prověřit příčinu."
-            data-en="A green result means a live verified manifest. The fallback registry preserves availability, but the administrator should investigate before the next release."
+            data-cs="Načítám stav synchronizace zdrojů…"
+            data-en="Loading source synchronisation status…"
           >
-            Zelený výsledek znamená živě ověřený manifest. Záložní registr
-            zachová dostupnost, ale správce má před dalším vydáním prověřit
-            příčinu.
+            Načítám stav synchronizace zdrojů…
           </p>
         </section>
         <section class="panel automation-report ai-core-report">

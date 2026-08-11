@@ -1,6 +1,6 @@
 await window.GHRAB.accessReady;
 
-if (window.GHRAB.isAdmin()) {
+if (window.GHRAB.isAdmin() && !window.GHRAB.isColleaguePreview?.()) {
   const G = window.GHRAB;
   const encoder = new TextEncoder();
   let privateKeyInfo = null;
@@ -127,7 +127,7 @@ if (window.GHRAB.isAdmin()) {
     if (!record) return;
     $("#permit-name").value = record.displayName || "";
     $("#permit-subject").value = record.subject || "";
-    $("#permit-role").value = record.role === "admin" ? "admin" : "teacher";
+    $("#permit-role").value = ["admin", "operator"].includes(record.role) ? record.role : "teacher";
     $("#permit-all").checked = record.apps.includes("*");
     document.querySelectorAll("[data-app]").forEach((input) => {
       input.checked = record.apps.includes(input.value);
@@ -272,9 +272,28 @@ if (window.GHRAB.isAdmin()) {
       feedback("Kód se nepodařilo zkopírovat. Označte jej ručně.");
     }
   });
-  $("#permit-role").addEventListener("change", () => {
-    if ($("#permit-role").value === "admin") $("#permit-all").checked = true;
-  });
+  function setExpiryDays(days) {
+    const date = new Date();
+    date.setDate(date.getDate() + Number(days || 0));
+    $("#permit-expiry").value = date.toISOString().slice(0, 10);
+  }
+  function syncRoleUi() {
+    const role = $("#permit-role").value;
+    const temporary = $("#temporary-admin-tools");
+    const operatorNote = $("#operator-role-note");
+    temporary.hidden = role !== "admin";
+    operatorNote.hidden = role !== "operator";
+    if (["admin", "operator"].includes(role)) $("#permit-all").checked = true;
+    if (role === "admin") {
+      const expiry = new Date(`${$("#permit-expiry").value || "2999-12-31"}T23:59:59`);
+      const maxPreferred = Date.now() + 31 * 86400 * 1000;
+      if (!Number.isFinite(expiry.getTime()) || expiry.getTime() > maxPreferred) setExpiryDays(14);
+    }
+  }
+  $("#permit-role").addEventListener("change", syncRoleUi);
+  document.querySelectorAll("[data-admin-days]").forEach((button) =>
+    button.addEventListener("click", () => setExpiryDays(button.dataset.adminDays)),
+  );
   $("#permit-name").addEventListener("blur", () => {
     if (!$("#permit-subject").value.trim())
       $("#permit-subject").value = slug($("#permit-name").value);
@@ -283,4 +302,5 @@ if (window.GHRAB.isAdmin()) {
   await loadPolicy();
   defaultExpiry();
   applyPrefill();
+  syncRoleUi();
 }

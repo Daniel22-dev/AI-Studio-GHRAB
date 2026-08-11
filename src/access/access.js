@@ -27,13 +27,28 @@ function showFeedback(message, ok = false) {
   feedback.className = `form-feedback ${ok ? "success" : "error"}`;
 }
 function roleLabel(role) {
-  return role === "admin"
-    ? G.t("Správce AI Studia", "AI Studio administrator")
-    : G.t("Proškolený učitel", "Trained teacher");
+  if (role === "admin") return G.t("Správce AI Studia", "AI Studio administrator");
+  if (role === "operator") return G.t("Zástupce správce", "Deputy administrator");
+  return G.t("Proškolený učitel", "Trained teacher");
 }
 function renderCurrent() {
   const snapshot = getAccessSnapshot();
+  const preview = Boolean(G.isColleaguePreview?.());
   current.replaceChildren();
+  if (preview) {
+    const badge = document.createElement("span");
+    badge.className = "access-state-badge ok";
+    badge.textContent = G.t("Pohled kolegy", "Colleague view");
+    const title = document.createElement("h2");
+    title.textContent = G.t("Modelový proškolený učitel", "Model trained teacher");
+    const description = document.createElement("p");
+    description.textContent = G.t(
+      "Simulace zobrazuje běžné učitelské rozhraní se všemi aktuálně dostupnými aplikacemi. Skutečné správcovské oprávnění zůstává beze změny.",
+      "The simulation shows the standard teacher interface with all currently available applications. The real administrator permit remains unchanged.",
+    );
+    current.append(badge, title, description);
+    return;
+  }
   const badge = document.createElement("span");
   badge.className = `access-state-badge ${snapshot.valid ? "ok" : "locked"}`;
   badge.textContent = snapshot.valid
@@ -68,9 +83,10 @@ function renderCurrent() {
 }
 async function renderApps() {
   const apps = await G.loadApps();
+  const preview = Boolean(G.isColleaguePreview?.());
   appsHost.replaceChildren(
     ...apps.map((app) => {
-      const access = hasAppAccess(app.id);
+      const access = preview ? { enabled: true } : hasAppAccess(app.id);
       const card = document.createElement("article");
       card.className = `access-app-card ${access.enabled ? "enabled" : "locked"}`;
       const icon = document.createElement("img");
@@ -100,6 +116,15 @@ async function render() {
 }
 async function activateToken(token) {
   clearFeedback();
+  if (G.isColleaguePreview?.()) {
+    showFeedback(
+      G.t(
+        "V pohledu kolegy se skutečné oprávnění nemění. Nejprve náhled ukončete.",
+        "The real permit cannot be changed in colleague view. Exit the preview first.",
+      ),
+    );
+    return;
+  }
   const result = await setPermitToken(token);
   if (result.ok) {
     tokenInput.value = "";
@@ -120,6 +145,16 @@ document
   .querySelector("#access-activate")
   .addEventListener("click", () => activateToken(tokenInput.value));
 fileInput.addEventListener("change", async () => {
+  if (G.isColleaguePreview?.()) {
+    fileInput.value = "";
+    showFeedback(
+      G.t(
+        "V pohledu kolegy se skutečné oprávnění nemění. Nejprve náhled ukončete.",
+        "The real permit cannot be changed in colleague view. Exit the preview first.",
+      ),
+    );
+    return;
+  }
   const file = fileInput.files?.[0];
   if (!file) return;
   clearFeedback();
@@ -137,6 +172,15 @@ fileInput.addEventListener("change", async () => {
   } else showFeedback(formatReason(result.reason, G.state.language));
 });
 document.querySelector("#access-clear").addEventListener("click", () => {
+  if (G.isColleaguePreview?.()) {
+    showFeedback(
+      G.t(
+        "V pohledu kolegy se skutečné oprávnění nemění. Nejprve náhled ukončete.",
+        "The real permit cannot be changed in colleague view. Exit the preview first.",
+      ),
+    );
+    return;
+  }
   if (
     !confirm(
       G.t(

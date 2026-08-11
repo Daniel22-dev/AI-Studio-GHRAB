@@ -5,7 +5,7 @@ async function guardAdministratorGuide() {
   await G.accessReady;
   const main = document.querySelector("#main");
   if (!main) return;
-  if (G.isAdmin()) {
+  if (G.isAdmin() && !G.isColleaguePreview?.()) {
     main.hidden = false;
     return;
   }

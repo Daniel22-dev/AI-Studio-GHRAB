@@ -24,7 +24,12 @@ const generatedQualityArtifacts = new Set(['quality-report.json', 'config/qualit
 const files = walk(dist).filter((file) => !generatedQualityArtifacts.has(posix(path.relative(dist, file))));
 const rel = (file) => posix(path.relative(dist, file));
 const size = (file) => fs.statSync(file).size;
-const sumExt = (extensions) => files.filter((file) => extensions.some((ext) => file.toLowerCase().endsWith(ext))).reduce((sum, file) => sum + size(file), 0);
+const lazyMedia = quality.lazyMedia || {};
+const lazyMediaPrefixes = Array.isArray(lazyMedia.prefixes) ? lazyMedia.prefixes.map((value) => String(value).replace(/^\.\//, "")) : [];
+const isLazyMedia = (file) => lazyMediaPrefixes.some((prefix) => rel(file).startsWith(prefix));
+const payloadFiles = files.filter((file) => !isLazyMedia(file));
+const lazyMediaFiles = files.filter(isLazyMedia);
+const sumExt = (extensions) => payloadFiles.filter((file) => extensions.some((ext) => file.toLowerCase().endsWith(ext))).reduce((sum, file) => sum + size(file), 0);
 const htmlFiles = files.filter((file) => file.toLowerCase().endsWith('.html'));
 const fullHtml = htmlFiles.filter((file) => /<html\b[^>]*>[\s\S]*<\/html>/i.test(fs.readFileSync(file, 'utf8')));
 const entry = path.join(dist, 'index.html');
@@ -90,14 +95,20 @@ function duplicateBytes() {
 
 const precache = precacheMetrics();
 const duplicate = duplicateBytes();
-const largestFile = files.slice().sort((a, b) => size(b) - size(a))[0] || null;
+const largestFile = payloadFiles.slice().sort((a, b) => size(b) - size(a))[0] || null;
+const largestLazyMediaFile = lazyMediaFiles.slice().sort((a, b) => size(b) - size(a))[0] || null;
 const metrics = {
   schema: 'ghrab-performance-report-v1',
   appId: consumer.appId,
   appVersion: consumer.appVersion,
   platformVersion: consumer.platform?.version || '',
   measuredAt: new Date().toISOString(),
-  distBytes: files.reduce((sum, file) => sum + size(file), 0),
+  distBytes: payloadFiles.reduce((sum, file) => sum + size(file), 0),
+  totalDistBytes: files.reduce((sum, file) => sum + size(file), 0),
+  lazyMediaBytes: lazyMediaFiles.reduce((sum, file) => sum + size(file), 0),
+  lazyMediaFileCount: lazyMediaFiles.length,
+  largestLazyMediaBytes: largestLazyMediaFile ? size(largestLazyMediaFile) : 0,
+  largestLazyMediaPath: largestLazyMediaFile ? rel(largestLazyMediaFile) : '',
   jsBytes: sumExt(['.js', '.mjs']),
   cssBytes: sumExt(['.css']),
   htmlBytes: sumExt(['.html']),
@@ -158,6 +169,11 @@ for (const [key, limit] of Object.entries(budget)) {
   check(Number(metrics[key]) <= Number(limit), `budget.${key}`, `${metrics[key]} <= ${limit}`);
 }
 if (quality.requireBudget === true) check(Object.keys(budget).length >= 5, 'budget.minimum-count', Object.keys(budget).length);
+if (lazyMediaPrefixes.length) {
+  check(Number(metrics.lazyMediaBytes) <= Number(lazyMedia.maxBytes || 0), 'lazy-media.total', `${metrics.lazyMediaBytes} <= ${lazyMedia.maxBytes || 0}`);
+  check(Number(metrics.largestLazyMediaBytes) <= Number(lazyMedia.maxSingleFileBytes || 0), 'lazy-media.single-file', `${metrics.largestLazyMediaBytes} <= ${lazyMedia.maxSingleFileBytes || 0}`);
+  check(!precache.assets.some((asset) => lazyMediaPrefixes.some((prefix) => asset.startsWith(prefix))), 'lazy-media.not-precache', lazyMediaPrefixes.join(', '));
+}
 
 const failedChecks = checks.filter((item) => !item.ok);
 

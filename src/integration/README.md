@@ -26,3 +26,7 @@ Přímé otevření jejich veřejných adres používá stejné podepsané oprá
 7. Při zamítnutí nebo chybě konfigurace se zobrazí zamykací obrazovka.
 
 Veřejný ověřovací klíč je bezpečné publikovat. Soukromý podpisový klíč ani osobní přístupové soubory nesmějí být v žádném veřejném repozitáři.
+
+## Uložení materiálu zpět do AI Studia
+
+Pro jednotné tlačítko **Uložit do AI Studia** použijte `save-to-studio.js`. Přesný serverless a budoucí serverový tok je popsán v `SAVE-TO-STUDIO.md`. Studio od verze 0.21.6 přijímá Bridge v2 handoff s cílem `ai-studio` na stránce Materiály.

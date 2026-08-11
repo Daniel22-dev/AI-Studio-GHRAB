@@ -176,6 +176,8 @@ const excludedOptionalPrefixes = [
   // P2 platform assets are added only after the canonical postprocessor runs.
   // Excluding src/platform prevents stale compatibility copies from entering SW precache.
   "./platform/",
+  // Large presentation media stays network-loaded and must not inflate the offline PWA cache.
+  "./assets/presentation/",
 ];
 const optionalCacheFiles = allCacheFiles.filter(
   (file) =>

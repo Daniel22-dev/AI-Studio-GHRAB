@@ -1,4 +1,4 @@
-import { readFile } from "node:fs/promises";
+import { readFile, stat } from "node:fs/promises";
 import path from "node:path";
 import { fileURLToPath, pathToFileURL } from "node:url";
 import vm from "node:vm";
@@ -32,19 +32,34 @@ for (const rel of standardHtml) {
   const html = await text(rel);
   check(html.includes('data-nav="changelog"'), `${rel} nema Katalog zmen v horni navigaci.`);
   check(html.includes('data-nav="library"'), `${rel} nema server-ready Materialy v horni navigaci.`);
+  check(html.includes('data-nav="colleague-preview"') && html.includes('data-colleague-preview-link') && html.includes('data-ops-nav'), `${rel} nema provozni Pohled kolegy v horni navigaci.`);
   check(!html.includes('data-nav="workflow"'), `${rel} stale obsahuje centralni tvorbu materialu v hlavni navigaci.`);
   check(!html.includes('class="footer-links"'), `${rel} stale obsahuje duplicitni patickovou navigaci.`);
+  check(html.includes('class="site-footer"'), `${rel} nema sjednocenou Studio paticku.`);
 }
 
 const policy = JSON.parse(await text("src/config/access-policy.json"));
 check(!policy.administratorPages.includes("changelog"), "Katalog zmen je stale spravcovska stranka.");
+check(Array.isArray(policy.operatorRoles) && policy.operatorRoles.includes("operator"), "Access policy nema roli operator.");
+check(Array.isArray(policy.operatorPages) && ["automation", "pilot", "report", "tests", "access-registry", "deputy-admin"].every((page) => policy.operatorPages.includes(page)), "Access policy nema bezpecny rozsah stranek zastupce spravce.");
+const accessControlJs = await text("src/access/access-control.js");
+check(accessControlJs.includes("export function isOperator()") && accessControlJs.includes("export function canAccessAdminPage(pageId)"), "Runtime nema oddelenou roli zastupce spravce a strankova opravneni.");
+check(accessControlJs.includes('return "invalid-role"'), "Podepsany permit nepripustne role neodmita.");
 const changelogJs = await text("src/changelog/changelog.js");
 check(!changelogJs.includes("isAdmin"), "Katalog zmen se stale renderuje jen spravci.");
+const polishCss = await text("src/polish.css");
+const platformConfig = await text("src/platform/ghrab-platform-config.js");
+check(platformConfig.includes('"autoFooter": false'), "Platforma stale muze prepsat sjednocenou paticku vlastnim boxem.");
+check(!/not\(\.access-ready\)[\s\S]{0,100}data-page="changelog"/.test(polishCss), "Katalog zmen je stale skryt access-ready gate a muze probliknout paticka.");
+check(polishCss.includes('.site-footer') && polishCss.includes('background: transparent'), "Paticka nema sjednoceny transparentni Studio styl.");
 
 const appJs = await text("src/app.js");
 check(appJs.includes('if (page === "changelog") return;'), "Katalog zmen nema runtime kompatibilitu pro starsi podepsany policy bundle.");
 check(appJs.includes('[data-teacher-only]'), "Chybi role teacher-only.");
-check(appJs.includes('snapshot.valid && snapshot.permit?.role !== "admin"'), "Teacher-only prvky nejsou vazany na platny nespravcovsky pristup.");
+check(appJs.includes('COLLEAGUE_PREVIEW_KEY') && appJs.includes('function isColleaguePreview()') && appJs.includes('function mountColleaguePreviewBanner()'), "Chybi session Pohled kolegy.");
+check(appJs.includes('const operator = isOperator() && !preview') && appJs.includes('const operations = admin || operator') && appJs.includes('snapshot.permit?.role === "teacher"'), "Role admin/operator/teacher se v UI nerozdeluji bezpecne.");
+check(appJs.includes('function swapCoreAppPositions') && appJs.includes('portal-drag-handle') && appJs.includes('dataTransfer'), "Top 4 nema drag-and-drop prehazovani pozic.");
+check(appJs.includes('snapshot.valid && snapshot.permit?.role === "teacher"'), "Teacher-only prvky nejsou vazany pouze na roli teacher.");
 check(/function renderExtraApps\(apps\)[\s\S]{0,1400}const anchor = document\.querySelector\("\.value-section"\)[\s\S]{0,220}anchor\.before\(section\)[\s\S]{0,120}main\?\.append\(section\)/.test(appJs), "Dalsi aplikace se po odstraneni mission-strip nemaji kam vlozit.");
 check(!appJs.includes('document.querySelector(".mission-strip")?.before(section)'), "Render dalsich aplikaci stale zavisi na odstranene mission-strip.");
 const accessHtml = await text("src/access/index.html");
@@ -54,6 +69,9 @@ check(/data-teacher-only[^>]*hidden[\s\S]*?Jak odevzdat m/.test(manualsHtml), "N
 check(/data-admin-only[^>]*hidden[\s\S]*?Automatick/.test(manualsHtml), "Navod evidence pristupu neni admin-only.");
 check(/data-teacher-only[^>]*hidden[\s\S]*?ai-studio-teacher\.html/.test(manualsHtml), "Centrum manualu nema roli ucitele pro manual AI Studia.");
 check(/data-admin-only[^>]*hidden[\s\S]*?ai-studio-admin\.html/.test(manualsHtml), "Centrum manualu nema roli administratora pro manual AI Studia.");
+const deputyGuide = await text("src/manualy/deputy-admin.html");
+check(/data-ops-only[^>]*hidden[\s\S]*?deputy-admin\.html/.test(manualsHtml), "Centrum manualu nema krizovy manual zastupce spravce.");
+check(deputyGuide.includes('data-page="deputy-admin"') && deputyGuide.includes("GitHub Actions") && deputyGuide.includes("DOČASNÝ PLNÝ SPRÁVCE"), "Manual zastupce nema incidentni triaz a nouzove zastoupeni.");
 const teacherStudioGuide = await text("src/manualy/ai-studio-teacher.html");
 const adminStudioGuide = await text("src/manualy/ai-studio-admin.html");
 check(teacherStudioGuide.includes("Co běžný učitel nemusí řešit") && !teacherStudioGuide.includes("Pilotní dashboard / Souhrnném reportu"), "Manual ucitele neni zjednoduseny pro bezny provoz.");
@@ -68,8 +86,23 @@ for (const duplicate of ['href="../report/"', 'href="../changelog/"', 'href="../
 }
 check(adminHtml.includes('id="preview-monthly-reminder"'), "Sprava nema nahled mesicni prosby.");
 const automationJs = await text("src/automation/automation.js");
+check(adminHtml.includes('data-full-admin-only') && adminHtml.includes('../tools/access-issuer/'), "Vydavatel opravneni neni ve Sprave omezen jen na plneho admina.");
+check(adminHtml.includes('data-operator-only') && adminHtml.includes('deputy-admin.html'), "Sprava nema provozni informaci pro zastupce spravce.");
+check(automationJs.includes('canAccessAdminPage?.("automation")'), "Sprava neuznava strankove opravneni zastupce.");
 check(/preview-monthly-reminder[\s\S]{0,180}setupMonthlyReportReminder\(\{[\s\S]{0,40}force:\s*true/.test(automationJs), "Nahled mesicni prosby nespousti vynuceny nahled.");
 check(/function setupMonthlyReportReminder\(options = \{\}\)[\s\S]{0,500}const force = Boolean\(options\.force\)[\s\S]{0,500}!force/.test(appJs), "Mesicni reminder nema otestovanou force vetev mimo datum/roli.");
+const syncScript = await text("scripts/sync-registry.mjs");
+check(adminHtml.includes('id="sync-health-note"') && adminHtml.includes('Naposledy živě'), "Sprava nema srozumitelne vysvetleni a datum ziveho overeni zdroju.");
+check(automationJs.includes('živě ověřeno nyní') && automationJs.includes('ze záložního snapshotu') && automationJs.includes('lastFullLiveVerifiedAt'), "Sprava stale smesuje fallback registr a zive overene manifesty.");
+check(syncScript.includes('lastLiveVerifiedAt') && syncScript.includes('lastFullLiveVerifiedAt'), "Synchronizace neuchovava posledni zive overeni manifestu.");
+
+const issuerHtml = await text("src/tools/access-issuer/index.html");
+const issuerJs = await text("src/tools/access-issuer/issuer.js");
+check(issuerHtml.includes('<option value="operator">Zástupce správce</option>'), "Vydavatel neumoznuje vydat roli zastupce spravce.");
+check(["7", "14", "30"].every((days) => issuerHtml.includes(`data-admin-days="${days}"`)), "Vydavatel nema rychle expirace 7/14/30 dni pro docasneho admina.");
+check(issuerJs.includes('temporary.hidden = role !== "admin"') && issuerJs.includes('role !== "operator"'), "Vydavatel nerozlisuje operatora a docasneho plneho admina.");
+const registryJs = await text("src/tools/access-registry/registry.js");
+check(registryJs.includes('canAccessAdminPage?.("access-registry")') && registryJs.includes('renew.hidden = !G.isAdmin()'), "Evidence pristupu nedodrzuje hranici zastupce proti Vydavateli.");
 
 const pilotHtml = await text("src/pilot/index.html");
 const pilotJs = await text("src/pilot/pilot.js");
@@ -82,6 +115,9 @@ check(safetyHtml.includes("Nejsem si jistý → rychle posoudit"), "Rychla kontr
 check(safetyHtml.includes('class="panel safety-check-details"'), "Rychla kontrola nepouziva rozbalovaci detail.");
 check(safetyHtml.includes("Nemusíte kontrolu otevírat před každým použitím AI."), "Bezpecnost nevysvetluje, ze kontrola neni povinna pred kazdym pouzitim.");
 check(!safetyHtml.includes("quality-centre") && !safetyHtml.includes("VERZOV\u00c1N\u00cd"), "Bezpecnost stale obsahuje kvalitu/verzovani materialu.");
+const safetyJs = await text("src/safety/safety.js");
+check(safetyHtml.includes('id="risk-traffic-light"') && safetyHtml.includes('risk-lamp-red') && safetyHtml.includes('risk-lamp-orange') && safetyHtml.includes('risk-lamp-green'), "Rychla kontrola nema viditelny tricolor semafor.");
+check(safetyJs.includes('setTraffic(level)') && safetyJs.includes('traffic.dataset.level'), "Semafor se neprepina podle vysledku rychle kontroly.");
 
 const libraryHtml = await text("src/library/index.html");
 const materialService = await text("src/library/material-service.js");
@@ -91,6 +127,11 @@ check(libraryHtml.includes('id="server-shared-section"') && libraryHtml.includes
 check(materialService.includes('config?.features?.schoolServerConnected === true') && materialService.includes('config?.features?.sharedMaterialLibrary === true'), "Material server adapter se muze aktivovat bez skutecneho serveroveho profilu.");
 check(materialService.includes("containsPersonalData === true"), "Serverove sdileni nema ochranu proti publikaci materialu s osobnimi udaji.");
 check(materialService.includes("publishToCommission") && materialService.includes("forkToWorkspace") && materialService.includes("recordQuality"), "Material server adapter nema pripraveny zakladni operace sdileni/verzovani/overeni.");
+const libraryJs = await text("src/library/library.js");
+const saveToStudio = await text("src/integration/save-to-studio.js");
+check(libraryJs.includes('takeHandoff?.("ai-studio")') && libraryJs.includes('studioHandoff'), "Materialy neumi prevzit handoff smerovany z aplikace do Studia.");
+check(appJs.includes('function takeHandoff(target)') && appJs.includes('takeHandoff,'), "Studio runtime neexportuje consume stranu handoffu.");
+check(saveToStudio.includes('target: "ai-studio"') && saveToStudio.includes('library/?studioHandoff=1'), "Jednotny kontrakt Ulozit do AI Studia nema spravny cil nebo URL.");
 
 // Functional guard: the current GitHub profile must never attempt a network publication.
 const materialModule = await import(pathToFileURL(path.join(src, "library/material-service.js")).href);
@@ -102,7 +143,7 @@ globalThis.fetch = async () => {
 };
 try {
   const localRepository = materialModule.createMaterialRepository({
-    VERSION: "0.21.4",
+    VERSION: "0.21.6",
     deploymentReady: Promise.resolve({
       profile: "github-pages",
       apiBaseUrl: "",
@@ -138,6 +179,22 @@ check(guideHtml.includes("OSM APLIKAC"), "Spolecny manual stale neuvadi osm apli
 check(guideHtml.includes("Soukrom") && guideHtml.includes("ukon"), "Spolecny manual nepopisuje ukonceni prace na sdilenem zarizeni.");
 check(guideHtml.includes("server"), "Spolecny manual nerozlisuje planovany serverovy profil.");
 
+const demoHtml = await text("src/demo/index.html");
+const demoJs = await text("src/demo/demo.js");
+const presentationConfig = JSON.parse(await text("src/config/presentation.json"));
+check(demoHtml.includes('id="presentation-loop"') && demoHtml.includes('id="presentation-fullscreen"') && demoHtml.includes('id="presentation-kiosk"'), "Prezentace nema PR smycku/fullscreen showcase.");
+check(demoJs.includes('presentation.json') && demoJs.includes('playVideoAt') && demoJs.includes('scheduleSceneLoop'), "Prezentace nema video-ready playlist a zivy fallback reel.");
+check(Array.isArray(presentationConfig.videos), "Presentation config nema video playlist.");
+check(presentationConfig.videos.length >= 1 && presentationConfig.videos[0]?.muted === false, "PR prezentace nema hlavni showcase video se zvukem.");
+if (presentationConfig.videos[0]?.src) {
+  const mediaPath = path.join(src, presentationConfig.videos[0].src);
+  const mediaStat = await stat(mediaPath).catch(() => null);
+  check(Boolean(mediaStat?.isFile() && mediaStat.size > 1_000_000), "Hlavni showcase video chybi nebo je podezrele male.");
+}
+const buildScript = await text("scripts/build.mjs");
+check(buildScript.includes('"./assets/presentation/"'), "Velke PR video neni vylouceno z offline precache PWA.");
+check(!demoHtml.includes("Jeden materiál. Tři výukové nástroje"), "Prezentace stale obsahuje stary technicky petikrokovy koncept.");
+
 const workflowJs = await text("src/workflow/workflow.js");
 for (const target of ["differentiator", "generator", "ludus"]) {
   check(workflowJs.includes(`id: "${target}"`), `Workflow nema definovanou kompatibilitu ${target}.`);
@@ -167,7 +224,7 @@ const context = {
   location: { href: "https://example.test/AI-Studio-GHRAB/" },
   document: {
     currentScript: { src: "https://example.test/AI-Studio-GHRAB/ghrab/ghrab-platform.js" },
-    documentElement: { dataset: { ghrabAppId: "ai-studio", ghrabAppVersion: "0.21.4" } },
+    documentElement: { dataset: { ghrabAppId: "ai-studio", ghrabAppVersion: "0.21.6" } },
     getElementById() { return null; },
     readyState: "loading",
     addEventListener() {},
@@ -178,7 +235,7 @@ vm.createContext(context);
 vm.runInContext(platformCode, context, { filename: "ghrab-platform.js" });
 const material = { schema: "ghrab-material-v1", id: "ux-contract-test", content: { sourceText: "test" } };
 const created = context.GHRAB_PLATFORM.bridge.create({
-  target: "generator", sourceAppId: "ai-studio", sourceAppVersion: "0.21.4",
+  target: "generator", sourceAppId: "ai-studio", sourceAppVersion: "0.21.6",
   targetVersionRange: ">=0.0.0 <100.0.0", ttlMs: 5 * 60 * 1000, material, writeLegacy: true,
 });
 check(created?.target === "generator", "Bridge v2 create nevratil cil generator.");
@@ -192,4 +249,4 @@ if (failures.length) {
   for (const failure of failures) console.error(`- ${failure}`);
   process.exit(1);
 }
-console.log("Studio UX/regression test passed: navigation, roles, reporting, safety, monthly preview wiring and handoff v2 contract.");
+console.log("Studio UX/regression test passed: navigation, colleague preview, Top 4 drag, footer/changelog, reporting, safety traffic light, PR presentation, materials inbound handoff and Bridge v2 contract.");

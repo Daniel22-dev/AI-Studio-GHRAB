@@ -443,6 +443,65 @@ async function initialiseServerMaterials() {
   renderWorkspace();
 }
 
+
+async function consumeIncomingStudioHandoff() {
+  const params = new URLSearchParams(location.search);
+  if (params.get("studioHandoff") !== "1") return;
+  await G.accessReady;
+  try {
+    const packet = G.takeHandoff?.("ai-studio");
+    if (!packet?.material) {
+      throw new Error(
+        G.t(
+          "Předávaný materiál už není dostupný nebo mu vypršela platnost.",
+          "The transferred resource is no longer available or has expired.",
+        ),
+      );
+    }
+    const validation = G.validateMaterialPackage(packet.material);
+    if (!validation.valid) {
+      const issue = validation.errors?.[0];
+      throw new Error(
+        issue
+          ? G.t(`${issue.cs} (${issue.path})`, `${issue.en} (${issue.path})`)
+          : G.t("Materiál není platný GHRAB Material v1.", "The resource is not a valid GHRAB Material v1 package."),
+      );
+    }
+    if (!G.saveWorkspaceMaterial(packet.material)) {
+      throw new Error(
+        G.t(
+          "Materiál se nepodařilo uložit do Mých materiálů.",
+          "The resource could not be saved to My resources.",
+        ),
+      );
+    }
+    renderWorkspace();
+    const source = packet.sourceAppId || packet.source?.appId || G.t("aplikace", "application");
+    G.showToast(
+      G.t(
+        `Materiál z aplikace ${source} byl uložen do Mých materiálů.`,
+        `The resource from ${source} was saved to My resources.`,
+      ),
+    );
+  } catch (error) {
+    G.showToast(
+      error?.message ||
+        G.t(
+          "Materiál z aplikace se nepodařilo převzít.",
+          "The resource from the application could not be received.",
+        ),
+    );
+  } finally {
+    params.delete("studioHandoff");
+    const query = params.toString();
+    history.replaceState(
+      null,
+      "",
+      `${location.pathname}${query ? `?${query}` : ""}${location.hash}`,
+    );
+  }
+}
+
 fetch("../library/catalog.json")
   .then((response) => response.json())
   .then((data) => {
@@ -535,3 +594,4 @@ document
 
 renderWorkspace();
 void initialiseServerMaterials();
+void consumeIncomingStudioHandoff();

@@ -1,6 +1,6 @@
 await window.GHRAB.accessReady;
 
-if (window.GHRAB.isAdmin()) {
+if (window.GHRAB.canAccessAdminPage?.("access-registry") && !window.GHRAB.isColleaguePreview?.()) {
   const G = window.GHRAB;
   const body = document.querySelector("#registry-body");
   const empty = document.querySelector("#registry-empty");
@@ -220,7 +220,7 @@ if (window.GHRAB.isAdmin()) {
     grid.className = "registry-detail-grid";
     const values = [
       ["Interní ID", record.subject || "—"],
-      ["Role", record.role === "admin" ? "Správce" : "Proškolený učitel"],
+      ["Role", record.role === "admin" ? "Správce" : record.role === "operator" ? "Zástupce správce" : "Proškolený učitel"],
       ["Vydáno", dateTimeText(record.issuedAt)],
       ["Platnost do", dateTimeText(record.expiresAt)],
       ["Stav", statusLabel(status)],
@@ -241,6 +241,7 @@ if (window.GHRAB.isAdmin()) {
     detailContent.replaceChildren(heading, grid);
     note.value = record.note || "";
     renew.href = `../access-issuer/?subject=${encodeURIComponent(record.subject || record.jti)}`;
+    renew.hidden = !G.isAdmin();
     toggleRevocation.textContent = record.pendingRevocation
       ? "Zrušit přípravu zneplatnění"
       : "Připravit zneplatnění";

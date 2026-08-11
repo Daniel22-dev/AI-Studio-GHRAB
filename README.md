@@ -1,14 +1,17 @@
 # AI Studio GHRAB
 
-**Aktuální verze:** 0.21.4
+**Aktuální verze:** 0.21.6
 **Platforma:** GHRAB Platform 1.1.0 · etapa P5
 
-**Verze 0.21.4 – bezpečnostní hotfix XSS regresní brány; zachovává manuály podle role, server-ready Materiály a zobrazení všech 8 aplikací.**
+**Verze 0.21.6 – provozní zastupitelnost: role Zástupce správce, krizový manuál a časově omezené plné zastoupení.**
 
 AI Studio GHRAB je centrální brána školních digitálních a AI nástrojů. Jednotlivé aplikace zůstávají v samostatných repozitářích; Studio zajišťuje společnou navigaci, Top 4, synchronizaci verzí, bezpečnostní rámec, pilotní měření, správu podepsaných přístupů a kanonický základ technického reportéru. Materiály jsou znovu viditelnou součástí portálu, ale v dnešním bezserverovém režimu se vlastní obsah ukládá pouze místně.
 
-## Hlavní novinky 0.21.4
+## Hlavní novinky 0.21.6
 
+- **Zástupce správce (`operator`)** má provozní Správu, diagnostiku, Pilot, reporty, Evidenci přístupů a Pohled kolegy bez nejcitlivějších administrátorských pravomocí.
+- **Dočasný plný správce** lze vystavit s rychlou expirací 7, 14 nebo 30 dní.
+- Přibyl samostatný krizový manuál pro zastupitelnost a incidenty.
 - XSS regresní audit už nepadá na nových stavech Materiálů: `innerHTML` sinky v knihovně byly nahrazeny DOM API + `textContent`.
 - Celkový bezpečnostní baseline byl zpřísněn z 12 na 8 evidovaných `innerHTML` sinků.
 - Offline/browser oprava 0.21.3 zůstává zachována: katalog zobrazuje všech 8 aplikací.
@@ -22,7 +25,7 @@ AI Studio GHRAB je centrální brána školních digitálních a AI nástrojů. 
 - Klient odmítne serverově publikovat materiál označený `provenance.containsPersonalData=true`; sdílení je určeno pouze pro bezpečně anonymizované výukové materiály.
 - **Bezpečnost → Rychlá kontrola dat** je nyní progresivní pomocník pod volbou „Nejsem si jistý → rychle posoudit“. Není to povinný krok před každým použitím AI.
 - **Tvorba materiálů** zůstává mimo hlavní navigaci: samotný obsah má vznikat v konkrétních aplikacích, zatímco Studio má být katalogem, pracovním prostorem a bezpečným předávacím bodem.
-- Zachovány jsou role učitel/správce, Katalog změn, sjednocený pilotní reporting, P5 release gate, offline režim a GHRAB Platform 1.1.0.
+- Zachovány jsou role učitel/správce a doplněna role zástupce správce, Katalog změn, sjednocený pilotní reporting, P5 release gate, offline režim a GHRAB Platform 1.1.0.
 
 ## Předchozí vydání 0.20.18
 
@@ -73,7 +76,7 @@ Ochranný bootstrap je určen pro Generátor 7.1.8, Diferenciátor 1.3.8, Hodnot
 
 ## Doporučené pořadí nasazení P2
 
-1. AI Studio GHRAB 0.21.4 jako zpětně kompatibilní platformní základ.
+1. AI Studio GHRAB 0.21.6 jako zpětně kompatibilní platformní základ.
 2. Korespondenční asistent 5.9.15.
 3. Diferenciátor 1.3.8.
 4. Generátor testů 7.1.8.

@@ -97,5 +97,16 @@
   "offlinePolicy": {
     "strategy": "online-first-signed-last-known-good",
     "failClosedWhenStale": true
-  }
+  },
+  "operatorRoles": [
+    "operator"
+  ],
+  "operatorPages": [
+    "automation",
+    "pilot",
+    "report",
+    "tests",
+    "access-registry",
+    "deputy-admin"
+  ]
 }

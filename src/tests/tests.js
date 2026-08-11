@@ -1,7 +1,7 @@
 import { safeExportSelfTest } from "../shared/safe-export.js";
 const T = window.GHRAB;
 await T.accessReady;
-if (T.isAdmin()) {
+if (T.canAccessAdminPage?.("tests")) {
   const box = document.querySelector("#test-results");
   const run = document.querySelector("#run-tests");
   const summary = document.querySelector("#diagnostic-summary");

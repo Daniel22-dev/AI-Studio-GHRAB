@@ -1,6 +1,40 @@
 const options = document.querySelector("#risk-options");
 const result = document.querySelector("#risk-result");
 const reset = document.querySelector("#risk-reset");
+const traffic = document.querySelector("#risk-traffic-light");
+const trafficLabel = document.querySelector("#risk-traffic-label");
+const trafficNote = document.querySelector("#risk-traffic-note");
+
+function language() {
+  return window.GHRAB?.state?.language === "en" ? "en" : "cs";
+}
+
+function setTraffic(level) {
+  if (!traffic || !trafficLabel || !trafficNote) return;
+  const copy = {
+    idle: {
+      cs: ["Čeká na volbu", "Zaškrtněte typ dat vlevo."],
+      en: ["Waiting for a choice", "Select a data type on the left."],
+    },
+    green: {
+      cs: ["ZELENÁ · lze použít", "Pouze pokud je obsah skutečně veřejný, smyšlený nebo bezpečně anonymizovaný."],
+      en: ["GREEN · can be used", "Only if the content is genuinely public, fictional or safely anonymised."],
+    },
+    orange: {
+      cs: ["ORANŽOVÁ · nejprve anonymizovat", "Odstraňte identifikátory a vše, co pro úkol není nutné."],
+      en: ["ORANGE · anonymise first", "Remove identifiers and anything not needed for the task."],
+    },
+    red: {
+      cs: ["ČERVENÁ · do externí AI nevkládat", "Použijte jiný pracovní postup nebo konzultaci s odpovědnou osobou."],
+      en: ["RED · do not enter into external AI", "Use another workflow or consult the responsible person."],
+    },
+  };
+  const selected = copy[level] || copy.idle;
+  traffic.dataset.level = level;
+  trafficLabel.textContent = selected[language()][0];
+  trafficNote.textContent = selected[language()][1];
+  traffic.setAttribute("aria-label", `${trafficLabel.textContent}. ${trafficNote.textContent}`);
+}
 
 function update() {
   const values = [...options.querySelectorAll("input:checked")].map(
@@ -9,6 +43,7 @@ function update() {
   if (!values.length) {
     result.hidden = true;
     result.replaceChildren();
+    setTraffic("idle");
     return;
   }
   let level = "green";
@@ -32,12 +67,12 @@ function update() {
   result.dataset.level = level;
   result.hidden = false;
   const strong = document.createElement("strong");
-  strong.textContent =
-    window.GHRAB.state.language === "cs" ? "Doporučení: " : "Recommendation: ";
+  strong.textContent = language() === "cs" ? "Doporučení: " : "Recommendation: ";
   result.replaceChildren(
     strong,
-    document.createTextNode(window.GHRAB.state.language === "cs" ? cs : en),
+    document.createTextNode(language() === "cs" ? cs : en),
   );
+  setTraffic(level);
 }
 
 options.addEventListener("change", update);

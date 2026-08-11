@@ -3,6 +3,15 @@ const TOKEN_PREFIX = "ghrab1";
 const LKG_KEY = "ghrab.access.last-known-good.v1";
 const CONFIG_BASE = new URL("../config/", import.meta.url);
 const DEFAULT_MAX_OFFLINE_AGE_HOURS = 24;
+const OPERATOR_ROLE = "operator";
+const DEFAULT_OPERATOR_PAGES = Object.freeze([
+  "automation",
+  "pilot",
+  "report",
+  "tests",
+  "access-registry",
+  "deputy-admin",
+]);
 const ACCESS_BUNDLE_VERIFY_KEY = Object.freeze({
   kty: "EC",
   crv: "P-256",
@@ -128,6 +137,7 @@ function endpoint(deployment, name, fallback) {
 }
 function emitChange() {
   document.documentElement.classList.toggle("access-admin", isAdmin());
+  document.documentElement.classList.toggle("access-operator", isOperator());
   document.documentElement.classList.toggle("access-ready", accessState.ready);
   document.documentElement.dataset.ghrabAccessConnection = accessState.connectionState;
   document.documentElement.dataset.ghrabAuthMode = accessState.mode;
@@ -160,6 +170,13 @@ function validateClaims(payload, policy, revocations) {
   if (!payload || payload.schema !== "ghrab-access-permit-v1") return "invalid-schema";
   if (payload.iss !== policy.issuer || payload.aud !== policy.audience) return "invalid-audience";
   if (!payload.sub || !payload.jti || !payload.kid || !payload.role) return "missing-claims";
+  const allowedRoles = new Set([
+    "teacher",
+    OPERATOR_ROLE,
+    ...(policy?.administratorRoles || ["admin"]),
+    ...(policy?.operatorRoles || []),
+  ]);
+  if (!allowedRoles.has(payload.role)) return "invalid-role";
   if (!Number.isFinite(payload.iat) || !Number.isFinite(payload.exp)) return "invalid-time-claims";
   const skew = Number(policy.clockSkewSeconds || 300);
   const now = nowSeconds();
@@ -447,6 +464,18 @@ export function isAdmin() {
   if (!accessState.valid) return false;
   return (accessState.policy?.administratorRoles || ["admin"]).includes(accessState.permit?.role);
 }
+export function isOperator() {
+  if (!accessState.valid || isAdmin()) return false;
+  const roles = accessState.policy?.operatorRoles || [OPERATOR_ROLE];
+  return roles.includes(accessState.permit?.role);
+}
+export function canAccessAdminPage(pageId) {
+  if (!accessState.valid) return false;
+  if (isAdmin()) return true;
+  if (!isOperator()) return false;
+  const pages = accessState.policy?.operatorPages || DEFAULT_OPERATOR_PAGES;
+  return Array.isArray(pages) && pages.includes(String(pageId || ""));
+}
 function trainingFailure(appId) {
   if (accessState.mode === "server-session") return null;
   const required = accessState.policy?.applications?.[appId];
@@ -473,7 +502,7 @@ export function formatReason(reason, language = "cs") {
       loading: "Ověřuji přístup…", missing: "Přístup zatím nebyl aktivován.",
       "invalid-format": "Přístupový kód má neplatný formát.", "invalid-payload": "Přístupový kód je poškozený.",
       "invalid-schema": "Přístupový kód používá nepodporovanou verzi.", "invalid-audience": "Přístupový kód nepatří k tomuto Studiu.",
-      "missing-claims": "V přístupovém kódu chybí povinné údaje.", "invalid-time-claims": "Přístupový kód obsahuje neplatné datum.",
+      "missing-claims": "V přístupovém kódu chybí povinné údaje.", "invalid-role": "Přístupový kód obsahuje nepovolenou roli.", "invalid-time-claims": "Přístupový kód obsahuje neplatné datum.",
       "not-yet-valid": "Přístup ještě není platný.", "issued-in-future": "Přístupový kód má neplatné datum vydání.",
       expired: "Platnost přístupu skončila.", "invalid-validity-window": "Přístupový kód má neplatnou dobu platnosti.",
       "validity-too-long": "Doba platnosti přístupu překračuje povolený limit.", "revoked-by-date": "Tento přístup byl centrálně zneplatněn.",
@@ -486,7 +515,7 @@ export function formatReason(reason, language = "cs") {
       "app-not-permitted": "Tato aplikace není v přístupu odemčena.",
       "training-missing": "Přístup neobsahuje potvrzení požadovaného školení pro tuto aplikaci.",
       "training-outdated": "Pro tuto aplikaci je nutné obnovit školení a vydat nové oprávnění.",
-      administrator: "Správcovský přístup je aktivní.", permitted: "Přístup k aplikaci je aktivní.",
+      administrator: "Správcovský přístup je aktivní.", operator: "Přístup zástupce správce je aktivní.", permitted: "Přístup k aplikaci je aktivní.",
       "storage-error": "Prohlížeč nepovolil uložení přístupu.", "invalid-file": "Soubor s přístupem nelze přečíst.",
       "file-too-large": "Soubor s přístupem je příliš velký.", "missing-file": "Nebyl vybrán soubor.",
     },
@@ -494,7 +523,7 @@ export function formatReason(reason, language = "cs") {
       loading: "Verifying access…", missing: "Access has not been activated yet.",
       "invalid-format": "The access code has an invalid format.", "invalid-payload": "The access code is damaged.",
       "invalid-schema": "The access code uses an unsupported version.", "invalid-audience": "The access code does not belong to this Studio.",
-      "missing-claims": "Required access data is missing.", "invalid-time-claims": "The access code contains an invalid date.",
+      "missing-claims": "Required access data is missing.", "invalid-role": "The access code contains an unsupported role.", "invalid-time-claims": "The access code contains an invalid date.",
       "not-yet-valid": "Access is not valid yet.", "issued-in-future": "The access code has an invalid issue date.", expired: "Access has expired.",
       "invalid-validity-window": "The access validity period is invalid.", "validity-too-long": "The access validity exceeds the allowed limit.",
       "revoked-by-date": "This access has been centrally revoked.", revoked: "This access has been revoked by the administrator.",
@@ -507,7 +536,7 @@ export function formatReason(reason, language = "cs") {
       "app-not-permitted": "This application is not unlocked in your access.",
       "training-missing": "The permit does not contain the required training confirmation for this application.",
       "training-outdated": "Training must be renewed and a new permit issued for this application.",
-      administrator: "Administrator access is active.", permitted: "Application access is active.",
+      administrator: "Administrator access is active.", operator: "Deputy administrator access is active.", permitted: "Application access is active.",
       "storage-error": "The browser did not allow access to be saved.", "invalid-file": "The access file could not be read.",
       "file-too-large": "The access file is too large.", "missing-file": "No file was selected.",
     },

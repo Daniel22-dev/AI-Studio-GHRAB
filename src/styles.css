@@ -795,20 +795,40 @@ textarea {
   margin: 0;
 }
 .site-footer {
-  border-top: 1px solid var(--line);
-  background: linear-gradient(180deg, rgba(8, 29, 50, 0.94), rgba(4, 20, 36, 0.96));
-  padding: 26px 0;
+  position: relative;
+  border-top: 1px solid rgba(80, 232, 255, 0.16);
+  background:
+    linear-gradient(180deg, rgba(13, 49, 78, 0.22), rgba(3, 12, 23, 0.08)),
+    radial-gradient(circle at 50% 0%, rgba(80, 232, 255, 0.06), transparent 58%);
+  padding: 24px 0 28px;
+  box-shadow: inset 0 1px rgba(255, 255, 255, 0.015);
+}
+.site-footer::before {
+  content: "";
+  position: absolute;
+  top: -1px;
+  left: 50%;
+  width: min(520px, 54vw);
+  height: 1px;
+  translate: -50% 0;
+  background: linear-gradient(90deg, transparent, rgba(80, 232, 255, 0.48), transparent);
+  pointer-events: none;
 }
 .footer-inner {
   display: flex;
-  justify-content: space-between;
+  justify-content: flex-start;
   gap: 20px;
   align-items: center;
 }
+.footer-inner strong {
+  color: #dff8ff;
+  font-size: 0.86rem;
+  letter-spacing: 0.025em;
+}
 .footer-inner p {
-  margin: 3px 0 0;
-  color: var(--muted);
-  font-size: 0.78rem;
+  margin: 4px 0 0;
+  color: rgba(183, 209, 224, 0.72);
+  font-size: 0.74rem;
 }
 /* Secondary pages */
 .page-hero {
@@ -2452,6 +2472,23 @@ html[data-speaker-notes="true"] .speaker-note {
 .changelog-list {
   display: grid;
   gap: 16px;
+  min-height: 440px;
+}
+.changelog-loading {
+  min-height: 210px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 12px;
+  color: var(--muted);
+}
+.changelog-loading-dot {
+  width: 10px;
+  height: 10px;
+  border-radius: 50%;
+  background: var(--cyan);
+  box-shadow: 0 0 18px rgba(80, 232, 255, 0.72);
+  animation: pulse 1.25s ease-in-out infinite;
 }
 .change-card {
   padding: 22px;
@@ -2518,6 +2555,9 @@ html[data-speaker-notes="true"] .speaker-note {
   .test-grid {
     grid-template-columns: 1fr;
   }
+  .portal-drag-handle {
+    display: none;
+  }
   .footer-links {
     align-items: flex-start;
   }
@@ -2533,6 +2573,36 @@ html[data-speaker-notes="true"] .speaker-note {
   display: flex;
   align-items: center;
   gap: 8px;
+}
+.portal-drag-handle {
+  width: 32px;
+  height: 32px;
+  font-size: 1rem;
+  line-height: 1;
+  color: var(--cyan);
+  opacity: 0.7;
+  cursor: grab;
+  touch-action: none;
+}
+.portal-drag-handle:hover,
+.portal-drag-handle:focus-visible {
+  opacity: 1;
+  border-color: rgba(80, 232, 255, 0.48);
+  box-shadow: 0 0 22px rgba(80, 232, 255, 0.14);
+}
+.portal-drag-handle:active {
+  cursor: grabbing;
+}
+.portal-app-card.is-drag-source {
+  opacity: 0.48;
+  transform: scale(0.985);
+}
+.portal-app-card.is-drop-target {
+  outline: 2px solid rgba(80, 232, 255, 0.72);
+  outline-offset: 5px;
+  box-shadow:
+    0 28px 65px rgba(0, 0, 0, 0.48),
+    0 0 42px rgba(80, 232, 255, 0.24);
 }
 .pin-button {
   width: 32px;

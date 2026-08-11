@@ -1,0 +1,20 @@
+{
+  "schema": "ai-studio-presentation-v1",
+  "loopPlaylist": true,
+  "sceneSeconds": 5,
+  "videos": [
+    {
+      "src": "assets/presentation/ai-studio-ghrab-showcase-2026.mp4",
+      "poster": "assets/presentation/ai-studio-ghrab-showcase-2026-poster.jpg",
+      "title": {
+        "cs": "AI Studio GHRAB · Showcase 2026",
+        "en": "AI Studio GHRAB · Showcase 2026"
+      },
+      "subtitle": {
+        "cs": "Dvouminutový PR film pro dny otevřených dveří, návštěvy a prezentaci školy.",
+        "en": "A two-minute PR film for open days, visitors and school presentations."
+      },
+      "muted": false
+    }
+  ]
+}

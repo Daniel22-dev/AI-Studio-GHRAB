@@ -14,6 +14,8 @@ import {
   getAccessSnapshot,
   getPermitToken,
   isAdmin,
+  isOperator,
+  canAccessAdminPage,
   hasAppAccess,
   requiredTraining,
   formatReason,
@@ -44,6 +46,8 @@ const TEST_LAUNCHES_KEY = "ghrab.pilot.test.launches";
 const TEST_EVENTS_KEY = "ghrab.pilot.test.events.v2";
 const TELEMETRY_MODE_KEY = "ghrab.pilot.telemetry.mode";
 const FAVORITE_APPS_KEY = "ghrab.favoriteApps.v1";
+const COLLEAGUE_PREVIEW_KEY = "ghrab.ai-studio.role-preview.v1";
+let draggedCoreAppId = null;
 const ISSUED_ACCESS_KEY = "ghrab.access.issued-registry.v1";
 const ISSUED_ACCESS_SCHEMA = "ghrab-issued-access-registry-v1";
 const HANDOFF_TTL_MS = 30 * 60 * 1000;
@@ -668,16 +672,110 @@ function setupNavigation() {
     ?.setAttribute("aria-current", "page");
 }
 
+function previewStorageGet() {
+  try {
+    return sessionStorage.getItem(COLLEAGUE_PREVIEW_KEY);
+  } catch {
+    return null;
+  }
+}
+function previewStorageSet(value) {
+  try {
+    sessionStorage.setItem(COLLEAGUE_PREVIEW_KEY, value);
+  } catch {
+    /* Role preview remains optional when sessionStorage is unavailable. */
+  }
+}
+function previewStorageClear() {
+  try {
+    sessionStorage.removeItem(COLLEAGUE_PREVIEW_KEY);
+  } catch {
+    /* no-op */
+  }
+}
+function canPreviewColleague() {
+  return Boolean(isAdmin() || isOperator());
+}
+function isColleaguePreview() {
+  return Boolean(canPreviewColleague() && previewStorageGet() === "teacher");
+}
+function syncColleaguePreviewRequest() {
+  const params = new URLSearchParams(location.search);
+  const requested = params.get("view");
+  if (!canPreviewColleague()) {
+    previewStorageClear();
+    return false;
+  }
+  if (requested === "teacher") previewStorageSet("teacher");
+  if (requested === "admin") previewStorageClear();
+  if (requested === "teacher" || requested === "admin") {
+    params.delete("view");
+    const query = params.toString();
+    history.replaceState(
+      null,
+      "",
+      `${location.pathname}${query ? `?${query}` : ""}${location.hash}`,
+    );
+  }
+  return isColleaguePreview();
+}
+function exitColleaguePreview() {
+  previewStorageClear();
+  location.assign(new URL(base, location.href).href);
+}
+function mountColleaguePreviewBanner() {
+  document.querySelector(".colleague-preview-banner")?.remove();
+  if (!isColleaguePreview()) return;
+  const banner = el("aside", "colleague-preview-banner");
+  banner.setAttribute("role", "status");
+  const copy = el("div", "colleague-preview-copy");
+  copy.append(
+    el("strong", "", t("Pohled kolegy", "Colleague view")),
+    el(
+      "span",
+      "",
+      t(
+        "Studio právě zobrazujete jako modelový proškolený učitel se všemi aktuálně dostupnými aplikacemi. Vaše skutečné správcovské oprávnění se nemění.",
+        "You are viewing the Studio as a model trained teacher with all currently available applications. Your real administrator permit is unchanged.",
+      ),
+    ),
+  );
+  const exit = el(
+    "button",
+    "button compact secondary colleague-preview-exit",
+    t("Ukončit náhled", "Exit preview"),
+  );
+  exit.type = "button";
+  exit.addEventListener("click", exitColleaguePreview);
+  banner.append(copy, exit);
+  document.querySelector(".site-header")?.after(banner);
+}
 function updateAdminVisibility() {
   const snapshot = getAccessSnapshot();
-  const admin = isAdmin();
-  const teacher = Boolean(snapshot.valid && snapshot.permit?.role !== "admin");
+  const preview = isColleaguePreview();
+  const admin = isAdmin() && !preview;
+  const operator = isOperator() && !preview;
+  const operations = admin || operator;
+  const teacher = Boolean(
+    (snapshot.valid && snapshot.permit?.role === "teacher") || preview,
+  );
   root.classList.toggle("access-admin", admin);
+  root.classList.toggle("access-operator", operator);
+  root.classList.toggle("access-operations", operations);
+  root.classList.toggle("colleague-preview-active", preview);
   document
-    .querySelectorAll("[data-admin-nav],[data-admin-link],[data-admin-only]")
+    .querySelectorAll("[data-admin-nav],[data-admin-link],[data-admin-only],[data-full-admin-only]")
     .forEach((node) => {
       node.hidden = !admin;
     });
+  document
+    .querySelectorAll("[data-ops-nav],[data-ops-link],[data-ops-only]")
+    .forEach((node) => {
+      node.hidden = !operations;
+    });
+  document.querySelectorAll("[data-operator-only]").forEach((node) => {
+    node.hidden = !operator;
+  });
   document.querySelectorAll("[data-teacher-only]").forEach((node) => {
     node.hidden = !teacher;
   });
@@ -850,6 +948,20 @@ function readHandoff() {
   }
   return payload;
 }
+function takeHandoff(target) {
+  const bridge = globalThis.GHRAB_PLATFORM?.bridge;
+  if (typeof bridge?.take === "function") {
+    return bridge.take({ target, maxBytes: 500000 });
+  }
+  const payload = parseLocal(LEGACY_HANDOFF_KEY, null);
+  if (!payload || payload.schema !== "ghrab-handoff-v1") return null;
+  if (payload.target !== target || Date.parse(payload.expiresAt || "") < Date.now()) {
+    if (Date.parse(payload.expiresAt || "") < Date.now()) safeRemoveItem(LEGACY_HANDOFF_KEY);
+    return null;
+  }
+  safeRemoveItem(LEGACY_HANDOFF_KEY);
+  return payload;
+}
 function clearHandoff() {
   const current = safeRemoveItem(HANDOFF_KEY);
   const legacy = safeRemoveItem(LEGACY_HANDOFF_KEY);
@@ -997,7 +1109,7 @@ function setupMonthlyReportReminder(options = {}) {
   if (
     !snapshot.valid ||
     (!force &&
-      (snapshot.permit?.role === "admin" || !isMonthlyReminderWindow()))
+      (snapshot.permit?.role !== "teacher" || !isMonthlyReminderWindow()))
   )
     return;
   const keys = reportReminderKeys();
@@ -1142,12 +1254,17 @@ function el(tag, className, text) {
 
 function accessExplanation(access, appId) {
   if (access.enabled)
-    return access.reason === "administrator"
-      ? t("Správcovský přístup je aktivní.", "Administrator access is active.")
-      : t(
-          "Aplikace je odemčena vaším platným oprávněním.",
-          "The application is unlocked by your valid permit.",
-        );
+    return isColleaguePreview()
+      ? t(
+          "Modelový proškolený kolega má tuto aplikaci odemčenou.",
+          "The model trained colleague has this application unlocked.",
+        )
+      : access.reason === "administrator"
+        ? t("Správcovský přístup je aktivní.", "Administrator access is active.")
+        : t(
+            "Aplikace je odemčena vaším platným oprávněním.",
+            "The application is unlocked by your valid permit.",
+          );
   const training = requiredTraining(appId);
   if (access.reason === "app-not-permitted" && training) {
     return t(
@@ -1199,6 +1316,35 @@ function toggleFavoriteApp(appId) {
   const current = getFavoriteApps().filter((id) => id !== appId);
   if (!getFavoriteApps().includes(appId)) current.unshift(appId);
   setFavoriteApps(current.slice(0, 4));
+}
+function currentCoreAppIds() {
+  if (!homeContext?.apps?.length) return [];
+  return selectCoreApps(homeContext.apps).core.map((app) => app.id);
+}
+function swapCoreAppPositions(sourceId, targetId) {
+  if (!sourceId || !targetId || sourceId === targetId) return false;
+  const ids = currentCoreAppIds();
+  const sourceIndex = ids.indexOf(sourceId);
+  const targetIndex = ids.indexOf(targetId);
+  if (sourceIndex < 0 || targetIndex < 0) return false;
+  [ids[sourceIndex], ids[targetIndex]] = [ids[targetIndex], ids[sourceIndex]];
+  setFavoriteApps(ids);
+  showToast(
+    t(
+      "Pozice Top 4 byla uložena pro tento prohlížeč.",
+      "The Top 4 position was saved for this browser.",
+    ),
+  );
+  return true;
+}
+function keyboardSwapTarget(position, key) {
+  const map = {
+    ArrowLeft: { 1: 0, 3: 2 },
+    ArrowRight: { 0: 1, 2: 3 },
+    ArrowUp: { 2: 0, 3: 1 },
+    ArrowDown: { 0: 2, 1: 3 },
+  };
+  return map[key]?.[position] ?? null;
 }
 function selectCoreApps(apps) {
   if (apps.length <= 4) return { core: apps, extra: [] };
@@ -1523,6 +1669,79 @@ function portalAppCard(app, index, permissions) {
   identityText.append(el("span", "status", localised(app.status)));
   identity.append(icon, identityText);
   const headActions = el("div", "portal-card-actions");
+  if (index >= 0 && index < 4) {
+    const dragHandle = el("button", "icon-button portal-drag-handle", "⠿");
+    dragHandle.type = "button";
+    dragHandle.draggable = true;
+    dragHandle.setAttribute(
+      "aria-label",
+      t(
+        `Přesunout ${localised(app.name)} na jiné místo kolem brány`,
+        `Move ${localised(app.name)} to another position around the gateway`,
+      ),
+    );
+    dragHandle.title = t(
+      "Přetáhněte myší. Klávesnicí použijte šipky.",
+      "Drag with the mouse. Use arrow keys with the keyboard.",
+    );
+    dragHandle.addEventListener("click", (event) => {
+      event.preventDefault();
+      event.stopPropagation();
+      showToast(
+        t(
+          "Kartu přetáhněte na jinou pozici Top 4; klávesnicí použijte šipky.",
+          "Drag the card onto another Top 4 position; use arrow keys with the keyboard.",
+        ),
+      );
+    });
+    dragHandle.addEventListener("dragstart", (event) => {
+      event.stopPropagation();
+      draggedCoreAppId = app.id;
+      article.classList.add("is-drag-source");
+      event.dataTransfer?.setData("text/plain", app.id);
+      if (event.dataTransfer) event.dataTransfer.effectAllowed = "move";
+    });
+    dragHandle.addEventListener("dragend", () => {
+      draggedCoreAppId = null;
+      document
+        .querySelectorAll(".portal-app-card.is-drag-source,.portal-app-card.is-drop-target")
+        .forEach((card) => card.classList.remove("is-drag-source", "is-drop-target"));
+    });
+    dragHandle.addEventListener("keydown", (event) => {
+      const targetPosition = keyboardSwapTarget(index, event.key);
+      if (targetPosition == null) return;
+      const targetId = currentCoreAppIds()[targetPosition];
+      if (!targetId) return;
+      event.preventDefault();
+      event.stopPropagation();
+      swapCoreAppPositions(app.id, targetId);
+      requestAnimationFrame(() => {
+        document
+          .querySelector(`.portal-app-card[data-app-id="${CSS.escape(app.id)}"] .portal-drag-handle`)
+          ?.focus();
+      });
+    });
+    article.addEventListener("dragover", (event) => {
+      const sourceId = draggedCoreAppId || event.dataTransfer?.getData("text/plain");
+      if (!sourceId || sourceId === app.id) return;
+      event.preventDefault();
+      if (event.dataTransfer) event.dataTransfer.dropEffect = "move";
+      article.classList.add("is-drop-target");
+    });
+    article.addEventListener("dragleave", (event) => {
+      if (!article.contains(event.relatedTarget)) article.classList.remove("is-drop-target");
+    });
+    article.addEventListener("drop", (event) => {
+      const sourceId = event.dataTransfer?.getData("text/plain") || draggedCoreAppId;
+      if (!sourceId) return;
+      event.preventDefault();
+      event.stopPropagation();
+      article.classList.remove("is-drop-target");
+      draggedCoreAppId = null;
+      swapCoreAppPositions(sourceId, app.id);
+    });
+    headActions.append(dragHandle);
+  }
   const pin = el(
     "button",
     `icon-button pin-button ${favorites.includes(app.id) ? "is-pinned" : ""}`,
@@ -1646,7 +1865,7 @@ function renderHomeAccessSummary() {
   const icon = el(
     "span",
     "access-summary-icon",
-    valid ? (isAdmin() ? "◆" : "✓") : "🔒",
+    valid ? (isAdmin() && !isColleaguePreview() ? "◆" : "✓") : "🔒",
   );
   const body = el("div");
   body.append(
@@ -1654,9 +1873,11 @@ function renderHomeAccessSummary() {
       "strong",
       "",
       valid
-        ? isAdmin()
-          ? t("Správcovský přístup aktivní", "Administrator access active")
-          : t("Přístup aktivní", "Access active")
+        ? isColleaguePreview()
+          ? t("Pohled proškoleného kolegy", "Trained colleague view")
+          : isAdmin()
+            ? t("Správcovský přístup aktivní", "Administrator access active")
+            : t("Přístup aktivní", "Access active")
         : t(
             "Aplikace jsou zatím uzamčené",
             "Applications are currently locked",
@@ -1668,7 +1889,12 @@ function renderHomeAccessSummary() {
       "small",
       "",
       valid
-        ? `${snapshot.permit.displayName || snapshot.permit.sub} · ${t("platnost do", "valid until")} ${new Date(snapshot.permit.exp * 1000).toLocaleDateString(state.language === "cs" ? "cs-CZ" : "en-GB")}`
+        ? isColleaguePreview()
+          ? t(
+              "Modelový proškolený učitel · všechny aktuálně dostupné aplikace",
+              "Model trained teacher · all currently available applications",
+            )
+          : `${snapshot.permit.displayName || snapshot.permit.sub} · ${t("platnost do", "valid until")} ${new Date(snapshot.permit.exp * 1000).toLocaleDateString(state.language === "cs" ? "cs-CZ" : "en-GB")}`
         : t(
             "Po školení načtěte přístupový soubor od správce.",
             "After training, load the access file from the administrator.",
@@ -2072,10 +2298,11 @@ function renderPageAccessGate() {
   // Changelog was made public in 0.21.0. Keep that route public even when an
   // older still-valid signed access bundle is cached on the device.
   if (page === "changelog") return;
-  const administratorPages = new Set(
-    getAccessSnapshot().policy?.administratorPages || [],
-  );
-  if (!administratorPages.has(page) || isAdmin()) return;
+  const administratorPages = new Set([
+    ...(getAccessSnapshot().policy?.administratorPages || []),
+    "deputy-admin",
+  ]);
+  if (!administratorPages.has(page) || (canAccessAdminPage(page) && !isColleaguePreview())) return;
   const main = document.querySelector("main");
   if (!main) return;
   main.replaceChildren();
@@ -2086,16 +2313,24 @@ function renderPageAccessGate() {
       "h1",
       "",
       t(
-        "Tato stránka je dostupná pouze správci AI Studia.",
-        "This page is available to the AI Studio administrator only.",
+        isColleaguePreview()
+          ? "V pohledu kolegy tato stránka není dostupná."
+          : "Tato stránka je dostupná pouze správci AI Studia.",
+        isColleaguePreview()
+          ? "This page is not available in colleague view."
+          : "This page is available to the AI Studio administrator only.",
       ),
     ),
     el(
       "p",
       "",
       t(
-        "Na stránce Můj přístup načtěte platné správcovské oprávnění.",
-        "Load a valid administrator permit on the My access page.",
+        isColleaguePreview()
+          ? "Je to záměrná simulace toho, co proškolený kolega neuvidí. Náhled ukončete horním pruhem."
+          : "Na stránce Můj přístup načtěte platné správcovské oprávnění.",
+        isColleaguePreview()
+          ? "This intentionally simulates what a trained colleague cannot see. Exit the preview using the top banner."
+          : "Load a valid administrator permit on the My access page.",
       ),
     ),
   );
@@ -2110,7 +2345,9 @@ function renderPageAccessGate() {
 }
 
 const accessReady = initialiseAccess().then(async (snapshot) => {
+  syncColleaguePreviewRequest();
   updateAdminVisibility();
+  mountColleaguePreviewBanner();
   renderPageAccessGate();
   if (snapshot.valid) {
     await initialisePlatformRuntime({
@@ -2146,6 +2383,7 @@ window.GHRAB = {
   deleteWorkspaceMaterial,
   createHandoff,
   readHandoff,
+  takeHandoff,
   clearHandoff,
   getPilotEvents,
   getTestPilotEvents,
@@ -2181,6 +2419,10 @@ window.GHRAB = {
   getAccessSnapshot,
   getPermitToken,
   isAdmin,
+  isOperator,
+  canAccessAdminPage,
+  isColleaguePreview,
+  exitColleaguePreview,
   hasAppAccess,
   requiredTraining,
   formatReason,
@@ -2230,9 +2472,12 @@ void Promise.all([deploymentReady, import("./access/app-guard.js")])
 document.addEventListener("ghrab:language", () => {
   renderHomeCards();
   renderHomeAccessSummary();
+  mountColleaguePreviewBanner();
 });
 document.addEventListener("ghrab:access-changed", () => {
+  syncColleaguePreviewRequest();
   updateAdminVisibility();
+  mountColleaguePreviewBanner();
   renderPageAccessGate();
   renderHomeCards();
   updateTelemetryModeBanner();

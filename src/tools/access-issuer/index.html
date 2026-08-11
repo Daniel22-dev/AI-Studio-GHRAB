@@ -1,5 +1,5 @@
 <!doctype html>
-<html lang="cs" data-theme="dark" data-ghrab-app-id="ai-studio" data-ghrab-app-version="0.21.4">
+<html lang="cs" data-theme="dark" data-ghrab-app-id="ai-studio" data-ghrab-app-version="0.21.6">
   <head>
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width,initial-scale=1" />
@@ -48,7 +48,8 @@
         ><a href="../../safety/" data-nav="safety" data-cs="Bezpe&#269;nost" data-en="Safety">Bezpe&#269;nost</a
         ><a href="../../access/" data-nav="access" data-cs="M&#367;j p&#345;&#237;stup" data-en="My access">M&#367;j p&#345;&#237;stup</a
         ><a href="../../changelog/" data-nav="changelog" data-cs="Katalog zm&#283;n" data-en="Change catalogue">Katalog zm&#283;n</a
-        ><a href="../../automation/" data-admin-nav hidden data-nav="automation" data-cs="Spr&#225;va" data-en="Administration">Spr&#225;va</a
+        ><a href="../../?view=teacher" data-ops-nav hidden data-colleague-preview-link data-nav="colleague-preview" data-cs="Pohled kolegy" data-en="Colleague view">Pohled kolegy</a
+        ><a href="../../automation/" data-ops-nav hidden data-nav="automation" data-cs="Spr&#225;va" data-en="Administration">Spr&#225;va</a
         ><a href="../../demo/" data-admin-nav hidden data-nav="demo" data-cs="Prezentace" data-en="Presentation">Prezentace</a>
       </nav>
       <div class="header-actions">
@@ -118,11 +119,24 @@
               ><span>Role</span
               ><select id="permit-role">
                 <option value="teacher">Proškolený učitel</option>
-                <option value="admin">Správce</option>
+                <option value="operator">Zástupce správce</option>
+                <option value="admin">Správce · plná práva</option>
               </select></label
             ><label class="field"
               ><span>Platnost do</span><input id="permit-expiry" type="date"
             /></label>
+          </div>
+          <div id="temporary-admin-tools" class="temporary-admin-tools" hidden>
+            <strong>Dočasné plné zastoupení</strong>
+            <p>Plný správce má všechny citlivé pravomoci. Pro nemoc nebo jinou mimořádnou situaci použijte co nejkratší dobu; přístup po datu expirace automaticky přestane platit.</p>
+            <div class="app-actions">
+              <button class="button ghost" type="button" data-admin-days="7">7 dní</button>
+              <button class="button ghost" type="button" data-admin-days="14">14 dní</button>
+              <button class="button ghost" type="button" data-admin-days="30">30 dní</button>
+            </div>
+          </div>
+          <div id="operator-role-note" class="safe-export-note" hidden>
+            <strong>Zástupce správce:</strong> diagnostika, provozní stav, pilotní reporty, evidence přístupů a Pohled kolegy. Bez vydávání správců, podpisových klíčů a změn bezpečnostní politiky.
           </div>
           <fieldset class="issuer-apps">
             <legend>Odemčené aplikace</legend>

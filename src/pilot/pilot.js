@@ -1,7 +1,7 @@
 import { safeStatistics } from "../shared/safe-export.js";
 
 await window.GHRAB.accessReady;
-if (window.GHRAB.isAdmin()) {
+if (window.GHRAB.canAccessAdminPage?.("pilot") && !window.GHRAB.isColleaguePreview?.()) {
   const G = window.GHRAB;
   const $ = (s) => document.querySelector(s);
   let apps = [];

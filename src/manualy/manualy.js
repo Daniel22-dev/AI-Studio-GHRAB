@@ -150,10 +150,10 @@ function renderSummary() {
   const symbol = make(
     "span",
     "manual-access-symbol",
-    snapshot.valid ? (G.isAdmin() ? "◆" : "✓") : "🔒",
+    snapshot.valid ? (G.isAdmin() && !G.isColleaguePreview?.() ? "◆" : "✓") : "🔒",
   );
   const copy = make("div", "manual-access-copy");
-  if (G.isAdmin()) {
+  if (G.isAdmin() && !G.isColleaguePreview?.()) {
     copy.append(
       make(
         "strong",

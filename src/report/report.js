@@ -6,7 +6,7 @@ import {
 } from "../shared/safe-export.js";
 
 await window.GHRAB.accessReady;
-if (window.GHRAB.isAdmin()) {
+if (window.GHRAB.canAccessAdminPage?.("report") && !window.GHRAB.isColleaguePreview?.()) {
   const G = window.GHRAB;
   const $ = (selector) => document.querySelector(selector);
   const SETTINGS_KEY = "ghrab.report.settings.v2";

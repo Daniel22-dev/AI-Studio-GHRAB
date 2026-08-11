@@ -1,0 +1,101 @@
+<!DOCTYPE html>
+<html lang="cs" data-theme="dark" data-ghrab-app-id="ai-studio" data-ghrab-app-version="0.21.6">
+<head>
+ <meta charset="utf-8"/>
+ <meta name="viewport" content="width=device-width,initial-scale=1"/>
+ <meta name="theme-color" content="#030915"/>
+ <meta http-equiv="Content-Security-Policy" content="default-src 'self'; script-src 'self'; style-src 'self'; img-src 'self' data:; connect-src 'self'; object-src 'none'; base-uri 'self'; form-action 'self'"/>
+ <title>Zástupce správce · AI Studio GHRAB</title>
+ <link rel="manifest" href="../manifest.webmanifest"/>
+ <link rel="icon" href="../assets/brand/icon-32.png"/>
+ <link rel="stylesheet" href="../styles.css"/>
+ <link rel="stylesheet" href="../polish.css"/>
+ <link rel="stylesheet" href="./manualy.css"/>
+</head>
+<body data-page="deputy-admin" data-title-cs="Zástupce správce · AI Studio GHRAB" data-title-en="Deputy administrator · AI Studio GHRAB">
+ <a class="skip-link" href="#main">Přejít na obsah</a>
+ <header class="site-header cosmic-header">
+  <a class="brand" href="../" aria-label="AI Studio GHRAB — domů"><span class="brand-orbit"><img src="../assets/brand/brand-mark.svg" alt="" width="46" height="46"/></span>
+   <span><strong>AI Studio <em>GHRAB</em></strong><small>Provozní zastupitelnost</small></span>
+  </a>
+  <button class="nav-toggle" type="button" aria-expanded="false" aria-controls="main-nav">☰</button>
+  <nav id="main-nav" class="main-nav" aria-label="Hlavní navigace">
+   <a href="../" data-nav="home">Aplikace</a>
+   <a href="../library/" data-nav="library">Materiály</a>
+   <a href="./" data-nav="manualy">Manuály</a>
+   <a href="../safety/" data-nav="safety">Bezpečnost</a>
+   <a href="../access/" data-nav="access">Můj přístup</a>
+   <a href="../changelog/" data-nav="changelog">Katalog změn</a>
+   <a href="../?view=teacher" data-ops-nav hidden data-colleague-preview-link data-nav="colleague-preview">Pohled kolegy</a>
+   <a href="../automation/" data-ops-nav hidden data-nav="automation">Správa</a>
+   <a href="../demo/" data-admin-nav hidden data-nav="demo">Prezentace</a>
+  </nav>
+  <div class="header-actions"><div class="segmented" aria-label="Jazyk"><button type="button" data-lang="cs" aria-pressed="true">CZ</button><button type="button" data-lang="en" aria-pressed="false">EN</button></div></div>
+ </header>
+ <main id="main">
+  <section class="page-hero shell"><p class="breadcrumb"><a href="./">Manuály</a> / Zástupce správce</p>
+   <p class="eyebrow">ZASTUPITELNOST · INCIDENTY · HRANICE PRAVOMOCÍ</p>
+   <h1>Zástupce správce: jak udržet ekosystém v chodu.</h1>
+   <p>Tento manuál je určen pro dlouhodobější nepřítomnost hlavního správce. Cílem není převzít vývoj ani bezpečnostní správu, ale bezpečně rozpoznat problém, provést běžný provozní zásah a včas eskalovat citlivé situace.</p></section>
+  <section class="section shell manual-article">
+   <article class="panel"><p class="eyebrow">ROLE</p>
+   <h2>Co může zástupce správce</h2>
+    <ul><li>otevřít Správu, diagnostiku a stav všech osmi aplikací,</li>
+     <li>kontrolovat registr, manifesty, synchronizaci a poslední živé ověření,</li>
+     <li>pracovat s Pilotním dashboardem a souhrnnými anonymními reporty,</li>
+     <li>otevřít Evidenci přístupů, dohledat JTI a připravit zneplatnění,</li>
+     <li>použít Pohled kolegy a ověřit, co vidí běžný proškolený učitel,</li>
+     <li>na GitHubu zkontrolovat Actions, znovu spustit bezpečný workflow nebo nasadit předem připravenou opravu, pokud má přidělený omezený GitHub přístup.</li></ul>
+   </article>
+   <article class="panel danger-panel"><p class="eyebrow">BEZPEČNOSTNÍ HRANICE</p>
+   <h2>Co zástupce správce nedělá</h2>
+    <ul><li>nevydává správcovská oprávnění a nepovyšuje sebe ani jiné uživatele,</li>
+     <li>nemění podpisové klíče, veřejné důvěryhodné klíče ani bezpečnostní politiku,</li>
+     <li>nevkládá soukromé klíče do GitHubu, e-mailu nebo sdíleného disku,</li>
+     <li>nemění serverová tajemství, API klíče ani autentizační infrastrukturu,</li>
+     <li>neprovádí nevratné zásahy bez zálohy a bez jasného důvodu.</li></ul>
+   </article>
+   <article class="panel"><p class="eyebrow">RYCHLÁ TRIÁŽ</p>
+   <h2>Když kolega hlásí, že něco nefunguje</h2>
+    <ol><li>Otevřete <strong>Pohled kolegy</strong> a ověřte problém ve stejném typu rozhraní.</li>
+     <li>Ve <strong>Správě</strong> zkontrolujte stav registru, živých manifestů a konkrétní aplikace.</li>
+     <li>Spusťte <strong>Diagnostiku</strong>. Pokud test ukáže konkrétní chybu, zaznamenejte její text a čas.</li>
+     <li>Pokud je chyba v deployi, otevřete GitHub Actions příslušného repozitáře. Opakujte pouze známý bezpečný workflow; při nové chybě nejprve zachovejte log.</li>
+     <li>Pokud je problém jen v oprávnění uživatele, otevřete Evidenci přístupů a ověřte platnost, JTI, roli a odemčené aplikace.</li></ol>
+   </article>
+   <article class="panel"><p class="eyebrow">SCÉNÁŘ A</p>
+   <h2>Studio hlásí fallback nebo neověřené manifesty</h2><p>Fallback znamená, že Studio má použitelný záložní snapshot, ale poslední synchronizace nepotvrdila živý zdroj. Nezaměňujte to automaticky za výpadek aplikací.</p><ol><li>Zkontrolujte počet živě ověřených manifestů a datum posledního kompletního ověření.</li>
+     <li>Spusťte diagnostiku.</li>
+     <li>V GitHub Actions zkontrolujte poslední sync/build. Je-li to známá dočasná síťová chyba, lze workflow bezpečně opakovat.</li>
+     <li>Pokud se chyba opakuje nebo manifest změnil strukturu, dále nezasahujte do bezpečnostní konfigurace a eskalujte.</li></ol>
+   </article>
+   <article class="panel"><p class="eyebrow">SCÉNÁŘ B</p>
+   <h2>Přístup učitele nefunguje</h2>
+    <ol><li>Na Můj přístup zjistěte přesný důvod: expirace, chybějící aplikace, staré školení, revokace.</li>
+     <li>V Evidenci přístupů dohledáte uživatele a JTI.</li>
+     <li>Podezřelý nebo ztracený přístup lze označit k revokaci a exportovat aktualizovaný revokační soubor pro nasazení.</li>
+     <li>Nový podepsaný přístup vydává plný správce. Zástupce bez plného správcovského oprávnění nepoužívá hlavní podpisový klíč.</li></ol>
+   </article>
+   <article class="panel"><p class="eyebrow">SCÉNÁŘ C</p>
+   <h2>GitHub Actions selhaly</h2>
+    <ol><li>Nejdříve zjistěte, který job a který krok selhal.</li>
+     <li>Nepřepisujte kód naslepo jen proto, aby kontrola zezelenala.</li>
+     <li>Je-li chyba síťová nebo jednorázová, opakujte pouze selhaný job/workflow.</li>
+     <li>Je-li chyba po novém commitu, porovnejte jej s posledním známým funkčním releasem. Rollback je bezpečnější než improvizovaná změna, pokud není příčina jednoznačná.</li>
+     <li>Log a SHA commitu uchovejte pro hlavního správce.</li></ol>
+   </article>
+   <article class="panel"><p class="eyebrow">DOČASNÝ PLNÝ SPRÁVCE</p>
+   <h2>Když omezená role nestačí</h2><p>Hlavní správce může vystavit samostatné plné oprávnění s krátkou expirací, typicky 7, 14 nebo 30 dní. Jde o mimořádný režim. Po expiraci se práva automaticky ztratí a běžné oprávnění zástupce zůstává oddělené.</p><p><strong>Plné povýšení použijte jen tehdy, když je nezbytný zásah, který role Zástupce správce záměrně blokuje.</strong></p>
+   </article>
+   <article class="panel"><p class="eyebrow">GITHUB</p>
+   <h2>Doporučený externí přístup</h2><p>Zástupce má mít vlastní GitHub účet a pouze taková práva, která skutečně potřebuje pro kontrolu Actions, bezpečný rerun, commit schválené opravy a případný rollback. Nemá sdílet účet hlavního správce ani dostat vlastnictví organizace/repozitářů jen kvůli zastupitelnosti.</p>
+   </article>
+   <article class="panel"><p class="eyebrow">ESKALACE</p>
+   <h2>Kdy přestat zasahovat</h2><p>Okamžitě eskalujte při podezření na kompromitaci podpisového klíče, úniku osobních údajů, problému se serverovými tajemstvími, nejasné revokaci správce, změně autentizace nebo situaci, kdy by oprava vyžadovala vypnout bezpečnostní kontrolu.</p>
+   </article>
+  </section>
+ </main>
+ <footer class="site-footer"><div class="shell-wide footer-inner"><div><strong>AI Studio GHRAB</strong><p>Autor a vývojový garant: Daniel Baláž · Školní projekt Gymnázia, Ostrava-Hrabůvka · verze 0.21.6</p></div></div></footer>
+ <script src="../app.js?v=0.21.6" type="module"></script>
+</body>
+</html>

@@ -25,7 +25,7 @@
 
 ## Etapa C — plná platforma
 
-- role učitel / komise / správce / vedení,
+- role učitel / komise / zástupce správce / správce / vedení,
 - schvalování a verzování materiálů, včetně stavů Ověřeno ve výuce a Doporučeno komisí,
 - centrální katalog komisí a osobní Top 4,
 - rozpočtové limity a monitoring spotřeby,
@@ -69,3 +69,8 @@ Po připojení školního serveru má fungovat tento tok:
 6. Materiál lze následně předat do podporované aplikace jednorázovým serverovým handoffem.
 
 Minimální bezpečnostní podmínky: školní session, kontrola členství v komisi, Origin/CSRF ochrana, audit změn, verzování, zálohy a zákaz publikace materiálu označeného jako obsahující osobní údaje. U sdílených výukových materiálů je anonymizace podmínkou, nikoli volitelným doporučením.
+
+
+## Zastupitelnost správce po přechodu na server
+
+Server má zachovat samostatnou provozní roli **Zástupce správce**. Ta smí kontrolovat stav ekosystému, diagnostiku, auditované provozní reporty a evidenci přístupů, ale nesmí měnit kořenové podpisové klíče, serverová tajemství ani udělovat plnou roli správce. Nouzové plné povýšení má být časově omezené, auditované, s automatickou expirací a jasným záznamem kdo, komu a do kdy práva předal.

@@ -1,6 +1,6 @@
-# Architektura AI Studio GHRAB 0.21.4
+# Architektura AI Studio GHRAB 0.21.6
 
-> Aktuální verze: **0.21.4** · etapa P5
+> Aktuální verze: **0.21.6** · etapa P5
 
 ## Koherence aktualizace PWA
 
@@ -40,8 +40,9 @@ Studio tedy není devátý editor. Materiál vzniká v konkrétní aplikaci; Stu
 
 ## Role rozhraní
 
-**Učitel:** Aplikace, Tvorba materiálů, Materiály, Bezpečnost, Můj přístup.
-**Správce:** navíc Správa, Pilot, Report, Prezentace, Změny, Diagnostika a Vydavatel oprávnění.
+**Učitel:** Aplikace, Materiály, Manuály, Bezpečnost, Můj přístup a Katalog změn.
+**Zástupce správce (`operator`):** navíc Pohled kolegy, Správa, Diagnostika, Pilot, souhrnný Report a Evidence přístupů; nemá Vydavatele oprávnění, Prezentaci ani správu podpisových klíčů.
+**Správce (`admin`):** plná sada provozních a bezpečnostních nástrojů včetně Vydavatele oprávnění a Prezentace.
 
 Správcovské stránky jsou po načtení konfigurace nahrazeny přístupovou bránou, pokud prohlížeč nemá platné správcovské oprávnění. Jejich vlastní moduly se bez správce nespustí.
 
@@ -101,3 +102,8 @@ Server nahradí import oprávnění školním přihlášením, místní úloži�
 ## Centrální AI vrstva
 
 AI Studio neprovádí modelová volání. Vydává neměnný GHRAB AI Core, runtime konfiguraci a readiness report. Aplikace zveřejňují `aiCore` ve Studio manifestu a `ai-operations.json`; server-ready stav je uznán až z živě načtených metadat.
+
+
+## Provozní zastupitelnost
+
+Role `operator` je určena pro dlouhodobější nepřítomnost hlavního správce. Její oprávnění jsou záměrně menší než `admin`; plné pravomoci lze předat pouze samostatným správcovským permitem s krátkou expirací. Vydavatel 0.21.6 nabízí rychlé doby 7, 14 a 30 dní. Zástupce má mít vlastní omezený GitHub účet, nikoli sdílené přihlašovací údaje hlavního správce.

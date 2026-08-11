@@ -1,6 +1,6 @@
 await window.GHRAB.accessReady;
 
-if (window.GHRAB.isAdmin()) {
+if (window.GHRAB.canAccessAdminPage?.("automation") && !window.GHRAB.isColleaguePreview?.()) {
 
   const {
 loadApps,loadSyncReport,loadAiCoreRegistry,loadAiReadiness,loadAiRuntime,localised,t,base}
@@ -62,11 +62,20 @@ span.textContent=t(labelCs,labelEn);
 card.append(strong,span);
 return card}
 
+  function formatSyncTime(value){
+if(!value)return "—";
+const date=new Date(value);
+if(Number.isNaN(date.getTime()))return "—";
+return date.toLocaleString(document.documentElement.lang==="en"?"en-GB":"cs-CZ")}
+
+  function syncModeLabel(mode){
+return ({live:t("živý registr","live registry"),mixed:t("smíšený režim","mixed mode"),fallback:t("záložní snapshot","fallback snapshot")})[mode]||mode||"—"}
+
   function renderTable(report,apps){
 tableBody.replaceChildren();
 const byId=new Map(apps.map(a=>[a.id,a]));
 for(const source of report?.sources||[]){
-const tr=document.createElement("tr"),app=byId.get(source.id),values=[localised(app?.name)||source.id,source.url,source.ok?t("Ověřeno","Verified"):t("Použit záložní registr","Fallback registry"),source.version||app?.version||"—"];
+const tr=document.createElement("tr"),app=byId.get(source.id),values=[localised(app?.name)||source.id,source.url,source.ok?t("Živě ověřeno","Verified live"):t("Záložní snapshot · živě neověřeno","Fallback snapshot · not verified live"),source.version||app?.version||"—",formatSyncTime(source.lastLiveVerifiedAt)];
 values.forEach((value,index)=>{
 const td=document.createElement("td");
 td.textContent=value;
@@ -121,8 +130,22 @@ aiReadinessTableBody.append(tr)}
   async function render(){
 const [apps,report,coreRegistry,readiness,runtime]=await Promise.all([loadApps(),loadSyncReport(),loadAiCoreRegistry(),loadAiReadiness(),loadAiRuntime()]);
 appHost.replaceChildren(...apps.map(appRow));
-const ok=report?.sources?.filter(s=>s.ok).length||0,total=report?.sources?.length||apps.length,time=report?.generatedAt?new Date(report.generatedAt).toLocaleString(document.documentElement.lang==="en"?"en-GB":"cs-CZ"):"—";
-summaryHost.replaceChildren(kpi(apps.length,"aplikací","applications"),kpi(`${ok}/${total}`,"manifestů ověřeno","manifests verified"),kpi(report?.mode||"fallback","režim synchronizace","sync mode"),kpi(time,"poslední build","latest build"));
+const ok=report?.sources?.filter(s=>s.ok).length||0,total=report?.sources?.length||apps.length,fallbackCount=Math.max(0,total-ok),time=formatSyncTime(report?.generatedAt),lastFullLive=formatSyncTime(report?.lastFullLiveVerifiedAt);
+summaryHost.replaceChildren(kpi(apps.length,"aplikací","applications"),kpi(`${ok}/${total}`,"živě ověřeno nyní","verified live now"),kpi(`${fallbackCount}/${total}`,"ze záložního snapshotu","from fallback snapshot"),kpi(syncModeLabel(report?.mode),"zdroj registru","registry source"),kpi(lastFullLive,"naposledy 8/8 živě","last 8/8 live"),kpi(time,"poslední synchronizace","latest synchronisation"));
+const healthNote=document.querySelector("#sync-health-note");
+if(healthNote){
+  healthNote.className=`notice ${ok===total?"sync-health-ok":ok?"sync-health-warn":"sync-health-fallback"}`;
+  healthNote.textContent=ok===total
+    ? t("Všech osm manifestů bylo při této synchronizaci načteno a ověřeno přímo ze zdrojových aplikací.","All eight manifests were loaded and verified directly from the source applications during this synchronisation.")
+    : t(
+        `Studio má všech ${total} aplikací k dispozici, ale živě ověřilo ${ok}/${total}. ` +
+          `Zbývajících ${fallbackCount}/${total} používá poslední známý záložní snapshot. ` +
+          `To není totéž jako živé ověření. Poslední úplné ověření 8/8: ${lastFullLive}.`,
+        `Studio has all ${total} applications available, but verified ${ok}/${total} live. ` +
+          `The remaining ${fallbackCount}/${total} use the last known fallback snapshot. ` +
+          `This is not the same as live verification. Last complete 8/8 verification: ${lastFullLive}.`,
+      );
+}
 renderTable(report||{
 sources:[]}
 ,apps);

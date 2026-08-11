@@ -2,6 +2,27 @@
 
 > Tento soubor se generuje ze `src/config/changelog.json`. Neupravujte jej ručně.
 
+## 0.21.6 — 2026-08-10
+**Zástupce správce a provozní zastupitelnost**
+
+- Přibyla samostatná role Zástupce správce pro dlouhodobější nepřítomnost hlavního správce. Má Správu, diagnostiku, Pilot, souhrnný report, Evidenci přístupů a Pohled kolegy, ale ne Vydavatele oprávnění, Prezentaci ani správu podpisových klíčů.
+- Vydavatel oprávnění umí vytvořit roli Zástupce správce a při plném správci nabízí bezpečné rychlé expirace 7, 14 nebo 30 dní pro mimořádné dočasné zastoupení.
+- Zástupce nemůže obnovovat přístupy přes Vydavatele ani se sám povýšit. Přímé správcovské stránky používají stránková oprávnění a plný administrátor zůstává jedinou rolí pro citlivé zásahy.
+- Centrum Manuálů obsahuje nový krizový a provozní manuál Zástupce správce s triáží výpadků, fallbacku manifestů, problémů s přístupy, GitHub Actions a jasnými eskalačními hranicemi.
+- Budoucí serverová architektura nově počítá se samostatnou rolí zástupce a auditovaným časově omezeným nouzovým povýšením.
+- Prezentace obsahuje dvouminutový Full HD showcase film se zvukem: dynamické profily všech osmi aplikací, materiály, bezpečnost, zastupitelnost a budoucí školní server. Film lze přehrát samostatně nebo v nekonečné smyčce a velký MP4 soubor se záměrně neukládá do offline PWA precache.
+
+## 0.21.5 — 2026-08-10
+**Pohled kolegy, PR prezentace a přesnější provozní stav**
+
+- Top 4 lze přetahováním myší nebo šipkami přeskládat mezi čtyřmi pozicemi kolem brány; rozložení se ukládá v prohlížeči.
+- Patička je sjednocena bez černého rámečku a automatická platformní patička je vypnutá. Katalog změn má stabilní načítací stav, takže při otevření neproblikává samotná patička.
+- Bezpečnostní rychlá kontrola má skutečný tříbarevný semafor, který se rozsvítí současně s textovým doporučením a nespoléhá jen na barvu.
+- Prezentace byla přepracována na PR showcase pro projektor a dny otevřených dveří: živá animační smyčka, celoobrazovkový režim a video playlist připravený přes presentation.json.
+- Správce má novou záložku Pohled kolegy. Náhled v session simuluje proškoleného učitele, skryje správcovské části a nemění skutečné podepsané oprávnění.
+- Materiály přijímají Bridge v2 handoff s cílem ai-studio. Přibyl jednotný integrační kontrakt pro budoucí tlačítko Uložit do AI Studia ve všech osmi aplikacích; bez školního serveru zůstává uložení lokální.
+- Kontrola zdrojů nově odděluje živě ověřené manifesty od záložního snapshotu a eviduje poslední živé ověření každé aplikace i poslední úplné ověření 8/8.
+
 ## 0.21.4 — 2026-08-10
 **Hotfix XSS regresní brány**
 
