@@ -130,9 +130,10 @@ if (window.GHRAB.isAdmin() && !window.GHRAB.isColleaguePreview?.()) {
     $("#permit-name").value = record.displayName || "";
     $("#permit-subject").value = record.subject || "";
     $("#permit-role").value = ["admin", "operator"].includes(record.role) ? record.role : "teacher";
-    $("#permit-all").checked = record.apps.includes("*");
+    const grantsAllApps = record.apps.includes("*");
+    $("#permit-all").checked = grantsAllApps;
     document.querySelectorAll("[data-app]").forEach((input) => {
-      input.checked = record.apps.includes(input.value);
+      input.checked = grantsAllApps || record.apps.includes(input.value);
     });
     feedback(
       `Načteny údaje uživatele ${record.displayName}. Po vydání se nový přístup automaticky zapíše do evidence.`,
@@ -284,13 +285,22 @@ if (window.GHRAB.isAdmin() && !window.GHRAB.isColleaguePreview?.()) {
     date.setDate(date.getDate() + Number(days || 0));
     $("#permit-expiry").value = date.toISOString().slice(0, 10);
   }
+  function selectAllCurrentApps() {
+    document.querySelectorAll("[data-app]").forEach((input) => {
+      input.checked = true;
+    });
+  }
+
   function syncRoleUi() {
     const role = $("#permit-role").value;
     const temporary = $("#temporary-admin-tools");
     const operatorNote = $("#operator-role-note");
     temporary.hidden = role !== "admin";
     operatorNote.hidden = role !== "operator";
-    if (role === "admin") $("#permit-all").checked = true;
+    if (role === "admin") {
+      $("#permit-all").checked = true;
+      selectAllCurrentApps();
+    }
     if (role === "admin") {
       const expiry = new Date(`${$("#permit-expiry").value || "2999-12-31"}T23:59:59`);
       const maxPreferred = Date.now() + 31 * 86400 * 1000;
@@ -298,6 +308,9 @@ if (window.GHRAB.isAdmin() && !window.GHRAB.isColleaguePreview?.()) {
     }
   }
   $("#permit-role").addEventListener("change", syncRoleUi);
+  $("#permit-all").addEventListener("change", (event) => {
+    if (event.currentTarget.checked) selectAllCurrentApps();
+  });
   document.querySelectorAll("[data-admin-days]").forEach((button) =>
     button.addEventListener("click", () => setExpiryDays(button.dataset.adminDays)),
   );

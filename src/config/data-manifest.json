@@ -1,7 +1,7 @@
 {
   "schema": "ghrab-data-manifest-v1",
   "appId": "ai-studio",
-  "appVersion": "0.21.10",
+  "appVersion": "0.21.11",
   "manifestVersion": 3,
   "dataCategories": [
     "settings",

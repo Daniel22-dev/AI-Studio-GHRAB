@@ -1,7 +1,29 @@
 {
   "schema": "ai-studio-changelog-v1",
-  "current": "0.21.10",
+  "current": "0.21.11",
   "items": [
+    {
+      "version": "0.21.11",
+      "date": "2026-08-11",
+      "title": {
+        "cs": "Nový showroom, bezpečnější fullscreen a intuitivnější přístupy",
+        "en": "New showroom, safer fullscreen and more intuitive access selection"
+      },
+      "changes": [
+        {
+          "cs": "Fullscreen Prezentace má nově větší bezpečnou zónu kolem centrálního textu, kompaktnější typografii a orbit omezený šířkou i výškou viewportu, takže text už nezasahuje do ikon aplikací.",
+          "en": "Fullscreen Presentation now reserves a larger safe zone around the central copy, uses tighter typography and constrains the orbit by both viewport width and height, preventing text from overlapping app icons."
+        },
+        {
+          "cs": "Showcase film byl kompletně přepracován do moderní přibližně minutové prezentace s pohybem, přechody a reálnými obrazovkami aplikací z QA podkladů; u aplikací bez čerstvého screenshotového artefaktu je obrazovka sestavena věrně podle aktuálního zdrojového rozhraní. Film používá dodaný soundtrack Tight Corners.",
+          "en": "The showcase film was rebuilt as a modern roughly one-minute presentation with motion, transitions and real application screens from QA evidence; where a fresh screenshot artifact was unavailable, the screen is faithfully reconstructed from the current source UI. The film uses the supplied Tight Corners soundtrack."
+        },
+        {
+          "cs": "Zaškrtnutí „Všechny současné i budoucí aplikace“ ve Vydavateli přístupu automaticky označí všechny aplikace, které jsou právě ve Studiu. Odškrtnutí hlavní volby ponechá jednotlivé současné výběry, takže lze snadno přejít z budoucího wildcard přístupu na explicitní současný seznam.",
+          "en": "Selecting “All current and future applications” in the Access issuer now automatically selects every application currently present in Studio. Clearing the master option preserves the explicit current selections, making it easy to move from future wildcard access to a current-only list."
+        }
+      ]
+    },
     {
       "version": "0.21.10",
       "date": "2026-08-11",

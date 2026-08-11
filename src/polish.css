@@ -2743,7 +2743,7 @@ body {
 }
 .first-run-guide a:hover{color:var(--text);border-bottom-color:var(--text)}
 
-/* 0.21.10 — footer remains a distinct block, but belongs to the Studio blue palette */
+/* 0.21.11 — footer remains a distinct block, but belongs to the Studio blue palette */
 .site-footer {
   border: 0;
   border-top: 1px solid rgba(112, 226, 255, 0.34);
@@ -2895,29 +2895,34 @@ body {
   mask-image: radial-gradient(circle at center, #000, transparent 78%);
 }
 .presentation-core {
-  width: min(490px, 58vw);
+  width: min(560px, 56vw);
   text-align: center;
   z-index: 3;
   display: grid;
   justify-items: center;
-  gap: 9px;
+  gap: 8px;
+  padding: 20px 26px 22px;
+  border-radius: 28px;
+  background: radial-gradient(circle at 50% 16%, rgba(13, 48, 70, .56), rgba(3, 16, 28, .2) 62%, transparent 78%);
 }
 .presentation-core img {
-  width: clamp(80px, 9vw, 116px);
+  width: clamp(76px, 7.4vw, 104px);
   filter: drop-shadow(0 0 30px rgba(80,232,255,.25));
 }
 .presentation-core h2 {
   margin: 0;
-  font-size: clamp(1.7rem, 3.6vw, 3.2rem);
-  line-height: 1.02;
+  max-width: 100%;
+  font-size: clamp(1.65rem, 3vw, 2.85rem);
+  line-height: 1.01;
   letter-spacing: -.035em;
   text-wrap: balance;
 }
 .presentation-core p:not(.eyebrow) {
-  margin: 4px 0 0;
+  max-width: 50ch;
+  margin: 3px 0 0;
   color: #b8cfdd;
-  font-size: clamp(.9rem, 1.4vw, 1.08rem);
-  line-height: 1.55;
+  font-size: clamp(.88rem, 1.2vw, 1.02rem);
+  line-height: 1.48;
   text-wrap: balance;
 }
 .presentation-core-halo {
@@ -3044,7 +3049,17 @@ body {
 .presentation-video-empty h3 { margin: 14px 0 6px; }
 .presentation-video-empty p { max-width: 720px; margin: 0; }
 .presentation-kiosk:fullscreen { width: 100vw; height: 100vh; min-height: 100vh; border: 0; border-radius: 0; }
-.presentation-kiosk:fullscreen .presentation-orbit-app { transform: rotate(var(--angle)) translateX(min(34vw, 32vh, 440px)) rotate(calc(-1 * var(--angle))); }
+.presentation-kiosk:fullscreen .presentation-core {
+  width: min(580px, 44vw);
+  translate: 0 -2.5vh;
+  padding-inline: 32px;
+}
+.presentation-kiosk:fullscreen .presentation-core h2 {
+  font-size: clamp(1.9rem, 2.75vw, 3rem);
+}
+.presentation-kiosk:fullscreen .presentation-orbit-app {
+  transform: rotate(var(--angle)) translateX(min(36vw, 34vh, 430px)) rotate(calc(-1 * var(--angle)));
+}
 @keyframes presentation-spin { to { transform: rotate(360deg); } }
 @keyframes presentation-breathe { 0%,100% { scale: .94; opacity: .72; } 50% { scale: 1.07; opacity: 1; } }
 @media (max-width: 1000px) {

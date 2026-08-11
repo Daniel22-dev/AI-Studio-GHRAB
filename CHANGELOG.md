@@ -2,6 +2,13 @@
 
 > Tento soubor se generuje ze `src/config/changelog.json`. Neupravujte jej ručně.
 
+## 0.21.11 — 2026-08-11
+**Nový showroom, bezpečnější fullscreen a intuitivnější přístupy**
+
+- Fullscreen Prezentace má nově větší bezpečnou zónu kolem centrálního textu, kompaktnější typografii a orbit omezený šířkou i výškou viewportu, takže text už nezasahuje do ikon aplikací.
+- Showcase film byl kompletně přepracován do moderní přibližně minutové prezentace s pohybem, přechody a reálnými obrazovkami aplikací z QA podkladů; u aplikací bez čerstvého screenshotového artefaktu je obrazovka sestavena věrně podle aktuálního zdrojového rozhraní. Film používá dodaný soundtrack Tight Corners.
+- Zaškrtnutí „Všechny současné i budoucí aplikace“ ve Vydavateli přístupu automaticky označí všechny aplikace, které jsou právě ve Studiu. Odškrtnutí hlavní volby ponechá jednotlivé současné výběry, takže lze snadno přejít z budoucího wildcard přístupu na explicitní současný seznam.
+
 ## 0.21.10 — 2026-08-11
 **Doladění výměny přístupů a oddělení prezentačních smyček**
 

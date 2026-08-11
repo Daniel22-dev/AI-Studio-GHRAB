@@ -107,7 +107,9 @@ const issuerJs = await text("src/tools/access-issuer/issuer.js");
 check(issuerHtml.includes('<option value="operator">Zástupce správce</option>'), "Vydavatel neumoznuje vydat roli zastupce spravce.");
 check(["7", "14", "30"].every((days) => issuerHtml.includes(`data-admin-days="${days}"`)), "Vydavatel nema rychle expirace 7/14/30 dni pro docasneho admina.");
 check(issuerJs.includes('temporary.hidden = role !== "admin"') && issuerJs.includes('role !== "operator"'), "Vydavatel nerozlisuje operatora a docasneho plneho admina.");
-check(issuerJs.includes('if (role === "admin") $("#permit-all").checked = true;') && !issuerJs.includes('["admin", "operator"].includes(role)'), "Zastupce spravce se stale automaticky rozsiri na vsechny aplikace.");
+check(issuerJs.includes('if (role === "admin") {') && issuerJs.includes('$("#permit-all").checked = true;') && !issuerJs.includes('["admin", "operator"].includes(role)'), "Zastupce spravce se stale automaticky rozsiri na vsechny aplikace.");
+check(issuerJs.includes('function selectAllCurrentApps()') && /permit-all[\s\S]{0,180}addEventListener\("change"[\s\S]{0,180}selectAllCurrentApps\(\)/.test(issuerJs), "Volba vsech soucasnych i budoucich aplikaci neoznaci aktualni aplikace ve Studiu.");
+check(issuerJs.includes('input.checked = grantsAllApps || record.apps.includes(input.value);'), "Nacteni wildcard pristupu nezobrazi vsechny soucasne aplikace jako oznacene.");
 check(issuerHtml.includes('← Zpět do evidence přístupů') && issuerHtml.includes('Hotovo → zpět do evidence'), "Vydavatel nema zretelny navrat do evidence pristupu.");
 check(issuerJs.includes('supersededBy: payload.jti') && issuerJs.includes('připravte původní JTI ke zneplatnění'), "Vydani nahradniho pristupu neoznaci puvodni zaznam jako nahrazeny nebo nevysvetli dalsi krok.");
 check(deputyGuide.includes('Vydat nový přístup') && deputyGuide.includes('starý učitelský JTI zneplatnit') && deputyGuide.includes('Dosavadní výběr aplikací zůstane zachován'), "Manual zastupce nepopisuje bezpecne povyseni existujiciho trained teacher.");
@@ -160,7 +162,7 @@ globalThis.fetch = async () => {
 };
 try {
   const localRepository = materialModule.createMaterialRepository({
-    VERSION: "0.21.10",
+    VERSION: "0.21.11",
     deploymentReady: Promise.resolve({
       profile: "github-pages",
       apiBaseUrl: "",
@@ -205,7 +207,8 @@ check(!demoJs.includes('playVideoAt(videoIndex)') && demoJs.includes('scheduleSc
 check(demoJs.includes('presentation-video-play') && demoJs.includes('presentation-video-loop') && demoJs.includes('video.loop = true') && demoJs.includes('video.play()'), "Hlavni showcase film nema samostatne prehrani a vlastni nekonecnou smycku s user gesture.");
 const serviceWorker = await text("src/sw.js");
 check(serviceWorker.includes("request.headers.has('range')"), "Service worker nepropousti Range/206 pozadavky velkeho showcase videa.");
-check(polishCss.includes('translateX(min(34vw, 32vh, 440px))'), "Fullscreen prezentace neomezuje orbit aplikaci i podle vysky viewportu.");
+check(polishCss.includes('translateX(min(36vw, 34vh, 430px))'), "Fullscreen prezentace neomezuje orbit aplikaci i podle vysky viewportu.");
+check(polishCss.includes('.presentation-kiosk:fullscreen .presentation-core') && polishCss.includes('translate: 0 -2.5vh') && polishCss.includes('width: min(580px, 44vw)'), "Fullscreen prezentace nema bezpecnou stredovou zonu proti kolizi textu s ikonami.");
 check(Array.isArray(presentationConfig.videos), "Presentation config nema video playlist.");
 check(presentationConfig.videos.length >= 1 && presentationConfig.videos[0]?.muted === false, "PR prezentace nema hlavni showcase video se zvukem.");
 if (presentationConfig.videos[0]?.src) {
@@ -246,7 +249,7 @@ const context = {
   location: { href: "https://example.test/AI-Studio-GHRAB/" },
   document: {
     currentScript: { src: "https://example.test/AI-Studio-GHRAB/ghrab/ghrab-platform.js" },
-    documentElement: { dataset: { ghrabAppId: "ai-studio", ghrabAppVersion: "0.21.10" } },
+    documentElement: { dataset: { ghrabAppId: "ai-studio", ghrabAppVersion: "0.21.11" } },
     getElementById() { return null; },
     readyState: "loading",
     addEventListener() {},
@@ -257,7 +260,7 @@ vm.createContext(context);
 vm.runInContext(platformCode, context, { filename: "ghrab-platform.js" });
 const material = { schema: "ghrab-material-v1", id: "ux-contract-test", content: { sourceText: "test" } };
 const created = context.GHRAB_PLATFORM.bridge.create({
-  target: "generator", sourceAppId: "ai-studio", sourceAppVersion: "0.21.10",
+  target: "generator", sourceAppId: "ai-studio", sourceAppVersion: "0.21.11",
   targetVersionRange: ">=0.0.0 <100.0.0", ttlMs: 5 * 60 * 1000, material, writeLegacy: true,
 });
 check(created?.target === "generator", "Bridge v2 create nevratil cil generator.");
