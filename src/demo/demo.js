@@ -21,12 +21,24 @@ let sceneTimer = null;
 
 const conceptScenes = [
   {
-    cs: ["JEDEN EKOSYSTÉM", "AI, která zapadá do práce učitele.", "Osm specializovaných aplikací spojuje společný vstup, bezpečnostní pravidla a jednotný školní standard."],
-    en: ["ONE ECOSYSTEM", "AI that fits a teacher's work.", "Eight specialised applications share one entry point, safety rules and a common school standard."],
+    cs: ["AI MĚNÍ SVĚT", "Zákaz nestačí. Nadšení nestačí.", "Škola má studenty naučit, kdy AI použít, kdy jí nevěřit a kdy převzít vlastní odpovědnost."],
+    en: ["AI IS CHANGING THE WORLD", "A ban is not enough. Hype is not enough.", "A school should teach students when to use AI, when not to trust it and when to take responsibility themselves."],
   },
   {
-    cs: ["OD NÁPADU K VÝUCE", "Každý nástroj řeší konkrétní pedagogickou práci.", "Testy, diferenciace, hry, materiály i další workflow zůstávají v aplikacích, které jsou pro daný úkol navržené."],
-    en: ["FROM IDEA TO LESSON", "Every tool solves a specific teaching task.", "Tests, differentiation, games, resources and other workflows stay in applications designed for the job."],
+    cs: ["NAŠE ODPOVĚĎ", "Nechceme AI bezmyšlenkovitě zakazovat.", "Chceme učit efektivní, kritickou a bezpečnou práci s nástrojem, který bude součástí jejich budoucnosti."],
+    en: ["OUR ANSWER", "We do not want to ban AI mindlessly.", "We want to teach effective, critical and safe use of a tool that will be part of students’ future."],
+  },
+  {
+    cs: ["DIGITÁLNÍ GRAMOTNOST", "AI nemá nahradit přemýšlení.", "Má rozšířit možnosti člověka, který umí zadat úkol, ověřit výsledek, chránit data a poznat hranice nástroje."],
+    en: ["DIGITAL LITERACY", "AI should not replace thinking.", "It should expand the abilities of someone who can define a task, verify a result, protect data and recognise the tool’s limits."],
+  },
+  {
+    cs: ["JEDEN EKOSYSTÉM", "Ne osm izolovaných aplikací. Jeden školní standard.", "Aplikace řeší konkrétní pedagogickou práci, Studio propojuje přístup, bezpečnost, materiály, diagnostiku a rozvoj."],
+    en: ["ONE ECOSYSTEM", "Not eight isolated apps. One school standard.", "The apps solve specific teaching tasks; Studio connects access, safety, resources, diagnostics and development."],
+  },
+  {
+    cs: ["OD NÁPADU K VÝUCE", "Učitel nepotřebuje další obecný chatbot.", "Potřebuje nástroje navržené pro testy, diferenciaci, hry, materiály, hodnocení, komunikaci a reálné školní workflow."],
+    en: ["FROM IDEA TO LESSON", "A teacher does not need another generic chatbot.", "A teacher needs tools designed for tests, differentiation, games, resources, assessment, communication and real school workflows."],
   },
   {
     cs: ["BEZPEČNOST OD ZAČÁTKU", "Nejdřív data. Potom AI.", "Společné zásady připomínají anonymizaci, práci na sdílených zařízeních a hranice pro citlivé školní informace."],

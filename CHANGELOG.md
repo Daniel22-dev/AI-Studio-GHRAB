@@ -2,6 +2,55 @@
 
 > Tento soubor se generuje ze `src/config/changelog.json`. Neupravujte jej ručně.
 
+## 0.21.18 — 2026-08-11
+**Stabilizovaný Premium Master: klidné UI, plynulé přechody a vyšší obrazová kvalita**
+
+- Showroom byl stabilizován pro projekci v učebně: v aplikačních sekvencích bylo odstraněno průběžné mikroposouvání, vlnění a plovoucí karty. Rozhraní po nástupu zůstává klidné; dynamiku tvoří především střih, jemné prolnutí a velmi pomalý filmový push-in.
+- LUDUS zůstává dynamický, ale jednotlivé herní světy jsou nyní stabilní hero záběry propojené krátkými prolnutími. Hogwarts Grammar Academy, The Frostline Express, Matrix a Indiana Jones se proto dají pohodlně přečíst bez dojmu ruční kamery.
+- Nový master je 1920×1080 / 30 fps s obrazovým tokem přibližně 6,6 Mb/s a je sestaven z ostrých zdrojových kompozic. Zvuk zůstává plynulý bez remixu; naměřená integrovaná hlasitost je přibližně -16,8 LUFS a true peak -5,7 dBFS.
+
+## 0.21.17 — 2026-08-11
+**Premium Master showroomu: ostrý obraz, hotové výstupy a čisté finále**
+
+- Showroom byl znovu sestaven z čistých zdrojových screenshotů a nově vyrenderovaných prezentačních vrstev místo dalšího přepočtu remasteru. Výstup je Full HD 1920×1080 / 30 fps a drobný text i aplikační panely jsou výrazně ostřejší na notebooku i projektoru.
+- Přehlídka osmi aplikací nyní používá jednotnou anonymní demo situaci 1.A · angličtina · Present Perfect a ukazuje hotový výsledek práce: test, tři diferenciované verze, hodnocení slohu, anonymizovanou odpověď, herní světy LUDUSu, pracovní list, obsazený zasedací pořádek a naplánovanou hodinu. Prázdné a chybové stavy už nejsou hlavní vizitkou aplikací.
+- Uživatelem dodaná skladba běží plynule od začátku bez remixu a vnitřních střihů; výsledná hlasitost je přibližně −16 LUFS. Karta „Ne ukázka budoucnosti. Nástroje, které už máme.“ se objeví právě jednou a plynule zhasne do závěrečné teze. Finále obsahuje pouze nenápadný odkaz ghrabuvka.cz, bez směrování návštěvníků na chodbu nebo na všechny učitele.
+
+## 0.21.16 — 2026-08-11
+**Showroom bez překryvů, plynulá skladba a klidnější finále**
+
+- Ideový prolog showroomu byl přestříhán tak, aby se jednotlivé titulky nikdy nepřekrývaly. Každá hlavní myšlenka má vlastní čitelný časový úsek a mezi kartami je krátký filmový nádech do tmy.
+- Uživatelem dodaná skladba nyní běží od začátku plynule v původním pořadí bez remixu, beatových přeskládání nebo střihů; upravena je pouze výsledná hlasitost a závěrečné ztišení.
+- Závěrečná karta „Ne ukázka budoucnosti. Nástroje, které už máme.“ zůstává na obrazovce déle a přechod k tezi o budoucnosti AI probíhá přes plynulé stmavení místo rychlého bliknutí. Film má přibližně 87 sekund.
+
+## 0.21.15 — 2026-08-11
+**Showroom dostává ideový prolog a finální tezi o AI gramotnosti**
+
+- Showroom film nově po aktivaci hvězdné brány vysvětluje, proč škola AI bezmyšlenkovitě nezakazuje: odpovědí je vzdělávání a schopnost AI použít, ověřit, chápat její limity a samostatně rozhodnout.
+- Ideový prolog vrcholí větou „Ne osm aplikací. Jeden školní ekosystém.“ a teprve potom přechází do přehlídky skutečných aplikací, takže video nejdřív vysvětlí smysl projektu a až potom jeho nástroje.
+- Závěr filmu nově uzavírá hlavní vize: budoucnost nebude patřit těm, kteří AI jen používají, ale těm, kteří vědí, jak ji používat dobře. Stopáž je přibližně 83 sekund a soundtrack zůstává postavený na uživatelem dodané skladbě ve vlastním trailerovém střihu.
+
+## 0.21.14 — 2026-08-11
+**Ideový prolog Prezentace o odpovědné práci s AI**
+
+- Prezentace dostala novou kapitolu „Proč AI Studio?“, která projekt zasazuje do širší školní strategie: AI nezakazovat bezmyšlenkovitě, ale učit studenty s ní pracovat efektivně, kriticky, bezpečně a s odpovědností.
+- Živá fullscreen smyčka nyní začíná ideovými scénami o AI gramotnosti, ověřování výsledků, ochraně dat a lidském úsudku, než přejde k přehlídce osmi aplikací.
+- Do prezentační stránky byla přidána jasná hlavní věta pro veřejné vysvětlení projektu: „Budoucnost nebude patřit těm, kteří AI jen používají. Bude patřit těm, kteří vědí, jak ji používat dobře.“
+
+## 0.21.13 — 2026-08-11
+**Trailerový střih showroomu s novým soundtrackem a čitelnějším LUDUSem**
+
+- Showroom používá uživatelem dodanou skladbu DJ Shadow – Six Days / Tokyo Drift ve zkráceném trailerovém střihu: vybrané části jsou beatově propojené, lehce ekvalizované a hlasitostně sjednocené pro projekci.
+- Sekvence LUDUS je záměrně téměř dvojnásobně zpomalená. Hogwarts Grammar Academy zůstává na obrazovce dost dlouho na přečtení a The Frostline Express dostává delší samostatný hero záběr, aniž by se ztratila filmová dynamika.
+- Celková stopáž filmu se prodlužuje přibližně na 70 sekund; ostatní sekvence a funkce Studia zůstávají beze změny.
+
+## 0.21.12 — 2026-08-11
+**Akční showroom s portálem a prémiovou sekvencí LUDUS**
+
+- Showcase film otevírá skutečná hvězdná brána AI Studia: její tři prstence se nezávisle otáčejí, osm ikon aplikací obíhá kolem portálu a závěr úvodu přechází do rychlého warp efektu.
+- Sekvence LUDUS je výrazně dynamičtější: krátká přehlídka herních světů přechází do čitelného hero záběru Hogwarts Grammar Academy a následně do výraznějšího detailu skutečné scény The Frostline Express z QA rozhraní.
+- Přechody filmu dostaly výraznější světelné impulzy, rychlejší kamerové nájezdy, orbitální pohyb, částice a filmové akcenty. Dodaný soundtrack Tight Corners zůstává zachovaný a synchronizovaný s původní minutovou stopáží.
+
 ## 0.21.11 — 2026-08-11
 **Nový showroom, bezpečnější fullscreen a intuitivnější přístupy**
 

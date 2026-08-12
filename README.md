@@ -1,19 +1,19 @@
 # AI Studio GHRAB
 
-**Aktuální verze:** 0.21.11
+**Aktuální verze:** 0.21.18
 **Platforma:** GHRAB Platform 1.1.0 · etapa P5
 
-**Verze 0.21.11 – CI/security hotfix zdrojového registru po běhu 0.21.7; funkční změny Studia zůstávají beze změny.**
+**Verze 0.21.18 – Premium Master showroomu staví na čistých zdrojích, hotových demo výstupech a výrazně ostřejším Full HD obrazu.**
 
 AI Studio GHRAB je centrální brána školních digitálních a AI nástrojů. Jednotlivé aplikace zůstávají v samostatných repozitářích; Studio zajišťuje společnou navigaci, Top 4, synchronizaci verzí, bezpečnostní rámec, pilotní měření, správu podepsaných přístupů a kanonický základ technického reportéru. Materiály jsou viditelnou součástí portálu, ale v dnešním bezserverovém režimu se vlastní obsah ukládá pouze místně.
 
-## Hlavní novinky 0.21.11
+## Hlavní novinky 0.21.18
 
-- Opraven repository fallback synchronizace: po úspěšném ověření veřejného GitHub zdroje se do `apps.generated.json` použije právě ověřený manifest místo staršího lokálního snapshotu.
-- Bezpečnostní validátor při identickém generated/fallback registru nově vyžaduje buď explicitně potvrzený offline snapshot, nebo úplnou a přesnou shodu verzí všech ověřených zdrojů.
-- Přidána regresní kontrola proti situaci, kdy je zdroj označen jako ověřený, ale generovaný registr stále obsahuje jinou/starší verzi.
-- Uživatelské změny 0.21.7 — modrá samostatná patička, rozšířený semafor, zástupce správce, zdrojová diagnostika a opravy Prezentace/showcase filmu — zůstávají beze změny.
-
+- Showroom je nově sestaven z čistých screenshotů a prezentačních vrstev, nikoli dalším přepočtem předchozího remasteru. Výstup má 1920×1080 / 30 fps a je výrazně ostřejší pro notebook i projektor.
+- Všech osm aplikací používá jednotnou anonymní demo situaci **1.A · angličtina · Present Perfect** a ukazuje především hotový výstup, ne prázdný formulář nebo chybový stav.
+- LUDUS zůstává nejdelší kapitolou a Hogwarts Grammar Academy i The Frostline Express dostávají dost času na přečtení.
+- Dodaná skladba běží od začátku plynule bez remixu; normalizace je přibližně **−16,1 LUFS** bez dodatečného přeskupování hudby.
+- Závěrečná karta **„Ne ukázka budoucnosti. Nástroje, které už máme.“** se zobrazí jen jednou a plynule přejde do finální teze. Finále používá pouze nenápadný odkaz **ghrabuvka.cz**.
 
 ## Předchozí vydání 0.20.18
 
@@ -64,7 +64,7 @@ Ochranný bootstrap je určen pro Generátor 7.1.8, Diferenciátor 1.3.8, Hodnot
 
 ## Doporučené pořadí nasazení P2
 
-1. AI Studio GHRAB 0.21.11 jako zpětně kompatibilní platformní základ.
+1. AI Studio GHRAB 0.21.18 jako zpětně kompatibilní platformní základ.
 2. Korespondenční asistent 5.9.15.
 3. Diferenciátor 1.3.8.
 4. Generátor testů 7.1.8.

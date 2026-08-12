@@ -1,7 +1,161 @@
 {
   "schema": "ai-studio-changelog-v1",
-  "current": "0.21.11",
+  "current": "0.21.18",
   "items": [
+    {
+      "version": "0.21.18",
+      "date": "2026-08-11",
+      "title": {
+        "cs": "Stabilizovaný Premium Master: klidné UI, plynulé přechody a vyšší obrazová kvalita",
+        "en": "Stabilized Premium Master: steady UI, smooth transitions and higher image quality"
+      },
+      "changes": [
+        {
+          "cs": "Showroom byl stabilizován pro projekci v učebně: v aplikačních sekvencích bylo odstraněno průběžné mikroposouvání, vlnění a plovoucí karty. Rozhraní po nástupu zůstává klidné; dynamiku tvoří především střih, jemné prolnutí a velmi pomalý filmový push-in.",
+          "en": "The showroom was stabilized for classroom projection: continuous micro-panning, wobble and floating cards were removed from application sequences. Once each interface enters, it stays steady; motion now comes mainly from editing, gentle dissolves and an extremely slow cinematic push-in."
+        },
+        {
+          "cs": "LUDUS zůstává dynamický, ale jednotlivé herní světy jsou nyní stabilní hero záběry propojené krátkými prolnutími. Hogwarts Grammar Academy, The Frostline Express, Matrix a Indiana Jones se proto dají pohodlně přečíst bez dojmu ruční kamery.",
+          "en": "LUDUS remains dynamic, but each game world is now a steady hero shot joined by short dissolves. Hogwarts Grammar Academy, The Frostline Express, Matrix and Indiana Jones are therefore readable without a handheld-camera feel."
+        },
+        {
+          "cs": "Nový master je 1920×1080 / 30 fps s obrazovým tokem přibližně 6,6 Mb/s a je sestaven z ostrých zdrojových kompozic. Zvuk zůstává plynulý bez remixu; naměřená integrovaná hlasitost je přibližně -16,8 LUFS a true peak -5,7 dBFS.",
+          "en": "The new master is 1920x1080 / 30 fps at roughly 6.6 Mb/s and is built from sharp source compositions. The soundtrack remains continuous and unremixed; measured integrated loudness is about -16.8 LUFS with -5.7 dBFS true peak."
+        }
+      ]
+    },
+    {
+      "version": "0.21.17",
+      "date": "2026-08-11",
+      "title": {
+        "cs": "Premium Master showroomu: ostrý obraz, hotové výstupy a čisté finále",
+        "en": "Premium showroom master: sharper image, finished outputs and a clean finale"
+      },
+      "changes": [
+        {
+          "cs": "Showroom byl znovu sestaven z čistých zdrojových screenshotů a nově vyrenderovaných prezentačních vrstev místo dalšího přepočtu remasteru. Výstup je Full HD 1920×1080 / 30 fps a drobný text i aplikační panely jsou výrazně ostřejší na notebooku i projektoru.",
+          "en": "The showroom was rebuilt from clean source screenshots and newly rendered presentation layers instead of transcoding the remaster again. The output is Full HD 1920×1080 / 30 fps, with significantly sharper small text and application panels on laptops and projectors."
+        },
+        {
+          "cs": "Přehlídka osmi aplikací nyní používá jednotnou anonymní demo situaci 1.A · angličtina · Present Perfect a ukazuje hotový výsledek práce: test, tři diferenciované verze, hodnocení slohu, anonymizovanou odpověď, herní světy LUDUSu, pracovní list, obsazený zasedací pořádek a naplánovanou hodinu. Prázdné a chybové stavy už nejsou hlavní vizitkou aplikací.",
+          "en": "All eight applications now share one anonymous demo scenario — class 1.A, English, Present Perfect — and show finished work: a test, three differentiated versions, an essay evaluation, an anonymized reply, LUDUS game worlds, a worksheet, a populated seating plan and a planned lesson. Empty and error states are no longer the main showcase."
+        },
+        {
+          "cs": "Uživatelem dodaná skladba běží plynule od začátku bez remixu a vnitřních střihů; výsledná hlasitost je přibližně −16 LUFS. Karta „Ne ukázka budoucnosti. Nástroje, které už máme.“ se objeví právě jednou a plynule zhasne do závěrečné teze. Finále obsahuje pouze nenápadný odkaz ghrabuvka.cz, bez směrování návštěvníků na chodbu nebo na všechny učitele.",
+          "en": "The user-supplied track runs continuously from the beginning without remixing or internal edits, at roughly −16 LUFS. The “Not a glimpse of the future. Tools we already have.” card appears exactly once and fades cleanly into the final thesis. The ending contains only a discreet ghrabuvka.cz reference, with no hallway directions or invitation to ask every teacher."
+        }
+      ]
+    },
+    {
+      "version": "0.21.16",
+      "date": "2026-08-11",
+      "title": {
+        "cs": "Showroom bez překryvů, plynulá skladba a klidnější finále",
+        "en": "Showroom without text collisions, continuous soundtrack and smoother finale"
+      },
+      "changes": [
+        {
+          "cs": "Ideový prolog showroomu byl přestříhán tak, aby se jednotlivé titulky nikdy nepřekrývaly. Každá hlavní myšlenka má vlastní čitelný časový úsek a mezi kartami je krátký filmový nádech do tmy.",
+          "en": "The showroom manifesto opening was recut so the title cards never overlap. Each key idea gets its own readable time window with a short cinematic dip to black between cards."
+        },
+        {
+          "cs": "Uživatelem dodaná skladba nyní běží od začátku plynule v původním pořadí bez remixu, beatových přeskládání nebo střihů; upravena je pouze výsledná hlasitost a závěrečné ztišení.",
+          "en": "The user-supplied track now runs continuously from the beginning in its original order, with no remix, beat rearrangement or internal cuts; only final playback level and the ending fade are adjusted."
+        },
+        {
+          "cs": "Závěrečná karta „Ne ukázka budoucnosti. Nástroje, které už máme.“ zůstává na obrazovce déle a přechod k tezi o budoucnosti AI probíhá přes plynulé stmavení místo rychlého bliknutí. Film má přibližně 87 sekund.",
+          "en": "The closing “Not a glimpse of the future. Tools we already have.” card now stays on screen longer, and the transition into the final AI thesis uses a smooth fade instead of a quick flash. The film runs for roughly 87 seconds."
+        }
+      ]
+    },
+    {
+      "version": "0.21.15",
+      "date": "2026-08-11",
+      "title": {
+        "cs": "Showroom dostává ideový prolog a finální tezi o AI gramotnosti",
+        "en": "Showroom gains an AI-literacy manifesto opening and closing thesis"
+      },
+      "changes": [
+        {
+          "cs": "Showroom film nově po aktivaci hvězdné brány vysvětluje, proč škola AI bezmyšlenkovitě nezakazuje: odpovědí je vzdělávání a schopnost AI použít, ověřit, chápat její limity a samostatně rozhodnout.",
+          "en": "After the star-gate activation, the showroom now explains why the school does not mindlessly ban AI: the answer is education and the ability to use AI, verify it, understand its limits and decide independently."
+        },
+        {
+          "cs": "Ideový prolog vrcholí větou „Ne osm aplikací. Jeden školní ekosystém.“ a teprve potom přechází do přehlídky skutečných aplikací, takže video nejdřív vysvětlí smysl projektu a až potom jeho nástroje.",
+          "en": "The manifesto opening culminates in “Not eight applications. One school ecosystem.” before moving into the real-application showcase, so the film explains the purpose before the tools."
+        },
+        {
+          "cs": "Závěr filmu nově uzavírá hlavní vize: budoucnost nebude patřit těm, kteří AI jen používají, ale těm, kteří vědí, jak ji používat dobře. Stopáž je přibližně 83 sekund a soundtrack zůstává postavený na uživatelem dodané skladbě ve vlastním trailerovém střihu.",
+          "en": "The film now closes on the core vision: the future will not belong to those who merely use AI, but to those who know how to use it well. Runtime is roughly 83 seconds and the soundtrack remains built from the user-supplied track in a custom trailer edit."
+        }
+      ]
+    },
+    {
+      "version": "0.21.14",
+      "date": "2026-08-11",
+      "title": {
+        "cs": "Ideový prolog Prezentace o odpovědné práci s AI",
+        "en": "Presentation manifesto for responsible AI use"
+      },
+      "changes": [
+        {
+          "cs": "Prezentace dostala novou kapitolu „Proč AI Studio?“, která projekt zasazuje do širší školní strategie: AI nezakazovat bezmyšlenkovitě, ale učit studenty s ní pracovat efektivně, kriticky, bezpečně a s odpovědností.",
+          "en": "Presentation now has a new “Why AI Studio?” section that frames the project as a school strategy: do not ban AI mindlessly; teach students to use it effectively, critically, safely and responsibly."
+        },
+        {
+          "cs": "Živá fullscreen smyčka nyní začíná ideovými scénami o AI gramotnosti, ověřování výsledků, ochraně dat a lidském úsudku, než přejde k přehlídce osmi aplikací.",
+          "en": "The live fullscreen loop now starts with conceptual scenes about AI literacy, verifying results, protecting data and human judgement before moving to the eight-application showcase."
+        },
+        {
+          "cs": "Do prezentační stránky byla přidána jasná hlavní věta pro veřejné vysvětlení projektu: „Budoucnost nebude patřit těm, kteří AI jen používají. Bude patřit těm, kteří vědí, jak ji používat dobře.“",
+          "en": "The presentation page now includes a clear public-facing thesis: “The future will not belong to those who merely use AI. It will belong to those who know how to use it well.”"
+        }
+      ]
+    },
+    {
+      "version": "0.21.13",
+      "date": "2026-08-11",
+      "title": {
+        "cs": "Trailerový střih showroomu s novým soundtrackem a čitelnějším LUDUSem",
+        "en": "Trailer-cut showroom with a new soundtrack and more readable LUDUS sequence"
+      },
+      "changes": [
+        {
+          "cs": "Showroom používá uživatelem dodanou skladbu DJ Shadow – Six Days / Tokyo Drift ve zkráceném trailerovém střihu: vybrané části jsou beatově propojené, lehce ekvalizované a hlasitostně sjednocené pro projekci.",
+          "en": "The showroom now uses the user-supplied DJ Shadow – Six Days / Tokyo Drift track in a shortened trailer edit: selected sections are beat-matched, lightly EQ’d and loudness-balanced for projection."
+        },
+        {
+          "cs": "Sekvence LUDUS je záměrně téměř dvojnásobně zpomalená. Hogwarts Grammar Academy zůstává na obrazovce dost dlouho na přečtení a The Frostline Express dostává delší samostatný hero záběr, aniž by se ztratila filmová dynamika.",
+          "en": "The LUDUS sequence is intentionally slowed to almost twice its previous duration. Hogwarts Grammar Academy remains on screen long enough to read, while The Frostline Express gets a longer standalone hero shot without losing the cinematic pace."
+        },
+        {
+          "cs": "Celková stopáž filmu se prodlužuje přibližně na 70 sekund; ostatní sekvence a funkce Studia zůstávají beze změny.",
+          "en": "The film now runs for roughly 70 seconds; all other Studio sequences and functionality remain unchanged."
+        }
+      ]
+    },
+    {
+      "version": "0.21.12",
+      "date": "2026-08-11",
+      "title": {
+        "cs": "Akční showroom s portálem a prémiovou sekvencí LUDUS",
+        "en": "Action showroom with portal opening and premium LUDUS sequence"
+      },
+      "changes": [
+        {
+          "cs": "Showcase film otevírá skutečná hvězdná brána AI Studia: její tři prstence se nezávisle otáčejí, osm ikon aplikací obíhá kolem portálu a závěr úvodu přechází do rychlého warp efektu.",
+          "en": "The showcase film now opens with the real AI Studio star gate: its three rings rotate independently, all eight app icons orbit the portal, and the opening resolves into a fast warp transition."
+        },
+        {
+          "cs": "Sekvence LUDUS je výrazně dynamičtější: krátká přehlídka herních světů přechází do čitelného hero záběru Hogwarts Grammar Academy a následně do výraznějšího detailu skutečné scény The Frostline Express z QA rozhraní.",
+          "en": "The LUDUS sequence is substantially more dynamic: a fast montage of game worlds moves into a clearly readable Hogwarts Grammar Academy hero and then into a stronger close-up of the real The Frostline Express QA scene."
+        },
+        {
+          "cs": "Přechody filmu dostaly výraznější světelné impulzy, rychlejší kamerové nájezdy, orbitální pohyb, částice a filmové akcenty. Dodaný soundtrack Tight Corners zůstává zachovaný a synchronizovaný s původní minutovou stopáží.",
+          "en": "Film transitions now use stronger light impacts, faster camera pushes, orbital motion, particles and cinematic accents. The supplied Tight Corners soundtrack remains in place and aligned to the original roughly one-minute runtime."
+        }
+      ]
+    },
     {
       "version": "0.21.11",
       "date": "2026-08-11",
