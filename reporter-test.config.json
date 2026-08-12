@@ -2,7 +2,7 @@
   "distEntry": "dist/tests/error-reporter-integration.html",
   "appId": "ai-studio-reporter",
   "appName": "AI Studio GHRAB – centrální reportér",
-  "version": "0.21.18",
+  "version": "0.21.22",
   "reporterPath": "src/access/error-reporter.js",
   "stylePath": "src/access/error-reporter.css",
   "adapterPath": "src/tests/error-reporter-adapter.js",

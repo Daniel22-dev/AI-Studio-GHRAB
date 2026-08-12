@@ -2,6 +2,35 @@
 
 > Tento soubor se generuje ze `src/config/changelog.json`. Neupravujte jej ručně.
 
+## 0.21.22 — 2026-08-12
+**Showroom 0.21.22: čistý přechod a dokončený LUDUS úvod**
+
+- Přechod kolem 00:05–00:06 byl přestřižen bez tmavého mezikroku: hvězdná brána nyní plynule přechází přímo do titulku „AI mění svět.“.
+- Úvod LUDUSu používá skutečný tmavý vzhled aplikace otevřené uvnitř AI Studia podle aktuálního rozhraní, místo světlého QA záběru.
+- Hogwarts Grammar Academy už nepůsobí prázdně: v hero záběru je viditelná skutečná úvodní karta s příběhovým textem, polem pro jméno a tlačítkem Begin Your Journey, která se v enginu standardně odhaluje se zpožděním.
+- Showroom zůstává v 2560×1440 / 30 fps a zvuková stopa zůstává beze změny. Opravované úseky byly nahrazeny cíleně a master je exportován ve vysoké kvalitě H.264.
+
+## 0.21.21 — 2026-08-12
+**Showroom 0.21.21: věrný LUDUS a vyšší projekční kvalita**
+
+- Úvodní záběr LUDUSu byl znovu vytvořen podle aktuálního zdroje aplikace 1.16.11. Zobrazuje skutečný hero text „Postav hru, aniž bys psal kód.“, tříkrokový postup Mechanika – Svět – Obsah a reálný první krok „Vyber mechaniku“ místo dřívější zjednodušené rekonstrukce.
+- LUDUS úsek byl nahrazen samostatně podle aktuálního zdroje a výsledný master prošel jediným finálním 1440p průchodem s Lanczos škálováním a mírným doostřením, bez řetězení dalších meziverzí.
+- Samostatný showroom i vložený film jsou exportovány ve 2560×1440 / 30 fps. Obrazový tok je přibližně 4,46 Mb/s, soubor má přibližně 53,5 MB a zůstává pod 60MB release limitem. Stopáž je přibližně 91,7 sekundy a nepřerušovaný soundtrack zůstává beze změny.
+
+## 0.21.20 — 2026-08-12
+**Showroom 0.21.20: čitelnější úvod, celé ikony a čistý LUDUS**
+
+- Ideový úvod byl prodloužen z přibližně 15 na 21 sekund. Tři hlavní textové karty mají samostatný delší čas pro čtení a aplikace začínají až po dokončení úvodní argumentace.
+- Levý informační sloupec všech osmi aplikací byl znovu vysázen z čistých zdrojů. Ikony jsou celé, názvy nepřetékají do ukázky a u Hodnotitele nezůstává žádný zbytek původního textu.
+- LUDUS nově začíná čistou úvodní stránkou bez modalu „Vítej v LUDUS“. Hogwarts Grammar Academy a Indiana Jones se zobrazují bez duplicitních redakčních nadpisů; závěr byl sestaven bez starého problikávajícího rámečku.
+
+## 0.21.19 — 2026-08-12
+**Prémiové doladění showroomu: bezpečné rozestupy, čistý Diferenciátor a nové finále**
+
+- Všechny aplikační karty dostaly pevnou levou bezpečnou zónu. Popisy už nezasahují do ukázek a kompaktní demo štítek byl zkrácen na „DEMO · 1.A · ANGLIČTINA“, takže se nedotýká rámečku aplikace.
+- Diferenciátor má opravený celý název aplikace v náhledu a nově vysázený panel tří pedagogických verzí; text „jiná podpora“ zůstává uvnitř jednotlivých karet a nic není oříznuté.
+- Závěrečná teze byla kompletně překreslena na čistou středovou kompozici bez rušivého vnitřního rámečku. Video je znovu vyrenderováno z kvalitnějšího 6,6Mb/s masteru, 1920×1080 / 30 fps, přičemž původní nepřerušovaný soundtrack zůstává beze změny.
+
 ## 0.21.18 — 2026-08-11
 **Stabilizovaný Premium Master: klidné UI, plynulé přechody a vyšší obrazová kvalita**
 

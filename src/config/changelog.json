@@ -1,7 +1,99 @@
 {
   "schema": "ai-studio-changelog-v1",
-  "current": "0.21.18",
+  "current": "0.21.22",
   "items": [
+    {
+      "version": "0.21.22",
+      "date": "2026-08-12",
+      "title": {
+        "cs": "Showroom 0.21.22: čistý přechod a dokončený LUDUS úvod",
+        "en": "Showroom 0.21.22: clean transition and completed LUDUS opening"
+      },
+      "changes": [
+        {
+          "cs": "Přechod kolem 00:05–00:06 byl přestřižen bez tmavého mezikroku: hvězdná brána nyní plynule přechází přímo do titulku „AI mění svět.“.",
+          "en": "The transition around 00:05–00:06 was recut without the dark intermediate state: the star gate now dissolves directly into the “AI is changing the world.” title."
+        },
+        {
+          "cs": "Úvod LUDUSu používá skutečný tmavý vzhled aplikace otevřené uvnitř AI Studia podle aktuálního rozhraní, místo světlého QA záběru.",
+          "en": "The LUDUS opening now uses the actual dark application view opened inside AI Studio instead of the light QA capture."
+        },
+        {
+          "cs": "Hogwarts Grammar Academy už nepůsobí prázdně: v hero záběru je viditelná skutečná úvodní karta s příběhovým textem, polem pro jméno a tlačítkem Begin Your Journey, která se v enginu standardně odhaluje se zpožděním.",
+          "en": "Hogwarts Grammar Academy no longer looks empty: the hero shot now shows the real intro card with story text, name field and Begin Your Journey button, which the engine normally reveals after a delay."
+        },
+        {
+          "cs": "Showroom zůstává v 2560×1440 / 30 fps a zvuková stopa zůstává beze změny. Opravované úseky byly nahrazeny cíleně a master je exportován ve vysoké kvalitě H.264.",
+          "en": "The showroom remains 2560×1440 / 30 fps and the soundtrack is unchanged. The affected segments were replaced surgically and the master is exported as high-quality H.264."
+        }
+      ]
+    },
+    {
+      "version": "0.21.21",
+      "date": "2026-08-12",
+      "title": {
+        "cs": "Showroom 0.21.21: věrný LUDUS a vyšší projekční kvalita",
+        "en": "Showroom 0.21.21: faithful LUDUS and higher projection quality"
+      },
+      "changes": [
+        {
+          "cs": "Úvodní záběr LUDUSu byl znovu vytvořen podle aktuálního zdroje aplikace 1.16.11. Zobrazuje skutečný hero text „Postav hru, aniž bys psal kód.“, tříkrokový postup Mechanika – Svět – Obsah a reálný první krok „Vyber mechaniku“ místo dřívější zjednodušené rekonstrukce.",
+          "en": "The LUDUS opening shot was rebuilt from the current 1.16.11 application source. It now shows the real “Build a game without writing code” hero, the Mechanics – World – Content three-step flow and the actual first step “Choose a mechanic” instead of the previous simplified reconstruction."
+        },
+        {
+          "cs": "LUDUS úsek byl nahrazen samostatně podle aktuálního zdroje a výsledný master prošel jediným finálním 1440p průchodem s Lanczos škálováním a mírným doostřením, bez řetězení dalších meziverzí.",
+          "en": "The LUDUS segment was replaced separately from the current source and the final master then received a single 1440p pass with Lanczos scaling and mild sharpening, avoiding a chain of further intermediate transcodes."
+        },
+        {
+          "cs": "Samostatný showroom i vložený film jsou exportovány ve 2560×1440 / 30 fps. Obrazový tok je přibližně 4,46 Mb/s, soubor má přibližně 53,5 MB a zůstává pod 60MB release limitem. Stopáž je přibližně 91,7 sekundy a nepřerušovaný soundtrack zůstává beze změny.",
+          "en": "The standalone showroom and embedded movie are exported at 2560×1440 / 30 fps. Video bitrate is about 4.46 Mb/s, the file is about 53.5 MB and remains below the 60 MB release limit. Runtime is about 91.7 seconds and the uninterrupted soundtrack remains unchanged."
+        }
+      ]
+    },
+    {
+      "version": "0.21.20",
+      "date": "2026-08-12",
+      "title": {
+        "cs": "Showroom 0.21.20: čitelnější úvod, celé ikony a čistý LUDUS",
+        "en": "Showroom 0.21.20: slower intro, complete icons and a clean LUDUS section"
+      },
+      "changes": [
+        {
+          "cs": "Ideový úvod byl prodloužen z přibližně 15 na 21 sekund. Tři hlavní textové karty mají samostatný delší čas pro čtení a aplikace začínají až po dokončení úvodní argumentace.",
+          "en": "The conceptual intro was extended from roughly 15 to 21 seconds. The three main text cards now have separate, longer reading time and the application showcase starts only after the introduction is complete."
+        },
+        {
+          "cs": "Levý informační sloupec všech osmi aplikací byl znovu vysázen z čistých zdrojů. Ikony jsou celé, názvy nepřetékají do ukázky a u Hodnotitele nezůstává žádný zbytek původního textu.",
+          "en": "The left information rail for all eight applications was rebuilt from clean source assets. Icons are fully visible, titles no longer spill into the preview and no leftover original text remains on the Essay Evaluator slide."
+        },
+        {
+          "cs": "LUDUS nově začíná čistou úvodní stránkou bez modalu „Vítej v LUDUS“. Hogwarts Grammar Academy a Indiana Jones se zobrazují bez duplicitních redakčních nadpisů; závěr byl sestaven bez starého problikávajícího rámečku.",
+          "en": "LUDUS now opens on a clean workshop landing page without the “Welcome to LUDUS” modal. Hogwarts Grammar Academy and Indiana Jones are shown without duplicate editorial titles, and the ending no longer flashes the obsolete frame."
+        }
+      ]
+    },
+    {
+      "version": "0.21.19",
+      "date": "2026-08-12",
+      "title": {
+        "cs": "Prémiové doladění showroomu: bezpečné rozestupy, čistý Diferenciátor a nové finále",
+        "en": "Premium showroom polish: safe spacing, clean Differentiator and redesigned finale"
+      },
+      "changes": [
+        {
+          "cs": "Všechny aplikační karty dostaly pevnou levou bezpečnou zónu. Popisy už nezasahují do ukázek a kompaktní demo štítek byl zkrácen na „DEMO · 1.A · ANGLIČTINA“, takže se nedotýká rámečku aplikace.",
+          "en": "All application cards now use a fixed left safe zone. Descriptions no longer intrude into previews, and the compact demo badge was shortened to “DEMO · 1.A · ENGLISH” so it stays clear of the application frame."
+        },
+        {
+          "cs": "Diferenciátor má opravený celý název aplikace v náhledu a nově vysázený panel tří pedagogických verzí; text „jiná podpora“ zůstává uvnitř jednotlivých karet a nic není oříznuté.",
+          "en": "Differentiator now shows its complete application title and a rebuilt three-version panel; the “different support” labels stay inside their cards and nothing is clipped."
+        },
+        {
+          "cs": "Závěrečná teze byla kompletně překreslena na čistou středovou kompozici bez rušivého vnitřního rámečku. Video je znovu vyrenderováno z kvalitnějšího 6,6Mb/s masteru, 1920×1080 / 30 fps, přičemž původní nepřerušovaný soundtrack zůstává beze změny.",
+          "en": "The closing thesis was completely redrawn as a clean centered composition without the distracting inner frame. The video was re-rendered from the higher-quality 6.6 Mbps master at 1920×1080 / 30 fps while preserving the original uninterrupted soundtrack unchanged."
+        }
+      ]
+    },
     {
       "version": "0.21.18",
       "date": "2026-08-11",
