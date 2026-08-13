@@ -1,7 +1,33 @@
 {
   "schema": "ai-studio-changelog-v1",
-  "current": "0.21.22",
+  "current": "0.21.23",
   "items": [
+    {
+      "version": "0.21.23",
+      "date": "2026-08-12",
+      "title": {
+        "cs": "Showroom 0.21.23: plynulý prolog a souvislý zvuk",
+        "en": "Showroom 0.21.23: smooth prologue and continuous audio"
+      },
+      "changes": [
+        {
+          "cs": "Vadný černý snímek v čase 00:04,67 byl nahrazen vypočteným mezisnímkem ze sousedních záběrů. Hvězdná brána proto už krátce nezhasne a přechod k titulku „AI mění svět.“ zůstává plynulý.",
+          "en": "The defective black frame at 00:04.67 was replaced with an interpolated frame built from its neighbours. The star gate no longer flashes off and the transition into the “AI is changing the world.” title remains smooth."
+        },
+        {
+          "cs": "Zvuková stopa byla znovu sestavena z původního zdrojového souboru jako jediný nepřerušený průběh. Tím zmizel přibližně 29ms přeskočený úsek kolem 00:30,57 i návrat hudby o přibližně 205 ms kolem 01:01,28.",
+          "en": "The soundtrack was rebuilt from the original source file as one uninterrupted timeline. This removes both the roughly 29 ms skip near 00:30.57 and the roughly 205 ms backward jump near 01:01.28."
+        },
+        {
+          "cs": "Finální zvuk používá 48 kHz stereo AAC-LC s tokem přibližně 320 kb/s, integrovanou hlasitostí −17,0 LUFS, true peakem −6,2 dBFS a plynulým závěrečným ztišením.",
+          "en": "Final audio uses 48 kHz stereo AAC-LC at roughly 320 kbps, −17.0 LUFS integrated loudness, −6.2 dBFS true peak and a smooth closing fade."
+        },
+        {
+          "cs": "Obraz zůstává 2560×1440 / 30 fps a stopáž 91,7 sekundy. Master je exportován jako kvalitní H.264 s rychlým startem pro webové přehrávání; ostatní části Studia se nemění.",
+          "en": "Video remains 2560×1440 at 30 fps with a 91.7-second runtime. The master is exported as high-quality H.264 with fast start for web playback; the rest of AI Studio is unchanged."
+        }
+      ]
+    },
     {
       "version": "0.21.22",
       "date": "2026-08-12",

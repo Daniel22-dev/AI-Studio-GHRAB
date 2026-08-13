@@ -1,19 +1,19 @@
 # AI Studio GHRAB
 
-**Aktuální verze:** 0.21.22
+**Aktuální verze:** 0.21.23
 **Platforma:** GHRAB Platform 1.1.0 · etapa P5
 
-**Verze 0.21.22 – Premium Polish showroomu zpřesňuje sazbu aplikačních karet a přináší čistší finále při zachování ostrého Full HD masteru.**
+**Verze 0.21.23 opravuje poslední vadný snímek prologu a obnovuje showcase film s nepřerušenou, kvalitněji exportovanou hudební stopou.**
 
 AI Studio GHRAB je centrální brána školních digitálních a AI nástrojů. Jednotlivé aplikace zůstávají v samostatných repozitářích; Studio zajišťuje společnou navigaci, Top 4, synchronizaci verzí, bezpečnostní rámec, pilotní měření, správu podepsaných přístupů a kanonický základ technického reportéru. Materiály jsou viditelnou součástí portálu, ale v dnešním bezserverovém režimu se vlastní obsah ukládá pouze místně.
 
-## Hlavní novinky 0.21.22
+## Hlavní novinky 0.21.23
 
-- Levý informační sloupec všech osmi aplikací používá pevnou safe zónu; nadpisy, popisy a demo štítky už nezasahují do rámečku ukázky.
-- Demo štítek je zkrácen na **DEMO · 1.A · ANGLIČTINA**, takže se netlačí na preview. Téma Present Perfect zůstává viditelné v samotných výstupech.
-- Diferenciátor má celý název aplikace a nově vysázenou trojici pedagogických verzí bez přetékání textu.
-- Závěrečná teze byla kompletně překreslena do čisté středové kompozice bez rušivého rámečku.
-- Showroom byl znovu vyrenderován z kvalitnějšího 6,6Mb/s masteru; výstup je **1920×1080 / 30 fps** a původní nepřerušovaný soundtrack zůstává beze změny.
+- Černý vadný snímek v čase **00:04,67** byl nahrazen přirozeným mezisnímkem ze sousedních záběrů, takže hvězdná brána už během přechodu krátce nezhasne.
+- Hudba byla znovu sestavena z původního zdrojového souboru jako jedna souvislá stopa; zmizel krátký skok kolem **00:30,57** i slyšitelný návrat přibližně o 205 ms kolem **01:01,28**.
+- Zvuk je nově exportován jako **48 kHz stereo AAC-LC / přibližně 320 kb/s**, s hlasitostí −17,0 LUFS, bezpečnou rezervou špiček a plynulým závěrečným ztišením.
+- Showroom zůstává v **2560×1440 / 30 fps**, má stopáž 91,7 sekundy a používá kvalitní H.264 master připravený pro webové přehrávání.
+- Funkce, oprávnění a datové chování AI Studia se touto opravou nemění.
 
 ## Předchozí vydání 0.20.18
 
@@ -64,7 +64,7 @@ Ochranný bootstrap je určen pro Generátor 7.1.8, Diferenciátor 1.3.8, Hodnot
 
 ## Doporučené pořadí nasazení P2
 
-1. AI Studio GHRAB 0.21.22 jako zpětně kompatibilní platformní základ.
+1. AI Studio GHRAB 0.21.23 jako zpětně kompatibilní platformní základ.
 2. Korespondenční asistent 5.9.15.
 3. Diferenciátor 1.3.8.
 4. Generátor testů 7.1.8.

@@ -2,6 +2,14 @@
 
 > Tento soubor se generuje ze `src/config/changelog.json`. Neupravujte jej ručně.
 
+## 0.21.23 — 2026-08-12
+**Showroom 0.21.23: plynulý prolog a souvislý zvuk**
+
+- Vadný černý snímek v čase 00:04,67 byl nahrazen vypočteným mezisnímkem ze sousedních záběrů. Hvězdná brána proto už krátce nezhasne a přechod k titulku „AI mění svět.“ zůstává plynulý.
+- Zvuková stopa byla znovu sestavena z původního zdrojového souboru jako jediný nepřerušený průběh. Tím zmizel přibližně 29ms přeskočený úsek kolem 00:30,57 i návrat hudby o přibližně 205 ms kolem 01:01,28.
+- Finální zvuk používá 48 kHz stereo AAC-LC s tokem přibližně 320 kb/s, integrovanou hlasitostí −17,0 LUFS, true peakem −6,2 dBFS a plynulým závěrečným ztišením.
+- Obraz zůstává 2560×1440 / 30 fps a stopáž 91,7 sekundy. Master je exportován jako kvalitní H.264 s rychlým startem pro webové přehrávání; ostatní části Studia se nemění.
+
 ## 0.21.22 — 2026-08-12
 **Showroom 0.21.22: čistý přechod a dokončený LUDUS úvod**
 
