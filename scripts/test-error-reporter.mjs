@@ -110,6 +110,7 @@ function staticAudit() {
   const reporter = text(config.reporterPath);
   const css = text(config.stylePath);
   const adapter = text(config.adapterPath);
+  const productionIndex = text('src/index.html');
 
   check('Ochrana jediné instance používá ghrab-error-reporter', reporter.includes('const REPORTER_ID = "ghrab-error-reporter"'));
   check('Kanonický reportér má verzi 1.1.2', reporter.includes('const REPORTER_VERSION = "1.1.2"'));
@@ -152,6 +153,10 @@ function staticAudit() {
     count(reporter, /const captureStatus = element\(/g) === 1 &&
     count(reporter, /const finalStatus = element\(/g) === 1 &&
     !/toast|snackbar/i.test(reporter));
+  check(
+    'Produkční CSP AI Studia povoluje blob náhledy screenshotů',
+    /img-src[^;]*\bblob:/.test(productionIndex),
+  );
 
   check('Adaptér má správné appId', adapter.includes(`appId: '${config.appId}'`));
   check('Adaptér má správnou verzi', adapter.includes(`appVersion: '${config.version}'`));
@@ -921,6 +926,66 @@ async function runBrowserTests() {
     })()`);
     check('Samostatné spuštění aplikace má právě jeden reportér', standalone.roots === 1 && standalone.launchers === 1 && standalone.duplicateReporterIds === 0, JSON.stringify(standalone));
     check('Samostatné spuštění nemá runtime výjimku reportéru', runtimeExceptions.length === 0, runtimeExceptions.join(' | '));
+
+    if (config.productionReporterEntry) {
+      runtimeExceptions.length = 0;
+      await navigate(client, `${appBase}/${config.productionReporterEntry}`);
+      await waitFor(client, 'document.querySelectorAll("#ghrab-error-reporter").length === 1', 'Produkční AI Studio nevytvořilo reportér', 500);
+      const productionCapture = await client.evaluate(`(async () => {
+        const root = document.getElementById('ghrab-error-reporter');
+        const wait = (ms = 40) => new Promise((resolve) => setTimeout(resolve, ms));
+        const until = async (test, label, loops = 160) => {
+          for (let i = 0; i < loops; i += 1) {
+            if (test()) return;
+            await wait(25);
+          }
+          throw new Error(label);
+        };
+        const byText = (selector, value) => [...root.querySelectorAll(selector)].find((node) => node.textContent.trim() === value);
+        const canvas = document.createElement('canvas');
+        canvas.width = 640;
+        canvas.height = 360;
+        const context = canvas.getContext('2d');
+        context.fillStyle = '#1565c0';
+        context.fillRect(0, 0, canvas.width, canvas.height);
+        context.fillStyle = '#ffffff';
+        context.font = '48px sans-serif';
+        context.fillText('GHRAB CSP TEST', 72, 190);
+        const stream = canvas.captureStream(5);
+        let pulse = false;
+        const timer = setInterval(() => {
+          pulse = !pulse;
+          context.fillStyle = pulse ? '#1565c0' : '#1565c1';
+          context.fillRect(0, 0, 2, 2);
+        }, 100);
+        window.__productionCaptureFixture = { canvas, stream, timer };
+        Object.defineProperty(navigator, 'mediaDevices', {
+          configurable: true,
+          value: { getDisplayMedia: async () => stream },
+        });
+        root.querySelector('.launcher').click();
+        await wait(60);
+        byText('button', 'Povolit snímání obrazovky').click();
+        await until(() => !byText('button', 'Pořídit snímek').disabled, 'Produkční stream se neaktivoval');
+        byText('button', 'Pořídit snímek').click();
+        await until(() => root.querySelectorAll('.ghrab-screenshot-card').length === 1, 'Produkční CSP zablokovala blob náhled screenshotu');
+        const image = root.querySelector('.ghrab-screenshot-card img');
+        const result = {
+          screenshots: root.querySelectorAll('.ghrab-screenshot-card').length,
+          imageReady: Boolean(image?.complete && image.naturalWidth > 0),
+          status: root.querySelector('.ghrab-report-status')?.textContent || '',
+        };
+        byText('button', 'Ukončit snímání').click();
+        clearInterval(timer);
+        return result;
+      })()`);
+      check(
+        'Produkční CSP AI Studia dovolí zpracovat skutečný screenshot',
+        productionCapture.screenshots === 1 && productionCapture.imageReady,
+        JSON.stringify(productionCapture),
+      );
+      check('Produkční snímání nemá runtime výjimku reportéru', runtimeExceptions.length === 0, runtimeExceptions.join(' | '));
+    }
 
     runtimeExceptions.length = 0;
     await navigate(client, `${appBase}/embed.html?entry=${encodeURIComponent(`/${config.distEntry}`)}`);

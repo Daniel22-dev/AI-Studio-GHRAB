@@ -7,7 +7,7 @@ Ochranná vrstva je integrována v těchto vydáních:
 - Generátor interaktivních testů 7.1.13 — ID `generator`,
 - Diferenciátor 1.3.13 — ID `differentiator`,
 - Hodnotitel maturitních slohů 1.5.11 — ID `essay-evaluator`,
-- LUDUS 1.16.12 — ID `ludus`,
+- LUDUS 1.16.13 — ID `ludus`,
 - Korespondenční asistent 5.10.3 — ID `correspondence`,
 - ACTIVA 0.5.10 — ID `activity-builder`,
 - SORTIO 1.0.12 — ID `sortio`,

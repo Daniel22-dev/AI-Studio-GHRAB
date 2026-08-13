@@ -1,11 +1,11 @@
-# Bezpečnostní hranice AI Studio GHRAB 0.21.25
+# Bezpečnostní hranice AI Studio GHRAB 0.21.26
 
-> Aktuální verze: **0.21.25** · etapa P5
+> Aktuální verze: **0.21.26** · etapa P5
 
 
 ## Rychlá kontrola dat v portálu
 
-Záložka **Bezpečnost** obsahuje jednoduchý semafor a volitelnou pomůcku **Nejsem si jistý → rychle posoudit**. Uživatel do ní nevkládá dokument ani text; pouze označí typy údajů. Kontrola běží lokálně, nic neposílá a nepoužívá AI. Není povinná před každým použitím aplikace. V 0.21.25 obsahuje deset praktických kategorií pro běžnou školní rutinu (identifikátory, práce žáka, známky/docházka, komunikace, obraz/hlas/rukopis, nepřímá identifikace, citlivé údaje, přístupové údaje a důvěrné interní dokumenty). Při více označených položkách vždy rozhoduje nejvyšší riziko: červená > oranžová > zelená; bezpečná anonymní volba se s rizikovými volbami nekombinuje.
+Záložka **Bezpečnost** obsahuje jednoduchý semafor a volitelnou pomůcku **Nejsem si jistý → rychle posoudit**. Uživatel do ní nevkládá dokument ani text; pouze označí typy údajů. Kontrola běží lokálně, nic neposílá a nepoužívá AI. Není povinná před každým použitím aplikace. V 0.21.26 obsahuje deset praktických kategorií pro běžnou školní rutinu (identifikátory, práce žáka, známky/docházka, komunikace, obraz/hlas/rukopis, nepřímá identifikace, citlivé údaje, přístupové údaje a důvěrné interní dokumenty). Při více označených položkách vždy rozhoduje nejvyšší riziko: červená > oranžová > zelená; bezpečná anonymní volba se s rizikovými volbami nekombinuje.
 
 ## Co serverless portál zajišťuje
 
@@ -29,7 +29,7 @@ Záložka **Bezpečnost** obsahuje jednoduchý semafor a volitelnou pomůcku **N
 
 ## Stav ochrany přímých adres
 
-Ochranný bootstrap je integrován v Generátoru 7.1.13, Diferenciátoru 1.3.13, Hodnotiteli maturitních slohů 1.5.11, LUDUSu 1.16.12, Korespondenčním asistentovi 5.10.3, ACTIVA 0.5.10, SORTIO 1.0.12 a Lesson Hubu 1.2.9. Běžný vstupní bod těchto aplikací nejprve načte centrální modul a ověří podpis, platnost, revokaci, roli, ID aplikace a aktuální verzi školení. Jde o praktickou ochranu proti běžnému sdílení přímé adresy, nikoli o serverovou ochranu zdrojového kódu: technicky zkušený uživatel může veřejný statický kód stáhnout nebo spustit mimo standardní bootstrap. Při nedostupnosti centrální konfigurace robustní bootstrap zobrazí srozumitelnou chybovou obrazovku a aplikaci nespustí.
+Ochranný bootstrap je integrován v Generátoru 7.1.13, Diferenciátoru 1.3.13, Hodnotiteli maturitních slohů 1.5.11, LUDUSu 1.16.13, Korespondenčním asistentovi 5.10.3, ACTIVA 0.5.10, SORTIO 1.0.12 a Lesson Hubu 1.2.9. Běžný vstupní bod těchto aplikací nejprve načte centrální modul a ověří podpis, platnost, revokaci, roli, ID aplikace a aktuální verzi školení. Jde o praktickou ochranu proti běžnému sdílení přímé adresy, nikoli o serverovou ochranu zdrojového kódu: technicky zkušený uživatel může veřejný statický kód stáhnout nebo spustit mimo standardní bootstrap. Při nedostupnosti centrální konfigurace robustní bootstrap zobrazí srozumitelnou chybovou obrazovku a aplikaci nespustí.
 
 ## Klíče
 

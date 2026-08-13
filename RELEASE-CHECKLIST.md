@@ -1,10 +1,10 @@
-# Release checklist AI Studio GHRAB 0.21.25
+# Release checklist AI Studio GHRAB 0.21.26
 
-> Aktuální verze: **0.21.25** · etapa P5
+> Aktuální verze: **0.21.26** · etapa P5
 
 ## Veřejný balík
 
-- [x] Verze 0.21.25 je shodná v package, PWA manifestu, QA manifestu, buildu, dokumentaci a changelogu.
+- [x] Verze 0.21.26 je shodná v package, PWA manifestu, QA manifestu, buildu, dokumentaci a changelogu.
 - [x] Všechny aplikace jsou ve výchozím stavu uzamčené.
 - [x] Veřejný balík obsahuje pouze veřejný ověřovací klíč.
 - [x] Ve zdroji ani buildu není soukromý klíč ani `.ghrab-access.json`.
@@ -15,7 +15,7 @@
 - [x] Materiály jsou v běžné navigaci jako server-ready katalog; centrální Tvorba materiálů v navigaci není. Bez serveru zůstává sdílení viditelně neaktivní.
 - [x] Pilotní metriky jsou přesně označeny jako místní.
 - [x] PWA cache se generuje automaticky z produkčního stromu a neobsahuje neplatné cesty.
-- [x] Všechny lokální JS/CSS vstupy a relativní modulové importy mají ve výsledném buildu revizi `?v=0.21.25`.
+- [x] Všechny lokální JS/CSS vstupy a relativní modulové importy mají ve výsledném buildu revizi `?v=0.21.26`.
 - [x] Serverový katalog se aktivuje pouze při `school-server` + `schoolServerConnected` + `sharedMaterialLibrary`; GitHub profil nemůže omylem publikovat materiál.
 - [x] Rychlá kontrola dat je rozbalovací pomocník pro nejisté situace, ne povinný krok před každým použitím AI.
 - [x] Semafor má deset praktických kategorií, používá nejvyšší zvolené riziko a bezpečná anonymní volba je výlučná.
@@ -24,7 +24,8 @@
 - [x] Showcase video propouští Range požadavky mimo CacheStorage a fullscreen orbit je omezen i výškou viewportu.
 - [x] Showcase video nemá vadný černý snímek v prologu; zvuková stopa má souvislou časovou osu, 48 kHz stereo AAC-LC a webový fast-start export.
 - [x] Reportér po povolení snímání nečeká bez omezení na `loadedmetadata`, má časově omezené čekání na skutečný frame a viditelně potvrzuje uložení screenshotu.
-- [x] Regrese reportéru pokrývá pořízení snímku v dialogu i z plovoucího panelu a opožděné zpřístupnění video rozměrů.
+- [x] Produkční CSP povoluje `blob:` v `img-src`, takže náhled zachyceného screenshotu není zablokovaný po převodu z canvasu.
+- [x] Regrese reportéru pokrývá pořízení snímku v dialogu i z plovoucího panelu, opožděné zpřístupnění video rozměrů a skutečný canvas MediaStream na produkčním indexu AI Studia.
 - [x] AI Studio má samostatný manuál učitele a rozšířený manuál administrátora; admin verze má vlastní runtime kontrolu role.
 - [x] Domovský odkaz „Poprvé v AI Studiu?“ je pouze drobný role-aware text pod stavem Studia, nikoli další panel.
 - [x] Úvodní překryv má nezávislý fail-open watchdog a při selhání uvolní inertní stav rozhraní.

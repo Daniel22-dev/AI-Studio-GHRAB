@@ -2,7 +2,7 @@
   {
     "id": "ai-studio",
     "name": "AI Studio GHRAB",
-    "version": "0.21.25",
+    "version": "0.21.26",
     "slug": "ai-studio-ghrab",
     "paths": {
       "app": "https://daniel22-dev.github.io/AI-Studio-GHRAB/",
@@ -31,7 +31,7 @@
       "performanceContract": "ghrab-performance-v1",
       "moduleContract": "ghrab-lazy-modules-v1"
     },
-    "cacheName": "ghrab-ai-studio-v0.21.25",
+    "cacheName": "ghrab-ai-studio-v0.21.26",
     "theme": {
       "supported": [
         "light",
@@ -250,7 +250,7 @@
   {
     "id": "ludus",
     "name": "LUDUS",
-    "version": "1.16.12",
+    "version": "1.16.13",
     "slug": "ludus",
     "paths": {
       "app": "https://daniel22-dev.github.io/Ludus/",
@@ -279,7 +279,7 @@
       "performanceContract": "ghrab-performance-v1",
       "moduleContract": "ghrab-lazy-modules-v1"
     },
-    "cacheName": "ghrab-ludus-v1.16.12",
+    "cacheName": "ghrab-ludus-v1.16.13",
     "theme": {
       "supported": [
         "light",

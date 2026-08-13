@@ -2,6 +2,14 @@
 
 > Tento soubor se generuje ze `src/config/changelog.json`. Neupravujte jej ručně.
 
+## 0.21.26 — 2026-08-13
+**Hotfix skutečného ukládání screenshotů**
+
+- Produkční Content Security Policy AI Studia nově povoluje lokální blob náhledy vytvořených screenshotů. Snímek se proto po zachycení skutečně přidá do hlášení místo chyby „Obrázek se nepodařilo zpracovat“.
+- Regresní test nově otevírá skutečný produkční index AI Studia, připojí reálný canvas MediaStream a ověří, že výsledný blob obrázek projde produkční CSP a má platný náhled.
+- Dvoukrokové stažení ZIPu, ruční přiložení do Gmailu, skryté pomocné video a ostatní opravy reportéru zůstávají beze změny.
+- Registr AI Studia byl současně dorovnán na opravený LUDUS 1.16.13.
+
 ## 0.21.25 — 2026-08-13
 **Sjednocený dvoukrokový reportér chyb**
 

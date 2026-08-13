@@ -1,19 +1,18 @@
 # AI Studio GHRAB
 
-**Aktuální verze:** 0.21.25
+**Aktuální verze:** 0.21.26
 **Platforma:** GHRAB Platform 1.1.0 · etapa P5
 
-**Verze 0.21.25 opravuje pořizování screenshotů v centrálním reportéru chyb a přidává jednoznačnou odezvu po kliknutí na „Pořídit snímek“.**
+**Verze 0.21.26 opravuje produkční CSP, která v AI Studiu blokovala blob náhled právě pořízeného screenshotu.**
 
 AI Studio GHRAB je centrální brána školních digitálních a AI nástrojů. Jednotlivé aplikace zůstávají v samostatných repozitářích; Studio zajišťuje společnou navigaci, Top 4, synchronizaci verzí, bezpečnostní rámec, pilotní měření, správu podepsaných přístupů a kanonický základ technického reportéru. Materiály jsou viditelnou součástí portálu, ale v dnešním bezserverovém režimu se vlastní obsah ukládá pouze místně.
 
-## Hlavní novinky 0.21.25
+## Hlavní novinky 0.21.26
 
-- Inicializace screen capture už nemůže uváznout čekáním na opožděnou nebo již proběhlou událost `loadedmetadata`; reportér čeká na skutečně dostupný video frame s časovým limitem.
-- Po kliknutí na **Pořídit snímek** se zobrazí „Pořizuji snímek…“ a po úspěchu „Snímek uložen ✓“; neaktivní stream už neselže potichu.
-- Opraven je i CSS selektor skrytého video prvku používaného pro zachycení obrazovky.
-- Regresní test pokrývá opožděné zpřístupnění obrazu a obě cesty snímání: přímo v dialogu i přes plovoucí panel.
-- Opravy showroomu a zvuku z 0.21.23 zůstávají zachovány beze změny.
+- Produkční `img-src` nyní výslovně povoluje lokální `blob:` URL, které reportér používá pro náhled a zpracování zachyceného obrázku.
+- Regresní test otevírá skutečný produkční index AI Studia a ověřuje screenshot z reálného canvas MediaStreamu bez podvržených rozměrů videa.
+- Ověření kontroluje, že se vytvoří právě jeden screenshot, náhled má nenulové rozměry a produkční CSP jej nezablokuje.
+- Dvoukrokové stažení ZIPu, ruční přiložení do Gmailu, skryté pomocné video a ostatní opravy z 0.21.25 zůstávají zachovány.
 
 ## Předchozí vydání 0.20.18
 
@@ -32,7 +31,7 @@ AI Studio GHRAB je centrální brána školních digitálních a AI nástrojů. 
 - Všechny aplikace používají jeden kanonický školní logotyp bez inline base64 kopií a jednotnou autorskou patičku.
 - Aplikační data mají namespace `ghrab.<appId>.*`; historické klíče se migrují vratně a před změnou vzniká úplná záloha.
 - Studio Bridge v2 zachovává kompatibilitu se starším handoffem v1 a strukturované exporty používají artifact envelope v1 se SHA-256.
-- Registr Studia je synchronizován s verzemi KS 5.10.3, SORTIO 1.0.12, Lesson Hub 1.2.9, Diferenciátor 1.3.13, ACTIVA 0.5.10, Hodnotitel 1.5.11, LUDUS 1.16.12 a Generátor 7.1.13.
+- Registr Studia je synchronizován s verzemi KS 5.10.3, SORTIO 1.0.12, Lesson Hub 1.2.9, Diferenciátor 1.3.13, ACTIVA 0.5.10, Hodnotitel 1.5.11, LUDUS 1.16.13 a Generátor 7.1.13.
 
 ## Serverová vrstva z P1
 
@@ -64,7 +63,7 @@ Ochranný bootstrap je určen pro Generátor 7.1.8, Diferenciátor 1.3.8, Hodnot
 
 ## Doporučené pořadí nasazení P2
 
-1. AI Studio GHRAB 0.21.25 jako zpětně kompatibilní platformní základ.
+1. AI Studio GHRAB 0.21.26 jako zpětně kompatibilní platformní základ.
 2. Korespondenční asistent 5.9.15.
 3. Diferenciátor 1.3.8.
 4. Generátor testů 7.1.8.

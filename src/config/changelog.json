@@ -1,7 +1,33 @@
 {
   "schema": "ai-studio-changelog-v1",
-  "current": "0.21.25",
+  "current": "0.21.26",
   "items": [
+    {
+      "version": "0.21.26",
+      "date": "2026-08-13",
+      "title": {
+        "cs": "Hotfix skutečného ukládání screenshotů",
+        "en": "Production screenshot saving hotfix"
+      },
+      "changes": [
+        {
+          "cs": "Produkční Content Security Policy AI Studia nově povoluje lokální blob náhledy vytvořených screenshotů. Snímek se proto po zachycení skutečně přidá do hlášení místo chyby „Obrázek se nepodařilo zpracovat“.",
+          "en": "AI Studio's production Content Security Policy now allows local blob previews of captured screenshots. A captured image is therefore added to the report instead of failing with an image processing error."
+        },
+        {
+          "cs": "Regresní test nově otevírá skutečný produkční index AI Studia, připojí reálný canvas MediaStream a ověří, že výsledný blob obrázek projde produkční CSP a má platný náhled.",
+          "en": "The regression test now opens AI Studio's real production index, attaches a genuine canvas MediaStream and verifies that the resulting blob image passes the production CSP and renders as a valid preview."
+        },
+        {
+          "cs": "Dvoukrokové stažení ZIPu, ruční přiložení do Gmailu, skryté pomocné video a ostatní opravy reportéru zůstávají beze změny.",
+          "en": "The two-step ZIP download, manual Gmail attachment, hidden helper video and all other reporter fixes remain unchanged."
+        },
+        {
+          "cs": "Registr AI Studia byl současně dorovnán na opravený LUDUS 1.16.13.",
+          "en": "AI Studio's registry was also aligned with the fixed LUDUS 1.16.13 release."
+        }
+      ]
+    },
     {
       "version": "0.21.25",
       "date": "2026-08-13",
