@@ -1,18 +1,18 @@
 # AI Studio GHRAB
 
-**Aktuální verze:** 0.21.26
+**Aktuální verze:** 0.21.27
 **Platforma:** GHRAB Platform 1.1.0 · etapa P5
 
-**Verze 0.21.26 opravuje produkční CSP, která v AI Studiu blokovala blob náhled právě pořízeného screenshotu.**
+**Verze 0.21.27 opravuje falešný pád produkčního regresního testu screenshotů na GitHub Actions.**
 
 AI Studio GHRAB je centrální brána školních digitálních a AI nástrojů. Jednotlivé aplikace zůstávají v samostatných repozitářích; Studio zajišťuje společnou navigaci, Top 4, synchronizaci verzí, bezpečnostní rámec, pilotní měření, správu podepsaných přístupů a kanonický základ technického reportéru. Materiály jsou viditelnou součástí portálu, ale v dnešním bezserverovém režimu se vlastní obsah ukládá pouze místně.
 
-## Hlavní novinky 0.21.26
+## Hlavní novinky 0.21.27
 
-- Produkční `img-src` nyní výslovně povoluje lokální `blob:` URL, které reportér používá pro náhled a zpracování zachyceného obrázku.
-- Regresní test otevírá skutečný produkční index AI Studia a ověřuje screenshot z reálného canvas MediaStreamu bez podvržených rozměrů videa.
-- Ověření kontroluje, že se vytvoří právě jeden screenshot, náhled má nenulové rozměry a produkční CSP jej nezablokuje.
-- Dvoukrokové stažení ZIPu, ruční přiložení do Gmailu, skryté pomocné video a ostatní opravy z 0.21.25 zůstávají zachovány.
+- Regresní scénář reportéru po kontrolách Gmailu výslovně vrací původní kartu AI Studia do popředí, než spustí reálný canvas MediaStream.
+- Test navíc ověřuje `document.visibilityState === "visible"`, takže už nemůže zaměnit Chromium throttling nebo zmrazení karty na pozadí za chybu produkční CSP.
+- Produkční kontrola `img-src blob:` zůstává zachována a skutečný screenshot po opravě testu projde s jedním náhledem s nenulovými rozměry.
+- Runtime reportéru a bezpečnostní politika se nemění; jde o cílenou opravu falešně červené QA brány nad již opraveným 0.21.26.
 
 ## Předchozí vydání 0.20.18
 
@@ -63,7 +63,7 @@ Ochranný bootstrap je určen pro Generátor 7.1.8, Diferenciátor 1.3.8, Hodnot
 
 ## Doporučené pořadí nasazení P2
 
-1. AI Studio GHRAB 0.21.26 jako zpětně kompatibilní platformní základ.
+1. AI Studio GHRAB 0.21.27 jako zpětně kompatibilní platformní základ.
 2. Korespondenční asistent 5.9.15.
 3. Diferenciátor 1.3.8.
 4. Generátor testů 7.1.8.

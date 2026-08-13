@@ -2,6 +2,13 @@
 
 > Tento soubor se generuje ze `src/config/changelog.json`. Neupravujte jej ručně.
 
+## 0.21.27 — 2026-08-13
+**Stabilní produkční regresní test screenshotů**
+
+- Opraven falešný pád GitHub QA po 87 úspěšných kontrolách: test po otevření Gmailu nechával původní AI Studio na pozadí, kde Chromium výrazně omezilo nebo zmrazilo MediaStream a dekódování obrázku.
+- Produkční screenshot regresní scénář nyní před reálným canvas MediaStreamem výslovně vrátí kartu AI Studia do popředí a ověří její viditelnost. Tím test odpovídá skutečnému uživatelskému scénáři pořizování snímku.
+- Kontrola CSP `img-src blob:` zůstává zachována a skutečný produkční screenshot po opravě testu prochází s platným náhledem; runtime reportéru ani bezpečnostní politika se kvůli tomuto CI hotfixu nerozšiřují.
+
 ## 0.21.26 — 2026-08-13
 **Hotfix skutečného ukládání screenshotů**
 

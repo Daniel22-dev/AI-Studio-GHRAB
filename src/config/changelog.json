@@ -1,7 +1,29 @@
 {
   "schema": "ai-studio-changelog-v1",
-  "current": "0.21.26",
+  "current": "0.21.27",
   "items": [
+    {
+      "version": "0.21.27",
+      "date": "2026-08-13",
+      "title": {
+        "cs": "Stabilní produkční regresní test screenshotů",
+        "en": "Stable production screenshot regression test"
+      },
+      "changes": [
+        {
+          "cs": "Opraven falešný pád GitHub QA po 87 úspěšných kontrolách: test po otevření Gmailu nechával původní AI Studio na pozadí, kde Chromium výrazně omezilo nebo zmrazilo MediaStream a dekódování obrázku.",
+          "en": "Fixed a false GitHub QA failure after 87 successful checks: after opening Gmail, the test left the original AI Studio tab in the background, where Chromium heavily throttled or froze MediaStream and image decoding."
+        },
+        {
+          "cs": "Produkční screenshot regresní scénář nyní před reálným canvas MediaStreamem výslovně vrátí kartu AI Studia do popředí a ověří její viditelnost. Tím test odpovídá skutečnému uživatelskému scénáři pořizování snímku.",
+          "en": "The production screenshot regression scenario now explicitly brings the AI Studio tab to the foreground and verifies its visibility before exercising a real canvas MediaStream, matching the real user capture scenario."
+        },
+        {
+          "cs": "Kontrola CSP `img-src blob:` zůstává zachována a skutečný produkční screenshot po opravě testu prochází s platným náhledem; runtime reportéru ani bezpečnostní politika se kvůli tomuto CI hotfixu nerozšiřují.",
+          "en": "The `img-src blob:` CSP assertion remains in place and the real production screenshot passes with a valid preview after the test fix; the reporter runtime and security policy are not broadened for this CI hotfix."
+        }
+      ]
+    },
     {
       "version": "0.21.26",
       "date": "2026-08-13",

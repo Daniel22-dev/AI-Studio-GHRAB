@@ -929,7 +929,14 @@ async function runBrowserTests() {
 
     if (config.productionReporterEntry) {
       runtimeExceptions.length = 0;
+      // Gmail checks open real new tabs. Bring the original application tab back to the
+      // foreground before exercising a real MediaStream; Chromium can otherwise freeze
+      // or heavily throttle background capture/image decoding and produce a false CI failure.
+      await client.call('Page.bringToFront');
       await navigate(client, `${appBase}/${config.productionReporterEntry}`);
+      await waitFor(client, 'document.visibilityState === "visible"', 'Produkční screenshot test neběží na aktivní kartě', 200);
+      const productionVisibility = await client.evaluate('document.visibilityState');
+      check('Produkční screenshot test běží na aktivní kartě', productionVisibility === 'visible', productionVisibility);
       await waitFor(client, 'document.querySelectorAll("#ghrab-error-reporter").length === 1', 'Produkční AI Studio nevytvořilo reportér', 500);
       const productionCapture = await client.evaluate(`(async () => {
         const root = document.getElementById('ghrab-error-reporter');
@@ -968,7 +975,7 @@ async function runBrowserTests() {
         byText('button', 'Povolit snímání obrazovky').click();
         await until(() => !byText('button', 'Pořídit snímek').disabled, 'Produkční stream se neaktivoval');
         byText('button', 'Pořídit snímek').click();
-        await until(() => root.querySelectorAll('.ghrab-screenshot-card').length === 1, 'Produkční CSP zablokovala blob náhled screenshotu');
+        await until(() => root.querySelectorAll('.ghrab-screenshot-card').length === 1, 'Produkční screenshot se nepodařilo dokončit');
         const image = root.querySelector('.ghrab-screenshot-card img');
         const result = {
           screenshots: root.querySelectorAll('.ghrab-screenshot-card').length,
