@@ -1,19 +1,19 @@
 # AI Studio GHRAB
 
-**Aktuální verze:** 0.21.23
+**Aktuální verze:** 0.21.24
 **Platforma:** GHRAB Platform 1.1.0 · etapa P5
 
-**Verze 0.21.23 opravuje poslední vadný snímek prologu a obnovuje showcase film s nepřerušenou, kvalitněji exportovanou hudební stopou.**
+**Verze 0.21.24 opravuje pořizování screenshotů v centrálním reportéru chyb a přidává jednoznačnou odezvu po kliknutí na „Pořídit snímek“.**
 
 AI Studio GHRAB je centrální brána školních digitálních a AI nástrojů. Jednotlivé aplikace zůstávají v samostatných repozitářích; Studio zajišťuje společnou navigaci, Top 4, synchronizaci verzí, bezpečnostní rámec, pilotní měření, správu podepsaných přístupů a kanonický základ technického reportéru. Materiály jsou viditelnou součástí portálu, ale v dnešním bezserverovém režimu se vlastní obsah ukládá pouze místně.
 
-## Hlavní novinky 0.21.23
+## Hlavní novinky 0.21.24
 
-- Černý vadný snímek v čase **00:04,67** byl nahrazen přirozeným mezisnímkem ze sousedních záběrů, takže hvězdná brána už během přechodu krátce nezhasne.
-- Hudba byla znovu sestavena z původního zdrojového souboru jako jedna souvislá stopa; zmizel krátký skok kolem **00:30,57** i slyšitelný návrat přibližně o 205 ms kolem **01:01,28**.
-- Zvuk je nově exportován jako **48 kHz stereo AAC-LC / přibližně 320 kb/s**, s hlasitostí −17,0 LUFS, bezpečnou rezervou špiček a plynulým závěrečným ztišením.
-- Showroom zůstává v **2560×1440 / 30 fps**, má stopáž 91,7 sekundy a používá kvalitní H.264 master připravený pro webové přehrávání.
-- Funkce, oprávnění a datové chování AI Studia se touto opravou nemění.
+- Inicializace screen capture už nemůže uváznout čekáním na opožděnou nebo již proběhlou událost `loadedmetadata`; reportér čeká na skutečně dostupný video frame s časovým limitem.
+- Po kliknutí na **Pořídit snímek** se zobrazí „Pořizuji snímek…“ a po úspěchu „Snímek uložen ✓“; neaktivní stream už neselže potichu.
+- Opraven je i CSS selektor skrytého video prvku používaného pro zachycení obrazovky.
+- Regresní test pokrývá opožděné zpřístupnění obrazu a obě cesty snímání: přímo v dialogu i přes plovoucí panel.
+- Opravy showroomu a zvuku z 0.21.23 zůstávají zachovány beze změny.
 
 ## Předchozí vydání 0.20.18
 
@@ -64,7 +64,7 @@ Ochranný bootstrap je určen pro Generátor 7.1.8, Diferenciátor 1.3.8, Hodnot
 
 ## Doporučené pořadí nasazení P2
 
-1. AI Studio GHRAB 0.21.23 jako zpětně kompatibilní platformní základ.
+1. AI Studio GHRAB 0.21.24 jako zpětně kompatibilní platformní základ.
 2. Korespondenční asistent 5.9.15.
 3. Diferenciátor 1.3.8.
 4. Generátor testů 7.1.8.

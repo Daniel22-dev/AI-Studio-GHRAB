@@ -1,5 +1,5 @@
 const REPORTER_ID = "ghrab-error-reporter";
-const REPORTER_VERSION = "1.1.0";
+const REPORTER_VERSION = "1.1.1";
 const MAX_COMPOSE_URL_LENGTH = 7000;
 const LOCAL_REPORTER_STYLE_URL = new URL("./error-reporter.css", import.meta.url);
 const MAX_SCREENSHOTS = 5;
@@ -58,6 +58,16 @@ function twoFrames() {
   return new Promise((resolve) =>
     requestAnimationFrame(() => requestAnimationFrame(resolve)),
   );
+}
+async function waitForVideoFrame(video, stream, timeoutMs = 3000) {
+  const startedAt = performance.now();
+  while (performance.now() - startedAt < timeoutMs) {
+    const track = stream?.getVideoTracks?.()[0];
+    if (track?.readyState === "ended") throw new Error("capture-track-ended");
+    if (video?.videoWidth > 0 && video?.videoHeight > 0) return;
+    await delay(50);
+  }
+  throw new Error("capture-frame-timeout");
 }
 function bytes(text) {
   return new TextEncoder().encode(text);
@@ -1157,7 +1167,12 @@ export function setupErrorReporter(options = {}) {
     setTimeout(() => comment.focus({ preventScroll: true }), 40);
   }
   function captureIsActive() {
-    return Boolean(state.stream && state.video && !snapButton.disabled);
+    const track = state.stream?.getVideoTracks?.()[0];
+    return Boolean(
+      state.stream &&
+        state.video &&
+        (!track || track.readyState === undefined || track.readyState === "live"),
+    );
   }
   function updateCaptureControls() {
     const active = captureIsActive();
@@ -1169,6 +1184,7 @@ export function setupErrorReporter(options = {}) {
   }
   function showApplicationForCapture() {
     if (!captureIsActive()) return;
+    captureBarTitle.textContent = t("Snímání obrazovky", "Screen capture");
     backdrop.hidden = true;
     root.classList.add("ghrab-capture-mode");
     captureBar.hidden = false;
@@ -1389,18 +1405,16 @@ export function setupErrorReporter(options = {}) {
         audio: false,
       });
       const video = document.createElement("video");
+      video.autoplay = true;
       video.muted = true;
       video.playsInline = true;
       video.srcObject = stream;
       video.className = "ghrab-capture-video";
       document.body.append(video);
-      await video.play();
-      if (!video.videoWidth)
-        await new Promise((resolve) =>
-          video.addEventListener("loadedmetadata", resolve, { once: true }),
-        );
       state.stream = stream;
       state.video = video;
+      await video.play();
+      await waitForVideoFrame(video, stream);
       shareButton.disabled = true;
       snapButton.disabled = false;
       stopButton.disabled = false;
@@ -1422,6 +1436,7 @@ export function setupErrorReporter(options = {}) {
         { once: true },
       );
     } catch (error) {
+      stopCapture();
       const denied = error?.name === "NotAllowedError";
       setStatus(
         denied
@@ -1438,7 +1453,21 @@ export function setupErrorReporter(options = {}) {
     }
   }
   async function captureFrame() {
-    if (!state.video || !state.stream) return;
+    if (!captureIsActive()) {
+      setStatus(
+        t(
+          "Snímání není aktivní. Nejprve znovu povolte snímání obrazovky.",
+          "Capture is not active. Allow screen capture again first.",
+        ),
+        "warn",
+      );
+      captureBarTitle.textContent = t(
+        "Snímání není aktivní",
+        "Capture is not active",
+      );
+      updateCaptureControls();
+      return;
+    }
     if (state.screenshots.length >= MAX_SCREENSHOTS) {
       setStatus(
         t(
@@ -1449,10 +1478,18 @@ export function setupErrorReporter(options = {}) {
       );
       return;
     }
+    snapButton.disabled = true;
+    captureBarSnap.disabled = true;
+    setStatus(t("Pořizuji snímek…", "Capturing screenshot…"));
+    captureBarTitle.textContent = t(
+      "Pořizuji snímek…",
+      "Capturing screenshot…",
+    );
     root.classList.add("ghrab-capture-hidden");
     await twoFrames();
     await delay(130);
     try {
+      await waitForVideoFrame(state.video, state.stream, 1500);
       const sourceWidth = state.video.videoWidth;
       const sourceHeight = state.video.videoHeight;
       if (!sourceWidth || !sourceHeight) throw new Error("no-frame");
@@ -1476,6 +1513,7 @@ export function setupErrorReporter(options = {}) {
         ),
       );
       await addScreenshot(blob);
+      captureBarTitle.textContent = t("Snímek uložen ✓", "Screenshot saved ✓");
     } catch {
       setStatus(
         t(
@@ -1484,8 +1522,13 @@ export function setupErrorReporter(options = {}) {
         ),
         "error",
       );
+      captureBarTitle.textContent = t(
+        "Snímek se nepodařilo pořídit",
+        "Screenshot failed",
+      );
     } finally {
       root.classList.remove("ghrab-capture-hidden");
+      updateCaptureControls();
     }
   }
 

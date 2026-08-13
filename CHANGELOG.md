@@ -2,6 +2,14 @@
 
 > Tento soubor se generuje ze `src/config/changelog.json`. Neupravujte jej ručně.
 
+## 0.21.24 — 2026-08-13
+**Reportér 0.21.24: spolehlivé pořizování screenshotů**
+
+- Inicializace snímání už nečeká bez omezení na událost loadedmetadata. Reportér nyní ověřuje skutečně dostupný obrazový frame s časovým limitem, takže se po udělení oprávnění nezasekne ve stavu, kdy tlačítko Pořídit snímek nereaguje.
+- Pořízení snímku má nově jasnou průběžnou odezvu: Pořizuji snímek… a po úspěchu Snímek uložen ✓. Neaktivní nebo ukončený stream už nekončí tichým návratem bez vysvětlení.
+- Skrytý video prvek používaný pro screen capture je správně stylován i mimo kořen reportéru, takže se nemůže nechtěně zobrazit v aplikaci nebo dostat do vlastního náhledu snímání.
+- Regresní test nově simuluje opožděné zpřístupnění rozměrů videa bez nové události loadedmetadata a kontroluje pořízení snímku jak přímo v hlášení, tak z plovoucího panelu.
+
 ## 0.21.23 — 2026-08-12
 **Showroom 0.21.23: plynulý prolog a souvislý zvuk**
 

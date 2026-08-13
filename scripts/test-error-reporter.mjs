@@ -112,7 +112,7 @@ function staticAudit() {
   const adapter = text(config.adapterPath);
 
   check('Ochrana jediné instance používá ghrab-error-reporter', reporter.includes('const REPORTER_ID = "ghrab-error-reporter"'));
-  check('Kanonický reportér má verzi 1.1.0', reporter.includes('const REPORTER_VERSION = "1.1.0"'));
+  check('Kanonický reportér má verzi 1.1.1', reporter.includes('const REPORTER_VERSION = "1.1.1"'));
   check('Limit je přesně pět screenshotů', reporter.includes('const MAX_SCREENSHOTS = 5'));
   check('Finální compose URL je omezena na 7000 znaků', reporter.includes('const MAX_COMPOSE_URL_LENGTH = 7000') && reporter.includes('export function fitMailBodyToComposeUrl'));
   check('Zkracování zachovává plné tělo a krátí diagnostiku jako první', reporter.includes('const fullBody = makeBody') && reporter.includes('currentDiagnostics = currentDiagnostics.slice(0, 3)'));
@@ -140,6 +140,7 @@ function staticAudit() {
   check('CSS respektuje safe-area', css.includes('safe-area-inset-bottom') && css.includes('safe-area-inset-right'));
   check('CSS má responzivní panel snímání', css.includes('@media (max-width: 430px)') && css.includes('.ghrab-capture-bar'));
   check('CSS skrývá reportér při samotném snímku', css.includes('.ghrab-error-reporter.ghrab-capture-hidden'));
+  check('Skrytý capture video prvek je stylovaný i mimo root reportéru', css.includes('.ghrab-capture-video {'));
 
   check('Adaptér má správné appId', adapter.includes(`appId: '${config.appId}'`));
   check('Adaptér má správnou verzi', adapter.includes(`appVersion: '${config.version}'`));
@@ -241,8 +242,11 @@ function harnessHtml() {
     set(value) { this.__srcObject = value; },
   });
   HTMLMediaElement.prototype.play = async function() {
-    Object.defineProperty(this, 'videoWidth', { configurable: true, value: 640 });
-    Object.defineProperty(this, 'videoHeight', { configurable: true, value: 360 });
+    const video = this;
+    setTimeout(() => {
+      Object.defineProperty(video, 'videoWidth', { configurable: true, value: 640 });
+      Object.defineProperty(video, 'videoHeight', { configurable: true, value: 360 });
+    }, 80);
   };
   const nativeDrawImage = CanvasRenderingContext2D.prototype.drawImage;
   CanvasRenderingContext2D.prototype.drawImage = function(source, ...args) {
@@ -576,11 +580,17 @@ async function runBrowserTests() {
       await until(() => !byText('button', 'Přejít do aplikace').disabled, 'Snímání se neaktivovalo');
       assert(!backdrop.hidden, 'Povolení snímání nesmí samo skrýt hlášení');
       assert(root.querySelector('.ghrab-capture-bar').hidden, 'Panel se zobrazil před explicitním přechodem');
+      byText('.ghrab-report-section button', 'Pořídit snímek').click();
+      await until(() => root.querySelectorAll('.ghrab-screenshot-card').length === 1, 'Snímek z otevřeného hlášení se nepřidal');
+      assert(root.querySelector('.ghrab-report-status').textContent.includes('Snímek 1/5'), 'Pořízení snímku nemá viditelnou odezvu');
+      root.querySelector('.ghrab-screenshot-card button.danger').click();
+      assert(root.querySelectorAll('.ghrab-screenshot-card').length === 0, 'Testovací screenshot se nepodařilo odstranit');
       byText('button', 'Přejít do aplikace').click(); await wait(60);
       assert(backdrop.hidden && !root.querySelector('.ghrab-capture-bar').hidden, 'Přejít do aplikace neotevřelo plovoucí panel');
       byText('.ghrab-capture-bar button', 'Pořídit snímek').click();
       await until(() => root.querySelectorAll('.ghrab-screenshot-card').length === 1, 'Přímý screenshot se nepřidal');
       assert(window.__captureHiddenObserved, 'Reportér nebyl při samotném screenshotu skryt');
+      assert(root.querySelector('.ghrab-capture-bar-state strong').textContent.includes('Snímek uložen'), 'Plovoucí panel nepotvrdil uložení snímku');
       byText('.ghrab-capture-bar button', 'Zpět k hlášení').click(); await wait(50);
       assert(!backdrop.hidden, 'Návrat do hlášení selhal');
       byText('.ghrab-report-section button', 'Ukončit snímání').click(); await wait(40);

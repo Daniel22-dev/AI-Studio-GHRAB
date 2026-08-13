@@ -424,7 +424,7 @@
   text-underline-offset: 3px;
 }
 
-.ghrab-error-reporter .ghrab-capture-video {
+.ghrab-capture-video {
   position: fixed !important;
   left: -9999px !important;
   top: -9999px !important;

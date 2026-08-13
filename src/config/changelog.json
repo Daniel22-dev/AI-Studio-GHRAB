@@ -1,7 +1,33 @@
 {
   "schema": "ai-studio-changelog-v1",
-  "current": "0.21.23",
+  "current": "0.21.24",
   "items": [
+    {
+      "version": "0.21.24",
+      "date": "2026-08-13",
+      "title": {
+        "cs": "Reportér 0.21.24: spolehlivé pořizování screenshotů",
+        "en": "Reporter 0.21.24: reliable screenshot capture"
+      },
+      "changes": [
+        {
+          "cs": "Inicializace snímání už nečeká bez omezení na událost loadedmetadata. Reportér nyní ověřuje skutečně dostupný obrazový frame s časovým limitem, takže se po udělení oprávnění nezasekne ve stavu, kdy tlačítko Pořídit snímek nereaguje.",
+          "en": "Capture initialisation no longer waits indefinitely for a loadedmetadata event. The reporter now verifies that a real video frame is available with a bounded timeout, preventing the capture button from becoming unresponsive after permission is granted."
+        },
+        {
+          "cs": "Pořízení snímku má nově jasnou průběžnou odezvu: Pořizuji snímek… a po úspěchu Snímek uložen ✓. Neaktivní nebo ukončený stream už nekončí tichým návratem bez vysvětlení.",
+          "en": "Screenshot capture now provides explicit progress feedback: Capturing screenshot… followed by Screenshot saved ✓. An inactive or ended stream no longer fails silently."
+        },
+        {
+          "cs": "Skrytý video prvek používaný pro screen capture je správně stylován i mimo kořen reportéru, takže se nemůže nechtěně zobrazit v aplikaci nebo dostat do vlastního náhledu snímání.",
+          "en": "The hidden video element used for screen capture is now styled correctly even outside the reporter root, preventing it from appearing in the application or leaking into its own capture preview."
+        },
+        {
+          "cs": "Regresní test nově simuluje opožděné zpřístupnění rozměrů videa bez nové události loadedmetadata a kontroluje pořízení snímku jak přímo v hlášení, tak z plovoucího panelu.",
+          "en": "The regression test now simulates delayed video dimensions without a new loadedmetadata event and verifies screenshot capture both inside the report dialog and from the floating capture panel."
+        }
+      ]
+    },
     {
       "version": "0.21.23",
       "date": "2026-08-12",
