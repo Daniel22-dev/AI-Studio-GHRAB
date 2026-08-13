@@ -1,13 +1,13 @@
 # AI Studio GHRAB
 
-**Aktuální verze:** 0.21.24
+**Aktuální verze:** 0.21.25
 **Platforma:** GHRAB Platform 1.1.0 · etapa P5
 
-**Verze 0.21.24 opravuje pořizování screenshotů v centrálním reportéru chyb a přidává jednoznačnou odezvu po kliknutí na „Pořídit snímek“.**
+**Verze 0.21.25 opravuje pořizování screenshotů v centrálním reportéru chyb a přidává jednoznačnou odezvu po kliknutí na „Pořídit snímek“.**
 
 AI Studio GHRAB je centrální brána školních digitálních a AI nástrojů. Jednotlivé aplikace zůstávají v samostatných repozitářích; Studio zajišťuje společnou navigaci, Top 4, synchronizaci verzí, bezpečnostní rámec, pilotní měření, správu podepsaných přístupů a kanonický základ technického reportéru. Materiály jsou viditelnou součástí portálu, ale v dnešním bezserverovém režimu se vlastní obsah ukládá pouze místně.
 
-## Hlavní novinky 0.21.24
+## Hlavní novinky 0.21.25
 
 - Inicializace screen capture už nemůže uváznout čekáním na opožděnou nebo již proběhlou událost `loadedmetadata`; reportér čeká na skutečně dostupný video frame s časovým limitem.
 - Po kliknutí na **Pořídit snímek** se zobrazí „Pořizuji snímek…“ a po úspěchu „Snímek uložen ✓“; neaktivní stream už neselže potichu.
@@ -32,7 +32,7 @@ AI Studio GHRAB je centrální brána školních digitálních a AI nástrojů. 
 - Všechny aplikace používají jeden kanonický školní logotyp bez inline base64 kopií a jednotnou autorskou patičku.
 - Aplikační data mají namespace `ghrab.<appId>.*`; historické klíče se migrují vratně a před změnou vzniká úplná záloha.
 - Studio Bridge v2 zachovává kompatibilitu se starším handoffem v1 a strukturované exporty používají artifact envelope v1 se SHA-256.
-- Registr Studia je synchronizován s verzemi KS 5.9.21, SORTIO 1.0.9, Lesson Hub 1.2.6, Diferenciátor 1.3.10, ACTIVA 0.5.7, Hodnotitel 1.5.8, LUDUS 1.16.9 a Generátor 7.1.10.
+- Registr Studia je synchronizován s verzemi KS 5.10.3, SORTIO 1.0.12, Lesson Hub 1.2.9, Diferenciátor 1.3.13, ACTIVA 0.5.10, Hodnotitel 1.5.11, LUDUS 1.16.12 a Generátor 7.1.13.
 
 ## Serverová vrstva z P1
 
@@ -64,7 +64,7 @@ Ochranný bootstrap je určen pro Generátor 7.1.8, Diferenciátor 1.3.8, Hodnot
 
 ## Doporučené pořadí nasazení P2
 
-1. AI Studio GHRAB 0.21.24 jako zpětně kompatibilní platformní základ.
+1. AI Studio GHRAB 0.21.25 jako zpětně kompatibilní platformní základ.
 2. Korespondenční asistent 5.9.15.
 3. Diferenciátor 1.3.8.
 4. Generátor testů 7.1.8.

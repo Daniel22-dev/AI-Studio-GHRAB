@@ -2,6 +2,15 @@
 
 > Tento soubor se generuje ze `src/config/changelog.json`. Neupravujte jej ručně.
 
+## 0.21.25 — 2026-08-13
+**Sjednocený dvoukrokový reportér chyb**
+
+- Centrální reportér AI Studia přebírá ověřené chování z Korespondenčního asistenta 5.10.3: nejprve vytvoří skutečný odkaz ke stažení ZIPu a Gmail zpřístupní až po kliknutí na stažení.
+- Rozhraní i předvyplněný e-mail výslovně vyžadují ruční přiložení ZIPu pomocí kancelářské sponky; automatické přiložení se neslibuje.
+- Pomocné video je uvnitř kořene reportéru, mimo obrazovku a skryté přes CSS i inline pojistku včetně opacity, visibility, pointer-events a aria-hidden, takže při sdílení stejné karty a scrollování nevzniká rekurzivní obraz.
+- Regresní sada fyzicky kliká na stažení, ověřuje ZIP ve složce Stažené soubory, jeho diagnostiku a snímky, následné odemčení Gmailu, jednu instanci reportéru, motivy, mobilní zobrazení a klávesnici.
+- Registr aplikací AI Studia byl aktualizován na vydání se sjednoceným reportérem; Korespondenční asistent zůstává beze změny ve verzi 5.10.3.
+
 ## 0.21.24 — 2026-08-13
 **Reportér 0.21.24: spolehlivé pořizování screenshotů**
 

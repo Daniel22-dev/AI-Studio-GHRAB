@@ -1305,7 +1305,12 @@ if (
   !errorReporterText.includes("Ponechat rozepsané a zavřít") ||
   !errorReporterText.includes("gmailUrl") ||
   !errorReporterText.includes('document.createElement("a")') ||
-  !errorReporterText.includes('prepareLink.target = "_blank"') ||
+  !errorReporterText.includes('download.dataset.reportDownload = "zip"') ||
+  !errorReporterText.includes("download.download = info.file.name") ||
+  !errorReporterText.includes("mailStep.hidden = true") ||
+  !errorReporterText.includes('download.addEventListener("click"') ||
+  !errorReporterText.includes("mailStep.hidden = false") ||
+  !errorReporterText.includes("PŘÍLOHA NENÍ PŘIPOJENA AUTOMATICKY.") ||
   /\bwindow\.open\s*\(/.test(errorReporterText) ||
   errorReporterText.includes("supportsFileShare") ||
   errorReporterText.includes("navigator.share")

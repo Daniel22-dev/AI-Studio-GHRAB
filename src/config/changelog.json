@@ -1,7 +1,37 @@
 {
   "schema": "ai-studio-changelog-v1",
-  "current": "0.21.24",
+  "current": "0.21.25",
   "items": [
+    {
+      "version": "0.21.25",
+      "date": "2026-08-13",
+      "title": {
+        "cs": "Sjednocený dvoukrokový reportér chyb",
+        "en": "Unified two-step error reporter"
+      },
+      "changes": [
+        {
+          "cs": "Centrální reportér AI Studia přebírá ověřené chování z Korespondenčního asistenta 5.10.3: nejprve vytvoří skutečný odkaz ke stažení ZIPu a Gmail zpřístupní až po kliknutí na stažení.",
+          "en": "AI Studio's central reporter adopts the verified behaviour from Correspondence Assistant 5.10.3: it first creates a real ZIP download link and only unlocks Gmail after the download click."
+        },
+        {
+          "cs": "Rozhraní i předvyplněný e-mail výslovně vyžadují ruční přiložení ZIPu pomocí kancelářské sponky; automatické přiložení se neslibuje.",
+          "en": "Both the interface and the prefilled email explicitly require attaching the ZIP manually with the paperclip; automatic attachment is never promised."
+        },
+        {
+          "cs": "Pomocné video je uvnitř kořene reportéru, mimo obrazovku a skryté přes CSS i inline pojistku včetně opacity, visibility, pointer-events a aria-hidden, takže při sdílení stejné karty a scrollování nevzniká rekurzivní obraz.",
+          "en": "The helper video stays inside the reporter root, off-screen and hidden by both CSS and inline safeguards including opacity, visibility, pointer-events and aria-hidden, preventing same-tab recursive capture while scrolling."
+        },
+        {
+          "cs": "Regresní sada fyzicky kliká na stažení, ověřuje ZIP ve složce Stažené soubory, jeho diagnostiku a snímky, následné odemčení Gmailu, jednu instanci reportéru, motivy, mobilní zobrazení a klávesnici.",
+          "en": "The regression suite physically clicks the download, verifies the ZIP in Downloads together with its diagnostics and screenshots, then checks Gmail unlocking, single-instance behaviour, themes, mobile layout and keyboard access."
+        },
+        {
+          "cs": "Registr aplikací AI Studia byl aktualizován na vydání se sjednoceným reportérem; Korespondenční asistent zůstává beze změny ve verzi 5.10.3.",
+          "en": "AI Studio's application registry now points to the releases with the unified reporter; Correspondence Assistant remains unchanged at version 5.10.3."
+        }
+      ]
+    },
     {
       "version": "0.21.24",
       "date": "2026-08-13",
