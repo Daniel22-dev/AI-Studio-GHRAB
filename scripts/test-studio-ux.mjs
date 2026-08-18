@@ -58,14 +58,15 @@ check(!/not\(\.access-ready\)[\s\S]{0,100}data-page="changelog"/.test(polishCss)
 check(polishCss.includes('.site-footer') && polishCss.includes('#0d4b78') && polishCss.includes('#0a355d'), "Paticka nema samostatny modry Studio blok bez cerneho pozadi.");
 
 const appJs = await text("src/app.js");
+const appTestStatusJs = await text("src/modules/app-test-status.js");
 check(appJs.includes('if (page === "changelog") return;'), "Katalog zmen nema runtime kompatibilitu pro starsi podepsany policy bundle.");
 check(appJs.includes('[data-teacher-only]'), "Chybi role teacher-only.");
 check(appJs.includes('COLLEAGUE_PREVIEW_KEY') && appJs.includes('function isColleaguePreview()') && appJs.includes('function mountColleaguePreviewBanner()'), "Chybi session Pohled kolegy.");
 check(appJs.includes('const operator = isOperator() && !preview') && appJs.includes('const operations = admin || operator') && appJs.includes('snapshot.permit?.role === "teacher"'), "Role admin/operator/teacher se v UI nerozdeluji bezpecne.");
 check(appJs.includes('function swapCoreAppPositions') && appJs.includes('portal-drag-handle') && appJs.includes('dataTransfer'), "Top 4 nema drag-and-drop prehazovani pozic.");
-check(appJs.includes('APP_TEST_STATUS_KEY') && appJs.includes('function getAppTestStatus(appId)') && appJs.includes('function setAppTestStatus(appId, status)'), "Karty aplikaci nemaji trvale ulozeny stav testovani podle ID aplikace.");
-check(appJs.includes('["untested", "light", "tested"]') && ["○", "◐", "✓"].every((symbol) => appJs.includes(`symbol: "${symbol}"`)), "Stav testovani nema tri odlisne symboly netestovano/lehce/otestovano.");
-check(appJs.includes('if (isAdmin() && !isColleaguePreview())') && appJs.includes('appTestStatusButton(app, article)'), "Stav testovani neni dostupny na kazde karte jen ve skutecnem spravcovskem pohledu.");
+check(appTestStatusJs.includes('ghrab.ai-studio.app-test-status.v1') && appTestStatusJs.includes('function getAppTestStatus(appId') && appTestStatusJs.includes('function setAppTestStatus(appId'), "Karty aplikaci nemaji trvale ulozeny stav testovani podle ID aplikace.");
+check(appTestStatusJs.includes('["untested", "light", "tested"]') && ["○", "◐", "✓"].every((symbol) => appTestStatusJs.includes(`symbol: "${symbol}"`)), "Stav testovani nema tri odlisne symboly netestovano/lehce/otestovano.");
+check(appJs.includes('import("./modules/app-test-status.js")') && appJs.includes('if (isAdmin() && !isColleaguePreview() && appTestStatusModule)') && appJs.includes('createAppTestStatusButton(app, article, state.language)'), "Stav testovani neni odlozene nacten a dostupny na kazde karte jen ve skutecnem spravcovskem pohledu.");
 check(home.includes('class="app-test-status-legend"') && home.includes('○ netestováno') && home.includes('◐ lehce') && home.includes('✓ otestováno'), "Domovska stranka nema spravcovskou legendu stavu testovani.");
 check(appJs.includes('Kontrola zneplatněných přístupů aktuální k'), "Souhrn pristupu stale pouziva nejasne oznaceni seznamu odvolani.");
 check(appJs.includes('snapshot.valid && snapshot.permit?.role === "teacher"'), "Teacher-only prvky nejsou vazany pouze na roli teacher.");
@@ -249,6 +250,12 @@ const makeStorage = () => {
 };
 const localStorage = makeStorage();
 const sessionStorage = makeStorage();
+const appTestStatus = await import(pathToFileURL(path.join(src, "modules/app-test-status.js")).href);
+const markerStorage = makeStorage();
+check(appTestStatus.getAppTestStatus("future-app", markerStorage) === "untested", "Budouci aplikace nezacina jako netestovana.");
+check(appTestStatus.setAppTestStatus("future-app", "light", markerStorage) && appTestStatus.getAppTestStatus("future-app", markerStorage) === "light", "Lehke otestovani se neuklada podle ID aplikace.");
+check(appTestStatus.setAppTestStatus("future-app", "tested", markerStorage) && appTestStatus.getAppTestStatus("future-app", markerStorage) === "tested", "Plne otestovani se neuklada podle ID aplikace.");
+check(appTestStatus.setAppTestStatus("future-app", "untested", markerStorage) && appTestStatus.getAppTestStatus("future-app", markerStorage) === "untested", "Navrat do stavu netestovano nefunguje.");
 const context = {
   URL, TextEncoder, TextDecoder, Date, JSON, Math, Object, Array, Set, Map, Promise,
   String, Number, Boolean, RegExp, Error, TypeError, Uint8Array, console,

@@ -46,25 +46,7 @@ const TEST_LAUNCHES_KEY = "ghrab.pilot.test.launches";
 const TEST_EVENTS_KEY = "ghrab.pilot.test.events.v2";
 const TELEMETRY_MODE_KEY = "ghrab.pilot.telemetry.mode";
 const FAVORITE_APPS_KEY = "ghrab.favoriteApps.v1";
-const APP_TEST_STATUS_KEY = "ghrab.ai-studio.app-test-status.v1";
-const APP_TEST_STATUS_ORDER = ["untested", "light", "tested"];
-const APP_TEST_STATUS_META = Object.freeze({
-  untested: {
-    symbol: "○",
-    cs: "Netestováno",
-    en: "Not tested",
-  },
-  light: {
-    symbol: "◐",
-    cs: "Lehce otestováno",
-    en: "Lightly tested",
-  },
-  tested: {
-    symbol: "✓",
-    cs: "Otestováno",
-    en: "Tested",
-  },
-});
+let appTestStatusModule = null;
 const COLLEAGUE_PREVIEW_KEY = "ghrab.ai-studio.role-preview.v1";
 let draggedCoreAppId = null;
 const ISSUED_ACCESS_KEY = "ghrab.access.issued-registry.v1";
@@ -1336,64 +1318,10 @@ function toggleFavoriteApp(appId) {
   if (!getFavoriteApps().includes(appId)) current.unshift(appId);
   setFavoriteApps(current.slice(0, 4));
 }
-function getAppTestStatuses() {
-  const stored = parseLocal(APP_TEST_STATUS_KEY, {});
-  if (!stored || typeof stored !== "object" || Array.isArray(stored)) return {};
-  return Object.fromEntries(
-    Object.entries(stored).filter(
-      ([appId, status]) =>
-        Boolean(appId) && APP_TEST_STATUS_ORDER.includes(status),
-    ),
-  );
-}
-function getAppTestStatus(appId) {
-  return getAppTestStatuses()[appId] || "untested";
-}
-function setAppTestStatus(appId, status) {
-  if (!appId || !APP_TEST_STATUS_ORDER.includes(status)) return false;
-  const stored = getAppTestStatuses();
-  if (status === "untested") delete stored[appId];
-  else stored[appId] = status;
-  return safeSetJson(APP_TEST_STATUS_KEY, stored);
-}
-function nextAppTestStatus(status) {
-  const currentIndex = APP_TEST_STATUS_ORDER.indexOf(status);
-  return APP_TEST_STATUS_ORDER[
-    (currentIndex + 1 + APP_TEST_STATUS_ORDER.length) %
-      APP_TEST_STATUS_ORDER.length
-  ];
-}
-function updateAppTestStatusButton(button, app, status) {
-  const meta = APP_TEST_STATUS_META[status] || APP_TEST_STATUS_META.untested;
-  const label = state.language === "cs" ? meta.cs : meta.en;
-  button.textContent = meta.symbol;
-  button.dataset.testStatus = status;
-  button.setAttribute(
-    "aria-label",
-    `${localised(app.name)}: ${t("stav testování", "testing status")} – ${label}. ${t("Kliknutím změnit.", "Click to change.")}`,
-  );
-  button.title = `${t("Stav testování", "Testing status")}: ${meta.symbol} ${label}`;
-}
-function appTestStatusButton(app, article) {
-  let status = getAppTestStatus(app.id);
-  article.dataset.testStatus = status;
-  const button = el("button", "icon-button app-test-status-button");
-  button.type = "button";
-  updateAppTestStatusButton(button, app, status);
-  button.addEventListener("click", (event) => {
-    event.preventDefault();
-    event.stopPropagation();
-    const next = nextAppTestStatus(status);
-    if (!setAppTestStatus(app.id, next)) return;
-    status = next;
-    article.dataset.testStatus = status;
-    updateAppTestStatusButton(button, app, status);
-    const meta = APP_TEST_STATUS_META[status];
-    showToast(
-      `${localised(app.name)}: ${meta.symbol} ${state.language === "cs" ? meta.cs.toLowerCase() : meta.en.toLowerCase()}`,
-    );
-  });
-  return button;
+async function loadAppTestStatusModule() {
+  if (!isAdmin() || isColleaguePreview()) return null;
+  appTestStatusModule ||= await import("./modules/app-test-status.js");
+  return appTestStatusModule;
 }
 function currentCoreAppIds() {
   if (!homeContext?.apps?.length) return [];
@@ -1828,8 +1756,10 @@ function portalAppCard(app, index, permissions) {
     });
     headActions.append(dragHandle);
   }
-  if (isAdmin() && !isColleaguePreview()) {
-    headActions.append(appTestStatusButton(app, article));
+  if (isAdmin() && !isColleaguePreview() && appTestStatusModule) {
+    headActions.append(
+      appTestStatusModule.createAppTestStatusButton(app, article, state.language),
+    );
   }
   const pin = el(
     "button",
@@ -2027,6 +1957,7 @@ async function renderHome() {
   if (!grid) return;
   try {
     await accessReady;
+    await loadAppTestStatusModule().catch(() => {});
     const [apps, permissions, platformConsumers] = await Promise.all([
       loadApps(),
       loadPermissions(),
@@ -2496,9 +2427,6 @@ window.GHRAB = {
   getFavoriteApps,
   setFavoriteApps,
   toggleFavoriteApp,
-  getAppTestStatuses,
-  getAppTestStatus,
-  setAppTestStatus,
   safeGetItem,
   safeSetItem,
   safeSetJson,
@@ -2573,7 +2501,7 @@ document.addEventListener("ghrab:access-changed", () => {
   updateAdminVisibility();
   mountColleaguePreviewBanner();
   renderPageAccessGate();
-  renderHomeCards();
+  void loadAppTestStatusModule().then(renderHomeCards, renderHomeCards);
   updateTelemetryModeBanner();
 });
 document.addEventListener("ghrab:favorites", renderHomeCards);
