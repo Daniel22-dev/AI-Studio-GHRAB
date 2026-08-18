@@ -285,6 +285,11 @@ if (window.GHRAB.isAdmin() && !window.GHRAB.isColleaguePreview?.()) {
     date.setDate(date.getDate() + Number(days || 0));
     $("#permit-expiry").value = date.toISOString().slice(0, 10);
   }
+  function setMaximumExpiry() {
+    // The selected date is signed at 23:59:59, so use one calendar day less
+    // to remain safely inside the exact maximum duration from the current time.
+    setExpiryDays(Math.max(1, Number(policy?.maximumPermitDays || 400) - 1));
+  }
   function selectAllCurrentApps() {
     document.querySelectorAll("[data-app]").forEach((input) => {
       input.checked = true;
@@ -301,11 +306,6 @@ if (window.GHRAB.isAdmin() && !window.GHRAB.isColleaguePreview?.()) {
       $("#permit-all").checked = true;
       selectAllCurrentApps();
     }
-    if (role === "admin") {
-      const expiry = new Date(`${$("#permit-expiry").value || "2999-12-31"}T23:59:59`);
-      const maxPreferred = Date.now() + 31 * 86400 * 1000;
-      if (!Number.isFinite(expiry.getTime()) || expiry.getTime() > maxPreferred) setExpiryDays(14);
-    }
   }
   $("#permit-role").addEventListener("change", syncRoleUi);
   $("#permit-all").addEventListener("change", (event) => {
@@ -314,6 +314,7 @@ if (window.GHRAB.isAdmin() && !window.GHRAB.isColleaguePreview?.()) {
   document.querySelectorAll("[data-admin-days]").forEach((button) =>
     button.addEventListener("click", () => setExpiryDays(button.dataset.adminDays)),
   );
+  $("#primary-admin-expiry").addEventListener("click", setMaximumExpiry);
   $("#permit-name").addEventListener("blur", () => {
     if (!$("#permit-subject").value.trim())
       $("#permit-subject").value = slug($("#permit-name").value);

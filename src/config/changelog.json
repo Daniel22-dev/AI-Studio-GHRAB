@@ -1,7 +1,33 @@
 {
   "schema": "ai-studio-changelog-v1",
-  "current": "0.21.27",
+  "current": "0.21.28",
   "items": [
+    {
+      "version": "0.21.28",
+      "date": "2026-08-18",
+      "title": {
+        "cs": "Osobní stav testování aplikací",
+        "en": "Personal application testing status"
+      },
+      "changes": [
+        {
+          "cs": "Plný správce má nově přímo v každé kartě aplikace tříúrovňové označení ○ netestováno, ◐ lehce otestováno a ✓ otestováno; kliknutím na symbol stav cyklicky změní.",
+          "en": "The full administrator now has a three-level marker directly on every application card: ○ not tested, ◐ lightly tested and ✓ tested; clicking the symbol cycles the status."
+        },
+        {
+          "cs": "Stavy se ukládají místně podle stabilního ID aplikace. Funkce proto automaticky pokryje i budoucí aplikace, které začínají jako netestované, a nezobrazuje se učitelům ani v Pohledu kolegy.",
+          "en": "Statuses are stored locally by stable application ID. The feature therefore automatically covers future applications, which start as not tested, and remains hidden from teachers and Colleague view."
+        },
+        {
+          "cs": "Vydavatel už každou roli Správce automaticky nezkracuje na 14 dní. Hlavní správce má samostatnou volbu maximální bezpečné platnosti 400 dní; 7/14/30 dní zůstává pro dočasné plné zastoupení.",
+          "en": "The issuer no longer shortens every Administrator role to 14 days automatically. The primary administrator has a dedicated maximum safe validity option of 400 days; 7/14/30 days remain available for temporary full cover."
+        },
+        {
+          "cs": "Souhrn přístupu nyní rozlišuje platnost bezpečnostního oprávnění správce od samotné správcovské role a nejasný „seznam odvolání“ přejmenovává na kontrolu zneplatněných přístupů. Trvalá správcovská role tím není časově omezena; expiruje pouze konkrétní přenositelné oprávnění.",
+          "en": "The access summary now distinguishes the administrator security permit validity from the administrator role itself and renames the ambiguous revocation-list wording to a revoked-access check. The permanent administrator role is not time-limited; only the specific portable permit expires."
+        }
+      ]
+    },
     {
       "version": "0.21.27",
       "date": "2026-08-13",

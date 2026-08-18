@@ -46,6 +46,25 @@ const TEST_LAUNCHES_KEY = "ghrab.pilot.test.launches";
 const TEST_EVENTS_KEY = "ghrab.pilot.test.events.v2";
 const TELEMETRY_MODE_KEY = "ghrab.pilot.telemetry.mode";
 const FAVORITE_APPS_KEY = "ghrab.favoriteApps.v1";
+const APP_TEST_STATUS_KEY = "ghrab.ai-studio.app-test-status.v1";
+const APP_TEST_STATUS_ORDER = ["untested", "light", "tested"];
+const APP_TEST_STATUS_META = Object.freeze({
+  untested: {
+    symbol: "○",
+    cs: "Netestováno",
+    en: "Not tested",
+  },
+  light: {
+    symbol: "◐",
+    cs: "Lehce otestováno",
+    en: "Lightly tested",
+  },
+  tested: {
+    symbol: "✓",
+    cs: "Otestováno",
+    en: "Tested",
+  },
+});
 const COLLEAGUE_PREVIEW_KEY = "ghrab.ai-studio.role-preview.v1";
 let draggedCoreAppId = null;
 const ISSUED_ACCESS_KEY = "ghrab.access.issued-registry.v1";
@@ -1317,6 +1336,65 @@ function toggleFavoriteApp(appId) {
   if (!getFavoriteApps().includes(appId)) current.unshift(appId);
   setFavoriteApps(current.slice(0, 4));
 }
+function getAppTestStatuses() {
+  const stored = parseLocal(APP_TEST_STATUS_KEY, {});
+  if (!stored || typeof stored !== "object" || Array.isArray(stored)) return {};
+  return Object.fromEntries(
+    Object.entries(stored).filter(
+      ([appId, status]) =>
+        Boolean(appId) && APP_TEST_STATUS_ORDER.includes(status),
+    ),
+  );
+}
+function getAppTestStatus(appId) {
+  return getAppTestStatuses()[appId] || "untested";
+}
+function setAppTestStatus(appId, status) {
+  if (!appId || !APP_TEST_STATUS_ORDER.includes(status)) return false;
+  const stored = getAppTestStatuses();
+  if (status === "untested") delete stored[appId];
+  else stored[appId] = status;
+  return safeSetJson(APP_TEST_STATUS_KEY, stored);
+}
+function nextAppTestStatus(status) {
+  const currentIndex = APP_TEST_STATUS_ORDER.indexOf(status);
+  return APP_TEST_STATUS_ORDER[
+    (currentIndex + 1 + APP_TEST_STATUS_ORDER.length) %
+      APP_TEST_STATUS_ORDER.length
+  ];
+}
+function updateAppTestStatusButton(button, app, status) {
+  const meta = APP_TEST_STATUS_META[status] || APP_TEST_STATUS_META.untested;
+  const label = state.language === "cs" ? meta.cs : meta.en;
+  button.textContent = meta.symbol;
+  button.dataset.testStatus = status;
+  button.setAttribute(
+    "aria-label",
+    `${localised(app.name)}: ${t("stav testování", "testing status")} – ${label}. ${t("Kliknutím změnit.", "Click to change.")}`,
+  );
+  button.title = `${t("Stav testování", "Testing status")}: ${meta.symbol} ${label}`;
+}
+function appTestStatusButton(app, article) {
+  let status = getAppTestStatus(app.id);
+  article.dataset.testStatus = status;
+  const button = el("button", "icon-button app-test-status-button");
+  button.type = "button";
+  updateAppTestStatusButton(button, app, status);
+  button.addEventListener("click", (event) => {
+    event.preventDefault();
+    event.stopPropagation();
+    const next = nextAppTestStatus(status);
+    if (!setAppTestStatus(app.id, next)) return;
+    status = next;
+    article.dataset.testStatus = status;
+    updateAppTestStatusButton(button, app, status);
+    const meta = APP_TEST_STATUS_META[status];
+    showToast(
+      `${localised(app.name)}: ${meta.symbol} ${state.language === "cs" ? meta.cs.toLowerCase() : meta.en.toLowerCase()}`,
+    );
+  });
+  return button;
+}
 function currentCoreAppIds() {
   if (!homeContext?.apps?.length) return [];
   return selectCoreApps(homeContext.apps).core.map((app) => app.id);
@@ -1750,6 +1828,9 @@ function portalAppCard(app, index, permissions) {
     });
     headActions.append(dragHandle);
   }
+  if (isAdmin() && !isColleaguePreview()) {
+    headActions.append(appTestStatusButton(app, article));
+  }
   const pin = el(
     "button",
     `icon-button pin-button ${favorites.includes(app.id) ? "is-pinned" : ""}`,
@@ -1902,7 +1983,9 @@ function renderHomeAccessSummary() {
               "Modelový proškolený učitel · všechny aktuálně dostupné aplikace",
               "Model trained teacher · all currently available applications",
             )
-          : `${snapshot.permit.displayName || snapshot.permit.sub} · ${t("platnost do", "valid until")} ${new Date(snapshot.permit.exp * 1000).toLocaleDateString(state.language === "cs" ? "cs-CZ" : "en-GB")}`
+          : isAdmin()
+            ? `${snapshot.permit.displayName || snapshot.permit.sub} · ${t("bezpečnostní oprávnění do", "security permit until")} ${new Date(snapshot.permit.exp * 1000).toLocaleDateString(state.language === "cs" ? "cs-CZ" : "en-GB")}`
+            : `${snapshot.permit.displayName || snapshot.permit.sub} · ${t("platnost do", "valid until")} ${new Date(snapshot.permit.exp * 1000).toLocaleDateString(state.language === "cs" ? "cs-CZ" : "en-GB")}`
         : t(
             "Po školení načtěte přístupový soubor od správce.",
             "After training, load the access file from the administrator.",
@@ -1919,12 +2002,12 @@ function renderHomeAccessSummary() {
         "",
         snapshot.revocationCheckMode === "offline-cache"
           ? t(
-              `Kontrola odvolání proběhla offline · seznam k ${revocationDate}`,
-              `Revocation check used offline data · list dated ${revocationDate}`,
+              `Kontrola zneplatněných přístupů: offline data k ${revocationDate}`,
+              `Revoked-access check: offline data dated ${revocationDate}`,
             )
           : t(
-              `Seznam odvolání k ${revocationDate}`,
-              `Revocation list dated ${revocationDate}`,
+              `Kontrola zneplatněných přístupů aktuální k ${revocationDate}`,
+              `Revoked-access check current as of ${revocationDate}`,
             ),
       ),
     );
@@ -2413,6 +2496,9 @@ window.GHRAB = {
   getFavoriteApps,
   setFavoriteApps,
   toggleFavoriteApp,
+  getAppTestStatuses,
+  getAppTestStatus,
+  setAppTestStatus,
   safeGetItem,
   safeSetItem,
   safeSetJson,

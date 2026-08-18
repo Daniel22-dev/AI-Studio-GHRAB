@@ -2,6 +2,14 @@
 
 > Tento soubor se generuje ze `src/config/changelog.json`. Neupravujte jej ručně.
 
+## 0.21.28 — 2026-08-18
+**Osobní stav testování aplikací**
+
+- Plný správce má nově přímo v každé kartě aplikace tříúrovňové označení ○ netestováno, ◐ lehce otestováno a ✓ otestováno; kliknutím na symbol stav cyklicky změní.
+- Stavy se ukládají místně podle stabilního ID aplikace. Funkce proto automaticky pokryje i budoucí aplikace, které začínají jako netestované, a nezobrazuje se učitelům ani v Pohledu kolegy.
+- Vydavatel už každou roli Správce automaticky nezkracuje na 14 dní. Hlavní správce má samostatnou volbu maximální bezpečné platnosti 400 dní; 7/14/30 dní zůstává pro dočasné plné zastoupení.
+- Souhrn přístupu nyní rozlišuje platnost bezpečnostního oprávnění správce od samotné správcovské role a nejasný „seznam odvolání“ přejmenovává na kontrolu zneplatněných přístupů. Trvalá správcovská role tím není časově omezena; expiruje pouze konkrétní přenositelné oprávnění.
+
 ## 0.21.27 — 2026-08-13
 **Stabilní produkční regresní test screenshotů**
 

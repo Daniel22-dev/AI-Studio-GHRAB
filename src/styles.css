@@ -2617,6 +2617,49 @@ html[data-speaker-notes="true"] .speaker-note {
   border-color: rgba(255, 211, 122, 0.45);
   box-shadow: 0 0 24px rgba(255, 211, 122, 0.16);
 }
+.app-test-status-legend {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  justify-content: center;
+  gap: 8px 12px;
+  margin: 14px auto 0;
+  color: var(--muted);
+  font-size: 0.75rem;
+}
+.app-test-status-legend strong {
+  color: var(--soft);
+}
+.app-test-status-legend span {
+  white-space: nowrap;
+}
+.app-test-status-button {
+  width: 32px;
+  height: 32px;
+  font-size: 1rem;
+  font-weight: 900;
+  line-height: 1;
+  opacity: 0.86;
+}
+.app-test-status-button[data-test-status="untested"] {
+  color: #a8bac6;
+  border-color: rgba(168, 186, 198, 0.32);
+}
+.app-test-status-button[data-test-status="light"] {
+  color: #ffd37a;
+  border-color: rgba(255, 211, 122, 0.46);
+  box-shadow: 0 0 18px rgba(255, 211, 122, 0.1);
+}
+.app-test-status-button[data-test-status="tested"] {
+  color: var(--green);
+  border-color: rgba(89, 224, 165, 0.46);
+  box-shadow: 0 0 18px rgba(89, 224, 165, 0.12);
+}
+.app-test-status-button:hover,
+.app-test-status-button:focus-visible {
+  opacity: 1;
+  transform: translateY(-1px);
+}
 .portal-app-card.is-favorite {
   box-shadow:
     var(--shadow),
@@ -2748,6 +2791,10 @@ html[data-speaker-notes="true"] .speaker-note {
     gap: 4px;
   }
   .pin-button {
+    width: 28px;
+    height: 28px;
+  }
+  .app-test-status-button {
     width: 28px;
     height: 28px;
   }

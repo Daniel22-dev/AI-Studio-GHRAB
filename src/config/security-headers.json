@@ -1,7 +1,7 @@
 {
   "schema": "ghrab-security-headers-v1",
   "appId": "ai-studio",
-  "version": "0.21.27",
+  "version": "0.21.28",
   "staticProfile": {
     "contentSecurityPolicy": "default-src 'self'; script-src 'self'; style-src 'self'; img-src 'self' data: blob:; connect-src 'self'; object-src 'none'; base-uri 'self'; form-action 'self'",
     "note": "Bez 'unsafe-inline'. Shodu s meta CSP v dist/index.html hlídá bezpečnostní brána."

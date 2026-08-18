@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<html lang="cs" data-theme="dark" data-ghrab-app-id="ai-studio" data-ghrab-app-version="0.21.27">
+<html lang="cs" data-theme="dark" data-ghrab-app-id="ai-studio" data-ghrab-app-version="0.21.28">
 <head>
  <meta charset="utf-8"/>
  <meta name="viewport" content="width=device-width,initial-scale=1"/>
@@ -30,7 +30,7 @@
   </nav>
  </header>
  <main id="main" class="studio-guide" hidden>
-  <div class="top"><a href="./">← Centrum manuálů</a><strong>AI Studio GHRAB · Administrátor · rozšířený manuál · verze 0.21.27</strong></div>
+  <div class="top"><a href="./">← Centrum manuálů</a><strong>AI Studio GHRAB · Administrátor · rozšířený manuál · verze 0.21.28</strong></div>
   <section class="hero admin">
    <span class="role-badge admin">Administrátor · rozšířený manuál</span>
    <h1>AI Studio GHRAB – manuál administrátora</h1>
@@ -94,11 +94,12 @@
     <h3>Přístupy po školení</h3>
     <ol class="steps">
      <li>Po absolvování školení vydat nebo aktualizovat kolegovi podepsané oprávnění pouze pro příslušné aplikace.</li>
-     <li>Evidence přístupů používá JTI, kumulativní oprávnění a revokační seznam; při odebrání přístupu aktualizovat revokaci.</li>
+     <li>Evidence přístupů používá JTI, kumulativní oprávnění a seznam zneplatněných přístupů; při odebrání přístupu aktualizovat tento seznam.</li>
      <li>Po změně přístupu ověřit chování z pohledu běžného učitele, nikoli jen z admin účtu.</li>
     </ol>
     <h3>Zástupce správce a dočasné plné zastoupení</h3>
     <p>Role <strong>Zástupce správce</strong> slouží pro provozní zastupitelnost. Vidí Správu, diagnostiku, stav zdrojů, Pilotní dashboard, souhrnný report, Evidenci přístupů a Pohled kolegy, ale nemá Vydavatele oprávnění, Prezentaci ani citlivé zásahy do podpisových klíčů a bezpečnostní politiky.</p>
+    <p><strong>Hlavní správce nepřichází uplynutím data o vlastnictví ani správu Studia.</strong> Končí pouze platnost konkrétního podepsaného souboru, aby případná zkopírovaná správcovská licence nezůstala použitelná navždy. Ve Vydavateli proto použijte volbu <strong>Hlavní správce · maximum</strong>, která nastaví aktuální bezpečnostní limit 400 dní; před koncem si vydáte nový soubor.</p>
     <p>Pokud je při delší nepřítomnosti nutný zásah vyžadující plná práva, administrátor může vystavit samostatné <strong>časově omezené správcovské oprávnění</strong>. Vydavatel nabízí rychlé nastavení 7, 14 nebo 30 dní; po expiraci se oprávnění automaticky stane neplatným.</p>
     <p>Pro zástupce je v centru Manuálů připraven samostatný krizový návod s triáží incidentů a hranicemi pravomocí.</p>
     <h3>Pohled kolegy</h3>
@@ -107,7 +108,13 @@
     <p>Kolegové generují měsíční anonymní souhrn ve svém Můj přístup. Administrátor v <strong>Pilotním dashboardu / Souhrnném reportu</strong> importuje jejich JSON soubory. Svoje provozní údaje nemusí exportovat a znovu nahrávat: pokud nechá zapnuté <strong>Zahrnout moje místní data do celku</strong>, Studio automaticky přidá data uložená v aktuálním prohlížeči/profilu pro zvolené období. Jiné zařízení se tím nepřenese.</p>
     <h3>Prezentace</h3>
     <p>Prezentační režim je samostatná PR část pro projektor, dny otevřených dveří a další veřejné ukázky. Nabízí živou vizuální smyčku Studia, režim celé obrazovky a připravený playlist pro budoucí lokální videa definovaná v <code>presentation.json</code>. Není duplicitně ve Správě a neobsahuje provozní administrační kroky.</p>
-   </section>
+  </section>
+  <section class="guide-section">
+   <p class="eyebrow">VLASTNÍ QA PŘEHLED</p>
+   <h2>Stav testování aplikací</h2>
+   <p>V záhlaví každé karty aplikace má plný správce vlastní tříúrovňové označení: <strong>○ netestováno</strong>, <strong>◐ lehce otestováno</strong> a <strong>✓ otestováno</strong>. Kliknutím na symbol se stav posune na další úroveň.</p>
+   <p>Stav se ukládá podle stabilního ID aplikace v aktuálním prohlížeči a profilu. Nově přidaná aplikace se proto automaticky zobrazí jako netestovaná. Označení se nezobrazuje učitelům ani v Pohledu kolegy a bez školního serveru se nepřenáší mezi zařízeními.</p>
+  </section>
    <section class="section admin-extra" id="release">
     <span class="role-badge admin">Provoz a release</span>
     <h2>Kontrola vydání a serverová připravenost</h2>
@@ -121,7 +128,7 @@
    </section>
 
  </main>
- <footer class="site-footer"><div class="shell-wide footer-inner"><div><strong>AI Studio GHRAB</strong><p>Autor a vývojový garant: Daniel Baláž · Školní projekt Gymnázia, Ostrava-Hrabůvka · verze 0.21.27</p></div></div></footer>
+ <footer class="site-footer"><div class="shell-wide footer-inner"><div><strong>AI Studio GHRAB</strong><p>Autor a vývojový garant: Daniel Baláž · Školní projekt Gymnázia, Ostrava-Hrabůvka · verze 0.21.28</p></div></div></footer>
  <script src="../app.js" type="module"></script>
  <script src="./ai-studio-admin.js" type="module"></script>
 </body>

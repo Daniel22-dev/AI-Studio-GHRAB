@@ -63,6 +63,11 @@ check(appJs.includes('[data-teacher-only]'), "Chybi role teacher-only.");
 check(appJs.includes('COLLEAGUE_PREVIEW_KEY') && appJs.includes('function isColleaguePreview()') && appJs.includes('function mountColleaguePreviewBanner()'), "Chybi session Pohled kolegy.");
 check(appJs.includes('const operator = isOperator() && !preview') && appJs.includes('const operations = admin || operator') && appJs.includes('snapshot.permit?.role === "teacher"'), "Role admin/operator/teacher se v UI nerozdeluji bezpecne.");
 check(appJs.includes('function swapCoreAppPositions') && appJs.includes('portal-drag-handle') && appJs.includes('dataTransfer'), "Top 4 nema drag-and-drop prehazovani pozic.");
+check(appJs.includes('APP_TEST_STATUS_KEY') && appJs.includes('function getAppTestStatus(appId)') && appJs.includes('function setAppTestStatus(appId, status)'), "Karty aplikaci nemaji trvale ulozeny stav testovani podle ID aplikace.");
+check(appJs.includes('["untested", "light", "tested"]') && ["○", "◐", "✓"].every((symbol) => appJs.includes(`symbol: "${symbol}"`)), "Stav testovani nema tri odlisne symboly netestovano/lehce/otestovano.");
+check(appJs.includes('if (isAdmin() && !isColleaguePreview())') && appJs.includes('appTestStatusButton(app, article)'), "Stav testovani neni dostupny na kazde karte jen ve skutecnem spravcovskem pohledu.");
+check(home.includes('class="app-test-status-legend"') && home.includes('○ netestováno') && home.includes('◐ lehce') && home.includes('✓ otestováno'), "Domovska stranka nema spravcovskou legendu stavu testovani.");
+check(appJs.includes('Kontrola zneplatněných přístupů aktuální k'), "Souhrn pristupu stale pouziva nejasne oznaceni seznamu odvolani.");
 check(appJs.includes('snapshot.valid && snapshot.permit?.role === "teacher"'), "Teacher-only prvky nejsou vazany pouze na roli teacher.");
 check(/function renderExtraApps\(apps\)[\s\S]{0,1400}const anchor = document\.querySelector\("\.value-section"\)[\s\S]{0,220}anchor\.before\(section\)[\s\S]{0,120}main\?\.append\(section\)/.test(appJs), "Dalsi aplikace se po odstraneni mission-strip nemaji kam vlozit.");
 check(!appJs.includes('document.querySelector(".mission-strip")?.before(section)'), "Render dalsich aplikaci stale zavisi na odstranene mission-strip.");
@@ -106,7 +111,10 @@ const issuerHtml = await text("src/tools/access-issuer/index.html");
 const issuerJs = await text("src/tools/access-issuer/issuer.js");
 check(issuerHtml.includes('<option value="operator">Zástupce správce</option>'), "Vydavatel neumoznuje vydat roli zastupce spravce.");
 check(["7", "14", "30"].every((days) => issuerHtml.includes(`data-admin-days="${days}"`)), "Vydavatel nema rychle expirace 7/14/30 dni pro docasneho admina.");
+check(issuerHtml.includes('id="primary-admin-expiry"') && issuerHtml.includes('Hlavní správce · maximum'), "Vydavatel nema samostatnou maximalni platnost pro hlavniho spravce.");
 check(issuerJs.includes('temporary.hidden = role !== "admin"') && issuerJs.includes('role !== "operator"'), "Vydavatel nerozlisuje operatora a docasneho plneho admina.");
+check(issuerJs.includes('function setMaximumExpiry()') && issuerJs.includes('policy?.maximumPermitDays || 400) - 1') && issuerJs.includes('addEventListener("click", setMaximumExpiry)'), "Hlavni spravce nema funkcni a validovatelnou volbu maximalni bezpecne platnosti.");
+check(!/syncRoleUi\(\)[\s\S]{0,700}setExpiryDays\(14\)/.test(issuerJs), "Volba role admin stale automaticky zkracuje hlavniho spravce na 14 dni.");
 check(issuerJs.includes('if (role === "admin") {') && issuerJs.includes('$("#permit-all").checked = true;') && !issuerJs.includes('["admin", "operator"].includes(role)'), "Zastupce spravce se stale automaticky rozsiri na vsechny aplikace.");
 check(issuerJs.includes('function selectAllCurrentApps()') && /permit-all[\s\S]{0,180}addEventListener\("change"[\s\S]{0,180}selectAllCurrentApps\(\)/.test(issuerJs), "Volba vsech soucasnych i budoucich aplikaci neoznaci aktualni aplikace ve Studiu.");
 check(issuerJs.includes('input.checked = grantsAllApps || record.apps.includes(input.value);'), "Nacteni wildcard pristupu nezobrazi vsechny soucasne aplikace jako oznacene.");
@@ -162,7 +170,7 @@ globalThis.fetch = async () => {
 };
 try {
   const localRepository = materialModule.createMaterialRepository({
-    VERSION: "0.21.27",
+    VERSION: "0.21.28",
     deploymentReady: Promise.resolve({
       profile: "github-pages",
       apiBaseUrl: "",
@@ -249,7 +257,7 @@ const context = {
   location: { href: "https://example.test/AI-Studio-GHRAB/" },
   document: {
     currentScript: { src: "https://example.test/AI-Studio-GHRAB/ghrab/ghrab-platform.js" },
-    documentElement: { dataset: { ghrabAppId: "ai-studio", ghrabAppVersion: "0.21.27" } },
+    documentElement: { dataset: { ghrabAppId: "ai-studio", ghrabAppVersion: "0.21.28" } },
     getElementById() { return null; },
     readyState: "loading",
     addEventListener() {},
@@ -260,7 +268,7 @@ vm.createContext(context);
 vm.runInContext(platformCode, context, { filename: "ghrab-platform.js" });
 const material = { schema: "ghrab-material-v1", id: "ux-contract-test", content: { sourceText: "test" } };
 const created = context.GHRAB_PLATFORM.bridge.create({
-  target: "generator", sourceAppId: "ai-studio", sourceAppVersion: "0.21.27",
+  target: "generator", sourceAppId: "ai-studio", sourceAppVersion: "0.21.28",
   targetVersionRange: ">=0.0.0 <100.0.0", ttlMs: 5 * 60 * 1000, material, writeLegacy: true,
 });
 check(created?.target === "generator", "Bridge v2 create nevratil cil generator.");
@@ -274,4 +282,4 @@ if (failures.length) {
   for (const failure of failures) console.error(`- ${failure}`);
   process.exit(1);
 }
-console.log("Studio UX/regression test passed: navigation, colleague preview, Top 4 drag, footer/changelog, reporting, safety traffic light, PR presentation, materials inbound handoff and Bridge v2 contract.");
+console.log("Studio UX/regression test passed: navigation, colleague preview, Top 4 drag, per-app testing status, footer/changelog, reporting, safety traffic light, PR presentation, materials inbound handoff and Bridge v2 contract.");

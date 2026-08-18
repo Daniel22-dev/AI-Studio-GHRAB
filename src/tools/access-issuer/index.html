@@ -1,5 +1,5 @@
 <!doctype html>
-<html lang="cs" data-theme="dark" data-ghrab-app-id="ai-studio" data-ghrab-app-version="0.21.27">
+<html lang="cs" data-theme="dark" data-ghrab-app-id="ai-studio" data-ghrab-app-version="0.21.28">
   <head>
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width,initial-scale=1" />
@@ -131,9 +131,10 @@
             /></label>
           </div>
           <div id="temporary-admin-tools" class="temporary-admin-tools" hidden>
-            <strong>Dočasné plné zastoupení</strong>
-            <p>Plný správce má všechny citlivé pravomoci. Pro nemoc nebo jinou mimořádnou situaci použijte co nejkratší dobu; přístup po datu expirace automaticky přestane platit.</p>
+            <strong>Délka plného správcovského oprávnění</strong>
+            <p>Podepsané oprávnění musí mít bezpečnostní konec platnosti i u správce; vaše role ani vlastnictví Studia tím nekončí. Pro hlavního správce zvolte maximum. Krátké doby používejte pouze pro mimořádné dočasné zastoupení.</p>
             <div class="app-actions">
+              <button id="primary-admin-expiry" class="button secondary" type="button">Hlavní správce · maximum</button>
               <button class="button ghost" type="button" data-admin-days="7">7 dní</button>
               <button class="button ghost" type="button" data-admin-days="14">14 dní</button>
               <button class="button ghost" type="button" data-admin-days="30">30 dní</button>
