@@ -663,7 +663,7 @@ function setupNavigation() {
       navToggle?.setAttribute("aria-expanded", "false");
     }),
   );
-  const activeNavPage = ["issuer", "access-registry"].includes(page)
+  const activeNavPage = ["issuer", "access-registry", "security-center"].includes(page)
     ? "automation"
     : ["manual-teacher", "manual-admin"].includes(page)
       ? "manualy"
@@ -2339,6 +2339,9 @@ function renderPageAccessGate() {
   const administratorPages = new Set([
     ...(getAccessSnapshot().policy?.administratorPages || []),
     "deputy-admin",
+    // The centre is a full-admin-only compatibility route. Older signed
+    // policies do not name it yet, so the runtime gates it explicitly here.
+    "security-center",
   ]);
   if (!administratorPages.has(page) || (canAccessAdminPage(page) && !isColleaguePreview())) return;
   const main = document.querySelector("main");

@@ -2,7 +2,7 @@
 
 > Aktuální verze: **0.21.32** · etapa P5
 
-Tato verze navazuje na zjednodušené Studio 0.21.0 a vrací do horní navigace **Materiály** v nové roli: dnes jako pravdivě místní katalog a pracovní prostor, do budoucna jako připravený serverový katalog předmětových komisí s verzemi a stavem ověření. Rychlá kontrola dat je nově rozbalovací pomocník pro nejisté situace. P5, offline-start a role učitel/správce zůstávají zachovány. AI Studio se nadále nasazuje jako poslední, po všech samostatných aplikacích.
+Tato verze přidává hlavnímu správci **Centrum zabezpečení**. Připravená zneplatnění lze podepsat přímo v prohlížeči a stáhnout jako veřejný aktualizační balíček, aniž by soukromý konfigurační klíč opustil zařízení. Zástupce správce může JTI připravit v evidenci, ale nesmí vytvářet podpis ani měnit bezpečnostní konfiguraci. P5, offline-start a dosavadní oprávnění zůstávají zachovány. AI Studio se nadále nasazuje jako poslední, po všech samostatných aplikacích.
 
 ## Povinné pořadí
 

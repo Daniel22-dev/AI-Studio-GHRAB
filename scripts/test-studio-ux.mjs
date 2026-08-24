@@ -30,7 +30,7 @@ const standardHtml = [
   "src/index.html", "src/access/index.html", "src/automation/index.html", "src/demo/index.html",
   "src/pilot/index.html", "src/report/index.html", "src/safety/index.html", "src/manualy/index.html",
   "src/changelog/index.html", "src/tests/index.html", "src/tools/access-issuer/index.html",
-  "src/tools/access-registry/index.html", "src/workflow/index.html", "src/library/index.html",
+  "src/tools/access-registry/index.html", "src/tools/security-center/index.html", "src/workflow/index.html", "src/library/index.html",
 ];
 for (const rel of standardHtml) {
   const html = await text(rel);
@@ -46,6 +46,7 @@ const policy = JSON.parse(await text("src/config/access-policy.json"));
 check(!policy.administratorPages.includes("changelog"), "Katalog zmen je stale spravcovska stranka.");
 check(Array.isArray(policy.operatorRoles) && policy.operatorRoles.includes("operator"), "Access policy nema roli operator.");
 check(Array.isArray(policy.operatorPages) && ["automation", "pilot", "report", "tests", "access-registry", "deputy-admin"].every((page) => policy.operatorPages.includes(page)), "Access policy nema bezpecny rozsah stranek zastupce spravce.");
+check(!policy.operatorPages.includes("security-center"), "Zastupce spravce nesmi mit Centrum zabezpeceni v podepsanem rozsahu.");
 const accessControlJs = await text("src/access/access-control.js");
 check(accessControlJs.includes("export function isOperator()") && accessControlJs.includes("export function canAccessAdminPage(pageId)"), "Runtime nema oddelenou roli zastupce spravce a strankova opravneni.");
 check(accessControlJs.includes('return "invalid-role"'), "Podepsany permit nepripustne role neodmita.");
@@ -97,6 +98,7 @@ for (const duplicate of ['href="../report/"', 'href="../changelog/"', 'href="../
 check(adminHtml.includes('id="preview-monthly-reminder"'), "Sprava nema nahled mesicni prosby.");
 const automationJs = await text("src/automation/automation.js");
 check(adminHtml.includes('data-full-admin-only') && adminHtml.includes('../tools/access-issuer/'), "Vydavatel opravneni neni ve Sprave omezen jen na plneho admina.");
+check(adminHtml.includes('../tools/security-center/') && /security-center\/["'] data-full-admin-only/.test(adminHtml), "Centrum zabezpeceni neni ve Sprave omezeno jen na plneho admina.");
 check(adminHtml.includes('data-operator-only') && adminHtml.includes('deputy-admin.html'), "Sprava nema provozni informaci pro zastupce spravce.");
 check(automationJs.includes('canAccessAdminPage?.("automation")'), "Sprava neuznava strankove opravneni zastupce.");
 check(/preview-monthly-reminder[\s\S]{0,180}setupMonthlyReportReminder\(\{[\s\S]{0,40}force:\s*true/.test(automationJs), "Nahled mesicni prosby nespousti vynuceny nahled.");
@@ -124,6 +126,13 @@ check(issuerJs.includes('supersededBy: payload.jti') && issuerJs.includes('přip
 check(deputyGuide.includes('Vydat nový přístup') && deputyGuide.includes('starý učitelský JTI zneplatnit') && deputyGuide.includes('Dosavadní výběr aplikací zůstane zachován'), "Manual zastupce nepopisuje bezpecne povyseni existujiciho trained teacher.");
 const registryJs = await text("src/tools/access-registry/registry.js");
 check(registryJs.includes('canAccessAdminPage?.("access-registry")') && registryJs.includes('renew.hidden = !G.isAdmin()'), "Evidence pristupu nedodrzuje hranici zastupce proti Vydavateli.");
+const securityCenterHtml = await text("src/tools/security-center/index.html");
+const securityCenterJs = await text("src/tools/security-center/security-center.js");
+const securityCenterCore = await text("src/tools/security-center/security-center-core.js");
+check(securityCenterHtml.includes('data-page="security-center"') && securityCenterJs.includes("window.GHRAB.isAdmin()"), "Centrum zabezpeceni nema plnou administratorskou branu.");
+check(securityCenterJs.includes("PRIVATE_KEY_TTL_MS = 10 * 60 * 1000") && securityCenterJs.includes("pagehide") && securityCenterJs.includes("clearPrivateKey"), "Konfiguracni soukromy klic se automaticky nezapomina.");
+check(!securityCenterJs.includes("localStorage.setItem") && !securityCenterJs.includes("sessionStorage.setItem"), "Centrum zabezpeceni nesmi ukladat soukromy klic do weboveho uloziste.");
+check(securityCenterCore.includes('schema: "ghrab-access-config-update-pack-v1"') && securityCenterCore.includes("findPrivateMaterial(pack)"), "Centrum nevytvari verejny kontrolovatelny aktualizacni balicek.");
 
 const reportHtml = await text("src/report/index.html");
 check(reportHtml.includes('tomto prohlížeči a profilu') && reportHtml.includes('Není třeba nahrávat vlastní soubor'), "Souhrnny report nevysvetluje automaticke pridani mistnich dat aktualniho prohlizece/profilu.");
@@ -171,7 +180,7 @@ globalThis.fetch = async () => {
 };
 try {
   const localRepository = materialModule.createMaterialRepository({
-    VERSION: "0.21.32",
+    VERSION: "0.21.31",
     deploymentReady: Promise.resolve({
       profile: "github-pages",
       apiBaseUrl: "",
@@ -264,7 +273,7 @@ const context = {
   location: { href: "https://example.test/AI-Studio-GHRAB/" },
   document: {
     currentScript: { src: "https://example.test/AI-Studio-GHRAB/ghrab/ghrab-platform.js" },
-    documentElement: { dataset: { ghrabAppId: "ai-studio", ghrabAppVersion: "0.21.32" } },
+    documentElement: { dataset: { ghrabAppId: "ai-studio", ghrabAppVersion: "0.21.31" } },
     getElementById() { return null; },
     readyState: "loading",
     addEventListener() {},
@@ -275,7 +284,7 @@ vm.createContext(context);
 vm.runInContext(platformCode, context, { filename: "ghrab-platform.js" });
 const material = { schema: "ghrab-material-v1", id: "ux-contract-test", content: { sourceText: "test" } };
 const created = context.GHRAB_PLATFORM.bridge.create({
-  target: "generator", sourceAppId: "ai-studio", sourceAppVersion: "0.21.32",
+  target: "generator", sourceAppId: "ai-studio", sourceAppVersion: "0.21.31",
   targetVersionRange: ">=0.0.0 <100.0.0", ttlMs: 5 * 60 * 1000, material, writeLegacy: true,
 });
 check(created?.target === "generator", "Bridge v2 create nevratil cil generator.");

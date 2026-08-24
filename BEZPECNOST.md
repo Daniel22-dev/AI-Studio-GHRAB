@@ -5,7 +5,7 @@
 
 ## Rychlá kontrola dat v portálu
 
-Záložka **Bezpečnost** obsahuje jednoduchý semafor a volitelnou pomůcku **Nejsem si jistý → rychle posoudit**. Uživatel do ní nevkládá dokument ani text; pouze označí typy údajů. Kontrola běží lokálně, nic neposílá a nepoužívá AI. Není povinná před každým použitím aplikace. V 0.21.31 obsahuje deset praktických kategorií pro běžnou školní rutinu (identifikátory, práce žáka, známky/docházka, komunikace, obraz/hlas/rukopis, nepřímá identifikace, citlivé údaje, přístupové údaje a důvěrné interní dokumenty). Při více označených položkách vždy rozhoduje nejvyšší riziko: červená > oranžová > zelená; bezpečná anonymní volba se s rizikovými volbami nekombinuje.
+Záložka **Bezpečnost** obsahuje jednoduchý semafor a volitelnou pomůcku **Nejsem si jistý → rychle posoudit**. Uživatel do ní nevkládá dokument ani text; pouze označí typy údajů. Kontrola běží lokálně, nic neposílá a nepoužívá AI. Není povinná před každým použitím aplikace. V 0.21.32 obsahuje deset praktických kategorií pro běžnou školní rutinu (identifikátory, práce žáka, známky/docházka, komunikace, obraz/hlas/rukopis, nepřímá identifikace, citlivé údaje, přístupové údaje a důvěrné interní dokumenty). Při více označených položkách vždy rozhoduje nejvyšší riziko: červená > oranžová > zelená; bezpečná anonymní volba se s rizikovými volbami nekombinuje.
 
 ## Co serverless portál zajišťuje
 
@@ -33,7 +33,7 @@ Ochranný bootstrap je integrován v Generátoru 7.1.13, Diferenciátoru 1.3.13,
 
 ## Klíče
 
-Systém používá dva oddělené podpisové účely. Klíč oprávnění podepisuje přístupy učitelů a správců. Konfigurační klíč podepisuje společnou bezpečnostní politiku a revokace. Rotace jednoho automaticky nerotuje druhý: v 0.21.31 se změnil pouze konfigurační klíč, a proto dříve vydaná platná uživatelská oprávnění pokračují beze změny.
+Systém používá dva oddělené podpisové účely. Klíč oprávnění podepisuje přístupy učitelů a správců. Konfigurační klíč podepisuje společnou bezpečnostní politiku a revokace. Rotace jednoho automaticky nerotuje druhý: v 0.21.31 se změnil pouze konfigurační klíč, a proto dříve vydaná platná uživatelská oprávnění pokračují beze změny. Verze 0.21.32 tento konfigurační klíč nemění; umožňuje jej bezpečně použít pouze místně v Centru zabezpečení.
 
 Soukromé části obou klíčů jsou nejcitlivější soubory celého systému. Patří pouze správci, ideálně na šifrované zařízení a do oddělené offline zálohy. Nesmějí být v GitHubu, e-mailu, veřejném cloudu ani společné školní složce. Veřejné části jsou naopak určeny k publikaci v aplikaci.
 
@@ -41,13 +41,13 @@ Veřejná konfigurace používá sadu klíčů. Při plánované rotaci se nejpr
 
 ## Revokace
 
-Konkrétní oprávnění se zneplatní přidáním jeho `jti` do `config/revoked-access.json`. Pole `revokedBefore` umožňuje zneplatnit všechna oprávnění vydaná před určeným okamžikem. Offline zařízení může poslední kryptograficky ověřenou konfiguraci použít nejvýše 24 hodin od posledního úspěšného online načtení; samotný podepsaný bundle nesmí být starší než 30 dní. Bundle zároveň musí odpovídat verzi zapečené v deployment profilu. Service worker bundle ani podpis neobsluhuje.
+Konkrétní oprávnění se zneplatní přidáním jeho `jti` do nového podepsaného access bundle. Správce nejprve označí JTI v Evidenci přístupů a poté v Centru zabezpečení místně vytvoří veřejný podepsaný aktualizační balíček. Pole `revokedBefore` umožňuje zneplatnit všechna oprávnění vydaná před určeným okamžikem, ale běžné rozhraní je záměrně nemění. Offline zařízení může poslední kryptograficky ověřenou konfiguraci použít nejvýše 24 hodin od posledního úspěšného online načtení; samotný podepsaný bundle nesmí být starší než 30 dní. Bundle zároveň musí odpovídat verzi zapečené v deployment profilu. Service worker bundle ani podpis neobsluhuje.
 
 Klientský `fetchedAt` měří pouze dobu od posledního spojení a sám není bezpečnostní kotvou. Rollback staršího revokačního seznamu omezuje podpis, 30denní stáří a shoda `bundle.version` se zapečeným `sharedAccessVersion`. Statický klient přesto není bezpečnostní hranice proti uživateli, který upraví samotný kód.
 
 Nová přenosná oprávnění vydaná od 22. 8. 2026 mají tvrdý limit 90 dní. Starší oprávnění zůstávají migračně platná do vlastní expirace; při odchodu kolegy nebo ztrátě zařízení je proto nutná výslovná revokace. Tento mechanismus je praktická serverless ochrana, nikoli náhrada serverové identity a relace.
 
-Po změně politiky nebo revokačního seznamu musí správce na svém zařízení znovu vytvořit podepsaný access bundle. Současný technický postup používá `npm run access:sign`; plánované jednotné správcovské rozhraní tuto operaci převede do srozumitelného ovládání v prohlížeči. Generátor vytvoří jedinečnou verzi a současně ji propíše do aktivních deployment profilů. I bez obsahové změny je nutné bundle nejpozději po 30 dnech obnovit; blokující CI kontrola starší verzi nenasadí. Soukromý konfigurační podpisový klíč se nikdy nevkládá do repozitáře ani neposílá jiné osobě.
+Po změně revokačního seznamu musí hlavní správce na svém zařízení znovu vytvořit podepsaný access bundle. Centrum zabezpečení vytvoří jedinečnou verzi, zkontroluje podpis a stáhne pouze veřejný aktualizační balíček. Ten se před nasazením nezávisle ověří a jeho verze se propíše do aktivních deployment profilů. I bez obsahové změny je nutné bundle nejpozději po 30 dnech obnovit; blokující CI kontrola starší verzi nenasadí. Soukromý konfigurační podpisový klíč se nikdy nevkládá do repozitáře ani neposílá jiné osobě.
 
 ## Deployment profil
 

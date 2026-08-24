@@ -53,10 +53,11 @@
     "sync:doc-versions": "node scripts/sync-doc-app-versions.mjs",
     "qa:doc-versions": "node scripts/sync-doc-app-versions.mjs --check",
     "test:audit-regressions": "node scripts/test-audit-regressions.mjs",
-    "test:security-regressions": "node scripts/test-security-regressions.mjs",
+    "test:security-regressions": "node scripts/test-security-regressions.mjs && node scripts/test-security-center.mjs",
     "access:check": "node scripts/check-access-bundle-freshness.mjs",
     "access:check:required": "node scripts/check-access-bundle-freshness.mjs --required",
     "access:validate-rotation": "node scripts/validate-access-rotation-pack.mjs",
+    "access:validate-update": "node scripts/validate-access-update-pack.mjs",
     "access:sign": "node scripts/sign-access-bundle.mjs",
     "test:studio-ux": "node scripts/test-studio-ux.mjs"
   },

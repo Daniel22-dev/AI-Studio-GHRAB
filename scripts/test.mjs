@@ -860,6 +860,7 @@ const standardPages = new Set([
   "tests/index.html",
   "tools/access-issuer/index.html",
   "tools/access-registry/index.html",
+  "tools/security-center/index.html",
 ]);
 for (const file of sourceFiles.filter((f) => f.endsWith(".html"))) {
   const html = await readFile(file, "utf8");
@@ -914,6 +915,7 @@ for (const [file, guard] of [
   ["report/report.js", "canAccessAdminPage"],
   ["demo/demo.js", "isAdmin"],
   ["tests/tests.js", "canAccessAdminPage"],
+  ["tools/security-center/security-center.js", "isAdmin"],
 ]) {
   const text = await readFile(path.join(src, file), "utf8");
   if (!text.includes("accessReady") || !text.includes(guard))
@@ -1071,11 +1073,7 @@ const deploymentConfigText = await readFile(
   path.join(src, "access/deployment-config.js"),
   "utf8",
 );
-if (
-  !/\[["\']issuer["\'], ["\']access-registry["\']\]\.includes\(page\)/.test(
-    mainAppText,
-  )
-)
+if (!mainAppText.includes('["issuer", "access-registry", "security-center"].includes(page)'))
   fail("Správcovské nástroje nezvýrazňují záložku Správa.");
 const issuerScriptText = await readFile(
   path.join(src, "tools/access-issuer/issuer.js"),
@@ -1087,6 +1085,18 @@ const registryPageText = await readFile(
 );
 const registryScriptText = await readFile(
   path.join(src, "tools/access-registry/registry.js"),
+  "utf8",
+);
+const securityCenterPageText = await readFile(
+  path.join(src, "tools/security-center/index.html"),
+  "utf8",
+);
+const securityCenterScriptText = await readFile(
+  path.join(src, "tools/security-center/security-center.js"),
+  "utf8",
+);
+const securityCenterCoreText = await readFile(
+  path.join(src, "tools/security-center/security-center-core.js"),
   "utf8",
 );
 if (
@@ -1111,16 +1121,32 @@ if (
   );
 if (
   !registryPageText.includes("Evidence přístupů") ||
-  !registryPageText.includes("export-revocations") ||
+  !registryPageText.includes("../security-center/") ||
+  !registryPageText.includes("data-full-admin-only") ||
   !registryPageText.includes("import-files") ||
   !registryPageText.includes("registry-drop-zone") ||
   !registryScriptText.includes("inspectPermitToken") ||
-  !registryScriptText.includes("revoked-access.json") ||
+  !registryScriptText.includes("access-config-bundle.json") ||
   !registryScriptText.includes("#registryImport=") ||
   !registryScriptText.includes("importSelectedFiles")
 )
   fail(
-    "Správcovská evidence nemá spolehlivý import, přehled, soukromý odkaz nebo export zneplatnění.",
+    "Správcovská evidence nemá spolehlivý import, přehled, soukromý odkaz nebo předání zneplatnění.",
+  );
+if (
+  !securityCenterPageText.includes('data-page="security-center"') ||
+  !securityCenterPageText.includes("SOUKROMY-KONFIGURACNI-KLIC-NEPOSILAT") ||
+  !securityCenterPageText.includes("VEREJNA-AKTUALIZACE") ||
+  !securityCenterScriptText.includes("window.GHRAB.isAdmin()") ||
+  !securityCenterScriptText.includes("PRIVATE_KEY_TTL_MS = 10 * 60 * 1000") ||
+  !securityCenterScriptText.includes("pagehide") ||
+  !securityCenterScriptText.includes("clearPrivateKey") ||
+  !securityCenterCoreText.includes("createSecurityUpdatePack") ||
+  !securityCenterCoreText.includes("verifySignedBundle") ||
+  !securityCenterCoreText.includes("findPrivateMaterial(pack)")
+)
+  fail(
+    "Centrum zabezpečení nemá plnou správcovskou bránu, lokální podpis nebo ochranu soukromého klíče.",
   );
 if (
   registryScriptText.indexOf(
@@ -1523,6 +1549,10 @@ const required = [
   "tools/access-registry/index.html",
   "tools/access-registry/registry.js",
   "tools/access-registry/registry.css",
+  "tools/security-center/index.html",
+  "tools/security-center/security-center.js",
+  "tools/security-center/security-center-core.js",
+  "tools/security-center/security-center.css",
   "automation/index.html",
   "app/index.html",
   "app/viewer.js",

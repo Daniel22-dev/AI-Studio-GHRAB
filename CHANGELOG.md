@@ -3,11 +3,12 @@
 > Tento soubor se generuje ze `src/config/changelog.json`. Neupravujte jej ručně.
 
 ## 0.21.32 — 2026-08-24
-**Sjednocení bezpečnostní větve a stabilního screenshot QA**
+**Lokální Centrum zabezpečení pro podepsaná zneplatnění**
 
-- Verze vychází z bezpečnostně zkontrolované 0.21.31 a zachovává rotovaný veřejný konfigurační klíč, podepsaný access bundle, oba časové limity, fail-closed chování, nulový XSS baseline i připnuté GitHub Actions.
-- Do novější bezpečnostní větve byla přenesena oprava falešného pádu screenshot testu: po vzniku karty test čeká až čtyři sekundy na skutečné dekódování blob náhledu.
-- Kontrola CSP zůstává přísná. Při skutečně zablokovaném nebo vadném obrázku zůstane `imageReady:false` a release gate nadále selže; produkční reportér ani bezpečnostní konfigurace se touto opravou nemění.
+- Hlavní správce může přímo ve Studiu podepsat připravená zneplatnění a stáhnout jediný veřejný aktualizační balíček; soukromý konfigurační klíč neopouští prohlížeč.
+- Konfigurační klíč se neukládá do localStorage ani sessionStorage a po podpisu, zavření stránky nebo deseti minutách se automaticky vymaže z paměti.
+- Zástupce správce může JTI v evidenci připravit, ale Centrum zabezpečení a vytvoření podpisu zůstává výhradně hlavnímu správci.
+- Veřejný balíček má samostatný validační nástroj a testy ověřují podpis, zachování politiky, sjednocení revokací, odmítnutí cizího klíče a nepřítomnost soukromého materiálu.
 
 ## 0.21.31 — 2026-08-22
 **Rotace konfiguračního ověřovacího klíče**

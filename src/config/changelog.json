@@ -6,21 +6,25 @@
       "version": "0.21.32",
       "date": "2026-08-24",
       "title": {
-        "cs": "Sjednocení bezpečnostní větve a stabilního screenshot QA",
-        "en": "Security branch and stable screenshot QA integration"
+        "cs": "Lokální Centrum zabezpečení pro podepsaná zneplatnění",
+        "en": "Local Security Centre for signed revocations"
       },
       "changes": [
         {
-          "cs": "Verze vychází z bezpečnostně zkontrolované 0.21.31 a zachovává rotovaný veřejný konfigurační klíč, podepsaný access bundle, oba časové limity, fail-closed chování, nulový XSS baseline i připnuté GitHub Actions.",
-          "en": "This release is based on the security-reviewed 0.21.31 and preserves the rotated public configuration key, signed access bundle, both age limits, fail-closed behaviour, zero XSS baseline and pinned GitHub Actions."
+          "cs": "Hlavní správce může přímo ve Studiu podepsat připravená zneplatnění a stáhnout jediný veřejný aktualizační balíček; soukromý konfigurační klíč neopouští prohlížeč.",
+          "en": "The primary administrator can sign prepared revocations directly in Studio and download a single public update pack; the private configuration key never leaves the browser."
         },
         {
-          "cs": "Do novější bezpečnostní větve byla přenesena oprava falešného pádu screenshot testu: po vzniku karty test čeká až čtyři sekundy na skutečné dekódování blob náhledu.",
-          "en": "The false screenshot-test failure fix was ported into the newer security branch: after the card appears, the test waits up to four seconds for the blob preview to decode."
+          "cs": "Konfigurační klíč se neukládá do localStorage ani sessionStorage a po podpisu, zavření stránky nebo deseti minutách se automaticky vymaže z paměti.",
+          "en": "The configuration key is not stored in localStorage or sessionStorage and is automatically cleared from memory after signing, leaving the page, or ten minutes."
         },
         {
-          "cs": "Kontrola CSP zůstává přísná. Při skutečně zablokovaném nebo vadném obrázku zůstane `imageReady:false` a release gate nadále selže; produkční reportér ani bezpečnostní konfigurace se touto opravou nemění.",
-          "en": "The CSP assertion remains strict. A genuinely blocked or invalid image still leaves `imageReady:false` and fails the release gate; the production reporter and security configuration are unchanged by this fix."
+          "cs": "Zástupce správce může JTI v evidenci připravit, ale Centrum zabezpečení a vytvoření podpisu zůstává výhradně hlavnímu správci.",
+          "en": "A deputy administrator can prepare a JTI in the registry, but the Security Centre and signature creation remain exclusive to the primary administrator."
+        },
+        {
+          "cs": "Veřejný balíček má samostatný validační nástroj a testy ověřují podpis, zachování politiky, sjednocení revokací, odmítnutí cizího klíče a nepřítomnost soukromého materiálu.",
+          "en": "The public pack has a dedicated validator, while tests verify its signature, policy preservation, revocation union, rejection of a foreign key, and absence of private material."
         }
       ]
     },

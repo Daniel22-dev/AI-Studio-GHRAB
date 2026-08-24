@@ -7,8 +7,10 @@
 - [x] Verze 0.21.32 je shodná v package, PWA manifestu, QA manifestu, buildu, dokumentaci a changelogu.
 - [x] Všechny aplikace jsou ve výchozím stavu uzamčené.
 - [x] Veřejný balík obsahuje pouze veřejný ověřovací klíč.
-- [x] Veřejný rotační balíček prošel kryptografickou validací 19/19 a neobsahuje soukromý materiál.
-- [x] Runtime klíč, veřejný trust anchor, podpis bundle a `sharedAccessVersion` používají stejnou novou identitu.
+- [x] Centrum zabezpečení je dostupné jen plnému správci; zástupce může v evidenci pouze připravit JTI.
+- [x] Konfigurační klíč se neukládá do webového úložiště a po podpisu, opuštění stránky nebo deseti minutách se vymaže.
+- [x] Veřejný aktualizační balíček zachovává politiku a permitový klíč, je podepsaný ES256 a neobsahuje soukromý materiál.
+- [x] `access:validate-update` před začleněním odmítne neplatný podpis, cizí trust anchor, rollback revokací nebo soukromý materiál.
 - [x] Klíč pro uživatelská oprávnění zůstává beze změny, takže dosud platná oprávnění nejsou rotací konfigurace zneplatněna.
 - [x] Ve zdroji ani buildu není soukromý klíč ani `.ghrab-access.json`.
 - [x] Učitelské a správcovské rozhraní jsou oddělené.
@@ -29,7 +31,6 @@
 - [x] Reportér po povolení snímání nečeká bez omezení na `loadedmetadata`, má časově omezené čekání na skutečný frame a viditelně potvrzuje uložení screenshotu.
 - [x] Produkční CSP povoluje `blob:` v `img-src`, takže náhled zachyceného screenshotu není zablokovaný po převodu z canvasu.
 - [x] Produkční regresní test před reálným MediaStreamem vrací kartu AI Studia do popředí a ověřuje její viditelnost, aby Chromium throttling pozadí nevytvářel falešný CSP pád.
-- [x] Produkční regresní test po vložení screenshotu čeká na skutečné dekódování blob náhledu; pomalejší runner proto není zaměněn za chybu CSP.
 - [x] Regrese reportéru pokrývá pořízení snímku v dialogu i z plovoucího panelu, opožděné zpřístupnění video rozměrů a skutečný canvas MediaStream na produkčním indexu AI Studia.
 - [x] AI Studio má samostatný manuál učitele a rozšířený manuál administrátora; admin verze má vlastní runtime kontrolu role.
 - [x] Domovský odkaz „Poprvé v AI Studiu?“ je pouze drobný role-aware text pod stavem Studia, nikoli další panel.
@@ -43,6 +44,7 @@
 - [x] XSS sink baseline je nula a nový `innerHTML`, `outerHTML`, `insertAdjacentHTML`, `document.write`, `eval` nebo `new Function` zastaví release.
 - [x] Všechny použité GitHub Actions jsou připnuté na plný commit SHA.
 - [x] `npm run test:security-regressions` behaviorálně ověřuje SW bypass, oba časové limity, odolnost proti podvrženému času a fail-closed školní profil bez lokálních API klíčů.
+- [x] Behaviorální test Centra zabezpečení ověřuje platný podpis, sjednocení revokací, obnovu bundle, odmítnutí cizího klíče a neměnnost vstupu.
 - [x] Offline-start Playwright test je součástí `qa:browser` a na GitHubu musí potvrdit 8 online + 8 offline karet.
 
 ## Soukromý administrátorský balík

@@ -10,7 +10,7 @@ Nejprve musí být nasazeny KS 5.10.3, SORTIO 1.0.12, Lesson Hub 1.2.9, Diferenc
 
 1. Stáhněte a rozbalte `AI-Studio-GHRAB-v0.21.32-GitHub.zip`.
 2. Do kořene repozitáře `AI-Studio-GHRAB` nahrajte přímo všechny soubory a složky z rozbaleného archivu.
-3. Commit pojmenujte například `AI Studio 0.21.32 – security + stable screenshot QA`.
+3. Commit pojmenujte například `AI Studio 0.21.32 – Centrum zabezpečení`.
 4. Vyčkejte na dokončení GitHub Actions. Workflow instaluje závislosti, synchronizuje manifesty, spustí regresi reportéru, celý GHRAB QA release gate, sestaví `dist` a až poté nasadí GitHub Pages.
 
 ## Kontrola po nasazení
@@ -18,6 +18,9 @@ Nejprve musí být nasazeny KS 5.10.3, SORTIO 1.0.12, Lesson Hub 1.2.9, Diferenc
 - `dist/build-info.json`, PWA manifest a service worker musí uvádět 0.21.32.
 - `dist/config/access-config-bundle.json` musí uvádět `access-p1-20260822195407Z-fxjS8DK9`.
 - Dříve vydaná platná uživatelská oprávnění musí zůstat funkční; jejich podpisový klíč se v tomto vydání nemění.
+- Ve **Správa → Centrum zabezpečení** musí hlavní správce vidět platný podpis konfigurace a počet připravených zneplatnění.
+- Zástupce správce nesmí Centrum zabezpečení vidět ani otevřít; v Evidenci přístupů smí pouze připravit JTI.
+- Soukromý konfigurační klíč se smí načíst pouze místně. Po podpisu se musí vymazat z paměti a výsledný veřejný JSON nesmí obsahovat vlastnost `d`.
 - Registr musí uvádět všech osm aktuálních verzí aplikací.
 - Ve správcovském pohledu musí mít každá karta symbol stavu testování `○`, `◐` nebo `✓`; po obnovení stránky musí zvolený stav zůstat zachovaný.
 - V Pohledu kolegy ani běžnému učiteli se symbol stavu testování nesmí zobrazit.

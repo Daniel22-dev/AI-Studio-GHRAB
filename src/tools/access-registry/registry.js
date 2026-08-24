@@ -588,38 +588,18 @@ if (window.GHRAB.canAccessAdminPage?.("access-registry") && !window.GHRAB.isColl
     setFeedback("Přehled CSV byl stažen.");
   });
 
-  document
-    .querySelector("#export-revocations")
-    .addEventListener("click", () => {
-      const pending = records
-        .filter((record) => record.pendingRevocation)
-        .map((record) => record.jti);
-      const revokedJti = [
-        ...new Set([...(deployedRevocations.revokedJti || []), ...pending]),
-      ].sort();
-      const payload = {
-        schema: "ghrab-access-revocation-list-v1",
-        updatedAt: new Date().toISOString(),
-        revokedBefore: deployedRevocations.revokedBefore || null,
-        revokedJti,
-      };
-      download("revoked-access.json", `${JSON.stringify(payload, null, 2)}\n`);
-      setFeedback(
-        pending.length
-          ? `Stažen hotový seznam s ${pending.length} nově připravenými JTI. Nahraďte jím src/config/revoked-access.json.`
-          : "Stažen aktuální seznam. Žádné nové JTI zatím není označeno ke zneplatnění.",
-      );
-    });
-
   search.addEventListener("input", render);
   statusFilter.addEventListener("change", render);
   document.addEventListener("ghrab:issued-access-changed", render);
 
   try {
-    const response = await fetch("../../config/revoked-access.json", {
+    const response = await fetch("../../config/access-config-bundle.json", {
       cache: "no-store",
     });
-    if (response.ok) deployedRevocations = await response.json();
+    if (response.ok) {
+      const bundle = await response.json();
+      if (bundle?.revocations) deployedRevocations = bundle.revocations;
+    }
   } catch {
     /* evidence remains usable offline */
   }

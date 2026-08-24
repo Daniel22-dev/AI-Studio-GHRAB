@@ -113,7 +113,7 @@
         </article>
         <article class="panel">
           <p class="eyebrow">4 · ZNEPLATNĚNÍ</p>
-          <h2>Seznam zneplatněných přístupů</h2>
+          <h2>Podepsané zneplatnění přímo ve Studiu</h2>
           <p>
             Nejde o seznam lidí k odebrání ani o mazání aplikací. Soubor obsahuje
             technická ID (JTI) konkrétních vydaných oprávnění, která už Studio nemá
@@ -125,21 +125,31 @@
               <strong>Připravit zneplatnění</strong>.
             </li>
             <li>
-              V horní části Evidence stáhněte
-              <strong>seznam zneplatnění</strong>.
+              Jako hlavní správce otevřete
+              <strong>Správa → Centrum zabezpečení</strong>.
             </li>
             <li>
-              Staženým souborem nahraďte
-              <code>src/config/revoked-access.json</code>.
+              Načtěte soubor
+              <code>SOUKROMY-KONFIGURACNI-KLIC-NEPOSILAT…json</code>. Klíč se
+              použije jen místně a po podpisu se vymaže z paměti.
             </li>
-            <li>Proveďte commit, push a počkejte na zelené nasazení.</li>
+            <li>
+              Stáhněte veřejný soubor
+              <code>VEREJNA-AKTUALIZACE-ZABEZPECENI…json</code>. Jen tento
+              veřejný soubor lze předat ke kontrole a začlenění.
+            </li>
+            <li>Po ověření, začlenění a zeleném nasazení zkontrolujte stav v evidenci.</li>
           </ol>
           <p class="safe-export-note">
-            Označení v místní evidenci samo přístup neblokuje. Rozhodující je až
-            zveřejněný revokační soubor. Tlačítko <strong>Odstranit jen místní záznam</strong>
-            není náhrada zneplatnění; aktivní či nahrazený přístup je vhodné v evidenci
-            ponechat kvůli dohledatelnosti.
+            Označení v místní evidenci ani stažení veřejného balíčku samo přístup
+            neblokuje. Rozhodující je až nasazená podepsaná konfigurace. Tlačítko
+            <strong>Odstranit jen místní záznam</strong> není náhrada zneplatnění.
+            Zástupce správce může JTI připravit, ale soukromý konfigurační klíč
+            a Centrum zabezpečení používá pouze hlavní správce.
           </p>
+          <a class="button primary" href="../tools/security-center/" data-full-admin-only hidden
+            >Otevřít Centrum zabezpečení</a
+          >
         </article>
         <article class="panel">
           <p class="eyebrow">5 · ZÁLOHA</p>

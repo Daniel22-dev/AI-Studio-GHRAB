@@ -976,18 +976,10 @@ async function runBrowserTests() {
         await until(() => !byText('button', 'Pořídit snímek').disabled, 'Produkční stream se neaktivoval');
         byText('button', 'Pořídit snímek').click();
         await until(() => root.querySelectorAll('.ghrab-screenshot-card').length === 1, 'Produkční screenshot se nepodařilo dokončit');
-        let previewWaitMs = 0;
-        for (let i = 0; i < 160; i += 1) {
-          const preview = root.querySelector('.ghrab-screenshot-card img');
-          if (preview?.complete && preview.naturalWidth > 0) break;
-          await wait(25);
-          previewWaitMs += 25;
-        }
         const image = root.querySelector('.ghrab-screenshot-card img');
         const result = {
           screenshots: root.querySelectorAll('.ghrab-screenshot-card').length,
           imageReady: Boolean(image?.complete && image.naturalWidth > 0),
-          previewWaitMs,
           status: root.querySelector('.ghrab-report-status')?.textContent || '',
         };
         byText('button', 'Ukončit snímání').click();

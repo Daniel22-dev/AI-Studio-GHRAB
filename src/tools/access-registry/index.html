@@ -103,13 +103,12 @@
             <button class="button ghost" id="export-csv" type="button">
               Přehled CSV
             </button>
-            <button
+            <a
               class="button warning"
-              id="export-revocations"
-              type="button"
-            >
-              Stáhnout seznam zneplatnění
-            </button>
+              href="../security-center/"
+              data-full-admin-only
+              hidden
+            >Dokončit zneplatnění</a>
           </div>
           <input
             id="import-files"
@@ -191,7 +190,7 @@
         <article class="panel registry-revocation-guide">
           <div>
             <p class="eyebrow">ZNEPLATNĚNÍ</p>
-            <h2>Dva kroky místo ručního přepisování</h2>
+            <h2>Bez ručního přepisování a bez posílání klíče</h2>
           </div>
           <ol>
             <li>
@@ -199,13 +198,15 @@
               <strong>Připravit zneplatnění</strong>.
             </li>
             <li>
-              Stáhněte hotový <code>revoked-access.json</code> a nahraďte jím
-              soubor <code>src/config/revoked-access.json</code> v repozitáři.
+              Hlavní správce otevře <strong>Centrum zabezpečení</strong>, načte
+              konfigurační klíč pouze ve svém prohlížeči a stáhne veřejný
+              podepsaný balíček.
             </li>
           </ol>
           <p>
-            Teprve po nahrání na GitHub a novém nasazení je přístup skutečně
-            centrálně zablokován.
+            Zástupce správce může zneplatnění připravit, podpis ale smí vytvořit
+            jen hlavní správce. Teprve po ověření balíčku a novém nasazení je
+            přístup skutečně centrálně zablokován.
           </p>
         </article>
       </section>

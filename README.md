@@ -3,24 +3,18 @@
 **Aktuální verze:** 0.21.32
 **Platforma:** GHRAB Platform 1.1.0 · etapa P5
 
-**Verze 0.21.32 sjednocuje bezpečnostně zkontrolovanou rotaci klíče s opravou stabilního screenshot QA.**
+**Verze 0.21.32 přidává hlavnímu správci lokální Centrum zabezpečení pro podepsaná zneplatnění bez sdílení soukromého klíče.**
 
 AI Studio GHRAB je centrální brána školních digitálních a AI nástrojů. Jednotlivé aplikace zůstávají v samostatných repozitářích; Studio zajišťuje společnou navigaci, Top 4, synchronizaci verzí, bezpečnostní rámec, pilotní měření, správu podepsaných přístupů a kanonický základ technického reportéru. Materiály jsou viditelnou součástí portálu, ale v dnešním bezserverovém režimu se vlastní obsah ukládá pouze místně.
 
-## Sjednocení 0.21.32
+## Hlavní novinky 0.21.32
 
-- Základem je kompletní bezpečnostní verze 0.21.31 včetně nového veřejného konfiguračního klíče a podepsaného access bundle.
-- Screenshot test po vytvoření karty čeká až čtyři sekundy na dekódování blob náhledu a nevydává pomalejší runner za chybu CSP.
-- Skutečně zablokovaný obrázek nadále testem neprojde; produkční reportér ani bezpečnostní politika se nemění.
-
-## Hlavní novinky 0.21.31
-
-- Nový veřejný konfigurační ověřovací klíč je zapečen v runtime i samostatném trust anchoru.
-- Nový podepsaný bundle byl před začleněním ověřen proti podpisu ES256, současné politice, revokacím a veřejnému klíči pro uživatelská oprávnění.
-- Kontrola potvrdila, že předaný rotační balíček neobsahuje žádný soukromý klíč.
-- Nová kontrola `access:validate-rotation` umožňuje bezpečně ověřit další veřejný rotační balíček před jeho převzetím.
+- Centrum zabezpečení načte soukromý konfigurační klíč pouze do paměti prohlížeče a po podpisu, opuštění stránky nebo deseti minutách jej vymaže.
+- Připravená JTI se spojí s již nasazenými revokacemi a vznikne jediný veřejný, znovu ověřený balíček bez soukromé složky `d`.
+- Zástupce správce může zneplatnění připravit v evidenci, ale podpis a bezpečnostní balíček smí vytvořit jen hlavní správce.
+- Nová kontrola `access:validate-update` umožňuje veřejný balíček nezávisle ověřit před jeho začleněním.
 - Klíč pro podepisování uživatelských oprávnění se nemění; dříve vydaná platná oprávnění proto zůstávají funkční.
-- Ochrany z 0.21.30 zůstávají zachovány: 24hodinový limit posledního online načtení, 30denní limit podepsaného bundle, shoda `sharedAccessVersion`, fail-closed režim a blokující release brána.
+- Konfigurační trust anchor z 0.21.31 zůstává beze změny; soukromý klíč není v repozitáři ani buildu.
 
 ## Předchozí vydání 0.20.18
 
