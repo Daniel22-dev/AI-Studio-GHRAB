@@ -1,3 +1,5 @@
+import { BAKED_DEPLOYMENT_CONFIG } from "../config/deployment-baked.js";
+
 const PLATFORM_SCHEMA = "ghrab-platform-runtime-v1";
 const DATA_MANIFEST_SCHEMA = "ghrab-data-manifest-v1";
 const SHARED_DEVICE_KEY = "ghrab.platform.shared-device.v1";
@@ -18,18 +20,30 @@ function uuid(prefix = "evt") {
   return `${prefix}-${Date.now().toString(36)}-${Math.random().toString(36).slice(2, 11)}`;
 }
 function deployment() {
-  return globalThis.__GHRAB_DEPLOYMENT_CONFIG__ || {
-    profile: "github-pages", authMode: "signed-permit", aiTransport: "direct-provider", telemetryMode: "local",
+  return globalThis.__GHRAB_DEPLOYMENT_CONFIG__ || BAKED_DEPLOYMENT_CONFIG || {
+    profile: "configuration-unavailable", authMode: "disabled", aiTransport: "disabled", telemetryMode: "local",
     apiBaseUrl: "", appBaseUrl: new URL("../", import.meta.url).href,
-    features: { allowLocalProviderKeys: true },
+    features: { allowLocalProviderKeys: false },
   };
 }
 function isSchoolProfile() {
   const config = deployment();
   return config.profile === "school-server" || config.authMode === "server-session" || config.aiTransport === "school-gateway";
 }
-function createAiRuntimeConfig({ timeoutMs = 120000, maxRequestBytes = 18 * 1024 * 1024, maxPartBytes = 14 * 1024 * 1024, models = {} } = {}) {
+function localProviderKeysAllowed() {
+  const config = deployment();
+  return config.features?.allowLocalProviderKeys === true && config.authMode !== "server-session";
+}
+function shouldEraseLocalProviderKeys() {
+  return isSchoolProfile() && deployment().features?.allowLocalProviderKeys === false;
+}
+export function createAiRuntimeConfig({ timeoutMs = 120000, maxRequestBytes = 18 * 1024 * 1024, maxPartBytes = 14 * 1024 * 1024, models = {} } = {}) {
   const school = isSchoolProfile();
+  const selectedMode = school
+    ? "school-gateway"
+    : localProviderKeysAllowed()
+      ? "direct-gemini"
+      : "disabled";
   const directModels = {
     economy: models.economy || "gemini-3.5-flash-lite",
     balanced: models.balanced || "gemini-3.6-flash",
@@ -38,9 +52,9 @@ function createAiRuntimeConfig({ timeoutMs = 120000, maxRequestBytes = 18 * 1024
   return Object.freeze({
     schema: "ghrab-runtime-config-v1",
     ai: Object.freeze({
-      defaultMode: school ? "school-gateway" : "direct-gemini",
-      selectedMode: school ? "school-gateway" : "direct-gemini",
-      allowedModes: Object.freeze([school ? "school-gateway" : "direct-gemini"]),
+      defaultMode: selectedMode,
+      selectedMode,
+      allowedModes: Object.freeze(selectedMode === "disabled" ? [] : [selectedMode]),
       allowUserModeSelection: false,
       automaticFallback: false,
       gatewayUrl: deployment().apiBaseUrl ? new URL("ai/generate", baseUrl(deployment().apiBaseUrl)).href : "/api/v1/ai/generate",
@@ -178,9 +192,10 @@ function sharedDeviceEnabled() {
   return deployment().profile === "school-server" || deployment().privacy?.sharedDeviceDefault === true;
 }
 function setSharedDevice(value) { safeSet(sessionStorage, SHARED_DEVICE_KEY, value ? "true" : "false"); }
-function enforceLocalKeyPolicy({ localStorageKeys = [], sessionStorageKeys = [], onRemoved } = {}) {
-  if (!isSchoolProfile() && deployment().features?.allowLocalProviderKeys !== false) return { allowed: true, removed: [] };
+export function enforceLocalKeyPolicy({ localStorageKeys = [], sessionStorageKeys = [], onRemoved } = {}) {
+  if (localProviderKeysAllowed()) return { allowed: true, removed: [] };
   const removed = [];
+  if (!shouldEraseLocalProviderKeys()) return { allowed: false, removed };
   for (const [storage, keys, label] of [[localStorage, localStorageKeys, "localStorage"], [sessionStorage, sessionStorageKeys, "sessionStorage"]]) {
     for (const key of keys) {
       if (safeGet(storage, key) !== null && safeRemove(storage, key)) removed.push(`${label}:${key}`);
@@ -343,7 +358,7 @@ function mountConnectionStatus(accessSnapshot) {
   (document.body || document.documentElement).append(badge);
 }
 async function enforceCredentialPolicy(manifest) {
-  if (deployment().features?.allowLocalProviderKeys !== false) return { removed: [] };
+  if (!shouldEraseLocalProviderKeys()) return { removed: [] };
   return clearByManifest(manifest, { credentialsOnly: true });
 }
 
@@ -389,7 +404,7 @@ export async function initialisePlatformRuntime({ appId, appVersion = "unknown",
     getDeployment: deployment,
     getProfile: () => deployment().profile || "github-pages",
     isSchoolProfile,
-    allowsLocalProviderKeys: () => deployment().features?.allowLocalProviderKeys !== false && deployment().authMode !== "server-session",
+    allowsLocalProviderKeys: localProviderKeysAllowed,
     apiUrl: (relative) => deployment().apiBaseUrl ? new URL(String(relative || "").replace(/^\/+/, ""), baseUrl(deployment().apiBaseUrl)).href : String(relative || ""),
     uuid,
     createAiRuntimeConfig,

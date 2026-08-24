@@ -1,12 +1,15 @@
-# Release checklist AI Studio GHRAB 0.21.28
+# Release checklist AI Studio GHRAB 0.21.32
 
-> Aktuální verze: **0.21.28** · etapa P5
+> Aktuální verze: **0.21.32** · etapa P5
 
 ## Veřejný balík
 
-- [x] Verze 0.21.28 je shodná v package, PWA manifestu, QA manifestu, buildu, dokumentaci a changelogu.
+- [x] Verze 0.21.32 je shodná v package, PWA manifestu, QA manifestu, buildu, dokumentaci a changelogu.
 - [x] Všechny aplikace jsou ve výchozím stavu uzamčené.
 - [x] Veřejný balík obsahuje pouze veřejný ověřovací klíč.
+- [x] Veřejný rotační balíček prošel kryptografickou validací 19/19 a neobsahuje soukromý materiál.
+- [x] Runtime klíč, veřejný trust anchor, podpis bundle a `sharedAccessVersion` používají stejnou novou identitu.
+- [x] Klíč pro uživatelská oprávnění zůstává beze změny, takže dosud platná oprávnění nejsou rotací konfigurace zneplatněna.
 - [x] Ve zdroji ani buildu není soukromý klíč ani `.ghrab-access.json`.
 - [x] Učitelské a správcovské rozhraní jsou oddělené.
 - [x] Správcovské moduly se bez role admin nespouštějí.
@@ -15,7 +18,7 @@
 - [x] Materiály jsou v běžné navigaci jako server-ready katalog; centrální Tvorba materiálů v navigaci není. Bez serveru zůstává sdílení viditelně neaktivní.
 - [x] Pilotní metriky jsou přesně označeny jako místní.
 - [x] PWA cache se generuje automaticky z produkčního stromu a neobsahuje neplatné cesty.
-- [x] Všechny lokální JS/CSS vstupy a relativní modulové importy mají ve výsledném buildu revizi `?v=0.21.28`.
+- [x] Všechny lokální JS/CSS vstupy a relativní modulové importy mají ve výsledném buildu revizi `?v=0.21.32`.
 - [x] Serverový katalog se aktivuje pouze při `school-server` + `schoolServerConnected` + `sharedMaterialLibrary`; GitHub profil nemůže omylem publikovat materiál.
 - [x] Rychlá kontrola dat je rozbalovací pomocník pro nejisté situace, ne povinný krok před každým použitím AI.
 - [x] Semafor má deset praktických kategorií, používá nejvyšší zvolené riziko a bezpečná anonymní volba je výlučná.
@@ -26,6 +29,7 @@
 - [x] Reportér po povolení snímání nečeká bez omezení na `loadedmetadata`, má časově omezené čekání na skutečný frame a viditelně potvrzuje uložení screenshotu.
 - [x] Produkční CSP povoluje `blob:` v `img-src`, takže náhled zachyceného screenshotu není zablokovaný po převodu z canvasu.
 - [x] Produkční regresní test před reálným MediaStreamem vrací kartu AI Studia do popředí a ověřuje její viditelnost, aby Chromium throttling pozadí nevytvářel falešný CSP pád.
+- [x] Produkční regresní test po vložení screenshotu čeká na skutečné dekódování blob náhledu; pomalejší runner proto není zaměněn za chybu CSP.
 - [x] Regrese reportéru pokrývá pořízení snímku v dialogu i z plovoucího panelu, opožděné zpřístupnění video rozměrů a skutečný canvas MediaStream na produkčním indexu AI Studia.
 - [x] AI Studio má samostatný manuál učitele a rozšířený manuál administrátora; admin verze má vlastní runtime kontrolu role.
 - [x] Domovský odkaz „Poprvé v AI Studiu?“ je pouze drobný role-aware text pod stavem Studia, nikoli další panel.
@@ -33,6 +37,12 @@
 - [x] V mobilním Nastavení (do 650 px) je přepínač CZ/EN viditelný a kritický browser flow jej fyzicky přepne EN → CS.
 - [x] `npm test` prochází bez chyby.
 - [x] Statické `no-store` registry mají network-first cache fallback a runtime API/deployment zůstávají mimo service worker.
+- [x] Podepsaný access bundle a jeho podpis jsou mimo service worker; 24hodinový offline limit se počítá od posledního online načtení a podepsaný bundle má samostatný 30denní limit.
+- [x] `bundle.version` odpovídá zapečenému `sharedAccessVersion` a release brána kontroluje podpis, stáří i shodu verze podle skutečného času.
+- [x] GitHub i school-server build mají zapečený deployment profil; neznámý profil je uzamčený a nesmaže osobní klíč jen kvůli chybě načtení konfigurace.
+- [x] XSS sink baseline je nula a nový `innerHTML`, `outerHTML`, `insertAdjacentHTML`, `document.write`, `eval` nebo `new Function` zastaví release.
+- [x] Všechny použité GitHub Actions jsou připnuté na plný commit SHA.
+- [x] `npm run test:security-regressions` behaviorálně ověřuje SW bypass, oba časové limity, odolnost proti podvrženému času a fail-closed školní profil bez lokálních API klíčů.
 - [x] Offline-start Playwright test je součástí `qa:browser` a na GitHubu musí potvrdit 8 online + 8 offline karet.
 
 ## Soukromý administrátorský balík

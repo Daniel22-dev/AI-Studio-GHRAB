@@ -83,6 +83,8 @@ function isRuntimeNetworkFirst(url, scopePath) {
 function isRuntimeRequest(url, scopePath) {
   const relative = url.pathname.slice(scopePath.length);
   return relative === 'config/deployment.json' ||
+    relative === 'config/access-config-bundle.json' ||
+    relative === 'config/access-config-bundle.sig.json' ||
     /^(?:api|auth|session|health)(?:\/|$)/.test(relative);
 }
 

@@ -27,6 +27,7 @@
   "access": {
     "strategy": "server-authoritative",
     "maxOfflineAgeHours": 0,
+    "maxSignedBundleAgeDays": 0,
     "failClosedWhenStale": true
   },
   "privacy": {

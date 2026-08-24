@@ -4,7 +4,7 @@
   "audience": "ai-studio-ghrab",
   "defaultState": "locked",
   "clockSkewSeconds": 300,
-  "maximumPermitDays": 400,
+  "maximumPermitDays": 90,
   "administratorRoles": [
     "admin"
   ],
@@ -92,10 +92,13 @@
     "access-registry"
   ],
   "legacyMaximumPermitDays": 1095,
-  "maximumPermitDaysEnforcedAfter": "2026-07-15T00:00:00.000Z",
+  "maximumPermitDaysEnforcedAfter": "2026-08-22T00:00:00.000Z",
   "maxOfflineAgeHours": 24,
+  "maxSignedBundleAgeDays": 30,
   "offlinePolicy": {
     "strategy": "online-first-signed-last-known-good",
+    "maxLastOnlineAgeHours": 24,
+    "maxSignedBundleAgeDays": 30,
     "failClosedWhenStale": true
   },
   "operatorRoles": [

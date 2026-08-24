@@ -1,8 +1,13 @@
+import { BAKED_DEPLOYMENT_CONFIG } from "../config/deployment-baked.js";
+
 const TOKEN_KEY = "ghrab.access.permit.v2";
 const TOKEN_PREFIX = "ghrab1";
 const LKG_KEY = "ghrab.access.last-known-good.v1";
 const CONFIG_BASE = new URL("../config/", import.meta.url);
 const DEFAULT_MAX_OFFLINE_AGE_HOURS = 24;
+const DEFAULT_MAX_SIGNED_BUNDLE_AGE_DAYS = 30;
+const MAX_NEW_PERMIT_DAYS = 90;
+const MAX_NEW_PERMIT_DAYS_ENFORCED_AFTER = Date.parse("2026-08-22T00:00:00.000Z") / 1000;
 const OPERATOR_ROLE = "operator";
 const DEFAULT_OPERATOR_PAGES = Object.freeze([
   "automation",
@@ -15,9 +20,9 @@ const DEFAULT_OPERATOR_PAGES = Object.freeze([
 const ACCESS_BUNDLE_VERIFY_KEY = Object.freeze({
   kty: "EC",
   crv: "P-256",
-  x: "Ur1Vc7I0Ev0ji4lBfa1CcM1TXFrzgHbPA48AQsnjVcM",
-  y: "WEWjNS13k0po9vUuYoviYo-iy-COGowYys0AnfPu00w",
-  kid: "ghrab-access-bundle-2026-08-p1",
+  x: "bYxfni4Vsy90xRYtk8qdP9oSame-uHavew5XjHgy3K0",
+  y: "aEC5jZaXh9Ipj-xrG5_myRsh6T32GhTIfQ9dgFWQJxg",
+  kid: "ghrab-access-bundle-20260822195407Z-fxjS8DK9",
   use: "sig",
   alg: "ES256",
 });
@@ -35,6 +40,8 @@ const accessState = {
   fetchedAt: null,
   offlineAgeHours: null,
   maxOfflineAgeHours: DEFAULT_MAX_OFFLINE_AGE_HOURS,
+  signedBundleAgeHours: null,
+  maxSignedBundleAgeDays: DEFAULT_MAX_SIGNED_BUNDLE_AGE_DAYS,
   connectionState: "checking",
   revocationListUpdatedAt: null,
   revocationCheckMode: null,
@@ -107,6 +114,19 @@ async function fetchJson(url, timeoutMs = 5000) {
 }
 async function deploymentContext() {
   if (globalThis.__GHRAB_DEPLOYMENT_CONFIG__) return globalThis.__GHRAB_DEPLOYMENT_CONFIG__;
+  if (BAKED_DEPLOYMENT_CONFIG) {
+    const originBase = new URL("/", location.href);
+    return {
+      ...BAKED_DEPLOYMENT_CONFIG,
+      studioBaseUrl: new URL(trailingSlash(BAKED_DEPLOYMENT_CONFIG.studioBaseUrl || "/AI-Studio-GHRAB/"), originBase).href,
+      apiBaseUrl: BAKED_DEPLOYMENT_CONFIG.apiBaseUrl
+        ? new URL(
+            trailingSlash(BAKED_DEPLOYMENT_CONFIG.apiBaseUrl),
+            BAKED_DEPLOYMENT_CONFIG.apiBaseUrl.startsWith("/") ? originBase : new URL("../", import.meta.url),
+          ).href
+        : "",
+    };
+  }
   try {
     const response = await fetchWithTimeout(new URL("deployment.json", CONFIG_BASE), {
       cache: "no-store",
@@ -121,12 +141,13 @@ async function deploymentContext() {
     return { ...raw, studioBaseUrl, apiBaseUrl };
   } catch {
     return {
-      profile: "github-pages",
-      authMode: "signed-permit",
+      profile: "configuration-unavailable",
+      authMode: "disabled",
+      aiTransport: "disabled",
       apiBaseUrl: "",
-      sharedAccessVersion: "fallback",
-      access: { maxOfflineAgeHours: DEFAULT_MAX_OFFLINE_AGE_HOURS },
-      features: { allowLocalProviderKeys: true },
+      sharedAccessVersion: "unavailable",
+      access: { maxOfflineAgeHours: 0, maxSignedBundleAgeDays: 0, failClosedWhenStale: true },
+      features: { allowLocalProviderKeys: false },
     };
   }
 }
@@ -148,9 +169,10 @@ function resetVerification(reason, token = safeStorageGet(TOKEN_KEY)) {
   accessState.permit = null;
   accessState.valid = false;
   accessState.reason = reason;
-  accessState.checkedAt = new Date().toISOString();
+  accessState.checkedAt = new Date(Date.now()).toISOString();
 }
 function nowSeconds() { return Math.floor(Date.now() / 1000); }
+function nowIso() { return new Date(Date.now()).toISOString(); }
 function normaliseApps(apps) {
   return Array.isArray(apps)
     ? [...new Set(apps.filter((value) => typeof value === "string" && value.trim()).map((value) => value.trim()))]
@@ -186,9 +208,12 @@ function validateClaims(payload, policy, revocations) {
   if (payload.exp <= payload.iat) return "invalid-validity-window";
   const enforcementTime = Date.parse(policy.maximumPermitDaysEnforcedAfter || "") / 1000;
   const isLegacyPermit = Number.isFinite(enforcementTime) && payload.iat < enforcementTime;
-  const maximumDays = isLegacyPermit
-    ? Number(policy.legacyMaximumPermitDays || policy.maximumPermitDays || 400)
-    : Number(policy.maximumPermitDays || 400);
+  const policyMaximumDays = isLegacyPermit
+    ? Number(policy.legacyMaximumPermitDays || policy.maximumPermitDays || 1095)
+    : Number(policy.maximumPermitDays || 90);
+  const maximumDays = payload.iat >= MAX_NEW_PERMIT_DAYS_ENFORCED_AFTER
+    ? Math.min(policyMaximumDays, MAX_NEW_PERMIT_DAYS)
+    : policyMaximumDays;
   if (payload.exp - payload.iat > maximumDays * 86400 + skew) return "validity-too-long";
   if (revocations?.revokedBefore && payload.iat <= Math.floor(Date.parse(revocations.revokedBefore) / 1000)) return "revoked-by-date";
   if (Array.isArray(revocations?.revokedJti) && revocations.revokedJti.includes(payload.jti)) return "revoked";
@@ -248,8 +273,8 @@ function configurationFromBundle(bundle) {
 }
 function saveLastKnownGood(bundle, signatureDocument) {
   safeStorageSet(LKG_KEY, JSON.stringify({
-    schema: "ghrab-access-last-known-good-v2",
-    fetchedAt: new Date().toISOString(),
+    schema: "ghrab-access-last-known-good-v4",
+    fetchedAt: nowIso(),
     sharedAccessVersion: accessState.deployment?.sharedAccessVersion || bundle.version || "unknown",
     bundle,
     signature: signatureDocument,
@@ -257,19 +282,54 @@ function saveLastKnownGood(bundle, signatureDocument) {
 }
 async function readLastKnownGood() {
   const parsed = safeJsonParse(safeStorageGet(LKG_KEY), null);
-  if (!parsed || parsed.schema !== "ghrab-access-last-known-good-v2") return null;
+  if (!parsed || ![
+    "ghrab-access-last-known-good-v2",
+    "ghrab-access-last-known-good-v3",
+    "ghrab-access-last-known-good-v4",
+  ].includes(parsed.schema)) return null;
   if (!await verifyAccessBundle(parsed.bundle, parsed.signature)) { safeStorageRemove(LKG_KEY); return null; }
   try { configurationFromBundle(parsed.bundle); } catch { safeStorageRemove(LKG_KEY); return null; }
+  const expectedVersion = String(accessState.deployment?.sharedAccessVersion || "").trim();
+  if (expectedVersion && expectedVersion !== "unavailable" && parsed.bundle?.version !== expectedVersion) {
+    safeStorageRemove(LKG_KEY);
+    return null;
+  }
+  const issuedAt = parsed.bundle?.issuedAt || parsed.bundle?.generatedAt || "";
+  const issuedMs = Date.parse(issuedAt);
   const fetchedMs = Date.parse(parsed.fetchedAt || "");
-  if (!Number.isFinite(fetchedMs)) return null;
-  return { ...parsed, ageHours: Math.max(0, (Date.now() - fetchedMs) / 3600000) };
+  const skewMs = Math.max(0, Number(parsed.bundle?.policy?.clockSkewSeconds || 300)) * 1000;
+  if (
+    !Number.isFinite(issuedMs) ||
+    !Number.isFinite(fetchedMs) ||
+    issuedMs > Date.now() + skewMs ||
+    fetchedMs > Date.now() + skewMs
+  ) {
+    safeStorageRemove(LKG_KEY);
+    return null;
+  }
+  return {
+    ...parsed,
+    issuedAt,
+    offlineAgeHours: Math.max(0, (Date.now() - fetchedMs) / 3600000),
+    signedBundleAgeHours: Math.max(0, (Date.now() - issuedMs) / 3600000),
+  };
 }
-function applySharedConfiguration({ policy, revocations, publicKeyInfo, fetchedAt, connectionState, revocationCheckMode, offlineAgeHours = null }) {
+function applySharedConfiguration({
+  policy,
+  revocations,
+  publicKeyInfo,
+  fetchedAt,
+  connectionState,
+  revocationCheckMode,
+  offlineAgeHours = null,
+  signedBundleAgeHours = null,
+}) {
   accessState.policy = policy;
   accessState.revocations = revocations;
   accessState.publicKeyInfo = publicKeyInfo;
-  accessState.fetchedAt = fetchedAt || new Date().toISOString();
+  accessState.fetchedAt = fetchedAt || nowIso();
   accessState.offlineAgeHours = offlineAgeHours;
+  accessState.signedBundleAgeHours = signedBundleAgeHours;
   accessState.connectionState = connectionState;
   accessState.revocationListUpdatedAt = revocations.updatedAt || null;
   accessState.revocationCheckMode = revocationCheckMode;
@@ -281,19 +341,60 @@ async function initialiseSignedPermit(options) {
   try {
     const [bundle, signatureDocument] = await Promise.all([fetchJson(bundleUrl, timeoutMs), fetchJson(signatureUrl, timeoutMs)]);
     if (!await verifyAccessBundle(bundle, signatureDocument)) throw new Error("invalid access bundle signature");
+    const expectedVersion = String(accessState.deployment?.sharedAccessVersion || "").trim();
+    if (expectedVersion && expectedVersion !== "unavailable" && bundle.version !== expectedVersion) {
+      throw new Error("configuration-version-mismatch");
+    }
     const configuration = configurationFromBundle(bundle);
     const bundleLimit = Math.max(0, Number(bundle.maxOfflineAgeHours ?? bundle.policy?.maxOfflineAgeHours ?? DEFAULT_MAX_OFFLINE_AGE_HOURS));
     accessState.maxOfflineAgeHours = Math.min(accessState.maxOfflineAgeHours, bundleLimit || accessState.maxOfflineAgeHours);
-    applySharedConfiguration({ ...configuration, fetchedAt: new Date().toISOString(), connectionState: "online", revocationCheckMode: "online-signed-bundle" });
+    const signedBundleLimit = Math.max(0, Number(
+      bundle.maxSignedBundleAgeDays ?? bundle.policy?.maxSignedBundleAgeDays ?? DEFAULT_MAX_SIGNED_BUNDLE_AGE_DAYS,
+    ));
+    accessState.maxSignedBundleAgeDays = Math.min(
+      accessState.maxSignedBundleAgeDays,
+      signedBundleLimit || accessState.maxSignedBundleAgeDays,
+    );
+    const issuedMs = Date.parse(bundle.issuedAt || bundle.generatedAt || "");
+    const signedBundleAgeHours = Number.isFinite(issuedMs)
+      ? Math.max(0, (Date.now() - issuedMs) / 3600000)
+      : Number.POSITIVE_INFINITY;
+    if (signedBundleAgeHours > accessState.maxSignedBundleAgeDays * 24) {
+      accessState.signedBundleAgeHours = signedBundleAgeHours;
+      accessState.connectionState = "configuration-stale";
+      throw new Error("configuration-stale");
+    }
+    applySharedConfiguration({
+      ...configuration,
+      fetchedAt: nowIso(),
+      connectionState: "online",
+      revocationCheckMode: "online-signed-bundle",
+      signedBundleAgeHours,
+    });
     saveLastKnownGood(bundle, signatureDocument);
   } catch (error) {
     const lkg = await readLastKnownGood();
-    if (!lkg) throw Object.assign(new Error("configuration-unavailable"), { cause: error });
+    if (!lkg) {
+      if (error?.message === "configuration-stale") throw error;
+      throw Object.assign(new Error("configuration-unavailable"), { cause: error });
+    }
     const configuration = configurationFromBundle(lkg.bundle);
     const bundleLimit = Math.max(0, Number(lkg.bundle.maxOfflineAgeHours ?? lkg.bundle.policy?.maxOfflineAgeHours ?? DEFAULT_MAX_OFFLINE_AGE_HOURS));
     accessState.maxOfflineAgeHours = Math.min(accessState.maxOfflineAgeHours, bundleLimit || accessState.maxOfflineAgeHours);
-    if (lkg.ageHours > accessState.maxOfflineAgeHours) {
-      accessState.offlineAgeHours = lkg.ageHours;
+    const signedBundleLimit = Math.max(0, Number(
+      lkg.bundle.maxSignedBundleAgeDays ?? lkg.bundle.policy?.maxSignedBundleAgeDays ?? DEFAULT_MAX_SIGNED_BUNDLE_AGE_DAYS,
+    ));
+    accessState.maxSignedBundleAgeDays = Math.min(
+      accessState.maxSignedBundleAgeDays,
+      signedBundleLimit || accessState.maxSignedBundleAgeDays,
+    );
+    if (lkg.signedBundleAgeHours > accessState.maxSignedBundleAgeDays * 24) {
+      accessState.signedBundleAgeHours = lkg.signedBundleAgeHours;
+      accessState.connectionState = "configuration-stale";
+      throw Object.assign(new Error("configuration-stale"), { cause: error });
+    }
+    if (lkg.offlineAgeHours > accessState.maxOfflineAgeHours) {
+      accessState.offlineAgeHours = lkg.offlineAgeHours;
       accessState.connectionState = "offline-stale";
       throw Object.assign(new Error("offline-stale"), { cause: error });
     }
@@ -302,7 +403,8 @@ async function initialiseSignedPermit(options) {
       fetchedAt: lkg.fetchedAt,
       connectionState: "offline-fresh",
       revocationCheckMode: "offline-signed-last-known-good",
-      offlineAgeHours: lkg.ageHours,
+      offlineAgeHours: lkg.offlineAgeHours,
+      signedBundleAgeHours: lkg.signedBundleAgeHours,
     });
   }
   const token = safeStorageGet(TOKEN_KEY);
@@ -311,7 +413,7 @@ async function initialiseSignedPermit(options) {
   accessState.permit = result.permit || null;
   accessState.valid = result.valid;
   accessState.reason = result.reason;
-  accessState.checkedAt = new Date().toISOString();
+  accessState.checkedAt = nowIso();
 }
 function sessionPermitFromResponse(data) {
   const user = data?.user || data?.session?.user || {};
@@ -354,7 +456,7 @@ async function initialiseServerSession(options) {
   accessState.permit = permit;
   accessState.valid = true;
   accessState.reason = "valid";
-  accessState.checkedAt = new Date().toISOString();
+  accessState.checkedAt = nowIso();
   accessState.fetchedAt = accessState.checkedAt;
   accessState.connectionState = "online";
   accessState.revocationCheckMode = "server-authoritative";
@@ -384,13 +486,19 @@ export async function initialiseAccess(options = {}) {
   accessState.maxOfflineAgeHours = Math.max(0, Number(
     options.maxOfflineAgeHours ?? accessState.deployment?.access?.maxOfflineAgeHours ?? DEFAULT_MAX_OFFLINE_AGE_HOURS,
   ));
+  accessState.maxSignedBundleAgeDays = Math.max(0, Number(
+    options.maxSignedBundleAgeDays ??
+      accessState.deployment?.access?.maxSignedBundleAgeDays ??
+      DEFAULT_MAX_SIGNED_BUNDLE_AGE_DAYS,
+  ));
   try {
+    if (accessState.mode === "disabled") throw new Error("configuration-unavailable");
     if (accessState.mode === "server-session") await initialiseServerSession(options);
     else await initialiseSignedPermit(options);
   } catch (error) {
     const knownReason = String(error?.message || "");
     const reason = [
-      "offline-stale", "configuration-unavailable", "session-required", "session-invalid",
+      "offline-stale", "configuration-stale", "configuration-unavailable", "session-required", "session-invalid",
       "access-denied", "server-unavailable", "server-offline",
     ].includes(knownReason) ? knownReason : "configuration-unavailable";
     console.warn("AI Studio: access configuration could not be loaded", error);
@@ -420,7 +528,7 @@ export async function setPermitToken(token) {
   accessState.permit = result.permit;
   accessState.valid = true;
   accessState.reason = "valid";
-  accessState.checkedAt = new Date().toISOString();
+  accessState.checkedAt = nowIso();
   emitChange();
   return { ok: true, permit: result.permit };
 }
@@ -454,6 +562,8 @@ export function getAccessSnapshot() {
     connectionState: accessState.connectionState,
     offlineAgeHours: accessState.offlineAgeHours,
     maxOfflineAgeHours: accessState.maxOfflineAgeHours,
+    signedBundleAgeHours: accessState.signedBundleAgeHours,
+    maxSignedBundleAgeDays: accessState.maxSignedBundleAgeDays,
     revocationListUpdatedAt: accessState.revocationListUpdatedAt,
     revocationCheckMode: accessState.revocationCheckMode,
     sharedAccessVersion: accessState.deployment?.sharedAccessVersion || null,
@@ -508,7 +618,8 @@ export function formatReason(reason, language = "cs") {
       "validity-too-long": "Doba platnosti přístupu překračuje povolený limit.", "revoked-by-date": "Tento přístup byl centrálně zneplatněn.",
       revoked: "Tento přístup byl správcem zneplatněn.", "unknown-key": "Přístupový kód byl podepsán neznámým klíčem.",
       "invalid-signature": "Digitální podpis přístupu není platný.", "verification-error": "Přístup se nepodařilo kryptograficky ověřit.",
-      "configuration-unavailable": "Konfiguraci přístupů se nepodařilo načíst.", "offline-stale": "Offline bezpečnostní konfigurace je příliš stará. Připojte zařízení k internetu.",
+      "configuration-unavailable": "Konfiguraci přístupů se nepodařilo načíst.", "configuration-stale": "Podepsaná bezpečnostní konfigurace je příliš stará. Správce musí vydat novou verzi.",
+      "offline-stale": "Od posledního online ověření uplynula příliš dlouhá doba. Připojte zařízení k internetu.",
       "server-offline": "Školní server nelze ověřit bez připojení k internetu.", "server-unavailable": "Školní server je dočasně nedostupný.",
       "session-required": "Přihlaste se ke školnímu serveru.", "session-invalid": "Serverová relace je neplatná nebo vypršela.",
       "server-session-managed": "Přístup spravuje školní server.", "access-denied": "Školní server tento přístup nepovolil.",
@@ -529,7 +640,8 @@ export function formatReason(reason, language = "cs") {
       "revoked-by-date": "This access has been centrally revoked.", revoked: "This access has been revoked by the administrator.",
       "unknown-key": "The access code was signed by an unknown key.", "invalid-signature": "The digital signature is invalid.",
       "verification-error": "Access could not be cryptographically verified.", "configuration-unavailable": "The access configuration could not be loaded.",
-      "offline-stale": "The offline security configuration is too old. Connect this device to the internet.",
+      "configuration-stale": "The signed security configuration is too old. An administrator must issue a new version.",
+      "offline-stale": "Too much time has passed since the last online verification. Connect this device to the internet.",
       "server-offline": "The school server cannot be verified while offline.", "server-unavailable": "The school server is temporarily unavailable.",
       "session-required": "Sign in to the school server.", "session-invalid": "The server session is invalid or expired.",
       "server-session-managed": "Access is managed by the school server.", "access-denied": "The school server denied this access.",

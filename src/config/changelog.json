@@ -1,7 +1,111 @@
 {
   "schema": "ai-studio-changelog-v1",
-  "current": "0.21.28",
+  "current": "0.21.32",
   "items": [
+    {
+      "version": "0.21.32",
+      "date": "2026-08-24",
+      "title": {
+        "cs": "Sjednocení bezpečnostní větve a stabilního screenshot QA",
+        "en": "Security branch and stable screenshot QA integration"
+      },
+      "changes": [
+        {
+          "cs": "Verze vychází z bezpečnostně zkontrolované 0.21.31 a zachovává rotovaný veřejný konfigurační klíč, podepsaný access bundle, oba časové limity, fail-closed chování, nulový XSS baseline i připnuté GitHub Actions.",
+          "en": "This release is based on the security-reviewed 0.21.31 and preserves the rotated public configuration key, signed access bundle, both age limits, fail-closed behaviour, zero XSS baseline and pinned GitHub Actions."
+        },
+        {
+          "cs": "Do novější bezpečnostní větve byla přenesena oprava falešného pádu screenshot testu: po vzniku karty test čeká až čtyři sekundy na skutečné dekódování blob náhledu.",
+          "en": "The false screenshot-test failure fix was ported into the newer security branch: after the card appears, the test waits up to four seconds for the blob preview to decode."
+        },
+        {
+          "cs": "Kontrola CSP zůstává přísná. Při skutečně zablokovaném nebo vadném obrázku zůstane `imageReady:false` a release gate nadále selže; produkční reportér ani bezpečnostní konfigurace se touto opravou nemění.",
+          "en": "The CSP assertion remains strict. A genuinely blocked or invalid image still leaves `imageReady:false` and fails the release gate; the production reporter and security configuration are unchanged by this fix."
+        }
+      ]
+    },
+    {
+      "version": "0.21.31",
+      "date": "2026-08-22",
+      "title": {
+        "cs": "Rotace konfiguračního ověřovacího klíče",
+        "en": "Configuration verification key rotation"
+      },
+      "changes": [
+        {
+          "cs": "Veřejný rotační balíček byl před převzetím kryptograficky ověřen; neobsahoval soukromý klíč a přesně odpovídal současné politice, revokacím a veřejnému klíči pro oprávnění.",
+          "en": "The public rotation pack was cryptographically verified before adoption; it contained no private key and exactly matched the current policy, revocations and permit public key."
+        },
+        {
+          "cs": "AI Studio důvěřuje novému veřejnému konfiguračnímu klíči a používá čerstvý podepsaný bundle access-p1-20260822195407Z-fxjS8DK9 vydaný 22. srpna 2026.",
+          "en": "AI Studio now trusts the new public configuration key and uses the fresh signed bundle access-p1-20260822195407Z-fxjS8DK9 issued on 22 August 2026."
+        },
+        {
+          "cs": "Klíč pro podepisování uživatelských oprávnění se nezměnil, takže dříve vydaná platná oprávnění pokračují beze změny až do vlastní expirace nebo revokace.",
+          "en": "The key used to sign user permits did not change, so previously issued valid permits continue unchanged until their own expiry or revocation."
+        },
+        {
+          "cs": "Přibyla lokální validační kontrola veřejného rotačního balíčku, která odmítne soukromý materiál, neshodu politiky, verze či klíčů a neplatný ES256 podpis.",
+          "en": "A local public rotation-pack validator now rejects private material, policy, version or key mismatches and invalid ES256 signatures."
+        }
+      ]
+    },
+    {
+      "version": "0.21.30",
+      "date": "2026-08-21",
+      "title": {
+        "cs": "Oprava offline časového modelu a doplnění release brány",
+        "en": "Offline timing model fix and release-gate coverage"
+      },
+      "changes": [
+        {
+          "cs": "Offline režim nyní odděluje 24 hodin od posledního úspěšného online načtení od 30denního maximálního stáří kryptograficky podepsaného bundle.",
+          "en": "Offline mode now separates the 24-hour limit since the last successful online fetch from the 30-day maximum age of the cryptographically signed bundle."
+        },
+        {
+          "cs": "Podepsaný bundle musí odpovídat verzi zapečené v deployment profilu; generátor podpisu vytváří jedinečnou verzi a propíše ji do aktivních profilů.",
+          "en": "The signed bundle must match the version baked into the deployment profile; the signing tool creates a unique version and writes it to the active profiles."
+        },
+        {
+          "cs": "Build hlásí skutečné stáří bundle a CI zastaví release při překročení 30 dní, neplatném podpisu nebo neshodě verze.",
+          "en": "The build reports the bundle's real age and CI blocks the release when it exceeds 30 days, has an invalid signature, or has a version mismatch."
+        },
+        {
+          "cs": "Nový behaviorální test se zapečeným školním profilem ověřuje zákaz direct-gemini i odstranění lokálních provider klíčů; bezpečnostní sada má 16 scénářů.",
+          "en": "A new behavioural test with a baked school profile verifies that direct-gemini is denied and local provider keys are removed; the security suite now has 16 scenarios."
+        }
+      ]
+    },
+    {
+      "version": "0.21.29",
+      "date": "2026-08-21",
+      "title": {
+        "cs": "Bezpečnostní hardening přístupové vrstvy a CI",
+        "en": "Access-layer and CI security hardening"
+      },
+      "changes": [
+        {
+          "cs": "Service worker už neobsluhuje podepsaný access bundle ani jeho podpis z aplikační cache; offline cesta proto prochází výhradně kryptograficky ověřeným LKG režimem.",
+          "en": "The service worker no longer serves the signed access bundle or its signature from the application cache, so the offline path exclusively uses the cryptographically verified LKG mode."
+        },
+        {
+          "cs": "Stáří offline konfigurace se počítá z podepsaného issuedAt/generatedAt. Podvržení klientského fetchedAt už nemůže obnovit starý revokační seznam.",
+          "en": "Offline configuration age is calculated from signed issuedAt/generatedAt. Tampering with client-side fetchedAt can no longer refresh an old revocation list."
+        },
+        {
+          "cs": "Produkční buildy obsahují zapečený deployment profil; chybějící konfigurace je uzamčená, lokální API klíče jsou povoleny pouze explicitním true a školní profil zůstává fail-closed.",
+          "en": "Production builds contain a baked deployment profile; missing configuration is locked, local API keys require explicit true, and the school profile remains fail-closed."
+        },
+        {
+          "cs": "Všech osm zbývajících innerHTML sinků bylo nahrazeno DOM API a XSS baseline je nula. GitHub Actions jsou připnuté na plné SHA a jejich aktualizace sleduje Dependabot.",
+          "en": "All eight remaining innerHTML sinks were replaced with DOM APIs and the XSS baseline is zero. GitHub Actions are pinned to full SHAs and Dependabot tracks updates."
+        },
+        {
+          "cs": "Nová přenosná oprávnění vydaná od 22. 8. 2026 mají v klientském ověření i vydavateli tvrdý limit 90 dní; starší oprávnění zůstávají kvůli bezpečné migraci do své dosavadní expirace.",
+          "en": "New portable permits issued from 22 August 2026 have a hard 90-day limit in both client verification and the issuer; older permits retain their existing expiry for safe migration."
+        }
+      ]
+    },
     {
       "version": "0.21.28",
       "date": "2026-08-18",

@@ -1,5 +1,7 @@
 await window.GHRAB.accessReady;
 
+const MAX_NEW_PERMIT_DAYS = 90;
+
 if (window.GHRAB.isAdmin() && !window.GHRAB.isColleaguePreview?.()) {
   const G = window.GHRAB;
   const encoder = new TextEncoder();
@@ -169,10 +171,14 @@ if (window.GHRAB.isAdmin() && !window.GHRAB.isColleaguePreview?.()) {
       feedback("Datum platnosti musí být v budoucnosti.");
       return;
     }
-    const maximum = Number(policy.maximumPermitDays || 400) * 86400;
+    const maximumDays = Math.min(
+      MAX_NEW_PERMIT_DAYS,
+      Math.max(1, Number(policy.maximumPermitDays || MAX_NEW_PERMIT_DAYS)),
+    );
+    const maximum = maximumDays * 86400;
     if (exp - now > maximum) {
       feedback(
-        `Platnost nesmí překročit ${policy.maximumPermitDays || 400} dní.`,
+        `Platnost nesmí překročit ${maximumDays} dní.`,
       );
       return;
     }
@@ -288,7 +294,11 @@ if (window.GHRAB.isAdmin() && !window.GHRAB.isColleaguePreview?.()) {
   function setMaximumExpiry() {
     // The selected date is signed at 23:59:59, so use one calendar day less
     // to remain safely inside the exact maximum duration from the current time.
-    setExpiryDays(Math.max(1, Number(policy?.maximumPermitDays || 400) - 1));
+    const maximumDays = Math.min(
+      MAX_NEW_PERMIT_DAYS,
+      Math.max(1, Number(policy?.maximumPermitDays || MAX_NEW_PERMIT_DAYS)),
+    );
+    setExpiryDays(Math.max(1, maximumDays - 1));
   }
   function selectAllCurrentApps() {
     document.querySelectorAll("[data-app]").forEach((input) => {

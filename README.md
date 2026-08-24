@@ -1,19 +1,26 @@
 # AI Studio GHRAB
 
-**Aktuální verze:** 0.21.28
+**Aktuální verze:** 0.21.32
 **Platforma:** GHRAB Platform 1.1.0 · etapa P5
 
-**Verze 0.21.28 přidává správci osobní přehled otestovanosti všech současných i budoucích aplikací.**
+**Verze 0.21.32 sjednocuje bezpečnostně zkontrolovanou rotaci klíče s opravou stabilního screenshot QA.**
 
 AI Studio GHRAB je centrální brána školních digitálních a AI nástrojů. Jednotlivé aplikace zůstávají v samostatných repozitářích; Studio zajišťuje společnou navigaci, Top 4, synchronizaci verzí, bezpečnostní rámec, pilotní měření, správu podepsaných přístupů a kanonický základ technického reportéru. Materiály jsou viditelnou součástí portálu, ale v dnešním bezserverovém režimu se vlastní obsah ukládá pouze místně.
 
-## Hlavní novinky 0.21.28
+## Sjednocení 0.21.32
 
-- V každé kartě aplikace má plný správce symbol `○` netestováno, `◐` lehce otestováno nebo `✓` otestováno.
-- Stav se přepíná kliknutím, ukládá se místně podle stabilního ID aplikace a automaticky funguje také pro budoucí aplikace.
-- Označení je osobní správcovská pomůcka; učitelům ani v Pohledu kolegy se nezobrazuje.
-- Vydavatel už hlavnímu správci automaticky nenastavuje 14 dní; nabízí samostatnou maximální platnost 400 dní a krátké volby ponechává pro dočasné zastoupení.
-- Souhrn přístupu přesněji vysvětluje platnost správcovského bezpečnostního oprávnění a místo nejasného seznamu odvolání uvádí kontrolu zneplatněných přístupů.
+- Základem je kompletní bezpečnostní verze 0.21.31 včetně nového veřejného konfiguračního klíče a podepsaného access bundle.
+- Screenshot test po vytvoření karty čeká až čtyři sekundy na dekódování blob náhledu a nevydává pomalejší runner za chybu CSP.
+- Skutečně zablokovaný obrázek nadále testem neprojde; produkční reportér ani bezpečnostní politika se nemění.
+
+## Hlavní novinky 0.21.31
+
+- Nový veřejný konfigurační ověřovací klíč je zapečen v runtime i samostatném trust anchoru.
+- Nový podepsaný bundle byl před začleněním ověřen proti podpisu ES256, současné politice, revokacím a veřejnému klíči pro uživatelská oprávnění.
+- Kontrola potvrdila, že předaný rotační balíček neobsahuje žádný soukromý klíč.
+- Nová kontrola `access:validate-rotation` umožňuje bezpečně ověřit další veřejný rotační balíček před jeho převzetím.
+- Klíč pro podepisování uživatelských oprávnění se nemění; dříve vydaná platná oprávnění proto zůstávají funkční.
+- Ochrany z 0.21.30 zůstávají zachovány: 24hodinový limit posledního online načtení, 30denní limit podepsaného bundle, shoda `sharedAccessVersion`, fail-closed režim a blokující release brána.
 
 ## Předchozí vydání 0.20.18
 
@@ -64,7 +71,7 @@ Ochranný bootstrap je určen pro Generátor 7.1.8, Diferenciátor 1.3.8, Hodnot
 
 ## Doporučené pořadí nasazení P2
 
-1. AI Studio GHRAB 0.21.28 jako zpětně kompatibilní platformní základ.
+1. AI Studio GHRAB 0.21.32 jako zpětně kompatibilní platformní základ.
 2. Korespondenční asistent 5.9.15.
 3. Diferenciátor 1.3.8.
 4. Generátor testů 7.1.8.
@@ -82,6 +89,7 @@ Po zeleném nasazení zavřete staré otevřené karty Studia a znovu je otevře
 ```bash
 npm run sync:offline
 npm test
+npm run build:school-server
 ```
 
 Autor a vývojový garant: Daniel Baláž

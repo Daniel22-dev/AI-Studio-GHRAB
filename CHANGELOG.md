@@ -2,6 +2,38 @@
 
 > Tento soubor se generuje ze `src/config/changelog.json`. Neupravujte jej ručně.
 
+## 0.21.32 — 2026-08-24
+**Sjednocení bezpečnostní větve a stabilního screenshot QA**
+
+- Verze vychází z bezpečnostně zkontrolované 0.21.31 a zachovává rotovaný veřejný konfigurační klíč, podepsaný access bundle, oba časové limity, fail-closed chování, nulový XSS baseline i připnuté GitHub Actions.
+- Do novější bezpečnostní větve byla přenesena oprava falešného pádu screenshot testu: po vzniku karty test čeká až čtyři sekundy na skutečné dekódování blob náhledu.
+- Kontrola CSP zůstává přísná. Při skutečně zablokovaném nebo vadném obrázku zůstane `imageReady:false` a release gate nadále selže; produkční reportér ani bezpečnostní konfigurace se touto opravou nemění.
+
+## 0.21.31 — 2026-08-22
+**Rotace konfiguračního ověřovacího klíče**
+
+- Veřejný rotační balíček byl před převzetím kryptograficky ověřen; neobsahoval soukromý klíč a přesně odpovídal současné politice, revokacím a veřejnému klíči pro oprávnění.
+- AI Studio důvěřuje novému veřejnému konfiguračnímu klíči a používá čerstvý podepsaný bundle access-p1-20260822195407Z-fxjS8DK9 vydaný 22. srpna 2026.
+- Klíč pro podepisování uživatelských oprávnění se nezměnil, takže dříve vydaná platná oprávnění pokračují beze změny až do vlastní expirace nebo revokace.
+- Přibyla lokální validační kontrola veřejného rotačního balíčku, která odmítne soukromý materiál, neshodu politiky, verze či klíčů a neplatný ES256 podpis.
+
+## 0.21.30 — 2026-08-21
+**Oprava offline časového modelu a doplnění release brány**
+
+- Offline režim nyní odděluje 24 hodin od posledního úspěšného online načtení od 30denního maximálního stáří kryptograficky podepsaného bundle.
+- Podepsaný bundle musí odpovídat verzi zapečené v deployment profilu; generátor podpisu vytváří jedinečnou verzi a propíše ji do aktivních profilů.
+- Build hlásí skutečné stáří bundle a CI zastaví release při překročení 30 dní, neplatném podpisu nebo neshodě verze.
+- Nový behaviorální test se zapečeným školním profilem ověřuje zákaz direct-gemini i odstranění lokálních provider klíčů; bezpečnostní sada má 16 scénářů.
+
+## 0.21.29 — 2026-08-21
+**Bezpečnostní hardening přístupové vrstvy a CI**
+
+- Service worker už neobsluhuje podepsaný access bundle ani jeho podpis z aplikační cache; offline cesta proto prochází výhradně kryptograficky ověřeným LKG režimem.
+- Stáří offline konfigurace se počítá z podepsaného issuedAt/generatedAt. Podvržení klientského fetchedAt už nemůže obnovit starý revokační seznam.
+- Produkční buildy obsahují zapečený deployment profil; chybějící konfigurace je uzamčená, lokální API klíče jsou povoleny pouze explicitním true a školní profil zůstává fail-closed.
+- Všech osm zbývajících innerHTML sinků bylo nahrazeno DOM API a XSS baseline je nula. GitHub Actions jsou připnuté na plné SHA a jejich aktualizace sleduje Dependabot.
+- Nová přenosná oprávnění vydaná od 22. 8. 2026 mají v klientském ověření i vydavateli tvrdý limit 90 dní; starší oprávnění zůstávají kvůli bezpečné migraci do své dosavadní expirace.
+
 ## 0.21.28 — 2026-08-18
 **Osobní stav testování aplikací**
 

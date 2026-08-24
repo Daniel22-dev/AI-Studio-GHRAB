@@ -2,12 +2,12 @@
   "schema": "ghrab-p5-xss-baseline-v1",
   "appId": "ai-studio",
   "counts": {
-    "innerHTML": 8,
+    "innerHTML": 0,
     "insertAdjacentHTML": 0,
     "outerHTML": 0,
     "documentWrite": 0,
     "eval": 0,
     "newFunction": 0
   },
-  "note": "P5 R2 baseline after 0.21.5 sink hardening; increases fail. Existing sinks still require review and CSP hardening."
+  "note": "Security hardening baseline: executable sources contain no approved HTML injection sinks; any new occurrence blocks the release gate."
 }

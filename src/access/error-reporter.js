@@ -836,7 +836,12 @@ export function setupErrorReporter(options = {}) {
   const launcher = button(t("Nahlásit chybu", "Report an issue"), "launcher");
   launcher.setAttribute("aria-haspopup", "dialog");
   launcher.setAttribute("aria-label", t("Nahlásit chybu", "Report an issue"));
-  launcher.innerHTML = `<span aria-hidden="true">!</span><strong>${t("Nahlásit chybu", "Report an issue")}</strong>`;
+  const launcherIcon = element("span", "", "!");
+  launcherIcon.setAttribute("aria-hidden", "true");
+  launcher.replaceChildren(
+    launcherIcon,
+    element("strong", "", t("Nahlásit chybu", "Report an issue")),
+  );
   const backdrop = element("div", "ghrab-report-backdrop");
   backdrop.hidden = true;
   const panel = element("section", "ghrab-report-panel");
@@ -857,7 +862,24 @@ export function setupErrorReporter(options = {}) {
 
   const appLine = element("p", "ghrab-report-app-line");
   const privacy = element("div", "ghrab-report-privacy");
-  privacy.innerHTML = `<strong>${t("Nechte chybu viditelnou v celém kontextu.", "Keep the issue visible in its full context.")}</strong><span>${t("Nezakrývejte chybové hlášení ani nastavení potřebná k opravě. Pokud snímek obsahuje nesouvisející osobní údaje žáka, můžete je volitelně začernit.", "Do not hide the error message or settings needed for diagnosis. If the screenshot contains unrelated student personal data, you may redact it optionally.")}</span>`;
+  privacy.append(
+    element(
+      "strong",
+      "",
+      t(
+        "Nechte chybu viditelnou v celém kontextu.",
+        "Keep the issue visible in its full context.",
+      ),
+    ),
+    element(
+      "span",
+      "",
+      t(
+        "Nezakrývejte chybové hlášení ani nastavení potřebná k opravě. Pokud snímek obsahuje nesouvisející osobní údaje žáka, můžete je volitelně začernit.",
+        "Do not hide the error message or settings needed for diagnosis. If the screenshot contains unrelated student personal data, you may redact it optionally.",
+      ),
+    ),
+  );
 
   const guide = document.createElement("a");
   guide.className = "ghrab-report-guide";

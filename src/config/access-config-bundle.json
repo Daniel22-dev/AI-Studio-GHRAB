@@ -1,15 +1,17 @@
 {
   "schema": "ghrab-access-config-bundle-v1",
-  "version": "access-p1-2026-08-04",
-  "generatedAt": "2026-08-04T12:27:56.084Z",
+  "version": "access-p1-20260822195407Z-fxjS8DK9",
+  "issuedAt": "2026-08-22T19:54:07.859Z",
+  "generatedAt": "2026-08-22T19:54:07.859Z",
   "maxOfflineAgeHours": 24,
+  "maxSignedBundleAgeDays": 30,
   "policy": {
     "schema": "ghrab-access-policy-v1",
     "issuer": "ai-studio-ghrab",
     "audience": "ai-studio-ghrab",
     "defaultState": "locked",
     "clockSkewSeconds": 300,
-    "maximumPermitDays": 400,
+    "maximumPermitDays": 90,
     "administratorRoles": [
       "admin"
     ],
@@ -93,17 +95,30 @@
       "pilot",
       "report",
       "tests",
-      "changelog",
       "issuer",
       "access-registry"
     ],
     "legacyMaximumPermitDays": 1095,
-    "maximumPermitDaysEnforcedAfter": "2026-07-15T00:00:00.000Z",
+    "maximumPermitDaysEnforcedAfter": "2026-08-22T00:00:00.000Z",
     "maxOfflineAgeHours": 24,
+    "maxSignedBundleAgeDays": 30,
     "offlinePolicy": {
       "strategy": "online-first-signed-last-known-good",
+      "maxLastOnlineAgeHours": 24,
+      "maxSignedBundleAgeDays": 30,
       "failClosedWhenStale": true
-    }
+    },
+    "operatorRoles": [
+      "operator"
+    ],
+    "operatorPages": [
+      "automation",
+      "pilot",
+      "report",
+      "tests",
+      "access-registry",
+      "deputy-admin"
+    ]
   },
   "revocations": {
     "schema": "ghrab-access-revocation-list-v1",

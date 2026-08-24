@@ -155,7 +155,13 @@ if (window.GHRAB.canAccessAdminPage?.("pilot") && !window.GHRAB.isColleaguePrevi
     const list = G.getPilotEvents().slice().reverse().slice(0, 20),
       host = $("#pilot-events");
     if (!list.length) {
-      host.innerHTML = `<div class="empty-state">${G.t("Zatím nejsou žádné automatické pilotní záznamy.", "There are no automatic pilot records yet.")}</div>`;
+      const empty = document.createElement("div");
+      empty.className = "empty-state";
+      empty.textContent = G.t(
+        "Zatím nejsou žádné automatické pilotní záznamy.",
+        "There are no automatic pilot records yet.",
+      );
+      host.replaceChildren(empty);
       return;
     }
     host.replaceChildren(

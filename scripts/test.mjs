@@ -325,12 +325,12 @@ for (const app of apps || []) {
     fail(`${app.id}: povinné školení nemá kód nebo verzi.`);
 }
 if (
-  Number(policy?.maximumPermitDays) !== 400 ||
+  Number(policy?.maximumPermitDays) !== 90 ||
   Number(policy?.legacyMaximumPermitDays) !== 1095 ||
   !Number.isFinite(Date.parse(policy?.maximumPermitDaysEnforcedAfter))
 )
   fail(
-    "Politika platnosti oprávnění nemá bezpečný limit 400 dní a migrační ochranu starých oprávnění.",
+    "Politika platnosti oprávnění nemá bezpečný limit 90 dní a migrační ochranu starých oprávnění.",
   );
 for (const item of publicKeys) {
   try {

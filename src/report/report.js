@@ -354,8 +354,13 @@ if (window.GHRAB.canAccessAdminPage?.("report") && !window.GHRAB.isColleaguePrev
   function renderImports(view) {
     const host = $("#report-import-list");
     if (!getImports().length) {
-      host.innerHTML =
-        '<div class="empty-state">Zatím nejsou načtené žádné souhrny od kolegů.</div>';
+      host.replaceChildren(
+        textEl(
+          "div",
+          "Zatím nejsou načtené žádné souhrny od kolegů.",
+          "empty-state",
+        ),
+      );
       return;
     }
     host.replaceChildren(
@@ -393,8 +398,13 @@ if (window.GHRAB.canAccessAdminPage?.("report") && !window.GHRAB.isColleaguePrev
       (row) => row.attempted || row.launches || row.activeSeconds,
     );
     if (!rows.length) {
-      host.innerHTML =
-        '<div class="empty-state">Ve zvoleném období zatím nejsou technická data.</div>';
+      host.replaceChildren(
+        textEl(
+          "div",
+          "Ve zvoleném období zatím nejsou technická data.",
+          "empty-state",
+        ),
+      );
       return;
     }
     host.replaceChildren(

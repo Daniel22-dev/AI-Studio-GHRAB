@@ -19,7 +19,7 @@
     "self",
     "https://daniel22-dev.github.io"
   ],
-  "sharedAccessVersion": "access-p1-2026-08-04",
+  "sharedAccessVersion": "access-p1-20260822195407Z-fxjS8DK9",
   "environmentId": "github-pages-production",
   "profile": "github-pages",
   "authMode": "signed-permit",
@@ -28,6 +28,7 @@
   "access": {
     "strategy": "online-first-signed-lkg",
     "maxOfflineAgeHours": 24,
+    "maxSignedBundleAgeDays": 30,
     "failClosedWhenStale": true
   },
   "privacy": {

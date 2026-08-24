@@ -1,6 +1,6 @@
 #!/usr/bin/env node
-import { createPrivateKey, createPublicKey, generateKeyPairSync, sign } from 'node:crypto';
-import { readFileSync, writeFileSync, existsSync, mkdirSync } from 'node:fs';
+import { createPrivateKey, createPublicKey, sign } from 'node:crypto';
+import { readFileSync, writeFileSync, existsSync } from 'node:fs';
 import { dirname, join, resolve } from 'node:path';
 import { fileURLToPath } from 'node:url';
 
@@ -13,6 +13,7 @@ function canonical(value) {
 }
 function b64url(buffer) { return Buffer.from(buffer).toString('base64url'); }
 function readJson(name) { return JSON.parse(readFileSync(join(CONFIG, name), 'utf8')); }
+function writeJson(name, value) { writeFileSync(join(CONFIG, name), `${JSON.stringify(value, null, 2)}\n`); }
 
 const privatePath = process.env.GHRAB_ACCESS_BUNDLE_PRIVATE_KEY || process.argv[2];
 if (!privatePath || !existsSync(privatePath)) {
@@ -22,14 +23,30 @@ if (!privatePath || !existsSync(privatePath)) {
 const privateJwk = JSON.parse(readFileSync(privatePath, 'utf8'));
 const privateKey = createPrivateKey({ key: privateJwk, format: 'jwk' });
 const publicJwk = createPublicKey(privateKey).export({ format: 'jwk' });
-const keyId = String(privateJwk.kid || publicJwk.kid || 'ghrab-access-bundle-p1');
+const trustAnchor = readJson('access-config-verify-key.json');
+const sameTrustAnchor = ['kty', 'crv', 'x', 'y'].every((field) => publicJwk[field] === trustAnchor.publicKey?.[field]);
+if (!sameTrustAnchor) {
+  console.error('Soukromý klíč neodpovídá veřejnému trust anchoru aplikace. Podpis byl zastaven; rotace klíče vyžaduje samostatnou změnu runtime.');
+  process.exit(2);
+}
+const keyId = String(trustAnchor.keyId);
 Object.assign(publicJwk, { kid: keyId, use: 'sig', alg: 'ES256' });
 const policy = readJson('access-policy.json');
+const issuedAt = new Date().toISOString();
+const defaultVersion = `access-p1-${issuedAt.replace(/\D/g, '').slice(0, 14)}Z`;
+const version = String(process.env.GHRAB_ACCESS_BUNDLE_VERSION || defaultVersion);
+const previousBundle = readJson('access-config-bundle.json');
+if (version === previousBundle.version) {
+  console.error('Nový podpis musí mít jedinečnou bundle.version; opakované použití verze by umožnilo rollback.');
+  process.exit(2);
+}
 const bundle = {
   schema: 'ghrab-access-config-bundle-v1',
-  version: String(process.env.GHRAB_ACCESS_BUNDLE_VERSION || 'access-p1-2026-08-04'),
-  generatedAt: new Date().toISOString(),
+  version,
+  issuedAt,
+  generatedAt: issuedAt,
   maxOfflineAgeHours: Number(policy.maxOfflineAgeHours || 24),
+  maxSignedBundleAgeDays: Number(policy.maxSignedBundleAgeDays || 30),
   policy,
   revocations: readJson('revoked-access.json'),
   accessPublicKey: readJson('access-public-key.json'),
@@ -43,7 +60,11 @@ const signatureDocument = {
   bundleVersion: bundle.version,
   signature: b64url(signature),
 };
-writeFileSync(join(CONFIG, 'access-config-bundle.json'), `${JSON.stringify(bundle, null, 2)}\n`);
-writeFileSync(join(CONFIG, 'access-config-bundle.sig.json'), `${JSON.stringify(signatureDocument, null, 2)}\n`);
-writeFileSync(join(CONFIG, 'access-config-signing-key.json'), `${JSON.stringify({ schema: 'ghrab-access-config-signing-key-v1', algorithm: 'ES256', keyId, publicKey: publicJwk }, null, 2)}\n`);
+writeJson('access-config-bundle.json', bundle);
+writeJson('access-config-bundle.sig.json', signatureDocument);
+for (const name of ['deployment.json', 'deployment.school-server.json']) {
+  const deployment = readJson(name);
+  deployment.sharedAccessVersion = version;
+  writeJson(name, deployment);
+}
 console.log(JSON.stringify({ ok: true, keyId, bundleVersion: bundle.version, signatureBytes: signature.length }));

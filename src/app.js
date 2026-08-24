@@ -839,7 +839,14 @@ function updateTelemetryModeBanner() {
   if (!isAdmin() || getTelemetryMode() !== "test") return;
   const banner = document.createElement("div");
   banner.className = "telemetry-test-banner";
-  banner.innerHTML = `<strong>${t("TESTOVACÍ REŽIM MĚŘENÍ", "TELEMETRY TEST MODE")}</strong><span>${t("Spuštění, aktivní čas a výstupy správce se ukládají odděleně a nevstupují do pilotního reportu.", "Administrator launches, active time and outputs are stored separately and excluded from the pilot report.")}</span>`;
+  const title = document.createElement("strong");
+  title.textContent = t("TESTOVACÍ REŽIM MĚŘENÍ", "TELEMETRY TEST MODE");
+  const description = document.createElement("span");
+  description.textContent = t(
+    "Spuštění, aktivní čas a výstupy správce se ukládají odděleně a nevstupují do pilotního reportu.",
+    "Administrator launches, active time and outputs are stored separately and excluded from the pilot report.",
+  );
+  banner.append(title, description);
   document.body.prepend(banner);
 }
 function recordLaunch(id) {
@@ -1968,7 +1975,16 @@ async function renderHome() {
     homeContext = { grid, apps, permissions, platformConsumers };
     renderHomeCards();
   } catch {
-    grid.innerHTML = `<div class="portal-empty">${t("Registr aplikací se nepodařilo načíst. Obnovte stránku.", "The application registry could not be loaded. Refresh the page.")}</div>`;
+    grid.replaceChildren(
+      el(
+        "div",
+        "portal-empty",
+        t(
+          "Registr aplikací se nepodařilo načíst. Obnovte stránku.",
+          "The application registry could not be loaded. Refresh the page.",
+        ),
+      ),
+    );
   }
   const report = await loadSyncReport();
   const status = document.querySelector("#studio-status");

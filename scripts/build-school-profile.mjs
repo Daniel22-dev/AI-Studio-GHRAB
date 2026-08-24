@@ -58,6 +58,10 @@ const deployment = readJson(path.join(configDir, "deployment.json"));
 if (deployment.appId !== "ai-studio" || deployment.profile !== "school-server" || deployment.authMode !== "server-session") {
   throw new Error("Aktivní school-server deployment kontrakt Studia není úplný.");
 }
+fs.writeFileSync(
+  path.join(configDir, "deployment-baked.js"),
+  `// Generated at build time; do not edit in dist.\nexport const BAKED_DEPLOYMENT_CONFIG = Object.freeze(${JSON.stringify(deployment, null, 2)});\n`,
+);
 
 files = walk(targetDist);
 for (const manifestPath of files.filter((file) => file.endsWith(`${path.sep}manifest.webmanifest`))) {
@@ -140,6 +144,10 @@ if (buildInfo.phase !== (consumer.quality?.stage || "P5")) throw new Error("Scho
 const schoolSw = fs.readFileSync(path.join(targetDist, "sw.js"), "utf8");
 if (/runtime-config\.js|deployment\.school-server-(?:p0|example)\.json/.test(schoolSw)) {
   throw new Error("School-server service worker stále odkazuje na mrtvý runtime/profile soubor.");
+}
+const bakedDeployment = fs.readFileSync(path.join(configDir, "deployment-baked.js"), "utf8");
+if (!bakedDeployment.includes('"profile": "school-server"') || !bakedDeployment.includes('"allowLocalProviderKeys": false')) {
+  throw new Error("School-server build nemá zapečený fail-closed deployment profil.");
 }
 for (const forbidden of [
   path.join(configDir, "deployment.school-server-p0.json"),

@@ -1,12 +1,15 @@
 import { cp, mkdir, readFile, readdir, rm, writeFile } from "node:fs/promises";
 import path from "node:path";
 import { fileURLToPath } from "node:url";
+import { checkAccessBundleFreshness } from "./lib/access-bundle-freshness.mjs";
 
 const here = path.dirname(fileURLToPath(import.meta.url));
 const root = path.resolve(here, "..");
 const src = path.join(root, "src");
 const dist = path.join(root, "dist");
 const pkg = JSON.parse(await readFile(path.join(root, "package.json"), "utf8"));
+
+await checkAccessBundleFreshness({ root, required: false });
 
 function appendRevision(ref, version) {
   if (!ref || /^(?:[a-z]+:|\/\/|#|data:|blob:)/i.test(ref)) return ref;
@@ -61,6 +64,14 @@ async function walk(dir) {
 await rm(dist, { recursive: true, force: true });
 await mkdir(dist, { recursive: true });
 await cp(src, dist, { recursive: true });
+const deploymentProfile = JSON.parse(
+  await readFile(path.join(src, "config", "deployment.json"), "utf8"),
+);
+await writeFile(
+  path.join(dist, "config", "deployment-baked.js"),
+  `// Generated at build time; do not edit in dist.\nexport const BAKED_DEPLOYMENT_CONFIG = Object.freeze(${JSON.stringify(deploymentProfile, null, 2)});\n`,
+  "utf8",
+);
 // The root consumer is the single source of truth; copy it before precache validation instead of relying on a stale src/ duplicate.
 await cp(path.join(root, 'ghrab-platform.consumer.json'), path.join(dist, 'ghrab-platform.consumer.json'));
 // Historical platform sources remain in src/ for rollback/audit, but the live build uses the canonical dist/ghrab platform bundle.
@@ -139,6 +150,7 @@ const requiredCacheFiles = [
   "./access/deployment-config.js",
   "./access/platform-runtime.js",
   "./access/access-gate.css",
+  "./config/deployment-baked.js",
   "./shared/material-validator.js",
   "./shared/safe-export.js",
   "./config/apps.generated.json",
@@ -183,6 +195,10 @@ const optionalCacheFiles = allCacheFiles.filter(
   (file) =>
     !requiredCacheFiles.includes(file) &&
     file !== "./config/changelog.json" &&
+    ![
+      "./config/access-config-bundle.json",
+      "./config/access-config-bundle.sig.json",
+    ].includes(file) &&
     !file.startsWith("./config/deployment") &&
     !excludedOptionalPrefixes.some((prefix) => file.startsWith(prefix)),
 );

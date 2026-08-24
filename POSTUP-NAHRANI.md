@@ -1,6 +1,6 @@
-# Přesný postup nahrání AI Studio GHRAB 0.21.28 na GitHub
+# Přesný postup nahrání AI Studio GHRAB 0.21.32 na GitHub
 
-> Aktuální verze: **0.21.28** · etapa P5
+> Aktuální verze: **0.21.32** · etapa P5
 
 ## Předpoklady
 
@@ -8,14 +8,16 @@ Nejprve musí být nasazeny KS 5.10.3, SORTIO 1.0.12, Lesson Hub 1.2.9, Diferenc
 
 ## Nahrání
 
-1. Stáhněte a rozbalte `AI-Studio-GHRAB-v0.21.28-GitHub.zip`.
+1. Stáhněte a rozbalte `AI-Studio-GHRAB-v0.21.32-GitHub.zip`.
 2. Do kořene repozitáře `AI-Studio-GHRAB` nahrajte přímo všechny soubory a složky z rozbaleného archivu.
-3. Commit pojmenujte například `AI Studio 0.21.28 – stav testování aplikací`.
+3. Commit pojmenujte například `AI Studio 0.21.32 – security + stable screenshot QA`.
 4. Vyčkejte na dokončení GitHub Actions. Workflow instaluje závislosti, synchronizuje manifesty, spustí regresi reportéru, celý GHRAB QA release gate, sestaví `dist` a až poté nasadí GitHub Pages.
 
 ## Kontrola po nasazení
 
-- `dist/build-info.json`, PWA manifest a service worker musí uvádět 0.21.28.
+- `dist/build-info.json`, PWA manifest a service worker musí uvádět 0.21.32.
+- `dist/config/access-config-bundle.json` musí uvádět `access-p1-20260822195407Z-fxjS8DK9`.
+- Dříve vydaná platná uživatelská oprávnění musí zůstat funkční; jejich podpisový klíč se v tomto vydání nemění.
 - Registr musí uvádět všech osm aktuálních verzí aplikací.
 - Ve správcovském pohledu musí mít každá karta symbol stavu testování `○`, `◐` nebo `✓`; po obnovení stránky musí zvolený stav zůstat zachovaný.
 - V Pohledu kolegy ani běžnému učiteli se symbol stavu testování nesmí zobrazit.

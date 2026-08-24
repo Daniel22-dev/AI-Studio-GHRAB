@@ -15,6 +15,9 @@ for (const rel of ['access/app-guard.js', 'access/access-control.js', 'access/pl
 }
 const runtimeBlock = sw.match(/function isRuntimeRequest[\s\S]*?\n\}/)?.[0] || '';
 check('SW runtime-only list excludes gate code', !/access\/(?:app-guard|access-control|platform-runtime)\.js/.test(runtimeBlock));
+for (const rel of ['config/access-config-bundle.json', 'config/access-config-bundle.sig.json']) {
+  check(`SW bypasses ${rel}`, runtimeBlock.includes(`'${rel}'`));
+}
 check('SW has network-first fetch branch', /isRuntimeNetworkFirst\(url, scopePath\)[\s\S]*?networkFirst\(request\)/.test(sw));
 check('SW has no dead runtime-config contract', !sw.includes("relative === 'runtime-config.js'"));
 
@@ -24,6 +27,22 @@ for (const rel of ['./access/app-guard.js', './access/access-control.js', './acc
 }
 check('Deployment profile is not precached as required', !/requiredCacheFiles[\s\S]*?\.\/config\/deployment\.json/.test(build));
 check('Changelog is excluded from install precache', build.includes('file !== \"./config/changelog.json\"'));
+check('Access bundle is excluded from install precache', build.includes('"./config/access-config-bundle.json"') && build.includes('"./config/access-config-bundle.sig.json"'));
+check('Build bakes deployment profile', build.includes('deployment-baked.js') && build.includes('deploymentProfile'));
+check('Build checks signed bundle freshness', build.includes('checkAccessBundleFreshness'));
+
+const pkg = json('package.json');
+check('P5 CI blocks stale signed bundle', pkg.scripts?.['qa:p5:ci']?.includes('access:check:required'));
+const deployWorkflow = read('.github/workflows/deploy.yml');
+check('Deploy blocks stale signed bundle before build', deployWorkflow.includes('npm run access:check:required'));
+
+const deploymentConfig = read('src/access/deployment-config.js');
+check('Deployment loader prefers build-time profile', deploymentConfig.includes('BAKED_DEPLOYMENT_CONFIG') && deploymentConfig.includes('configurationSource: "build-time"'));
+check('Deployment fallback is fail-closed', deploymentConfig.includes('profile: "configuration-unavailable"') && deploymentConfig.includes('allowLocalProviderKeys: false'));
+
+const platformRuntime = read('src/access/platform-runtime.js');
+check('Local keys require explicit allow', platformRuntime.includes('allowLocalProviderKeys === true'));
+check('Unavailable profile disables AI transport', platformRuntime.includes('selectedMode === "disabled" ? []'));
 
 const prepaint = read('src/startup-prepaint.js');
 const canonical = prepaint.indexOf('ghrab.ai-studio.motion.v1');
@@ -56,6 +75,14 @@ check('School build derives P5 phase from consumer', schoolBuild.includes('consu
 check('School build derives provider-key flag', schoolBuild.includes('deployment.features?.allowLocalProviderKeys'));
 check('School build derives gateway flag', schoolBuild.includes('deployment.features?.schoolGatewayReady'));
 check('School build removes example profile', schoolBuild.includes('deployment.school-server.example.json'));
+check('School build bakes fail-closed deployment', schoolBuild.includes('deployment-baked.js') && schoolBuild.includes('allowLocalProviderKeys'));
+
+const workflowFiles = fs.readdirSync(path.join(root, '.github/workflows')).filter((name) => name.endsWith('.yml'));
+for (const name of workflowFiles) {
+  const workflow = read(`.github/workflows/${name}`);
+  const mutable = [...workflow.matchAll(/uses:\s*[^\s@]+@([^\s#]+)/g)].filter((match) => !/^[0-9a-f]{40}$/.test(match[1]));
+  check(`Workflow actions are SHA-pinned: ${name}`, mutable.length === 0, mutable.map((match) => match[0]).join(', '));
+}
 check('School build validates stale SW references', /runtime-config\\\.js|runtime-config\\?\.js|runtime-config/.test(schoolBuild) && schoolBuild.includes('deployment\\.school-server'));
 
 const qualityScript = read('scripts/qa-p3-quality.mjs');

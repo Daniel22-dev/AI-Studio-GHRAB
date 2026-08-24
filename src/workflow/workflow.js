@@ -691,7 +691,13 @@ function renderWorkspace() {
       `Workspace: approximately ${workspaceKb} kB · total local Studio data: ${usage.kilobytes} kB.`,
     );
   if (!materials.length) {
-    workspaceHost.innerHTML = `<div class="empty-state">${G.t("Pracovní prostor je zatím prázdný.", "The workspace is empty.")}</div>`;
+    const empty = document.createElement("div");
+    empty.className = "empty-state";
+    empty.textContent = G.t(
+      "Pracovní prostor je zatím prázdný.",
+      "The workspace is empty.",
+    );
+    workspaceHost.replaceChildren(empty);
     return;
   }
   workspaceHost.replaceChildren(
