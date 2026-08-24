@@ -1,20 +1,20 @@
 # AI Studio GHRAB
 
-**Aktuální verze:** 0.21.32
+**Aktuální verze:** 0.21.33
 **Platforma:** GHRAB Platform 1.1.0 · etapa P5
 
-**Verze 0.21.32 přidává hlavnímu správci lokální Centrum zabezpečení pro podepsaná zneplatnění bez sdílení soukromého klíče.**
+**Verze 0.21.33 nasazuje ověřené podepsané zneplatnění starého učitelského oprávnění; nové oprávnění správce zástupce zůstává funkční.**
 
 AI Studio GHRAB je centrální brána školních digitálních a AI nástrojů. Jednotlivé aplikace zůstávají v samostatných repozitářích; Studio zajišťuje společnou navigaci, Top 4, synchronizaci verzí, bezpečnostní rámec, pilotní měření, správu podepsaných přístupů a kanonický základ technického reportéru. Materiály jsou viditelnou součástí portálu, ale v dnešním bezserverovém režimu se vlastní obsah ukládá pouze místně.
 
-## Hlavní novinky 0.21.32
+## Hlavní novinky 0.21.33
 
-- Centrum zabezpečení načte soukromý konfigurační klíč pouze do paměti prohlížeče a po podpisu, opuštění stránky nebo deseti minutách jej vymaže.
-- Připravená JTI se spojí s již nasazenými revokacemi a vznikne jediný veřejný, znovu ověřený balíček bez soukromé složky `d`.
-- Zástupce správce může zneplatnění připravit v evidenci, ale podpis a bezpečnostní balíček smí vytvořit jen hlavní správce.
-- Nová kontrola `access:validate-update` umožňuje veřejný balíček nezávisle ověřit před jeho začleněním.
-- Klíč pro podepisování uživatelských oprávnění se nemění; dříve vydaná platná oprávnění proto zůstávají funkční.
-- Konfigurační trust anchor z 0.21.31 zůstává beze změny; soukromý klíč není v repozitáři ani buildu.
+- Veřejný balíček vytvořený v Centru zabezpečení prošel 23 nezávislými kontrolami a neobsahuje soukromý klíč.
+- Nový podepsaný bundle obsahuje jedinou cílenou revokaci starého učitelského oprávnění.
+- Nové oprávnění správce zástupce má jiné JTI, a proto zůstává funkční.
+- Klíč pro podepisování uživatelských oprávnění, konfigurační ověřovací klíč i bezpečnostní politika se nemění.
+- Test vydání hlídá platný podpis, přesné JTI revokace a shodu verze bundle v obou produkčních profilech.
+- Centrum zabezpečení zavedené ve verzi 0.21.32 zůstává místním nástrojem hlavního správce; soukromý konfigurační klíč se do repozitáře ani buildu nevkládá.
 
 ## Předchozí vydání 0.20.18
 
@@ -65,7 +65,7 @@ Ochranný bootstrap je určen pro Generátor 7.1.8, Diferenciátor 1.3.8, Hodnot
 
 ## Doporučené pořadí nasazení P2
 
-1. AI Studio GHRAB 0.21.32 jako zpětně kompatibilní platformní základ.
+1. AI Studio GHRAB 0.21.33 jako zpětně kompatibilní platformní základ.
 2. Korespondenční asistent 5.9.15.
 3. Diferenciátor 1.3.8.
 4. Generátor testů 7.1.8.

@@ -2,6 +2,15 @@
 
 > Tento soubor se generuje ze `src/config/changelog.json`. Neupravujte jej ručně.
 
+## 0.21.33 — 2026-08-24
+**Podepsané zneplatnění starého přístupu kolegyně**
+
+- Veřejný aktualizační balíček z Centra zabezpečení prošel před začleněním všemi 23 kontrolami podpisu, návaznosti, politiky, klíčů, revokací a nepřítomnosti soukromého materiálu.
+- Nový podepsaný access bundle zneplatňuje právě jedno staré učitelské oprávnění; nové oprávnění správce zástupce má jiné JTI a změna se jej netýká.
+- Bezpečnostní politika, veřejný klíč oprávnění, konfigurační ověřovací klíč a hranice revokedBefore zůstávají beze změny.
+- Platnost podepsaného bundle byla obnovena na dalších 30 dní; offline režim zůstává omezen na 24 hodin od posledního úspěšného online načtení.
+- Po nasazení a online obnovení konfigurace evidence označí staré oprávnění jako centrálně zneplatněné a jeho další použití bude odmítnuto.
+
 ## 0.21.32 — 2026-08-24
 **Lokální Centrum zabezpečení pro podepsaná zneplatnění**
 

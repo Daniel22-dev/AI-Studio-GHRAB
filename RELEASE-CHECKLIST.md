@@ -1,15 +1,18 @@
-# Release checklist AI Studio GHRAB 0.21.32
+# Release checklist AI Studio GHRAB 0.21.33
 
-> Aktuální verze: **0.21.32** · etapa P5
+> Aktuální verze: **0.21.33** · etapa P5
 
 ## Veřejný balík
 
-- [x] Verze 0.21.32 je shodná v package, PWA manifestu, QA manifestu, buildu, dokumentaci a changelogu.
+- [x] Verze 0.21.33 je shodná v package, PWA manifestu, QA manifestu, buildu, dokumentaci a changelogu.
 - [x] Všechny aplikace jsou ve výchozím stavu uzamčené.
 - [x] Veřejný balík obsahuje pouze veřejný ověřovací klíč.
 - [x] Centrum zabezpečení je dostupné jen plnému správci; zástupce může v evidenci pouze připravit JTI.
 - [x] Konfigurační klíč se neukládá do webového úložiště a po podpisu, opuštění stránky nebo deseti minutách se vymaže.
 - [x] Veřejný aktualizační balíček zachovává politiku a permitový klíč, je podepsaný ES256 a neobsahuje soukromý materiál.
+- [x] Aktualizační balíček prošel 23/23 validačními kontrolami a navazuje na bundle z verze 0.21.32.
+- [x] Nasazený bundle obsahuje právě JTI starého učitelského oprávnění; `revokedBefore` zůstává prázdné a nové oprávnění správce zástupce není dotčeno.
+- [x] Samostatný regresní test ověřuje podpis, přesné JTI a shodu `sharedAccessVersion` v obou aktivních deployment profilech.
 - [x] `access:validate-update` před začleněním odmítne neplatný podpis, cizí trust anchor, rollback revokací nebo soukromý materiál.
 - [x] Klíč pro uživatelská oprávnění zůstává beze změny, takže dosud platná oprávnění nejsou rotací konfigurace zneplatněna.
 - [x] Ve zdroji ani buildu není soukromý klíč ani `.ghrab-access.json`.
@@ -20,7 +23,7 @@
 - [x] Materiály jsou v běžné navigaci jako server-ready katalog; centrální Tvorba materiálů v navigaci není. Bez serveru zůstává sdílení viditelně neaktivní.
 - [x] Pilotní metriky jsou přesně označeny jako místní.
 - [x] PWA cache se generuje automaticky z produkčního stromu a neobsahuje neplatné cesty.
-- [x] Všechny lokální JS/CSS vstupy a relativní modulové importy mají ve výsledném buildu revizi `?v=0.21.32`.
+- [x] Všechny lokální JS/CSS vstupy a relativní modulové importy mají ve výsledném buildu revizi `?v=0.21.33`.
 - [x] Serverový katalog se aktivuje pouze při `school-server` + `schoolServerConnected` + `sharedMaterialLibrary`; GitHub profil nemůže omylem publikovat materiál.
 - [x] Rychlá kontrola dat je rozbalovací pomocník pro nejisté situace, ne povinný krok před každým použitím AI.
 - [x] Semafor má deset praktických kategorií, používá nejvyšší zvolené riziko a bezpečná anonymní volba je výlučná.

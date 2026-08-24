@@ -1,6 +1,6 @@
 {
   "name": "ai-studio-ghrab",
-  "version": "0.21.32",
+  "version": "0.21.33",
   "private": true,
   "description": "Profesionální federované PWA osmi chráněných školních aplikací včetně Lesson Hubu, manuálů, řízeného přístupu a jednotné GHRAB QA brány",
   "type": "module",
@@ -53,7 +53,7 @@
     "sync:doc-versions": "node scripts/sync-doc-app-versions.mjs",
     "qa:doc-versions": "node scripts/sync-doc-app-versions.mjs --check",
     "test:audit-regressions": "node scripts/test-audit-regressions.mjs",
-    "test:security-regressions": "node scripts/test-security-regressions.mjs && node scripts/test-security-center.mjs",
+    "test:security-regressions": "node scripts/test-security-regressions.mjs && node scripts/test-security-center.mjs && node scripts/test-deployed-revocation.mjs",
     "access:check": "node scripts/check-access-bundle-freshness.mjs",
     "access:check:required": "node scripts/check-access-bundle-freshness.mjs --required",
     "access:validate-rotation": "node scripts/validate-access-rotation-pack.mjs",

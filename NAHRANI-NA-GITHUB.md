@@ -1,8 +1,8 @@
-# Nahrání AI Studio GHRAB 0.21.32
+# Nahrání AI Studio GHRAB 0.21.33
 
-> Aktuální verze: **0.21.32** · etapa P5
+> Aktuální verze: **0.21.33** · etapa P5
 
-Tato verze přidává hlavnímu správci **Centrum zabezpečení**. Připravená zneplatnění lze podepsat přímo v prohlížeči a stáhnout jako veřejný aktualizační balíček, aniž by soukromý konfigurační klíč opustil zařízení. Zástupce správce může JTI připravit v evidenci, ale nesmí vytvářet podpis ani měnit bezpečnostní konfiguraci. P5, offline-start a dosavadní oprávnění zůstávají zachovány. AI Studio se nadále nasazuje jako poslední, po všech samostatných aplikacích.
+Tato verze nasazuje veřejný balíček vytvořený v **Centru zabezpečení** a zneplatňuje jedno staré učitelské oprávnění kolegyně. Nové oprávnění správce zástupce má jiné JTI a zůstává platné. Soukromý konfigurační klíč není ve zdrojáku ani ve výsledném buildu. P5, offline-start a ostatní platná oprávnění zůstávají zachovány. AI Studio se nadále nasazuje jako poslední, po všech samostatných aplikacích.
 
 ## Povinné pořadí
 

@@ -1,7 +1,37 @@
 {
   "schema": "ai-studio-changelog-v1",
-  "current": "0.21.32",
+  "current": "0.21.33",
   "items": [
+    {
+      "version": "0.21.33",
+      "date": "2026-08-24",
+      "title": {
+        "cs": "Podepsané zneplatnění starého přístupu kolegyně",
+        "en": "Signed revocation of a colleague's old access"
+      },
+      "changes": [
+        {
+          "cs": "Veřejný aktualizační balíček z Centra zabezpečení prošel před začleněním všemi 23 kontrolami podpisu, návaznosti, politiky, klíčů, revokací a nepřítomnosti soukromého materiálu.",
+          "en": "The public update pack from the Security Centre passed all 23 signature, continuity, policy, key, revocation and private-material absence checks before integration."
+        },
+        {
+          "cs": "Nový podepsaný access bundle zneplatňuje právě jedno staré učitelské oprávnění; nové oprávnění správce zástupce má jiné JTI a změna se jej netýká.",
+          "en": "The new signed access bundle revokes exactly one old teacher permit; the new deputy administrator permit has a different JTI and is unaffected."
+        },
+        {
+          "cs": "Bezpečnostní politika, veřejný klíč oprávnění, konfigurační ověřovací klíč a hranice revokedBefore zůstávají beze změny.",
+          "en": "The security policy, permit public key, configuration verification key and revokedBefore boundary remain unchanged."
+        },
+        {
+          "cs": "Platnost podepsaného bundle byla obnovena na dalších 30 dní; offline režim zůstává omezen na 24 hodin od posledního úspěšného online načtení.",
+          "en": "The signed bundle validity was renewed for another 30 days; offline operation remains limited to 24 hours since the last successful online fetch."
+        },
+        {
+          "cs": "Po nasazení a online obnovení konfigurace evidence označí staré oprávnění jako centrálně zneplatněné a jeho další použití bude odmítnuto.",
+          "en": "After deployment and an online configuration refresh, the registry will mark the old permit as centrally revoked and any further use will be rejected."
+        }
+      ]
+    },
     {
       "version": "0.21.32",
       "date": "2026-08-24",

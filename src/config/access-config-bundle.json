@@ -1,8 +1,8 @@
 {
   "schema": "ghrab-access-config-bundle-v1",
-  "version": "access-p1-20260822195407Z-fxjS8DK9",
-  "issuedAt": "2026-08-22T19:54:07.859Z",
-  "generatedAt": "2026-08-22T19:54:07.859Z",
+  "version": "access-p1-20260824175535Z-k_wtm7Zj",
+  "issuedAt": "2026-08-24T17:55:35.651Z",
+  "generatedAt": "2026-08-24T17:55:35.651Z",
   "maxOfflineAgeHours": 24,
   "maxSignedBundleAgeDays": 30,
   "policy": {
@@ -122,9 +122,11 @@
   },
   "revocations": {
     "schema": "ghrab-access-revocation-list-v1",
-    "updatedAt": "2026-07-10T00:00:00.000Z",
+    "updatedAt": "2026-08-24T17:55:35.651Z",
     "revokedBefore": null,
-    "revokedJti": []
+    "revokedJti": [
+      "51ae2d7a-9c6f-434b-9f8a-21483b75f17c"
+    ]
   },
   "accessPublicKey": {
     "schema": "ghrab-access-public-key-v1",

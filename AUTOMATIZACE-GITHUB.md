@@ -1,6 +1,6 @@
-# Automatizace aktualizací AI Studio GHRAB 0.21.32
+# Automatizace aktualizací AI Studio GHRAB 0.21.33
 
-> Aktuální verze: **0.21.32** · etapa P5
+> Aktuální verze: **0.21.33** · etapa P5
 
 ## Pravidelná synchronizace
 
