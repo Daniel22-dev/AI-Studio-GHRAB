@@ -2,6 +2,16 @@
 
 > Tento soubor se generuje ze `src/config/changelog.json`. Neupravujte jej ručně.
 
+## 0.21.34 — 2026-08-26
+**Spolehlivá synchronizace a oprava vložených aplikací**
+
+- Produkční screenshotová regrese nyní před vyhodnocením čeká nejen na vytvoření karty snímku, ale také na skutečné načtení blob náhledu v Chromiu.
+- Kontrola nadále fail-closed ověřuje CSP img-src blob:; při skutečném zablokování náhledu skončí časovým limitem a vydání zastaví.
+- Návrat z uzamčené vložené aplikace nyní opustí celý iframe a otevře AI Studio v hlavním okně, takže nevzniknou dvě horní lišty.
+- Viewer rozpozná již vzniklé chybné vnoření Studia a přesměruje je do hlavního okna.
+- Tlačítka přístupové brány mají izolované barvy, pozadí a okraje, které nepřepíší obecné styly vložené aplikace.
+- Runtime reportéru, bezpečnostní politika, přístupové klíče i podepsaný revokační bundle zůstávají beze změny.
+
 ## 0.21.33 — 2026-08-24
 **Podepsané zneplatnění starého přístupu kolegyně**
 

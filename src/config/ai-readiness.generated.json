@@ -1,6 +1,6 @@
 {
   "schema": "ghrab-ai-readiness-report-v1",
-  "generatedAt": "2026-08-24T18:03:02.502Z",
+  "generatedAt": "2026-08-26T06:15:23.269Z",
   "activeCoreVersion": "1.0.0",
   "runtime": {
     "defaultMode": "direct-gemini",
@@ -32,7 +32,7 @@
   "applications": [
     {
       "appId": "correspondence",
-      "appVersion": "5.10.3",
+      "appVersion": "5.10.8",
       "classification": "ai-consumer",
       "status": "ready",
       "coreVersion": "1.0.0",
@@ -45,7 +45,7 @@
     },
     {
       "appId": "generator",
-      "appVersion": "7.1.13",
+      "appVersion": "7.1.16",
       "classification": "ai-consumer",
       "status": "ready",
       "coreVersion": "1.0.0",
@@ -58,7 +58,7 @@
     },
     {
       "appId": "differentiator",
-      "appVersion": "1.3.13",
+      "appVersion": "1.3.32",
       "classification": "ai-consumer",
       "status": "ready",
       "coreVersion": "1.0.0",
@@ -71,7 +71,7 @@
     },
     {
       "appId": "essay-evaluator",
-      "appVersion": "1.5.11",
+      "appVersion": "1.5.13",
       "classification": "ai-consumer",
       "status": "ready",
       "coreVersion": "1.0.0",

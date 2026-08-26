@@ -8,6 +8,16 @@ import {
   loadDeploymentConfig,
 } from "../access/deployment-config.js";
 
+// Viewer is always a top-level workspace. Older access gates could navigate
+// only their iframe back to Studio and accidentally nest another viewer.
+if (window.top !== window.self) {
+  try {
+    window.top.location.replace(window.location.href);
+  } catch {
+    // A foreign embedding context is handled by the regular origin checks.
+  }
+}
+
 const deploymentReady = loadDeploymentConfig({ appId: "ai-studio" });
 
 const language = (() => {

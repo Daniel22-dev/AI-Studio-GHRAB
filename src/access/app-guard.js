@@ -48,6 +48,11 @@ function studioHref(options) {
   return new URL(options.studioUrl || "../", location.href).href;
 }
 
+function makeTopLevelLink(link) {
+  if (window.top !== window.self) link.target = "_top";
+  return link;
+}
+
 export function startErrorReporterBestEffort(appId, options = {}) {
   if (!appId || options.errorReporter === false) return Promise.resolve(null);
   const timeoutMs = Math.max(250, Number(options.reporterTimeoutMs || 4000));
@@ -466,11 +471,11 @@ function renderGate(appId, access, options = {}) {
   } else main.append(mark, eyebrow, title, description, reason);
   const actions = document.createElement("div");
   actions.className = "ghrab-access-gate-actions";
-  const back = document.createElement("a");
+  const back = makeTopLevelLink(document.createElement("a"));
   back.href = studioHref(options);
   back.textContent = text("Otevřít AI Studio", "Open AI Studio");
   back.className = "ghrab-access-gate-primary";
-  const accessPage = document.createElement("a");
+  const accessPage = makeTopLevelLink(document.createElement("a"));
   accessPage.href = new URL("access/", studioHref(options)).href;
   accessPage.textContent = text("Aktivovat přístup", "Activate access");
   accessPage.className = "ghrab-access-gate-secondary";

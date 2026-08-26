@@ -1,7 +1,41 @@
 {
   "schema": "ai-studio-changelog-v1",
-  "current": "0.21.33",
+  "current": "0.21.34",
   "items": [
+    {
+      "version": "0.21.34",
+      "date": "2026-08-26",
+      "title": {
+        "cs": "Spolehlivá synchronizace a oprava vložených aplikací",
+        "en": "Reliable registry sync and embedded-application fixes"
+      },
+      "changes": [
+        {
+          "cs": "Produkční screenshotová regrese nyní před vyhodnocením čeká nejen na vytvoření karty snímku, ale také na skutečné načtení blob náhledu v Chromiu.",
+          "en": "The production screenshot regression now waits not only for the screenshot card but also for the blob preview to finish loading in Chromium before evaluating it."
+        },
+        {
+          "cs": "Kontrola nadále fail-closed ověřuje CSP img-src blob:; při skutečném zablokování náhledu skončí časovým limitem a vydání zastaví.",
+          "en": "The check still validates CSP img-src blob: in a fail-closed manner; a genuinely blocked preview times out and stops the release."
+        },
+        {
+          "cs": "Návrat z uzamčené vložené aplikace nyní opustí celý iframe a otevře AI Studio v hlavním okně, takže nevzniknou dvě horní lišty.",
+          "en": "Returning from a locked embedded application now exits the iframe and opens AI Studio in the top-level window, preventing duplicate top bars."
+        },
+        {
+          "cs": "Viewer rozpozná již vzniklé chybné vnoření Studia a přesměruje je do hlavního okna.",
+          "en": "The viewer detects an already nested Studio instance and redirects it to the top-level window."
+        },
+        {
+          "cs": "Tlačítka přístupové brány mají izolované barvy, pozadí a okraje, které nepřepíší obecné styly vložené aplikace.",
+          "en": "Access-gate buttons now use isolated colours, backgrounds and borders that generic embedded-application styles cannot override."
+        },
+        {
+          "cs": "Runtime reportéru, bezpečnostní politika, přístupové klíče i podepsaný revokační bundle zůstávají beze změny.",
+          "en": "The reporter runtime, security policy, access keys and signed revocation bundle remain unchanged."
+        }
+      ]
+    },
     {
       "version": "0.21.33",
       "date": "2026-08-24",

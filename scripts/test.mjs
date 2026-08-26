@@ -994,6 +994,10 @@ const appGuardText = await readFile(
   path.join(src, "access/app-guard.js"),
   "utf8",
 );
+const accessGateCssText = await readFile(
+  path.join(src, "access/access-gate.css"),
+  "utf8",
+);
 const accessControlText = await readFile(
   path.join(src, "access/access-control.js"),
   "utf8",
@@ -1016,6 +1020,13 @@ if (
   )
 )
   fail("app-guard nepřevádí relativní adresu Studia na úplnou URL.");
+if (!appGuardText.includes('link.target = "_top"'))
+  fail("Přístupová brána neotevírá AI Studio z iframe v hlavním okně.");
+if (
+  !accessGateCssText.includes("appearance: none !important") ||
+  !accessGateCssText.includes("background: rgba(3, 14, 27, 0.72) !important")
+)
+  fail("Ovládací prvky přístupové brány nejsou chráněny před styly vložené aplikace.");
 if (
   !appGuardText.includes("ACTIVE_IDLE_MS = 5 * 60 * 1000") ||
   !appGuardText.includes("document.visibilityState") ||
@@ -1248,6 +1259,7 @@ if (
   !embeddedViewerScript.includes("appUrl.origin !== location.origin") ||
   !embeddedViewerScript.includes("applyDeploymentToAppRegistry") ||
   !embeddedViewerScript.includes("loadDeploymentConfig") ||
+  !embeddedViewerScript.includes("window.top.location.replace(window.location.href)") ||
   !mainAppText.includes("applyDeploymentToAppRegistry") ||
   !studioWorkspaceCode.includes("return applyDeploymentToAppRegistry(deployment, registry)") ||
   !deploymentConfigText.includes("export function applyDeploymentToAppRegistry") ||

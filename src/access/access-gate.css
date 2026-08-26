@@ -86,12 +86,15 @@ html[data-ghrab-access="checking"] body {
   background: transparent;
 }
 .ghrab-access-gate-primary {
-  background: linear-gradient(135deg, #50e8ff, #8db7ff);
-  color: #02111f;
+  border: 1px solid transparent !important;
+  background: linear-gradient(135deg, #50e8ff, #8db7ff) !important;
+  color: #02111f !important;
 }
 .ghrab-access-gate-secondary {
-  border: 1px solid rgba(80, 232, 255, 0.28);
-  color: #edf9ff;
+  appearance: none !important;
+  border: 1px solid rgba(80, 232, 255, 0.28) !important;
+  background: rgba(3, 14, 27, 0.72) !important;
+  color: #edf9ff !important;
 }
 @media (max-width: 600px) {
   .ghrab-access-gate {
