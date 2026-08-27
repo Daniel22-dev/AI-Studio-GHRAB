@@ -1,6 +1,0 @@
-import { readFile } from "node:fs/promises";
-import path from "node:path";
-import { fileURLToPath } from "node:url";
-const root=path.resolve(path.dirname(fileURLToPath(import.meta.url)),".."),read=n=>readFile(path.join(root,"src/config",n),"utf8").then(JSON.parse);
-const [registry,consumers]=await Promise.all([read("ai-core.json"),read("ai-core-consumers.json")]);const dry=process.argv.includes("--dry-run")||!process.env.GHRAB_CORE_SYNC_TOKEN;const manifestUrl=new URL(registry.activeRelease.manifestUrl,registry.publicBaseUrl).href;
-for(const consumer of consumers.consumers.filter(x=>x.enabled)){const payload={event_type:consumers.eventType,client_payload:{coreVersion:registry.activeRelease.coreVersion,contractVersion:registry.activeRelease.contractVersion,buildId:registry.activeRelease.buildId,manifestUrl}};if(dry){console.log(`[dry-run] ${consumer.repository}: ${JSON.stringify(payload)}`);continue;}const r=await fetch(`https://api.github.com/repos/${consumer.repository}/dispatches`,{method:"POST",headers:{Authorization:`Bearer ${process.env.GHRAB_CORE_SYNC_TOKEN}`,Accept:"application/vnd.github+json","X-GitHub-Api-Version":"2022-11-28","Content-Type":"application/json"},body:JSON.stringify(payload)});if(!r.ok)throw new Error(`${consumer.repository}: HTTP ${r.status}`);console.log(`${consumer.repository}: dispatch odeslán`);}
