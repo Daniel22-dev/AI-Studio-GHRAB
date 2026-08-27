@@ -1,0 +1,618 @@
+{
+  "schema": "ghrab-p1-ai-conformance-evidence-v1",
+  "createdAt": "2026-08-04T13:27:37.027Z",
+  "coreVersion": "1.0.0",
+  "contractVersion": "1",
+  "consumers": 6,
+  "totalOperations": 31,
+  "passed": 102,
+  "failed": 0,
+  "results": [
+    {
+      "appId": "correspondence",
+      "appVersion": "5.9.14",
+      "operations": 8,
+      "coreSha256": "81acb93e1f17646ab2b58b3744fce38a6ed5c779e8d5e9cba2ae797816ecec44",
+      "suiteSha256": "7707811e4d2e3975a4f90b6d672321ef185e77f71649fdb755f6467da5d4c3b7",
+      "conformance": {
+        "schema": "ghrab-ai-conformance-result-v1",
+        "suiteVersion": "1.0.0",
+        "coreVersion": "1.0.0",
+        "passed": 17,
+        "failed": 0,
+        "results": [
+          {
+            "name": "Core metadata is frozen and versioned",
+            "ok": true,
+            "ms": 0
+          },
+          {
+            "name": "Runtime separates defaultMode and allowedModes",
+            "ok": true,
+            "ms": 0
+          },
+          {
+            "name": "Unregistered operation is rejected",
+            "ok": true,
+            "ms": 0
+          },
+          {
+            "name": "Unsupported schema is rejected locally",
+            "ok": true,
+            "ms": 0
+          },
+          {
+            "name": "Direct text request uses registered operation and schema",
+            "ok": true,
+            "ms": 2
+          },
+          {
+            "name": "Multimodal request preserves supported parts",
+            "ok": true,
+            "ms": 0
+          },
+          {
+            "name": "Gateway payload is neutral and contains no Gemini credentials",
+            "ok": true,
+            "ms": 2
+          },
+          {
+            "name": "Same logical request gets a new attemptId",
+            "ok": true,
+            "ms": 1
+          },
+          {
+            "name": "Gateway usage metadata is authoritative",
+            "ok": true,
+            "ms": 0
+          },
+          {
+            "name": "Server message is never used as user-facing text",
+            "ok": true,
+            "ms": 0
+          },
+          {
+            "name": "budgetResetAt is retained",
+            "ok": true,
+            "ms": 23
+          },
+          {
+            "name": "Unknown response fields are ignored",
+            "ok": true,
+            "ms": 0
+          },
+          {
+            "name": "Local output schema validation rejects invalid result",
+            "ok": true,
+            "ms": 1
+          },
+          {
+            "name": "Streaming fixture preserves event sequence",
+            "ok": true,
+            "ms": 0
+          },
+          {
+            "name": "Health handshake accepts additive fields",
+            "ok": true,
+            "ms": 0
+          },
+          {
+            "name": "Direct mode cannot run registered streaming operation",
+            "ok": true,
+            "ms": 0
+          },
+          {
+            "name": "Mode outside allowedModes is rejected",
+            "ok": true,
+            "ms": 1
+          }
+        ]
+      }
+    },
+    {
+      "appId": "differentiator",
+      "appVersion": "1.3.7",
+      "operations": 6,
+      "coreSha256": "81acb93e1f17646ab2b58b3744fce38a6ed5c779e8d5e9cba2ae797816ecec44",
+      "suiteSha256": "7707811e4d2e3975a4f90b6d672321ef185e77f71649fdb755f6467da5d4c3b7",
+      "conformance": {
+        "schema": "ghrab-ai-conformance-result-v1",
+        "suiteVersion": "1.0.0",
+        "coreVersion": "1.0.0",
+        "passed": 17,
+        "failed": 0,
+        "results": [
+          {
+            "name": "Core metadata is frozen and versioned",
+            "ok": true,
+            "ms": 0
+          },
+          {
+            "name": "Runtime separates defaultMode and allowedModes",
+            "ok": true,
+            "ms": 0
+          },
+          {
+            "name": "Unregistered operation is rejected",
+            "ok": true,
+            "ms": 0
+          },
+          {
+            "name": "Unsupported schema is rejected locally",
+            "ok": true,
+            "ms": 0
+          },
+          {
+            "name": "Direct text request uses registered operation and schema",
+            "ok": true,
+            "ms": 1
+          },
+          {
+            "name": "Multimodal request preserves supported parts",
+            "ok": true,
+            "ms": 0
+          },
+          {
+            "name": "Gateway payload is neutral and contains no Gemini credentials",
+            "ok": true,
+            "ms": 1
+          },
+          {
+            "name": "Same logical request gets a new attemptId",
+            "ok": true,
+            "ms": 0
+          },
+          {
+            "name": "Gateway usage metadata is authoritative",
+            "ok": true,
+            "ms": 1
+          },
+          {
+            "name": "Server message is never used as user-facing text",
+            "ok": true,
+            "ms": 0
+          },
+          {
+            "name": "budgetResetAt is retained",
+            "ok": true,
+            "ms": 0
+          },
+          {
+            "name": "Unknown response fields are ignored",
+            "ok": true,
+            "ms": 0
+          },
+          {
+            "name": "Local output schema validation rejects invalid result",
+            "ok": true,
+            "ms": 1
+          },
+          {
+            "name": "Streaming fixture preserves event sequence",
+            "ok": true,
+            "ms": 0
+          },
+          {
+            "name": "Health handshake accepts additive fields",
+            "ok": true,
+            "ms": 0
+          },
+          {
+            "name": "Direct mode cannot run registered streaming operation",
+            "ok": true,
+            "ms": 0
+          },
+          {
+            "name": "Mode outside allowedModes is rejected",
+            "ok": true,
+            "ms": 1
+          }
+        ]
+      }
+    },
+    {
+      "appId": "generator",
+      "appVersion": "7.1.7",
+      "operations": 10,
+      "coreSha256": "81acb93e1f17646ab2b58b3744fce38a6ed5c779e8d5e9cba2ae797816ecec44",
+      "suiteSha256": "7707811e4d2e3975a4f90b6d672321ef185e77f71649fdb755f6467da5d4c3b7",
+      "conformance": {
+        "schema": "ghrab-ai-conformance-result-v1",
+        "suiteVersion": "1.0.0",
+        "coreVersion": "1.0.0",
+        "passed": 17,
+        "failed": 0,
+        "results": [
+          {
+            "name": "Core metadata is frozen and versioned",
+            "ok": true,
+            "ms": 0
+          },
+          {
+            "name": "Runtime separates defaultMode and allowedModes",
+            "ok": true,
+            "ms": 0
+          },
+          {
+            "name": "Unregistered operation is rejected",
+            "ok": true,
+            "ms": 1
+          },
+          {
+            "name": "Unsupported schema is rejected locally",
+            "ok": true,
+            "ms": 0
+          },
+          {
+            "name": "Direct text request uses registered operation and schema",
+            "ok": true,
+            "ms": 1
+          },
+          {
+            "name": "Multimodal request preserves supported parts",
+            "ok": true,
+            "ms": 0
+          },
+          {
+            "name": "Gateway payload is neutral and contains no Gemini credentials",
+            "ok": true,
+            "ms": 1
+          },
+          {
+            "name": "Same logical request gets a new attemptId",
+            "ok": true,
+            "ms": 0
+          },
+          {
+            "name": "Gateway usage metadata is authoritative",
+            "ok": true,
+            "ms": 0
+          },
+          {
+            "name": "Server message is never used as user-facing text",
+            "ok": true,
+            "ms": 1
+          },
+          {
+            "name": "budgetResetAt is retained",
+            "ok": true,
+            "ms": 0
+          },
+          {
+            "name": "Unknown response fields are ignored",
+            "ok": true,
+            "ms": 0
+          },
+          {
+            "name": "Local output schema validation rejects invalid result",
+            "ok": true,
+            "ms": 0
+          },
+          {
+            "name": "Streaming fixture preserves event sequence",
+            "ok": true,
+            "ms": 1
+          },
+          {
+            "name": "Health handshake accepts additive fields",
+            "ok": true,
+            "ms": 0
+          },
+          {
+            "name": "Direct mode cannot run registered streaming operation",
+            "ok": true,
+            "ms": 0
+          },
+          {
+            "name": "Mode outside allowedModes is rejected",
+            "ok": true,
+            "ms": 0
+          }
+        ]
+      }
+    },
+    {
+      "appId": "essay-evaluator",
+      "appVersion": "1.5.5",
+      "operations": 4,
+      "coreSha256": "81acb93e1f17646ab2b58b3744fce38a6ed5c779e8d5e9cba2ae797816ecec44",
+      "suiteSha256": "7707811e4d2e3975a4f90b6d672321ef185e77f71649fdb755f6467da5d4c3b7",
+      "conformance": {
+        "schema": "ghrab-ai-conformance-result-v1",
+        "suiteVersion": "1.0.0",
+        "coreVersion": "1.0.0",
+        "passed": 17,
+        "failed": 0,
+        "results": [
+          {
+            "name": "Core metadata is frozen and versioned",
+            "ok": true,
+            "ms": 0
+          },
+          {
+            "name": "Runtime separates defaultMode and allowedModes",
+            "ok": true,
+            "ms": 0
+          },
+          {
+            "name": "Unregistered operation is rejected",
+            "ok": true,
+            "ms": 1
+          },
+          {
+            "name": "Unsupported schema is rejected locally",
+            "ok": true,
+            "ms": 0
+          },
+          {
+            "name": "Direct text request uses registered operation and schema",
+            "ok": true,
+            "ms": 1
+          },
+          {
+            "name": "Multimodal request preserves supported parts",
+            "ok": true,
+            "ms": 0
+          },
+          {
+            "name": "Gateway payload is neutral and contains no Gemini credentials",
+            "ok": true,
+            "ms": 0
+          },
+          {
+            "name": "Same logical request gets a new attemptId",
+            "ok": true,
+            "ms": 1
+          },
+          {
+            "name": "Gateway usage metadata is authoritative",
+            "ok": true,
+            "ms": 2
+          },
+          {
+            "name": "Server message is never used as user-facing text",
+            "ok": true,
+            "ms": 0
+          },
+          {
+            "name": "budgetResetAt is retained",
+            "ok": true,
+            "ms": 0
+          },
+          {
+            "name": "Unknown response fields are ignored",
+            "ok": true,
+            "ms": 0
+          },
+          {
+            "name": "Local output schema validation rejects invalid result",
+            "ok": true,
+            "ms": 1
+          },
+          {
+            "name": "Streaming fixture preserves event sequence",
+            "ok": true,
+            "ms": 0
+          },
+          {
+            "name": "Health handshake accepts additive fields",
+            "ok": true,
+            "ms": 0
+          },
+          {
+            "name": "Direct mode cannot run registered streaming operation",
+            "ok": true,
+            "ms": 0
+          },
+          {
+            "name": "Mode outside allowedModes is rejected",
+            "ok": true,
+            "ms": 0
+          }
+        ]
+      }
+    },
+    {
+      "appId": "activity-builder",
+      "appVersion": "0.5.4",
+      "operations": 1,
+      "coreSha256": "81acb93e1f17646ab2b58b3744fce38a6ed5c779e8d5e9cba2ae797816ecec44",
+      "suiteSha256": "7707811e4d2e3975a4f90b6d672321ef185e77f71649fdb755f6467da5d4c3b7",
+      "conformance": {
+        "schema": "ghrab-ai-conformance-result-v1",
+        "suiteVersion": "1.0.0",
+        "coreVersion": "1.0.0",
+        "passed": 17,
+        "failed": 0,
+        "results": [
+          {
+            "name": "Core metadata is frozen and versioned",
+            "ok": true,
+            "ms": 0
+          },
+          {
+            "name": "Runtime separates defaultMode and allowedModes",
+            "ok": true,
+            "ms": 1
+          },
+          {
+            "name": "Unregistered operation is rejected",
+            "ok": true,
+            "ms": 0
+          },
+          {
+            "name": "Unsupported schema is rejected locally",
+            "ok": true,
+            "ms": 0
+          },
+          {
+            "name": "Direct text request uses registered operation and schema",
+            "ok": true,
+            "ms": 1
+          },
+          {
+            "name": "Multimodal request preserves supported parts",
+            "ok": true,
+            "ms": 0
+          },
+          {
+            "name": "Gateway payload is neutral and contains no Gemini credentials",
+            "ok": true,
+            "ms": 1
+          },
+          {
+            "name": "Same logical request gets a new attemptId",
+            "ok": true,
+            "ms": 0
+          },
+          {
+            "name": "Gateway usage metadata is authoritative",
+            "ok": true,
+            "ms": 1
+          },
+          {
+            "name": "Server message is never used as user-facing text",
+            "ok": true,
+            "ms": 0
+          },
+          {
+            "name": "budgetResetAt is retained",
+            "ok": true,
+            "ms": 0
+          },
+          {
+            "name": "Unknown response fields are ignored",
+            "ok": true,
+            "ms": 0
+          },
+          {
+            "name": "Local output schema validation rejects invalid result",
+            "ok": true,
+            "ms": 1
+          },
+          {
+            "name": "Streaming fixture preserves event sequence",
+            "ok": true,
+            "ms": 0
+          },
+          {
+            "name": "Health handshake accepts additive fields",
+            "ok": true,
+            "ms": 0
+          },
+          {
+            "name": "Direct mode cannot run registered streaming operation",
+            "ok": true,
+            "ms": 0
+          },
+          {
+            "name": "Mode outside allowedModes is rejected",
+            "ok": true,
+            "ms": 1
+          }
+        ]
+      }
+    },
+    {
+      "appId": "ludus",
+      "appVersion": "1.16.6",
+      "operations": 2,
+      "coreSha256": "81acb93e1f17646ab2b58b3744fce38a6ed5c779e8d5e9cba2ae797816ecec44",
+      "suiteSha256": "7707811e4d2e3975a4f90b6d672321ef185e77f71649fdb755f6467da5d4c3b7",
+      "conformance": {
+        "schema": "ghrab-ai-conformance-result-v1",
+        "suiteVersion": "1.0.0",
+        "coreVersion": "1.0.0",
+        "passed": 17,
+        "failed": 0,
+        "results": [
+          {
+            "name": "Core metadata is frozen and versioned",
+            "ok": true,
+            "ms": 0
+          },
+          {
+            "name": "Runtime separates defaultMode and allowedModes",
+            "ok": true,
+            "ms": 0
+          },
+          {
+            "name": "Unregistered operation is rejected",
+            "ok": true,
+            "ms": 1
+          },
+          {
+            "name": "Unsupported schema is rejected locally",
+            "ok": true,
+            "ms": 0
+          },
+          {
+            "name": "Direct text request uses registered operation and schema",
+            "ok": true,
+            "ms": 1
+          },
+          {
+            "name": "Multimodal request preserves supported parts",
+            "ok": true,
+            "ms": 0
+          },
+          {
+            "name": "Gateway payload is neutral and contains no Gemini credentials",
+            "ok": true,
+            "ms": 1
+          },
+          {
+            "name": "Same logical request gets a new attemptId",
+            "ok": true,
+            "ms": 0
+          },
+          {
+            "name": "Gateway usage metadata is authoritative",
+            "ok": true,
+            "ms": 0
+          },
+          {
+            "name": "Server message is never used as user-facing text",
+            "ok": true,
+            "ms": 1
+          },
+          {
+            "name": "budgetResetAt is retained",
+            "ok": true,
+            "ms": 0
+          },
+          {
+            "name": "Unknown response fields are ignored",
+            "ok": true,
+            "ms": 0
+          },
+          {
+            "name": "Local output schema validation rejects invalid result",
+            "ok": true,
+            "ms": 0
+          },
+          {
+            "name": "Streaming fixture preserves event sequence",
+            "ok": true,
+            "ms": 1
+          },
+          {
+            "name": "Health handshake accepts additive fields",
+            "ok": true,
+            "ms": 0
+          },
+          {
+            "name": "Direct mode cannot run registered streaming operation",
+            "ok": true,
+            "ms": 0
+          },
+          {
+            "name": "Mode outside allowedModes is rejected",
+            "ok": true,
+            "ms": 0
+          }
+        ]
+      }
+    }
+  ]
+}

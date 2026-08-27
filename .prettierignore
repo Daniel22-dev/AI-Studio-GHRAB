@@ -1,0 +1,3 @@
+# Immutable GHRAB AI Core releases are byte-for-byte artifacts.
+# Their integrity is verified by SHA-256; formatting them would invalidate the release.
+src/ai-core/releases/**
