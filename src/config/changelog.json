@@ -1,7 +1,29 @@
 {
   "schema": "ai-studio-changelog-v1",
-  "current": "0.21.34",
+  "current": "0.21.35",
   "items": [
+    {
+      "version": "0.21.35",
+      "date": "2026-08-28",
+      "title": {
+        "cs": "Průřezové zpevnění registrů ekosystému",
+        "en": "Cross-ecosystem registry hardening"
+      },
+      "changes": [
+        {
+          "cs": "Platformní registr se nově generuje z aktuálního registru aplikací místo ručně udržovaného snapshotu.",
+          "en": "The platform registry is now generated from the current application registry instead of a manually maintained snapshot."
+        },
+        {
+          "cs": "Nový blokující ecosystem gate porovnává verze, platformní kontrakty, cache, storage namespace, readiness a sharedAccessVersion napříč celým Studiem.",
+          "en": "A new blocking ecosystem gate compares versions, platform contracts, caches, storage namespaces, readiness and sharedAccessVersion across the whole Studio."
+        },
+        {
+          "cs": "Fallback snapshot byl dorovnán na aktuální GitHub verze; produkční deploy jej před buildem nadále živě ověřuje a synchronizuje.",
+          "en": "The fallback snapshot was aligned to current GitHub versions; production deployment still verifies and synchronizes it live before build."
+        }
+      ]
+    },
     {
       "version": "0.21.34",
       "date": "2026-08-26",

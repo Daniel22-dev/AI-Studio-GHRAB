@@ -44,7 +44,7 @@
     },
     {
       "appId": "activity-builder",
-      "repository": "daniel22-dev/Sestavovac-aktivit",
+      "repository": "daniel22-dev/ACTIVA",
       "enabled": true,
       "applicable": true,
       "syncWorkflow": ".github/workflows/sync-ghrab-ai-core.yml",

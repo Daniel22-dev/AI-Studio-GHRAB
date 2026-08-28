@@ -1,10 +1,10 @@
-# Release checklist AI Studio GHRAB 0.21.34
+# Release checklist AI Studio GHRAB 0.21.35
 
-> Aktuální verze: **0.21.34** · etapa P5
+> Aktuální verze: **0.21.35** · etapa P5
 
 ## Veřejný balík
 
-- [x] Verze 0.21.34 je shodná v package, PWA manifestu, QA manifestu, buildu, dokumentaci a changelogu.
+- [x] Verze 0.21.35 je shodná v package, PWA manifestu, QA manifestu, buildu, dokumentaci a changelogu.
 - [x] Všechny aplikace jsou ve výchozím stavu uzamčené.
 - [x] Veřejný balík obsahuje pouze veřejný ověřovací klíč.
 - [x] Centrum zabezpečení je dostupné jen plnému správci; zástupce může v evidenci pouze připravit JTI.
@@ -23,7 +23,7 @@
 - [x] Materiály jsou v běžné navigaci jako server-ready katalog; centrální Tvorba materiálů v navigaci není. Bez serveru zůstává sdílení viditelně neaktivní.
 - [x] Pilotní metriky jsou přesně označeny jako místní.
 - [x] PWA cache se generuje automaticky z produkčního stromu a neobsahuje neplatné cesty.
-- [x] Všechny lokální JS/CSS vstupy a relativní modulové importy mají ve výsledném buildu revizi `?v=0.21.34`.
+- [x] Všechny lokální JS/CSS vstupy a relativní modulové importy mají ve výsledném buildu revizi `?v=0.21.35`.
 - [x] Odkazy přístupové brány při vložení do iframe opustí rámec a otevřou AI Studio v hlavním okně.
 - [x] Viewer obsahuje pojistku proti vnořenému AI Studiu a styly brány odolávají obecnému CSS vložených aplikací.
 - [x] Serverový katalog se aktivuje pouze při `school-server` + `schoolServerConnected` + `sharedMaterialLibrary`; GitHub profil nemůže omylem publikovat materiál.

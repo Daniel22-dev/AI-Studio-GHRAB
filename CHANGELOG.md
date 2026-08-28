@@ -2,6 +2,13 @@
 
 > Tento soubor se generuje ze `src/config/changelog.json`. Neupravujte jej ručně.
 
+## 0.21.35 — 2026-08-28
+**Průřezové zpevnění registrů ekosystému**
+
+- Platformní registr se nově generuje z aktuálního registru aplikací místo ručně udržovaného snapshotu.
+- Nový blokující ecosystem gate porovnává verze, platformní kontrakty, cache, storage namespace, readiness a sharedAccessVersion napříč celým Studiem.
+- Fallback snapshot byl dorovnán na aktuální GitHub verze; produkční deploy jej před buildem nadále živě ověřuje a synchronizuje.
+
 ## 0.21.34 — 2026-08-26
 **Spolehlivá synchronizace a oprava vložených aplikací**
 

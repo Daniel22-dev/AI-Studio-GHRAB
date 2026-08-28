@@ -1,26 +1,19 @@
 # AI Studio GHRAB
 
-**Aktuální verze:** 0.21.34
+**Aktuální verze:** 0.21.35
 **Platforma:** GHRAB Platform 1.1.0 · etapa P5
 
-**Verze 0.21.34 opravuje falešný pád screenshotové QA a současně řeší nechtěné vnoření AI Studia i přepis stylů přístupové brány; bezpečnostní politika, revokace a vydaná oprávnění zůstávají beze změny.**
+**Verze 0.21.35 zpevňuje průřezovou konzistenci celého ekosystému: platformní registr a AI readiness jsou odvozeny od stejného synchronizovaného registru aplikací a nový ecosystem gate zastaví release při driftu verzí či kontraktů. Bezpečnostní politika, revokace a vydaná oprávnění zůstávají beze změny.**
 
 AI Studio GHRAB je centrální brána školních digitálních a AI nástrojů. Jednotlivé aplikace zůstávají v samostatných repozitářích; Studio zajišťuje společnou navigaci, Top 4, synchronizaci verzí, bezpečnostní rámec, pilotní měření, správu podepsaných přístupů a kanonický základ technického reportéru. Materiály jsou viditelnou součástí portálu, ale v dnešním bezserverovém režimu se vlastní obsah ukládá pouze místně.
 
-## Hlavní novinky 0.21.34
+## Hlavní novinky 0.21.35
 
-- Screenshotový regresní test čeká na skutečné načtení blob náhledu, ne pouze na vytvoření jeho HTML karty.
-- Skutečné porušení CSP zůstává blokující chybou; oprava nemění produkční runtime ani bezpečnostní pravidla.
-- Návrat z uzamčené vložené aplikace míří do hlavního okna, takže se AI Studio již neotevře samo v sobě.
-- Viewer umí opustit i již vzniklé vnoření a tlačítka přístupové brány jsou chráněna před globálními styly vložené aplikace.
-- Podepsané zneplatnění starého učitelského oprávnění z verze 0.21.33 zůstává aktivní a nové oprávnění správce zástupce zůstává funkční.
-
-- Veřejný balíček vytvořený v Centru zabezpečení prošel 23 nezávislými kontrolami a neobsahuje soukromý klíč.
-- Nový podepsaný bundle obsahuje jedinou cílenou revokaci starého učitelského oprávnění.
-- Nové oprávnění správce zástupce má jiné JTI, a proto zůstává funkční.
-- Klíč pro podepisování uživatelských oprávnění, konfigurační ověřovací klíč i bezpečnostní politika se nemění.
-- Test vydání hlídá platný podpis, přesné JTI revokace a shodu verze bundle v obou produkčních profilech.
-- Centrum zabezpečení zavedené ve verzi 0.21.32 zůstává místním nástrojem hlavního správce; soukromý konfigurační klíč se do repozitáře ani buildu nevkládá.
+- `platform-consumers.json` se nově deterministicky generuje z aktuálního `apps.generated.json` a vlastního platformního consumeru AI Studia.
+- Nový `qa:ecosystem` blokuje release při rozporu verzí, platformních kontraktů, cache, storage namespace, readiness nebo access bundle.
+- GitHub deploy nadále před buildem živě ověřuje manifesty jednotlivých aplikací; odvozené registry pak vznikají z téhož synchronizovaného vstupu.
+- Screenshotová regrese a opravy vložených aplikací z 0.21.34 zůstávají zachovány.
+- Bezpečnostní politika, podpisové klíče, revokace a role se nemění.
 
 ## Předchozí vydání 0.20.18
 
@@ -39,7 +32,7 @@ AI Studio GHRAB je centrální brána školních digitálních a AI nástrojů. 
 - Všechny aplikace používají jeden kanonický školní logotyp bez inline base64 kopií a jednotnou autorskou patičku.
 - Aplikační data mají namespace `ghrab.<appId>.*`; historické klíče se migrují vratně a před změnou vzniká úplná záloha.
 - Studio Bridge v2 zachovává kompatibilitu se starším handoffem v1 a strukturované exporty používají artifact envelope v1 se SHA-256.
-- Registr Studia je synchronizován s verzemi KS 5.10.8, SORTIO 1.0.12, Lesson Hub 1.2.9, Diferenciátor 1.3.32, ACTIVA 0.5.10, Hodnotitel 1.5.13, LUDUS 1.16.13 a Generátor 7.1.16.
+- Registr Studia je synchronizován s verzemi KS 5.10.9, SORTIO 1.0.13, Lesson Hub 1.2.12, Diferenciátor 1.3.36, ACTIVA 0.5.14, Hodnotitel 1.5.13, LUDUS 1.16.16 a Generátor 7.1.17.
 
 ## Serverová vrstva z P1
 
@@ -71,7 +64,7 @@ Ochranný bootstrap je určen pro Generátor 7.1.8, Diferenciátor 1.3.8, Hodnot
 
 ## Doporučené pořadí nasazení P2
 
-1. AI Studio GHRAB 0.21.34 jako zpětně kompatibilní platformní základ.
+1. AI Studio GHRAB 0.21.35 jako zpětně kompatibilní platformní základ.
 2. Korespondenční asistent 5.9.15.
 3. Diferenciátor 1.3.8.
 4. Generátor testů 7.1.8.
