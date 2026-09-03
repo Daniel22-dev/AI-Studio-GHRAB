@@ -85,6 +85,15 @@ for (const name of workflowFiles) {
 }
 check('School build validates stale SW references', /runtime-config\\\.js|runtime-config\\?\.js|runtime-config/.test(schoolBuild) && schoolBuild.includes('deployment\\.school-server'));
 
+const offlineStartBrowser = read('scripts/test-offline-start-browser.mjs');
+check(
+  'Offline browser card count follows generated registry',
+  offlineStartBrowser.includes("config', 'apps.generated.json") &&
+    offlineStartBrowser.includes('const expectedCards = registryApps.length') &&
+    offlineStartBrowser.includes('result.onlineCards === expectedCards') &&
+    offlineStartBrowser.includes('result.offlineCards === expectedCards'),
+);
+
 const qualityScript = read('scripts/qa-p3-quality.mjs');
 check('P3 quality report exposes release status', /status:\s*failedChecks\.length\s*\?\s*'failed'\s*:\s*'passed'/.test(qualityScript));
 

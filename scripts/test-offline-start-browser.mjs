@@ -8,7 +8,12 @@ import { chromium } from 'playwright';
 const root = path.resolve('.');
 const dist = path.join(root, 'dist');
 const reportPath = path.join(dist, 'qa-p3-browser-report.json');
+const registryPath = path.join(dist, 'config', 'apps.generated.json');
 if (!fs.existsSync(path.join(dist, 'index.html'))) throw new Error('Offline browser regression vyžaduje hotový dist/.');
+if (!fs.existsSync(registryPath)) throw new Error('Offline browser regression vyžaduje dist/config/apps.generated.json.');
+const registryApps = JSON.parse(await fsp.readFile(registryPath, 'utf8'));
+if (!Array.isArray(registryApps) || registryApps.length === 0) throw new Error('Offline browser regression: registr aplikací je prázdný nebo neplatný.');
+const expectedCards = registryApps.length;
 
 const mime = (file) => file.endsWith('.html') ? 'text/html; charset=utf-8'
   : file.endsWith('.js') ? 'text/javascript; charset=utf-8'
@@ -43,7 +48,7 @@ const port = server.address().port;
 const baseUrl = `http://127.0.0.1:${port}/`;
 let browser;
 let context;
-let result = { passed: false, onlineCards: 0, offlineCards: 0, controlled: false, errors: [] };
+let result = { passed: false, expectedCards, onlineCards: 0, offlineCards: 0, controlled: false, errors: [] };
 try {
   browser = await chromium.launch({ headless: true, args: ['--no-sandbox', '--disable-dev-shm-usage', '--disable-gpu'] });
   context = await browser.newContext({ serviceWorkers: 'allow' });
@@ -68,7 +73,7 @@ try {
   await page.reload({ waitUntil: 'domcontentloaded', timeout: 10000 });
   await page.waitForSelector('.portal-app-card', { timeout: 10000 });
   result.offlineCards = await page.locator('.portal-app-card').count();
-  result.passed = result.onlineCards === 8 && result.offlineCards === 8 && result.errors.length === 0;
+  result.passed = result.onlineCards === expectedCards && result.offlineCards === expectedCards && result.errors.length === 0;
   if (!result.passed) throw new Error(`Offline start nesplnil kontrakt: ${JSON.stringify(result)}`);
 } catch (error) {
   result.error = error?.stack || String(error);
