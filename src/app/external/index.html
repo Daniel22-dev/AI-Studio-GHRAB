@@ -1,0 +1,29 @@
+<!doctype html>
+<html lang="cs">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width,initial-scale=1" />
+    <meta name="robots" content="noindex,nofollow" />
+    <title>AI Studio GHRAB · bezpečné spuštění</title>
+    <style>
+      :root { color-scheme: dark; font-family: system-ui,-apple-system,BlinkMacSystemFont,"Segoe UI",sans-serif; background:#030915; color:#eef7ff; }
+      body { min-height:100vh; margin:0; display:grid; place-items:center; background:radial-gradient(circle at 50% 40%,#0d2746 0,#07162b 38%,#030915 72%); }
+      main { width:min(620px,calc(100vw - 40px)); text-align:center; padding:40px 28px; }
+      .mark { width:54px; height:54px; margin:0 auto 18px; border-radius:50%; border:2px solid #50e8ff; box-shadow:0 0 28px rgba(80,232,255,.35); }
+      h1 { font-size:clamp(1.35rem,3vw,2rem); margin:.2rem 0 .7rem; }
+      p { color:#a9bdd3; line-height:1.55; margin:.4rem 0; }
+      .error { color:#ffd7d7; }
+      a { color:#8fefff; }
+    </style>
+  </head>
+  <body>
+    <main>
+      <div class="mark" aria-hidden="true"></div>
+      <h1 id="title">Ověřuji bezpečné spuštění aplikace…</h1>
+      <p id="copy">AI Studio kontroluje vaše oprávnění a cílovou adresu.</p>
+      <p id="error" class="error" hidden></p>
+      <p><a id="back" href="../../#applications" hidden>Zpět do AI Studia</a></p>
+    </main>
+    <script type="module" src="./launcher.js"></script>
+  </body>
+</html>

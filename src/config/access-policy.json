@@ -80,6 +80,15 @@
         "cs": "Lesson Hub",
         "en": "Lesson Hub"
       }
+    },
+    "maturita-desk": {
+      "trainingRequired": true,
+      "trainingCode": "MAT-01",
+      "trainingVersion": "2026-09",
+      "label": {
+        "cs": "Maturita Desk",
+        "en": "Maturita Desk"
+      }
     }
   },
   "administratorPages": [

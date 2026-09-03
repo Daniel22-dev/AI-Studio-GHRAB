@@ -73,9 +73,9 @@ await writeFile(
   "utf8",
 );
 // The root consumer is the single source of truth; copy it before precache validation instead of relying on a stale src/ duplicate.
-await cp(path.join(root, 'ghrab-platform.consumer.json'), path.join(dist, 'ghrab-platform.consumer.json'));
+await cp(path.join(root, "ghrab-platform.consumer.json"), path.join(dist, "ghrab-platform.consumer.json"));
 // Historical platform sources remain in src/ for rollback/audit, but the live build uses the canonical dist/ghrab platform bundle.
-await rm(path.join(dist, 'platform'), { recursive: true, force: true });
+await rm(path.join(dist, "platform"), { recursive: true, force: true });
 
 for (const file of await walk(dist)) {
   if (!/\.(?:html|js|json|webmanifest|css|md)$/.test(file)) continue;
@@ -95,6 +95,27 @@ const syncReport = JSON.parse(
 const apps = JSON.parse(
   await readFile(path.join(src, "config", "apps.generated.json"), "utf8"),
 );
+let localApps = [];
+try {
+  localApps = JSON.parse(
+    await readFile(path.join(src, "config", "apps.local.json"), "utf8"),
+  );
+  if (!Array.isArray(localApps)) throw new Error("apps.local.json is not an array");
+} catch (error) {
+  if (error?.code !== "ENOENT") throw error;
+}
+const runtimeApps = [...apps];
+for (const localApp of localApps) {
+  if (!localApp?.id) throw new Error("Local runtime app is missing id");
+  const existingIndex = runtimeApps.findIndex((app) => app.id === localApp.id);
+  if (existingIndex >= 0) runtimeApps[existingIndex] = localApp;
+  else runtimeApps.push(localApp);
+}
+await writeFile(
+  path.join(dist, "config", "apps.generated.json"),
+  JSON.stringify(runtimeApps, null, 2) + "\n",
+  "utf8",
+);
 const aiCoreRegistry = JSON.parse(
   await readFile(path.join(src, "config", "ai-core.json"), "utf8"),
 );
@@ -112,7 +133,7 @@ await writeFile(
         contract: "ghrab-platform-v1",
         version: "1.1.0",
         brandVersion: "1.0.0",
-        registrySchema: "ghrab-app-registry-v2"
+        registrySchema: "ghrab-app-registry-v2",
       },
       aiCore: {
         coreVersion: aiCoreRegistry.activeRelease.coreVersion,
@@ -121,7 +142,7 @@ await writeFile(
         readyApps: aiReadiness.summary.readyApps,
         certifiedPendingApps: aiReadiness.summary.certifiedPendingApps,
       },
-      apps: apps.map((app) => ({ id: app.id, version: app.version })),
+      apps: runtimeApps.map((app) => ({ id: app.id, version: app.version })),
     },
     null,
     2,
@@ -185,6 +206,10 @@ const excludedOptionalPrefixes = [
   "./integration/",
   "./schemas/",
   "./ai-core/",
+  // The protected external launcher is a network transition to another HTTPS origin.
+  // Maturita Desk owns its independent offline PWA cache, so duplicating this bridge
+  // in the Studio precache would waste the core offline budget without adding content availability.
+  "./app/external/",
   // P2 platform assets are added only after the canonical postprocessor runs.
   // Excluding src/platform prevents stale compatibility copies from entering SW precache.
   "./platform/",
