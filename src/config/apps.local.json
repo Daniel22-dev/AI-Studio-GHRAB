@@ -18,7 +18,7 @@
     "launchUrl": "https://daniel22-dev.github.io/AI-Studio-GHRAB/app/external/?app=maturita-desk",
     "manualUrl": "https://daniel22-dev.github.io/maturita-desk/",
     "repository": "Daniel22-dev/maturita-desk",
-    "icon": "https://daniel22-dev.github.io/maturita-desk/assets/icons/icon-192.png",
+    "icon": "assets/apps/maturita-desk.png",
     "accent": "#4b263d",
     "tags": [
       {

@@ -65,6 +65,14 @@
       "applicable": false,
       "syncWorkflow": null,
       "delivery": "not-applicable"
+    },
+    {
+      "appId": "maturita-desk",
+      "repository": "Daniel22-dev/maturita-desk",
+      "enabled": false,
+      "applicable": false,
+      "syncWorkflow": null,
+      "delivery": "not-applicable"
     }
   ]
 }

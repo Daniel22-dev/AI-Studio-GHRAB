@@ -46,5 +46,11 @@
     "url": "https://daniel22-dev.github.io/lesson-hub/studio-manifest.json",
     "repository": "daniel22-dev/lesson-hub",
     "branch": "main"
+  },
+  {
+    "id": "maturita-desk",
+    "url": "https://daniel22-dev.github.io/maturita-desk/studio-manifest.json",
+    "repository": "Daniel22-dev/maturita-desk",
+    "branch": "main"
   }
 ]

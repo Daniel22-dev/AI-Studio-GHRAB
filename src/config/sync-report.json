@@ -1,15 +1,15 @@
 {
   "schema": "ai-studio-sync-report-v1",
   "generated": true,
-  "generatedAt": "2026-08-28T06:51:01.564Z",
+  "generatedAt": "2026-09-03T10:22:19.764Z",
   "mode": "fallback",
   "verificationMode": "snapshot",
   "counts": {
     "verified": 0,
     "deployment": 0,
     "repository": 0,
-    "snapshot": 8,
-    "total": 8
+    "snapshot": 9,
+    "total": 9
   },
   "lastFullSourceVerifiedAt": "2026-08-26T06:13:15.288Z",
   "lastFullLiveVerifiedAt": null,
@@ -23,7 +23,7 @@
       "verification": "snapshot",
       "version": "7.1.17",
       "sourceVersion": null,
-      "error": "offline režim",
+      "error": "nasazení: fetch failed; repozitář: fetch failed",
       "lastSourceVerifiedAt": "2026-08-26T06:13:15.288Z",
       "lastLiveVerifiedAt": null
     },
@@ -35,7 +35,7 @@
       "verification": "snapshot",
       "version": "1.3.36",
       "sourceVersion": null,
-      "error": "offline režim",
+      "error": "nasazení: fetch failed; repozitář: fetch failed",
       "lastSourceVerifiedAt": "2026-08-26T06:13:15.288Z",
       "lastLiveVerifiedAt": null
     },
@@ -47,7 +47,7 @@
       "verification": "snapshot",
       "version": "1.5.13",
       "sourceVersion": null,
-      "error": "offline režim",
+      "error": "nasazení: fetch failed; repozitář: fetch failed",
       "lastSourceVerifiedAt": "2026-08-26T06:13:15.288Z",
       "lastLiveVerifiedAt": null
     },
@@ -59,7 +59,7 @@
       "verification": "snapshot",
       "version": "5.10.9",
       "sourceVersion": null,
-      "error": "offline režim",
+      "error": "nasazení: fetch failed; repozitář: fetch failed",
       "lastSourceVerifiedAt": "2026-08-26T06:13:15.288Z",
       "lastLiveVerifiedAt": null
     },
@@ -71,7 +71,7 @@
       "verification": "snapshot",
       "version": "1.16.16",
       "sourceVersion": null,
-      "error": "offline režim",
+      "error": "nasazení: fetch failed; repozitář: fetch failed",
       "lastSourceVerifiedAt": "2026-08-26T06:13:15.288Z",
       "lastLiveVerifiedAt": null
     },
@@ -83,7 +83,7 @@
       "verification": "snapshot",
       "version": "0.5.14",
       "sourceVersion": null,
-      "error": "offline režim",
+      "error": "nasazení: fetch failed; repozitář: fetch failed",
       "lastSourceVerifiedAt": "2026-08-26T06:13:15.288Z",
       "lastLiveVerifiedAt": null
     },
@@ -95,7 +95,7 @@
       "verification": "snapshot",
       "version": "1.0.13",
       "sourceVersion": null,
-      "error": "offline režim",
+      "error": "nasazení: fetch failed; repozitář: fetch failed",
       "lastSourceVerifiedAt": "2026-08-26T06:13:15.288Z",
       "lastLiveVerifiedAt": null
     },
@@ -107,8 +107,20 @@
       "verification": "snapshot",
       "version": "1.2.12",
       "sourceVersion": null,
-      "error": "offline režim",
+      "error": "nasazení: fetch failed; repozitář: fetch failed",
       "lastSourceVerifiedAt": "2026-08-26T06:13:15.288Z",
+      "lastLiveVerifiedAt": null
+    },
+    {
+      "id": "maturita-desk",
+      "url": "https://daniel22-dev.github.io/maturita-desk/studio-manifest.json",
+      "repository": "Daniel22-dev/maturita-desk",
+      "ok": false,
+      "verification": "snapshot",
+      "version": "1.0.1",
+      "sourceVersion": null,
+      "error": "nasazení: fetch failed; repozitář: fetch failed",
+      "lastSourceVerifiedAt": null,
       "lastLiveVerifiedAt": null
     }
   ]

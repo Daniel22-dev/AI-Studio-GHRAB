@@ -150,6 +150,18 @@ await writeFile(
   "utf8",
 );
 
+// Build-time registry inputs are consumed above and are not browser runtime assets.
+// Keeping them out of dist avoids shipping internal synchronization metadata and
+// preserves the PWA performance budget as the application registry grows.
+for (const buildOnlyConfig of [
+  "apps.local.json",
+  "sources.json",
+  "ai-readiness-baseline.json",
+  "ai-core-consumers.json",
+]) {
+  await rm(path.join(dist, "config", buildOnlyConfig), { force: true });
+}
+
 const allCacheFiles = (await walk(dist))
   .filter((file) => file !== path.join(dist, "sw.js"))
   .map((file) => `./${path.relative(dist, file).split(path.sep).join("/")}`)
@@ -217,6 +229,9 @@ const excludedOptionalPrefixes = [
   "./platform/",
   // Large presentation media stays network-loaded and must not inflate the offline PWA cache.
   "./assets/presentation/",
+  // The aggregate pilot report is an administrator-only online diagnostic surface.
+  // It is not required for the teacher portal's first offline boot.
+  "./report/",
 ];
 const optionalCacheFiles = allCacheFiles.filter(
   (file) =>

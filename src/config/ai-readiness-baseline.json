@@ -81,6 +81,10 @@
     {
       "appId": "lesson-hub",
       "classification": "not-applicable"
+    },
+    {
+      "appId": "maturita-desk",
+      "classification": "not-applicable"
     }
   ],
   "generatedAt": "2026-08-04T16:40:00.000Z"

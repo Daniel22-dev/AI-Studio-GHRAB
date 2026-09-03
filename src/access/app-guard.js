@@ -36,6 +36,9 @@ export const OUTPUT_KINDS = Object.freeze({
     "material-import",
     "backup-export",
   ]),
+  // Maturita Desk is launcher-only in the serverless pilot. No exam/review content
+  // may be recorded into AI Studio pilot telemetry.
+  "maturita-desk": new Set(),
 });
 
 function language() {

@@ -1,6 +1,6 @@
 {
   "schema": "ghrab-ai-readiness-report-v1",
-  "generatedAt": "2026-08-28T06:52:01.626Z",
+  "generatedAt": "2026-09-03T10:31:30.013Z",
   "activeCoreVersion": "1.0.0",
   "runtime": {
     "defaultMode": "direct-gemini",
@@ -22,11 +22,11 @@
     }
   },
   "summary": {
-    "totalApps": 8,
+    "totalApps": 9,
     "readyApps": 6,
     "certifiedPendingApps": 0,
     "notMigratedApps": 0,
-    "notApplicableApps": 2,
+    "notApplicableApps": 3,
     "incompatibleApps": 0
   },
   "applications": [
@@ -124,6 +124,19 @@
     {
       "appId": "lesson-hub",
       "appVersion": "1.2.12",
+      "classification": "not-applicable",
+      "status": "not-applicable",
+      "coreVersion": null,
+      "contractVersion": null,
+      "conformancePassed": false,
+      "operationsManifestUrl": null,
+      "certifiedAppVersion": null,
+      "operationsCount": null,
+      "evidence": null
+    },
+    {
+      "appId": "maturita-desk",
+      "appVersion": "1.0.1",
       "classification": "not-applicable",
       "status": "not-applicable",
       "coreVersion": null,

@@ -599,7 +599,8 @@ for (const app of readinessApps) {
     !consumer ||
     consumer.repository !== app.repository ||
     consumer.enabled !== certifiedConsumerIds.has(app.id) ||
-    consumer.applicable !== !["sortio", "lesson-hub"].includes(app.id)
+    consumer.applicable !==
+      (readinessBaselineById.get(app.id)?.classification !== "not-applicable")
   )
     fail(`${app.id}: registr spotřebitelů neodpovídá certifikační baseline.`);
 }

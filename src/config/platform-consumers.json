@@ -375,5 +375,47 @@
       "default": "dark",
       "systemFallback": "dark"
     }
+  },
+  {
+    "id": "maturita-desk",
+    "name": "Maturita Desk",
+    "version": "1.0.1",
+    "slug": "maturita-desk",
+    "paths": {
+      "app": "https://daniel22-dev.github.io/maturita-desk/",
+      "manual": "https://daniel22-dev.github.io/maturita-desk/",
+      "schoolApp": "/apps/maturita-desk/",
+      "schoolManual": "/apps/maturita-desk/"
+    },
+    "capabilities": [
+      "oral-exam",
+      "encrypted-content-pack",
+      "offline",
+      "standalone-pwa"
+    ],
+    "platform": {
+      "contract": "ghrab-platform-v1",
+      "requiredPlatformRange": ">=1.1.0 <2.0.0",
+      "brandVersion": "1.0.0",
+      "themeContract": "ghrab-theme-v1",
+      "swContract": 1,
+      "studioBridge": 2,
+      "artifactEnvelope": 1,
+      "storagePrefix": "ghrab.maturita-desk.",
+      "platformVersion": "1.1.0",
+      "accessibilityContract": "ghrab-a11y-v1",
+      "performanceContract": "ghrab-performance-v1",
+      "moduleContract": "not-applicable"
+    },
+    "cacheName": "ghrab-maturita-desk-v1.0.1",
+    "theme": {
+      "supported": [
+        "light",
+        "dark",
+        "system"
+      ],
+      "default": "system",
+      "systemFallback": "light"
+    }
   }
 ]
