@@ -185,6 +185,10 @@ const excludedOptionalPrefixes = [
   "./integration/",
   "./schemas/",
   "./ai-core/",
+  // The protected external launcher is a network transition to another HTTPS origin.
+  // Maturita Desk owns its independent offline PWA cache, so duplicating this bridge
+  // in the Studio precache would waste the core offline budget without adding content availability.
+  "./app/external/",
   // P2 platform assets are added only after the canonical postprocessor runs.
   // Excluding src/platform prevents stale compatibility copies from entering SW precache.
   "./platform/",
