@@ -2,7 +2,7 @@
   "name": "ai-studio-ghrab",
   "version": "0.21.35",
   "private": true,
-  "description": "Profesionální federované PWA osmi chráněných školních aplikací včetně Lesson Hubu, manuálů, řízeného přístupu a jednotné GHRAB QA brány",
+  "description": "Profesionální federované PWA devíti chráněných školních aplikací včetně Lesson Hubu, manuálů, řízeného přístupu a jednotné GHRAB QA brány",
   "type": "module",
   "scripts": {
     "sync": "node scripts/sync-registry.mjs && node scripts/sync-platform-consumers.mjs && node scripts/generate-ai-readiness.mjs && node scripts/sync-doc-app-versions.mjs",

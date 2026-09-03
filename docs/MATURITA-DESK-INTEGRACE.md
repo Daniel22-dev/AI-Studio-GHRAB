@@ -2,7 +2,7 @@
 
 ## Stav
 
-Maturita Desk 1.0.1 je připravena jako samostatná PWA a budoucí dlaždice AI Studia. Ostrý maturitní obsah musí zůstat na izolovaném HTTPS originu, proto se aplikace nesmí vložit do stejného originu jako běžné aplikace jen kvůli sdílenému `localStorage` přístupu.
+Maturita Desk 1.0.2 je připravena jako samostatná PWA a budoucí dlaždice AI Studia. Ostrý maturitní obsah musí zůstat na izolovaném HTTPS originu, proto se aplikace nesmí vložit do stejného originu jako běžné aplikace jen kvůli sdílenému `localStorage` přístupu.
 
 ## Přístupový model
 

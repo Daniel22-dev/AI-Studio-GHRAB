@@ -6,7 +6,7 @@
       "cs": "Maturita Desk",
       "en": "Maturita Desk"
     },
-    "version": "1.0.1",
+    "version": "1.0.2",
     "status": {
       "cs": "Řízený pilot · demo obsah",
       "en": "Controlled pilot · demo content"
@@ -70,7 +70,7 @@
       "studioBridge": "ghrab-studio-handoff-v2",
       "artifactEnvelope": "ghrab-artifact-envelope-v1",
       "storagePrefix": "ghrab.maturita-desk.",
-      "cacheName": "ghrab-maturita-desk-v1.0.1",
+      "cacheName": "ghrab-maturita-desk-v1.0.2",
       "accessibilityContract": "ghrab-a11y-v1",
       "performanceContract": "ghrab-performance-v1"
     }

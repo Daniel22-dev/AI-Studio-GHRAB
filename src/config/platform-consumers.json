@@ -379,7 +379,7 @@
   {
     "id": "maturita-desk",
     "name": "Maturita Desk",
-    "version": "1.0.1",
+    "version": "1.0.2",
     "slug": "maturita-desk",
     "paths": {
       "app": "https://daniel22-dev.github.io/maturita-desk/",
@@ -407,7 +407,7 @@
       "performanceContract": "ghrab-performance-v1",
       "moduleContract": "not-applicable"
     },
-    "cacheName": "ghrab-maturita-desk-v1.0.1",
+    "cacheName": "ghrab-maturita-desk-v1.0.2",
     "theme": {
       "supported": [
         "light",
