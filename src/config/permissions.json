@@ -42,11 +42,11 @@
   "serverlessEnforcement": {
     "requiredLayers": [
       "studio_gate",
-      "target_app_bootstrap"
+      "target_app_bootstrap_or_isolated_app_guard"
     ],
     "limitations": {
-      "cs": "Bez serveru nelze spolehlivě ověřit totožnost uživatele ani zabránit předání platného souboru. Přímé adresy současných osmi aplikací jsou chráněny integračním bootstrapem; stejnou vrstvu musí dostat každá budoucí aplikace.",
-      "en": "Without a server, user identity cannot be reliably verified and a valid permit file can be shared. Direct URLs of the current eight applications are protected by the integration bootstrap; every future application must receive the same layer."
+      "cs": "Bez serveru nelze spolehlivě ověřit totožnost uživatele ani zabránit předání platného souboru. Přímé adresy běžných aplikací jsou chráněny integračním bootstrapem. Aplikace s citlivým obsahem mohou místo něj používat vlastní rovnocennou ochranu na izolovaném HTTPS originu; Maturita Desk používá podepsanou autorizaci originu, podepsaný šifrovaný Content Pack a heslo k packu.",
+      "en": "Without a server, user identity cannot be reliably verified and a valid permit file can be shared. Direct URLs of regular applications are protected by the integration bootstrap. Sensitive applications may instead use an equivalent app-specific guard on an isolated HTTPS origin; Maturita Desk uses signed origin authorization, a signed encrypted Content Pack, and a pack passphrase."
     }
   },
   "serverMigration": [
