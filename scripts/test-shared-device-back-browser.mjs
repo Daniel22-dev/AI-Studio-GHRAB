@@ -65,7 +65,7 @@ async function runScenario(browser, action) {
         apiBaseUrl:'',appBaseUrl:new URL('/AI-Studio-GHRAB/',location.href).href,
         features:{allowLocalProviderKeys:false},privacy:{sharedDeviceDefault:true},
       };
-      const runtime=await import('../access/platform-runtime.js');
+      const runtime=await import('/AI-Studio-GHRAB/access/platform-runtime.js');
       await runtime.initialisePlatformRuntime({appId:'ai-studio',appVersion:version,mountControls:false});
       globalThis.GHRABPlatform.setSharedDevice(true);
       const result=action==='deleteMyData'
