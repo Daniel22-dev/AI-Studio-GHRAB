@@ -3,6 +3,7 @@ import { BAKED_DEPLOYMENT_CONFIG } from "../config/deployment-baked.js";
 const TOKEN_KEY = "ghrab.access.permit.v2";
 const TOKEN_PREFIX = "ghrab1";
 const LKG_KEY = "ghrab.access.last-known-good.v1";
+const ACCESS_END_SIGNAL_KEY = "ghrab.access.end-session.v1";
 const CONFIG_BASE = new URL("../config/", import.meta.url);
 const DEFAULT_MAX_OFFLINE_AGE_HOURS = 24;
 const DEFAULT_MAX_SIGNED_BUNDLE_AGE_DAYS = 30;
@@ -425,7 +426,7 @@ function sessionPermitFromResponse(data) {
     displayName: user.displayName ? String(user.displayName) : undefined,
     role: String(user.role || (roles.includes("admin") ? "admin" : roles[0]) || "teacher"),
     roles,
-    apps: normaliseApps(user.apps || data.apps || ["*"]),
+    apps: normaliseApps(user.apps ?? data.apps ?? []),
     training: user.training && typeof user.training === "object" ? user.training : {},
     exp: data.expiresAt ? Math.floor(Date.parse(data.expiresAt) / 1000) : undefined,
     jti: data.sessionId ? String(data.sessionId) : "server-session",
@@ -539,6 +540,18 @@ export function clearPermit() {
   accessState.ready = true;
   emitChange();
 }
+export function endAccessSession({ broadcast = true } = {}) {
+  clearPermit();
+  if (broadcast) {
+    try {
+      localStorage.setItem(ACCESS_END_SIGNAL_KEY, `${Date.now()}-${Math.random().toString(36).slice(2, 10)}`);
+      localStorage.removeItem(ACCESS_END_SIGNAL_KEY);
+    } catch {
+      /* The current tab is still invalidated even when cross-tab signalling is unavailable. */
+    }
+  }
+  return { ok: true };
+}
 export async function readPermitFile(file) {
   if (accessState.mode === "server-session") return { ok: false, reason: "server-session-managed" };
   if (!file) return { ok: false, reason: "missing-file" };
@@ -598,6 +611,11 @@ function trainingFailure(appId) {
 export function hasAppAccess(appId) {
   if (!accessState.ready) return { enabled: false, reason: "loading", permit: null };
   if (!accessState.valid) return { enabled: false, reason: accessState.reason, permit: accessState.permit };
+  const expiresAt = Number(accessState.permit?.exp);
+  const skew = accessState.mode === "server-session" ? 0 : Math.max(0, Number(accessState.policy?.clockSkewSeconds || 300));
+  if (Number.isFinite(expiresAt) && expiresAt <= nowSeconds() - skew) {
+    return { enabled: false, reason: "expired", permit: accessState.permit };
+  }
   if (isAdmin()) return { enabled: true, reason: "administrator", permit: accessState.permit };
   const apps = accessState.permit?.apps || [];
   if (!apps.includes("*") && !apps.includes(appId)) return { enabled: false, reason: "app-not-permitted", permit: accessState.permit };
@@ -606,6 +624,32 @@ export function hasAppAccess(appId) {
   return { enabled: true, reason: "permitted", permit: accessState.permit };
 }
 export function requiredTraining(appId) { return accessState.policy?.applications?.[appId] || null; }
+
+function invalidateFromOtherContext(reason) {
+  if (accessState.mode === "server-session") globalThis.__GHRAB_SERVER_SESSION__ = null;
+  resetVerification(reason, null);
+  accessState.ready = true;
+  emitChange();
+}
+function installCrossContextAccessSync() {
+  if (typeof globalThis.addEventListener !== "function") return;
+  globalThis.addEventListener("storage", (event) => {
+    if (event.key === ACCESS_END_SIGNAL_KEY) {
+      safeStorageRemove(TOKEN_KEY);
+      invalidateFromOtherContext(accessState.mode === "server-session" ? "session-required" : "missing");
+      return;
+    }
+    if (event.key !== TOKEN_KEY) return;
+    if (!event.newValue) {
+      invalidateFromOtherContext(accessState.mode === "server-session" ? "session-required" : "missing");
+      return;
+    }
+    if (accessState.mode !== "server-session") {
+      void initialiseAccess().catch(() => invalidateFromOtherContext("configuration-unavailable"));
+    }
+  });
+}
+installCrossContextAccessSync();
 export function formatReason(reason, language = "cs") {
   const messages = {
     cs: {

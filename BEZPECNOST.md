@@ -1,6 +1,6 @@
-# Bezpečnostní hranice AI Studio GHRAB 0.21.35
+# Bezpečnostní hranice AI Studio GHRAB 0.21.40
 
-> Aktuální verze: **0.21.35** · etapa P5
+> Aktuální verze: **0.21.40** · etapa P5
 
 
 ## Rychlá kontrola dat v portálu
@@ -43,7 +43,7 @@ Veřejná konfigurace používá sadu klíčů. Při plánované rotaci se nejpr
 
 Konkrétní oprávnění se zneplatní přidáním jeho `jti` do nového podepsaného access bundle. Správce nejprve označí JTI v Evidenci přístupů a poté v Centru zabezpečení místně vytvoří veřejný podepsaný aktualizační balíček. Pole `revokedBefore` umožňuje zneplatnit všechna oprávnění vydaná před určeným okamžikem, ale běžné rozhraní je záměrně nemění. Offline zařízení může poslední kryptograficky ověřenou konfiguraci použít nejvýše 24 hodin od posledního úspěšného online načtení; samotný podepsaný bundle nesmí být starší než 30 dní. Bundle zároveň musí odpovídat verzi zapečené v deployment profilu. Service worker bundle ani podpis neobsluhuje.
 
-Vydání 0.21.35 zachovává právě jednu cílenou revokaci starého učitelského oprávnění z verze 0.21.33. Nejde o zneplatnění osoby ani všech jejích přístupů: nové oprávnění správce zástupce má samostatné JTI a zůstává platné.
+Vydání 0.21.40 zachovává právě jednu cílenou revokaci starého učitelského oprávnění z verze 0.21.33. Nejde o zneplatnění osoby ani všech jejích přístupů: nové oprávnění správce zástupce má samostatné JTI a zůstává platné.
 
 Klientský `fetchedAt` měří pouze dobu od posledního spojení a sám není bezpečnostní kotvou. Rollback staršího revokačního seznamu omezuje podpis, 30denní stáří a shoda `bundle.version` se zapečeným `sharedAccessVersion`. Statický klient přesto není bezpečnostní hranice proti uživateli, který upraví samotný kód.
 

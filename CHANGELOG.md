@@ -2,6 +2,51 @@
 
 > Tento soubor se generuje ze `src/config/changelog.json`. Neupravujte jej ručně.
 
+## 0.21.40 — 2026-09-04
+**GARP 2.3 – suite-level ukončení sdílené relace**
+
+- GHRAB Platform 1.1.2 zavádí trvalou suite-session generační značku a kontrakt ghrab-suite-session-v1 pro koordinovaný úklid napříč aplikacemi na společném originu.
+- Destruktivní Ukončit práci v AI Studiu nově vyvolá suite-session signál; selhání signálu je fail-closed součástí výsledku ukončení práce.
+- Sdílený suite-session tombstone je vyjmut z vlastnictví AI Studia, takže explicitní smazání dat Studia nezruší dosud nevyzvednutý požadavek na úklid child aplikací.
+- E-01 zůstává ekosystémově otevřený do propagace Platformy 1.1.2 a napojení vlastního cleanupu všech devíti child aplikací; sdílené zařízení s reálnými daty proto zůstává zakázané.
+
+## 0.21.39 — 2026-09-04
+**GARP 2.3 – trvalé smazání proti Browser Back**
+
+- Úplné „Smazat moje data“ po smazání rotuje neobsahovou generační značku relace stejně jako sdílené Ukončit práci, takže návrat přes Browser Back nemůže znovu zhmotnit starý formulářový obsah.
+- SIM-03 browser regrese nyní používá skutečný platform-runtime a povinně ověřuje obě destruktivní cesty: endWork i deleteMyData, včetně následného psaní a nové karty.
+- Selhání zápisu generační značky je fail-closed součástí výsledku destruktivní operace; operace nesmí hlásit úplný úspěch, pokud lifecycle ochrana nebyla obnovena.
+- SIM-03 QA evidence se zapisuje mimo publikovatelný dist do qa-results, aby testovací report nebyl součástí veřejné aplikace.
+
+## 0.21.38 — 2026-09-04
+**GARP 2.3 – trvalé ukončení sdílené relace**
+
+- Sdílené ukončení práce rotuje generační značku relace a workflow ji váže k history.state, takže návrat přes Back, reload nebo bfcache nerozpracuje znovu obsah předchozího uživatele.
+- Při detekci ukončené relace se zruší čekající autosave, formulář se vyčistí a další autosave se zablokuje; preventivní pagehide scrub odstraňuje citlivý obsah z bfcache DOM.
+- Úplné mazání používá defaultní ownership ghrab.* s explicitními výjimkami registrovaných child aplikací, takže nový neznámý klíč AI Studia nemůže tiše uniknout datovému manifestu.
+- Storage coverage test rekurzivně skenuje celý src/**/*.js a SIM-03 shared-device Back/Restore je součástí browser release brány.
+
+## 0.21.37 — 2026-09-03
+**GARP 2.3 – opravné kolo po nezávislé kontrole**
+
+- Datový manifest nyní pokrývá workflow koncepty, reporty, registr vydaných oprávnění, přístupovou relaci a další vlastněné storage cesty; úplné mazání po doběhnutí ověřuje, že žádný vlastněný klíč nezůstal.
+- Storage migrace p2-storage-namespace-v2 přesouvá obsahové a administrativní legacy klíče do namespace ghrab.ai-studio.* a zachovává rollbackový backup.
+- Release QA, browser gate a build-info odvozují verzi platformy z consumer kontraktu místo zamrzlé hodnoty 1.1.0.
+- Sdílený helper Uložit do AI Studia nenaviguje při kolizi handoffu a workflow rozlišuje čekající předávku od skutečného selhání úložiště.
+- GARP regrese byly rozšířeny z testů jednotlivých oprav na kontrolu úplnosti storage mapy, release-version surface a obou zapisovatelů handoffu.
+
+## 0.21.36 — 2026-09-03
+**GARP 2.3 – zpevnění ukončení práce a soukromí**
+
+- Ukončení práce nyní fail-closed odstraňuje lokální podepsané oprávnění a synchronizuje odhlášení mezi otevřenými kartami.
+- School-server session bez explicitního seznamu aplikací již nezíská implicitní přístup ke všem aplikacím.
+- Mazání lokálních dat pokrývá oba handoff klíče a při nedostupném datovém manifestu již nehlásí falešný úspěch.
+- Pilotní telemetrie platformy 1.1.1 již neukládá materialId; AI Studio vyžaduje platformu alespoň 1.1.1.
+- Diagnostika přístupové brány kopíruje pouze origin a cestu bez query/hash a živě znovu ověřuje expiraci oprávnění.
+- Workflow už nepřenáší materialId do pilotní telemetrie ani do URL cílové aplikace; při startu se starší lokální pilotní události pročistí přes explicitní allowlist.
+- Současný handoff je fail-closed chráněn proti přepsání druhou souběžnou předávkou; nový handoff lze vytvořit až po spotřebování nebo expiraci předchozího.
+- Platformní conformance test odvozuje previous/current/next verzi z deklarované platformy, takže patch bump 1.1.1 nezanechá falešně zastaralou release kontrolu.
+
 ## 0.21.35 — 2026-08-28
 **Průřezové zpevnění registrů ekosystému**
 

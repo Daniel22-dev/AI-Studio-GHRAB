@@ -1,8 +1,11 @@
 import { BAKED_DEPLOYMENT_CONFIG } from "../config/deployment-baked.js";
+import { endAccessSession } from "./access-control.js";
 
 const PLATFORM_SCHEMA = "ghrab-platform-runtime-v1";
 const DATA_MANIFEST_SCHEMA = "ghrab-data-manifest-v1";
 const SHARED_DEVICE_KEY = "ghrab.platform.shared-device.v1";
+const SESSION_GENERATION_KEY = "ghrab.access.session-generation.v1";
+const SUITE_SESSION_GENERATION_KEY = "ghrab.platform.suite-session-generation.v1";
 const MAX_TELEMETRY_QUEUE = 250;
 
 function safeGet(storage, key) { try { return storage.getItem(key); } catch { return null; } }
@@ -18,6 +21,16 @@ function baseUrl(value, fallback = "/") { return trailingSlash(absoluteUrl(value
 function uuid(prefix = "evt") {
   if (globalThis.crypto?.randomUUID) return `${prefix}-${crypto.randomUUID()}`;
   return `${prefix}-${Date.now().toString(36)}-${Math.random().toString(36).slice(2, 11)}`;
+}
+function rotateSessionGeneration() {
+  const value = `${Date.now()}-${Math.random().toString(36).slice(2, 10)}`;
+  return { ok: safeSet(localStorage, SESSION_GENERATION_KEY, value), value };
+}
+function signalSuiteSessionEnd(reason = "studio-end-work") {
+  const platform = globalThis.GHRAB_PLATFORM?.session;
+  if (typeof platform?.end === "function") return platform.end({ reason, clearApplicationData: true });
+  const generation = `${Date.now()}-${Math.random().toString(36).slice(2, 10)}`;
+  return { ok: safeSet(localStorage, SUITE_SESSION_GENERATION_KEY, generation), generation, fallback: true };
 }
 function deployment() {
   return globalThis.__GHRAB_DEPLOYMENT_CONFIG__ || BAKED_DEPLOYMENT_CONFIG || {
@@ -114,6 +127,64 @@ function patternMatches(pattern, key) {
   if (text.endsWith("*")) return key.startsWith(text.slice(0, -1));
   return key === text;
 }
+function storeSelectedForClear(store, { sessionOnly = false, credentialsOnly = false } = {}) {
+  if (sessionOnly && store.clearOnEndWork !== true) return false;
+  if (credentialsOnly && store.category !== "credential") return false;
+  return true;
+}
+function ownershipRule(manifest, kind) {
+  const value = manifest?.ownership?.[`${kind}Rule`];
+  if (!value || typeof value !== "object") return null;
+  const prefix = String(value.prefix || "");
+  const exceptions = Array.isArray(value.exceptions) ? value.exceptions.map(String) : [];
+  const reserved = Array.isArray(value.reserved) ? value.reserved.map(String) : [];
+  return prefix ? { prefix, exceptions, reserved } : null;
+}
+function keyMatchesOwnership(manifest, kind, key) {
+  const rule = ownershipRule(manifest, kind);
+  if (rule && key.startsWith(rule.prefix)) {
+    if (rule.reserved.some((pattern) => patternMatches(pattern, key))) return false;
+    return !rule.exceptions.some((pattern) => patternMatches(pattern, key));
+  }
+  const owned = manifest?.ownership?.[`${kind}Patterns`];
+  return Array.isArray(owned) && owned.some((pattern) => patternMatches(String(pattern), key));
+}
+function verificationPatterns(manifest, kind, options = {}) {
+  return (manifest?.stores || [])
+    .filter((store) => store.kind === kind && storeSelectedForClear(store, options))
+    .flatMap((store) => Array.isArray(store.patterns) ? store.patterns.map(String) : []);
+}
+async function verifyManifestClear(manifest, { sessionOnly = false, credentialsOnly = false } = {}) {
+  const verification = { complete: true, remaining: [], errors: [] };
+  const options = { sessionOnly, credentialsOnly };
+  if (!sessionOnly && !credentialsOnly && manifest?.deletion?.clientVerified === true) {
+    const ownership = manifest?.ownership;
+    if (!ownership || !ownershipRule(manifest, "localStorage") || !ownershipRule(manifest, "sessionStorage")) {
+      verification.errors.push("ownership-rule-unavailable");
+    }
+  }
+  for (const [kind, storage] of [["localStorage", localStorage], ["sessionStorage", sessionStorage]]) {
+    const patterns = verificationPatterns(manifest, kind, options);
+    for (const key of storageKeys(storage)) {
+      const shouldBeGone = !sessionOnly && !credentialsOnly
+        ? keyMatchesOwnership(manifest, kind, key)
+        : patterns.some((pattern) => patternMatches(pattern, key));
+      if (shouldBeGone) verification.remaining.push(`${kind}:${key}`);
+    }
+  }
+  if (!sessionOnly && !credentialsOnly && globalThis.caches) {
+    const patterns = verificationPatterns(manifest, "cacheStorage", options);
+    const names = await caches.keys().catch((error) => {
+      verification.errors.push(`cacheStorage:${error?.message || "enumeration-failed"}`);
+      return [];
+    });
+    for (const name of names) {
+      if (patterns.some((pattern) => patternMatches(pattern, name))) verification.remaining.push(`cacheStorage:${name}`);
+    }
+  }
+  verification.complete = verification.errors.length === 0 && verification.remaining.length === 0;
+  return verification;
+}
 function manifestUrl(appId) {
   const config = deployment();
   const appBase = config.appBaseUrls?.[appId] || config.appBaseUrl || location.href;
@@ -125,10 +196,10 @@ async function loadDataManifest(appId) {
     if (!response.ok) throw new Error(`HTTP ${response.status}`);
     const data = await response.json();
     if (data.schema !== DATA_MANIFEST_SCHEMA || data.appId !== appId || !Array.isArray(data.stores)) throw new Error("invalid data manifest");
-    return data;
+    return { ...data, runtimeAvailable: true };
   } catch (error) {
     console.warn(`GHRAB data manifest (${appId}) není dostupný.`, error);
-    return { schema: DATA_MANIFEST_SCHEMA, appId, version: "unknown", stores: [], retention: { defaultDays: 0 }, deletion: { supported: false } };
+    return { schema: DATA_MANIFEST_SCHEMA, appId, version: "unknown", stores: [], retention: { defaultDays: 0 }, deletion: { supported: false }, runtimeAvailable: false };
   }
 }
 async function deleteIndexedDb(name) {
@@ -143,10 +214,10 @@ async function deleteIndexedDb(name) {
   });
 }
 async function clearByManifest(manifest, { sessionOnly = false, credentialsOnly = false } = {}) {
-  const result = { removed: [], databases: [], errors: [] };
+  const options = { sessionOnly, credentialsOnly };
+  const result = { removed: [], databases: [], errors: [], verification: null };
   for (const store of manifest.stores || []) {
-    if (sessionOnly && store.clearOnEndWork !== true) continue;
-    if (credentialsOnly && store.category !== "credential") continue;
+    if (!storeSelectedForClear(store, options)) continue;
     if (store.kind === "localStorage" || store.kind === "sessionStorage") {
       const storage = store.kind === "localStorage" ? localStorage : sessionStorage;
       for (const key of storageKeys(storage)) {
@@ -157,10 +228,14 @@ async function clearByManifest(manifest, { sessionOnly = false, credentialsOnly 
       }
     }
     if (!sessionOnly && !credentialsOnly && store.kind === "indexedDB") {
-      for (const name of store.names || []) result.databases.push(await deleteIndexedDb(name));
+      for (const name of store.names || []) {
+        const deleted = await deleteIndexedDb(name);
+        result.databases.push(deleted);
+        if (deleted.ok === false) result.errors.push(`indexedDB:${name}`);
+      }
     }
     if (!sessionOnly && !credentialsOnly && store.kind === "cacheStorage" && globalThis.caches) {
-      const names = await caches.keys().catch(() => []);
+      const names = await caches.keys().catch((error) => { result.errors.push(`cacheStorage:${error?.message || "enumeration-failed"}`); return []; });
       for (const name of names) {
         if ((store.patterns || []).some((pattern) => patternMatches(pattern, name))) {
           const ok = await caches.delete(name).catch(() => false);
@@ -169,6 +244,18 @@ async function clearByManifest(manifest, { sessionOnly = false, credentialsOnly 
       }
     }
   }
+  if (!sessionOnly && !credentialsOnly) {
+    for (const [kind, storage] of [["localStorage", localStorage], ["sessionStorage", sessionStorage]]) {
+      for (const key of storageKeys(storage)) {
+        if (!keyMatchesOwnership(manifest, kind, key)) continue;
+        if (safeRemove(storage, key)) result.removed.push(`${kind}:${key}`);
+        else result.errors.push(`${kind}:${key}`);
+      }
+    }
+  }
+  result.verification = await verifyManifestClear(manifest, options);
+  for (const item of result.verification.remaining) result.errors.push(`verification-remaining:${item}`);
+  for (const item of result.verification.errors) result.errors.push(`verification-error:${item}`);
   return result;
 }
 function serverSession() { return globalThis.__GHRAB_SERVER_SESSION__ || null; }
@@ -263,11 +350,16 @@ async function platformHealth() {
 }
 async function deleteMyData({ reload = true } = {}) {
   if (!runtimeState) return { ok: false, reason: "not-initialised" };
+  if (runtimeState.dataManifest.runtimeAvailable !== true || runtimeState.dataManifest.deletion?.supported !== true) {
+    recordTelemetry("data-deleted", { outcome: "failed", errorCode: "DATA_MANIFEST_UNAVAILABLE" });
+    return { ok: false, reason: "data-manifest-unavailable", local: { removed: [], databases: [], errors: ["data-manifest-unavailable"] }, server: { ok: false, skipped: true } };
+  }
   const local = await clearByManifest(runtimeState.dataManifest);
+  const sessionGeneration = rotateSessionGeneration();
+  if (!sessionGeneration.ok) local.errors.push("session-generation-rotation-failed");
   let server = { ok: true, skipped: true };
   if (deployment().profile === "school-server" && runtimeState.dataManifest.deletion?.serverEndpoint) {
     try {
-      const session = serverSession();
       const headers = { Accept: "application/json", "Content-Type": "application/json" };
       const token = requestToken();
       if (token) { headers.Authorization = `Bearer ${token}`; headers["X-GHRAB-CSRF"] = token; }
@@ -278,19 +370,39 @@ async function deleteMyData({ reload = true } = {}) {
     } catch (error) { server = { ok: false, error: error.message }; }
   }
   recordTelemetry("data-deleted", { outcome: local.errors.length || !server.ok ? "partial" : "success" });
-  const result = { ok: local.errors.length === 0 && server.ok, local, server };
-  if (reload) window.setTimeout(() => location.reload(), 150);
+  const result = {
+    ok: local.errors.length === 0 && server.ok,
+    local,
+    server,
+    sessionGenerationRotated: sessionGeneration.ok,
+  };
+  if (reload && result.ok) window.setTimeout(() => location.reload(), 150);
   return result;
 }
 async function endWork({ clearApplicationData = sharedDeviceEnabled(), reload = true } = {}) {
   if (!runtimeState) return { ok: false, reason: "not-initialised" };
-  const local = await clearByManifest(runtimeState.dataManifest, { sessionOnly: !clearApplicationData });
-  await serverLogout();
-  globalThis.__GHRAB_SERVER_SESSION__ = null;
+  const manifestUsable = runtimeState.dataManifest.runtimeAvailable === true;
+  const local = clearApplicationData && !manifestUsable
+    ? { removed: [], databases: [], errors: ["data-manifest-unavailable"] }
+    : await clearByManifest(runtimeState.dataManifest, { sessionOnly: !clearApplicationData });
+  const logoutOk = await serverLogout();
+  endAccessSession({ broadcast: true });
   safeRemove(sessionStorage, SHARED_DEVICE_KEY);
-  recordTelemetry("work-session-ended", { outcome: local.errors.length ? "partial" : "success" });
-  if (reload) window.setTimeout(() => location.reload(), 150);
-  return { ok: local.errors.length === 0, local };
+  const sessionGeneration = clearApplicationData ? rotateSessionGeneration() : null;
+  if (sessionGeneration && !sessionGeneration.ok) local.errors.push("session-generation-rotation-failed");
+  const suiteSession = clearApplicationData ? signalSuiteSessionEnd("studio-end-work") : null;
+  if (suiteSession && !suiteSession.ok) local.errors.push("suite-session-signal-failed");
+  const ok = local.errors.length === 0 && logoutOk;
+  recordTelemetry("work-session-ended", { outcome: ok ? "success" : "partial", errorCode: !logoutOk ? "LOGOUT_FAILED" : local.errors.length ? "LOCAL_CLEAR_FAILED" : undefined });
+  if (reload && ok) window.setTimeout(() => location.reload(), 150);
+  return {
+    ok,
+    local,
+    server: { ok: logoutOk, skipped: deployment().authMode !== "server-session" },
+    sessionGenerationRotated: sessionGeneration?.ok === true,
+    suiteSessionSignalled: suiteSession?.ok === true,
+    suiteSessionGeneration: suiteSession?.generation || null,
+  };
 }
 function mountPrivacyControls() {
   if (document.getElementById("ghrab-privacy-controls")) return;
@@ -319,10 +431,16 @@ function mountPrivacyControls() {
   const erase = document.createElement("button"); erase.type = "button"; erase.textContent = "Smazat moje data";
   const close = document.createElement("button"); close.type = "button"; close.textContent = "Zavřít";
   for (const control of [end, erase, close]) control.style.cssText = "border:1px solid rgba(255,255,255,.24);border-radius:8px;background:#1e293b;color:#fff;padding:7px 10px;cursor:pointer";
-  end.addEventListener("click", async () => { end.disabled = true; end.textContent = "Ukončuji…"; await endWork({ clearApplicationData: checkbox.checked }); });
+  end.addEventListener("click", async () => {
+    end.disabled = true; end.textContent = "Ukončuji…";
+    const result = await endWork({ clearApplicationData: checkbox.checked });
+    if (!result.ok) { end.disabled = false; end.textContent = "Ukončení se nezdařilo – zkuste znovu"; }
+  });
   erase.addEventListener("click", async () => {
     if (!confirm("Opravdu odstranit lokální data této aplikace a požádat server o smazání serverových dat, pokud je podporováno?")) return;
-    erase.disabled = true; erase.textContent = "Mažu…"; await deleteMyData();
+    erase.disabled = true; erase.textContent = "Mažu…";
+    const result = await deleteMyData();
+    if (!result.ok) { erase.disabled = false; erase.textContent = "Mazání se nezdařilo – zkuste znovu"; }
   });
   const closePanel = () => { panel.hidden = true; button.setAttribute("aria-expanded", "false"); button.focus(); };
   close.addEventListener("click", closePanel);

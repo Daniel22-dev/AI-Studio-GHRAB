@@ -1,19 +1,20 @@
 # AI Studio GHRAB
 
-**Aktuální verze:** 0.21.35
-**Platforma:** GHRAB Platform 1.1.0 · etapa P5
+**Aktuální verze:** 0.21.40
+**Platforma:** GHRAB Platform 1.1.1 · etapa P5
 
-**Verze 0.21.35 zpevňuje průřezovou konzistenci celého ekosystému: platformní registr a AI readiness jsou odvozeny od stejného synchronizovaného registru aplikací a nový ecosystem gate zastaví release při driftu verzí či kontraktů. Bezpečnostní politika, revokace a vydaná oprávnění zůstávají beze změny.**
+**Stav:** AMBER – KANDIDÁT NOVÉHO VÝSLOVNĚ ZAHÁJENÉHO GARP 2.3 CYKLU, NE FINÁLNÍ RELEASE. Nezávislá kontrola Claude nad 0.21.38 potvrdila C-01/C-02/C-03, ale našla D-01 / HIGH na cestě „Smazat moje data“ → Browser Back. D-01 je v 0.21.40 opraven a kandidát čeká na druhé nezávislé ověření tohoto nového cyklu. **Reálná studentská data nepoužívat.**
 
+**Verze 0.21.40** sjednocuje destruktivní lifecycle ochranu: `deleteMyData()` i shared-device `endWork()` po smazání rotují neobsahovou generační tombstone. SIM-03 browser regrese testuje obě cesty, následné psaní i novou kartu a QA evidence se nepublikuje v `dist/`.
 AI Studio GHRAB je centrální brána školních digitálních a AI nástrojů. Jednotlivé aplikace zůstávají v samostatných repozitářích; Studio zajišťuje společnou navigaci, Top 4, synchronizaci verzí, bezpečnostní rámec, pilotní měření, správu podepsaných přístupů a kanonický základ technického reportéru. Materiály jsou viditelnou součástí portálu, ale v dnešním bezserverovém režimu se vlastní obsah ukládá pouze místně.
 
-## Hlavní novinky 0.21.35
+## Hlavní novinky 0.21.40
 
-- `platform-consumers.json` se nově deterministicky generuje z aktuálního `apps.generated.json` a vlastního platformního consumeru AI Studia.
-- Nový `qa:ecosystem` blokuje release při rozporu verzí, platformních kontraktů, cache, storage namespace, readiness nebo access bundle.
-- GitHub deploy nadále před buildem živě ověřuje manifesty jednotlivých aplikací; odvozené registry pak vznikají z téhož synchronizovaného vstupu.
-- Screenshotová regrese a opravy vložených aplikací z 0.21.34 zůstávají zachovány.
-- Bezpečnostní politika, podpisové klíče, revokace a role se nemění.
+- `Smazat moje data` po úplném clear obnoví čerstvou neobsahovou generační tombstone, takže Browser Back nemůže znovu aktivovat starý workflow formulář a autosave.
+- Stejný fail-closed helper rotace používá i shared-device `Ukončit práci`; selhání zápisu generační značky je součástí neúspěchu destruktivní operace.
+- SIM-03 browser harness používá skutečný `platform-runtime.js` a testuje `endWork` i `deleteMyData`, následný vstup i druhou kartu.
+- QA report SIM-03 se zapisuje do `qa-results/`, nikoli do veřejného `dist/`.
+- Zachovány jsou předchozí opravy server-session scope, broad storage ownership, handoff kolizí, telemetrie, P5 version driftu a platformy 1.1.2.
 
 ## Předchozí vydání 0.20.18
 

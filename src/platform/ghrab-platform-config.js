@@ -5,8 +5,8 @@
   "schema": "ghrab-platform-app-config-v1",
   "appId": "ai-studio",
   "appName": "AI Studio GHRAB",
-  "appVersion": "0.21.35",
-  "requiredPlatformRange": ">=1.1.0 <2.0.0",
+  "appVersion": "0.21.40",
+  "requiredPlatformRange": ">=1.1.2 <2.0.0",
   "autoFooter": false,
   "bridgeWriteLegacy": true,
   "bridgeMaxBytes": 500000,
@@ -19,22 +19,46 @@
     "default": "dark"
   },
   "storageMigration": {
-    "id": "p2-storage-namespace-v1",
-    "backup": "full",
-    "mappings": [
-      {
-        "legacy": "ghrab.language",
-        "canonical": "ghrab.ai-studio.language.v1"
-      },
-      {
-        "legacy": "ghrab.motion",
-        "canonical": "ghrab.ai-studio.motion.v1"
-      },
-      {
-        "legacy": "ghrab.workspace.v1",
-        "canonical": "ghrab.ai-studio.workspace.v1"
-      }
-    ]
+      "id": "p2-storage-namespace-v2",
+      "backup": "full",
+      "mappings": [
+          {
+              "legacy": "ghrab.language",
+              "canonical": "ghrab.ai-studio.language.v1"
+          },
+          {
+              "legacy": "ghrab.motion",
+              "canonical": "ghrab.ai-studio.motion.v1"
+          },
+          {
+              "legacy": "ghrab.workspace.v1",
+              "canonical": "ghrab.ai-studio.workspace.v1"
+          },
+          {
+              "legacy": "ghrab.workflow.draft.v1",
+              "canonical": "ghrab.ai-studio.workflow.draft.v1"
+          },
+          {
+              "legacy": "ghrab.report.settings.v2",
+              "canonical": "ghrab.ai-studio.report.settings.v2"
+          },
+          {
+              "legacy": "ghrab.report.imports.v1",
+              "canonical": "ghrab.ai-studio.report.imports.v1"
+          },
+          {
+              "legacy": "ghrab.access.issued-registry.v1",
+              "canonical": "ghrab.ai-studio.access.issued-registry.v1"
+          },
+          {
+              "legacy": "ghrab.favoriteApps.v1",
+              "canonical": "ghrab.ai-studio.favoriteApps.v1"
+          },
+          {
+              "legacy": "ghrab.pwa.install-dismissed-until",
+              "canonical": "ghrab.ai-studio.pwa.install-dismissed-until.v1"
+          }
+      ]
   },
   "quality": {
     "schema": "ghrab-quality-consumer-v1",

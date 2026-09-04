@@ -66,7 +66,7 @@ try {
     throw new Error(`Platform runtime timeout: ${JSON.stringify({ debug, browserErrors })}`);
   }
 
-  const result = await page.evaluate(async () => {
+  const result = await page.evaluate(async (expectedPlatformVersion) => {
     const p = window.GHRAB_PLATFORM;
     const checks = {};
     if (!p) return { checks: { platformPresent: false }, failed: ['platformPresent'], activeElement: document.activeElement?.id || '', snapshot: null };
@@ -78,7 +78,7 @@ try {
     const first = document.getElementById('first');
     const close = document.getElementById('close');
     checks.platformPresent = true;
-    checks.version = p.version === '1.1.0';
+    checks.version = p.version === expectedPlatformVersion;
     checks.a11yContract = p.a11y.contract === 'ghrab-a11y-v1';
     checks.performanceContract = p.performance.contract === 'ghrab-performance-v1';
     checks.moduleContract = p.modules.contract === 'ghrab-lazy-modules-v1';
@@ -118,7 +118,7 @@ try {
       activeElement: document.activeElement?.id || '',
       snapshot: snap,
     };
-  });
+  }, consumer.platform.version);
 
   const report = {
     schema: 'ghrab-p3-browser-result-v1',

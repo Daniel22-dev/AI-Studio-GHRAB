@@ -125,7 +125,8 @@ const metrics = {
 };
 
 check(fs.existsSync(dist), 'dist.exists');
-check(consumer.platform?.version === '1.1.0', 'platform.version', consumer.platform?.version);
+const platformBuildInfo = fs.existsSync(path.join(dist, 'platform-build-info.json')) ? readJson(path.join(dist, 'platform-build-info.json')) : null;
+check(platformBuildInfo?.platformVersion === consumer.platform?.version, 'platform.version', `${platformBuildInfo?.platformVersion || 'missing'} / ${consumer.platform?.version || 'missing'}`);
 check(quality.accessibilityContract === 'ghrab-a11y-v1', 'contract.a11y', quality.accessibilityContract);
 check(quality.performanceContract === 'ghrab-performance-v1', 'contract.performance', quality.performanceContract);
 check(quality.moduleContract === 'ghrab-lazy-modules-v1', 'contract.modules', quality.moduleContract);

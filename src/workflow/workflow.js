@@ -20,9 +20,24 @@ const ludusResult = $("#ludus-compatibility");
 let currentId = "";
 let apps = [];
 const DRAFT_KEY = "ghrab.workflow.draft.v1";
+const SESSION_GENERATION_KEY = "ghrab.access.session-generation.v1";
 let draftTimer = 0;
 let lastSavedSignature = "";
 let initialising = true;
+let lifecycleBlocked = false;
+const HISTORY_GENERATION_FIELD = "ghrabSessionGeneration";
+const currentSessionGeneration = () => G.safeGetItem(SESSION_GENERATION_KEY, "") || "";
+const historyGeneration = (() => {
+  const current = currentSessionGeneration();
+  try {
+    const existing = history.state && typeof history.state === "object" ? history.state : {};
+    if (typeof existing[HISTORY_GENERATION_FIELD] === "string") return existing[HISTORY_GENERATION_FIELD];
+    history.replaceState({ ...existing, [HISTORY_GENERATION_FIELD]: current }, "", location.href);
+  } catch {
+    /* History state is a hardening signal; storage generation remains the fallback. */
+  }
+  return current;
+})();
 
 const qualityLabels = {
   "ai-draft": ["Návrh AI", "AI draft"],
@@ -70,7 +85,7 @@ function setDraftStatus(message) {
   if (host) host.textContent = message;
 }
 function saveDraft() {
-  if (initialising) return;
+  if (initialising || lifecycleBlocked) return;
   const material = collectMaterial();
   const ok = G.safeSetJson(
     DRAFT_KEY,
@@ -88,11 +103,55 @@ function saveDraft() {
 }
 function scheduleDraft() {
   clearTimeout(draftTimer);
+  if (initialising || lifecycleBlocked) return;
   setDraftStatus(G.t("Ukládám koncept…", "Saving draft…"));
   draftTimer = setTimeout(saveDraft, 650);
 }
 function currentIsDirty() {
   return materialSignature(collectMaterial()) !== lastSavedSignature;
+}
+function blankMaterial() {
+  return {
+    schema: "ghrab-material-v1",
+    id: uid(),
+    version: 1,
+    title: "",
+    subject: "",
+    yearGroup: "",
+    level: "",
+    language: "cs",
+    objectives: [],
+    content: { sourceText: "", tasks: [] },
+    quality: { status: "ai-draft" },
+    provenance: { containsPersonalData: true },
+  };
+}
+function sharedDeviceNow() {
+  try {
+    return globalThis.GHRABPlatform?.isSharedDevice?.() === true
+      || sessionStorage.getItem("ghrab.platform.shared-device.v1") === "true";
+  } catch {
+    return false;
+  }
+}
+function scrubRestoredWorkflow({ block = false } = {}) {
+  clearTimeout(draftTimer);
+  lifecycleBlocked = block;
+  initialising = true;
+  G.safeRemoveItem(DRAFT_KEY);
+  setMaterial(blankMaterial());
+  lastSavedSignature = materialSignature(collectMaterial());
+  initialising = false;
+  setDraftStatus(
+    block
+      ? G.t("Předchozí sdílená relace byla ukončena. Vraťte se do Studia a zahajte novou práci.", "The previous shared-device session has ended. Return to Studio and start a new work session.")
+      : G.t("Koncept byl obnoven bezpečně z místního úložiště.", "The draft was safely restored from local storage."),
+  );
+}
+function handleSessionGenerationChange() {
+  if (currentSessionGeneration() === historyGeneration) return false;
+  scrubRestoredWorkflow({ block: true });
+  return true;
 }
 
 function taskData(row) {
@@ -614,13 +673,30 @@ function handoff(app) {
     return;
   }
   currentId = material.id;
-  const payload = G.createHandoff(app.id, material);
-  if (!payload) {
+  let payload = null;
+  try {
+    payload = G.createHandoff(app.id, material);
+  } catch {
     G.showToast(
       G.t(
-        "Předávku se nepodařilo uložit. Uvolněte místní úložiště a zkuste to znovu.",
-        "The handoff could not be saved. Free local storage and try again.",
+        "Předávku se nepodařilo uložit do místního úložiště. Zkontrolujte volné místo a zkuste to znovu.",
+        "The handoff could not be written to local storage. Check available space and try again.",
       ),
+    );
+    return;
+  }
+  if (!payload) {
+    const pending = G.readHandoff();
+    G.showToast(
+      pending
+        ? G.t(
+            "Předchozí předávka stále čeká na vyzvednutí. Nejprve ji dokončete nebo otevřete cílovou aplikaci; nový materiál ji nepřepíše.",
+            "A previous handoff is still waiting to be collected. Finish it or open the target application first; the new material will not overwrite it.",
+          )
+        : G.t(
+            "Předávku se nepodařilo uložit do místního úložiště. Zkontrolujte volné místo a zkuste to znovu.",
+            "The handoff could not be written to local storage. Check available space and try again.",
+          ),
     );
     return;
   }
@@ -632,12 +708,10 @@ function handoff(app) {
   G.recordPilotEvent({
     type: "handoff",
     appId: app.id,
-    materialId: material.id,
     estimatedMinutes: 5,
   });
   const target = new URL(app.launchUrl);
   target.searchParams.set("studioHandoff", "1");
-  target.searchParams.set("material", material.id);
   window.open(target.toString(), "_blank", "noopener,noreferrer");
   G.showToast(
     G.t(
@@ -668,7 +742,6 @@ function saveWorkspace() {
   renderWorkspace();
   G.recordPilotEvent({
     type: "material-saved",
-    materialId: material.id,
     estimatedMinutes: 10,
   });
   G.showToast(
@@ -905,20 +978,7 @@ $("#workflow-clear").addEventListener("click", () => {
     return;
   currentId = "";
   G.safeRemoveItem(DRAFT_KEY);
-  setMaterial({
-    schema: "ghrab-material-v1",
-    id: uid(),
-    version: 1,
-    title: "",
-    subject: "",
-    yearGroup: "",
-    level: "",
-    language: "cs",
-    objectives: [],
-    content: { sourceText: "", tasks: [] },
-    quality: { status: "ai-draft" },
-    provenance: { containsPersonalData: true },
-  });
+  setMaterial(blankMaterial());
 });
 $("#workflow-save").addEventListener("click", saveWorkspace);
 $("#workflow-export").addEventListener("click", () => {
@@ -926,7 +986,6 @@ $("#workflow-export").addEventListener("click", () => {
   downloadJson(material, `${safeFileName(material.title)}.ghrab.json`);
   G.recordPilotEvent({
     type: "material-exported",
-    materialId: material.id,
     estimatedMinutes: 2,
   });
 });
@@ -938,7 +997,6 @@ $("#ludus-export").addEventListener("click", () => {
   );
   G.recordPilotEvent({
     type: "ludus-export",
-    materialId: material.id,
     estimatedMinutes: 15,
   });
 });
@@ -995,8 +1053,33 @@ setDraftStatus(
     "The draft is saved automatically after the first change.",
   ),
 );
+addEventListener("storage", (event) => {
+  if (event.key === SESSION_GENERATION_KEY) handleSessionGenerationChange();
+});
+addEventListener("pagehide", (event) => {
+  if (!event.persisted || !sharedDeviceNow()) return;
+  clearTimeout(draftTimer);
+  initialising = true;
+  setMaterial(blankMaterial());
+  lastSavedSignature = materialSignature(collectMaterial());
+  initialising = false;
+});
+addEventListener("pageshow", (event) => {
+  if (handleSessionGenerationChange()) return;
+  if (!event.persisted || !sharedDeviceNow() || lifecycleBlocked) return;
+  const stored = (() => {
+    try { return JSON.parse(G.safeGetItem(DRAFT_KEY, "null")); } catch { return null; }
+  })();
+  if (stored?.schema === "ghrab-workflow-draft-v1" && G.validMaterial(stored.material)) {
+    initialising = true;
+    setMaterial(stored.material);
+    lastSavedSignature = "";
+    initialising = false;
+    setDraftStatus(G.t("Koncept obnoven z místního úložiště.", "Draft restored from local storage."));
+  }
+});
 addEventListener("beforeunload", (event) => {
-  if (!currentIsDirty()) return;
+  if (lifecycleBlocked || !currentIsDirty()) return;
   event.preventDefault();
   event.returnValue = "";
 });

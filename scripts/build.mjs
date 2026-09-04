@@ -8,6 +8,8 @@ const root = path.resolve(here, "..");
 const src = path.join(root, "src");
 const dist = path.join(root, "dist");
 const pkg = JSON.parse(await readFile(path.join(root, "package.json"), "utf8"));
+const consumer = JSON.parse(await readFile(path.join(root, "ghrab-platform.consumer.json"), "utf8"));
+if (consumer.appVersion !== pkg.version) throw new Error(`Consumer appVersion ${consumer.appVersion} neodpovídá package ${pkg.version}.`);
 
 await checkAccessBundleFreshness({ root, required: false });
 
@@ -130,9 +132,9 @@ await writeFile(
       builtAt: new Date().toISOString(),
       syncMode: syncReport.mode,
       platform: {
-        contract: "ghrab-platform-v1",
-        version: "1.1.0",
-        brandVersion: "1.0.0",
+        contract: consumer.platform.contract,
+        version: consumer.platform.version,
+        brandVersion: consumer.brand.version,
         registrySchema: "ghrab-app-registry-v2",
       },
       aiCore: {
@@ -158,6 +160,9 @@ for (const buildOnlyConfig of [
   "sources.json",
   "ai-readiness-baseline.json",
   "ai-core-consumers.json",
+  // Historical P0 compatibility profile is source-only. It enables direct-provider
+  // semantics for migration tests and must not be published as a runtime asset.
+  "deployment.school-server-p0.json",
 ]) {
   await rm(path.join(dist, "config", buildOnlyConfig), { force: true });
 }
@@ -284,3 +289,33 @@ for (const file of await walk(dist)) {
     : revisionModuleImports(content, pkg.version);
   if (revised !== content) await writeFile(file, revised, "utf8");
 }
+
+// P5 performance hygiene: compact machine-readable JSON only in dist. Source files
+// remain human-readable. Service-worker URLs are content-agnostic, so this does not
+// alter cache semantics; it only reduces transfer/storage size.
+for (const relative of [
+  "config/changelog.json",
+  "config/apps.generated.json",
+  "config/apps.fallback.json",
+  "config/platform-consumers.json",
+  "manifest.webmanifest",
+]) {
+  const file = path.join(dist, relative);
+  try {
+    const parsed = JSON.parse(await readFile(file, "utf8"));
+    await writeFile(file, `${JSON.stringify(parsed)}\n`, "utf8");
+  } catch (error) {
+    if (error?.code !== "ENOENT") throw new Error(`Nelze zkompaktovat ${relative}: ${error.message}`);
+  }
+}
+
+// Keep at least one whitespace separator between HTML lines while removing only
+// indentation before tags. This is deliberately not a general HTML minifier.
+const rootIndex = path.join(dist, "index.html");
+const rootIndexText = await readFile(rootIndex, "utf8");
+const rootIndexCompacted = rootIndexText
+  .split("\n")
+  .map((line) => line.replace(/^[ \\t]+(?=<)/u, ""))
+  .join("\n");
+if (rootIndexCompacted !== rootIndexText) await writeFile(rootIndex, rootIndexCompacted, "utf8");
+

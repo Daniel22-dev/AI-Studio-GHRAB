@@ -246,7 +246,8 @@ check(workflowJs.includes("G.createHandoff(app.id, material)"), "Workflow nevytv
 check(workflowJs.includes('target.searchParams.set("studioHandoff", "1")'), "Workflow neoznacuje otevreni cilove aplikace handoff parametrem.");
 
 // Functional contract test for the shared handoff v2: create -> validate -> peek -> consume.
-const platformCode = await text("vendor/ghrab-platform-1.1.0/ghrab-platform.js");
+const consumerForPlatform = JSON.parse(await text("ghrab-platform.consumer.json"));
+const platformCode = await text(`vendor/ghrab-platform-${consumerForPlatform.platform.version}/ghrab-platform.js`);
 const makeStorage = () => {
   const data = new Map();
   return {

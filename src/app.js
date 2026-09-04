@@ -1,3 +1,4 @@
+import { sanitizePilotEvent, sanitizePilotEventList } from "./privacy/pilot-event.js";
 import { validateMaterialPackage } from "./shared/material-validator.js";
 import { buildPilotSummary } from "./shared/safe-export.js";
 import {
@@ -931,6 +932,9 @@ function createHandoff(target, material) {
       writeLegacy: true,
     });
   }
+  const pending = parseLocal(LEGACY_HANDOFF_KEY, null);
+  if (pending && Date.parse(pending.expiresAt || "") >= Date.now()) return null;
+  if (pending) safeRemoveItem(LEGACY_HANDOFF_KEY);
   const legacy = {
     schema: "ghrab-handoff-v1",
     target,
@@ -975,29 +979,36 @@ function clearHandoff() {
   const legacy = safeRemoveItem(LEGACY_HANDOFF_KEY);
   return current || legacy;
 }
+function cleanPilotEventStore(key) {
+  const list = parseLocal(key, []);
+  const safeList = sanitizePilotEventList(list);
+  if (JSON.stringify(safeList) !== JSON.stringify(Array.isArray(list) ? list : [])) safeSetJson(key, safeList);
+  return safeList;
+}
 function getPilotEvents() {
-  const list = parseLocal(PILOT_EVENTS_KEY, []);
-  return Array.isArray(list) ? list : [];
+  return cleanPilotEventStore(PILOT_EVENTS_KEY);
 }
 function getTestPilotEvents() {
-  const list = parseLocal(TEST_EVENTS_KEY, []);
-  return Array.isArray(list) ? list : [];
+  return cleanPilotEventStore(TEST_EVENTS_KEY);
 }
 function recordPilotEvent(event) {
   const key = telemetryEventKey();
+  const safeEvent = sanitizePilotEvent(event);
+  if (!safeEvent) return null;
   const item = {
     id: `${Date.now().toString(36)}-${Math.random().toString(36).slice(2, 8)}`,
     at: new Date().toISOString(),
-    ...event,
+    ...safeEvent,
   };
-  const list = parseLocal(key, []);
-  const safeList = Array.isArray(list) ? list : [];
+  const safeList = cleanPilotEventStore(key);
   safeList.push(item);
   return safeSetJson(key, safeList.slice(-2000)) ? item : null;
 }
 function clearPilotEvents() {
   return safeRemoveItem(PILOT_EVENTS_KEY);
 }
+cleanPilotEventStore(PILOT_EVENTS_KEY);
+cleanPilotEventStore(TEST_EVENTS_KEY);
 function downloadJson(data, filename) {
   const blob = new Blob([JSON.stringify(data, null, 2) + "\n"], {
     type: "application/json;charset=utf-8",

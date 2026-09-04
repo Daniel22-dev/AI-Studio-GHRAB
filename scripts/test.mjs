@@ -1595,7 +1595,6 @@ const required = [
   "config/access-public-key.json",
   "config/revoked-access.json",
   "config/deployment.json",
-  "config/deployment.school-server-p0.json",
   "config/deployment.school-server.json",
   "config/deployment.school-server.example.json",
   "config/ai-core.json",
@@ -1618,6 +1617,8 @@ const required = [
 for (const rel of required)
   if (!distFiles.includes(path.join(dist, rel)))
     fail(`Build neobsahuje ${rel}`);
+if (distFiles.includes(path.join(dist, "config/deployment.school-server-p0.json")))
+  fail("Veřejný build publikuje historický P0 direct-provider profil.");
 const builtSw = await readFile(path.join(dist, "sw.js"), "utf8");
 
 const localRevision = `v=${pkg.version}`;

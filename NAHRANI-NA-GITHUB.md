@@ -1,8 +1,10 @@
-# Nahrání AI Studio GHRAB 0.21.35
+# Nahrání AI Studio GHRAB 0.21.40
 
-> Aktuální verze: **0.21.35** · etapa P5
+> Aktuální verze: **0.21.40** · etapa P5
 
-Tato verze nasazuje veřejný balíček vytvořený v **Centru zabezpečení** a zneplatňuje jedno staré učitelské oprávnění kolegyně. Nové oprávnění správce zástupce má jiné JTI a zůstává platné. Soukromý konfigurační klíč není ve zdrojáku ani ve výsledném buildu. P5, offline-start a ostatní platná oprávnění zůstávají zachovány. AI Studio se nadále nasazuje jako poslední, po všech samostatných aplikacích.
+> **BLOKACE NASAZENÍ:** nový nezávislý GARP 2.3 cyklus byl výslovně zahájen. Verze 0.21.40 je kandidát po opravě D-01 / HIGH z první nezávislé kontroly tohoto nového cyklu a před nasazením musí projít jeho druhou Claude kontrolou a uzavřením release gate. Do té doby se tento postup NESMÍ použít k produkčnímu nasazení a reálná studentská data se nesmí použít.
+
+Tato verze je opravný bezpečnostní kandidát nového výslovně zahájeného cyklu GARP 2.3 po opravě D-01 a zatím není schválena k nasazení. Zpevňuje ukončení práce na sdíleném zařízení, server-session scope, datové mazání a platformní telemetrii. Podepisovací klíče, existující revokace a vydaná oprávnění zůstávají beze změny; nasazení musí projít stejnými P5 a access gates jako předchozí release.
 
 ## Povinné pořadí
 

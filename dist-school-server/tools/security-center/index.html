@@ -1,0 +1,176 @@
+<!doctype html>
+<html lang="cs" data-theme="dark" data-ghrab-app-id="ai-studio" data-ghrab-app-version="0.21.40" data-ghrab-platform-contract="ghrab-platform-v1" data-theme-preference="dark">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width,initial-scale=1" />
+    <meta name="theme-color" content="#030915" />
+    <meta
+      http-equiv="Content-Security-Policy"
+      content="default-src 'self'; script-src 'self'; style-src 'self'; img-src 'self' data:; connect-src 'self'; object-src 'none'; base-uri 'self'; form-action 'self'"
+    />
+    <title>Centrum zabezpečení · AI Studio GHRAB</title>
+    <link rel="manifest" href="../../manifest.webmanifest" />
+    <link rel="icon" href="../../assets/brand/icon-32.png" />
+    <link rel="stylesheet" href="../../styles.css?v=0.21.40" />
+    <link rel="stylesheet" href="../../polish.css?v=0.21.40" />
+    <link rel="stylesheet" href="./security-center.css?v=0.21.40" />
+  
+    <!-- GHRAB Platform 1.1.2 · generated -->
+    <link rel="stylesheet" href="../../ghrab/ghrab-platform.css?v=0.21.40" data-ghrab-platform-style>
+    <script id="ghrab-platform-config" type="application/json">{"appId":"ai-studio","appName":"AI Studio GHRAB","appVersion":"0.21.40","requiredPlatformRange":">=1.1.2 \u003c2.0.0","platformContract":"ghrab-platform-v1","brandVersion":"1.0.0","autoFooter":true,"theme":{"supported":["dark"],"default":"dark"},"storageMigration":{"id":"p2-storage-namespace-v2","backup":"full","mappings":[{"legacy":"ghrab.language","canonical":"ghrab.ai-studio.language.v1"},{"legacy":"ghrab.motion","canonical":"ghrab.ai-studio.motion.v1"},{"legacy":"ghrab.workspace.v1","canonical":"ghrab.ai-studio.workspace.v1"},{"legacy":"ghrab.workflow.draft.v1","canonical":"ghrab.ai-studio.workflow.draft.v1"},{"legacy":"ghrab.report.settings.v2","canonical":"ghrab.ai-studio.report.settings.v2"},{"legacy":"ghrab.report.imports.v1","canonical":"ghrab.ai-studio.report.imports.v1"},{"legacy":"ghrab.access.issued-registry.v1","canonical":"ghrab.ai-studio.access.issued-registry.v1"},{"legacy":"ghrab.favoriteApps.v1","canonical":"ghrab.ai-studio.favoriteApps.v1"},{"legacy":"ghrab.pwa.install-dismissed-until","canonical":"ghrab.ai-studio.pwa.install-dismissed-until.v1"}]},"bridgeMaxBytes":500000,"artifactContract":"ghrab-artifact-envelope-v1","quality":{"schema":"ghrab-quality-consumer-v1","accessibilityContract":"ghrab-a11y-v1","performanceContract":"ghrab-performance-v1","moduleContract":"ghrab-lazy-modules-v1","requireBudget":true,"performanceBudget":{"distBytes":2250000,"entryHtmlBytes":50000,"entryCriticalBytes":500000,"largestInlineScriptBytes":30000,"precacheBytes":1800000,"largestFileBytes":200000,"duplicateLargeBytes":260000},"modules":{"required":["modules/portal-effects.js","modules/registry-client.js"]},"referenceProfile":{"cpuSlowdown":4,"viewport":"1366x768","memoryClassGb":4,"viewportWidths":[1280,390,320]},"stage":"P5","a11yContract":"ghrab-a11y-v1","requireRuntimeBudget":true,"runtimeBudget":{"maxDomNodes":1000,"maxRenderReadyMs":3000,"maxJsHeapUsedBytes":8000000,"maxLayoutDurationMs":1200,"maxTaskDurationMs":2700},"finalRelease":true,"cleanInstallRequired":true,"a11yGate":"ghrab-p5-runtime-a11y-v2","releaseGate":"ghrab-p5-release-v2","runtimeAudit":{"scriptsExecuted":true,"transport":"local-http","dialogStates":true,"viewports":[1280,390,320],"pages":["index.html","app/index.html","pilot/index.html","library/index.html","automation/index.html","safety/index.html","workflow/index.html","demo/index.html"]},"lazyMedia":{"prefixes":["assets/presentation/"],"maxBytes":65000000,"maxSingleFileBytes":60000000}}}</script>
+    <script defer src="../../ghrab/ghrab-platform.js?v=0.21.40" data-ghrab-platform-loader></script>
+  </head>
+  <body
+    data-page="security-center"
+    data-base="../../"
+    data-title-cs="Centrum zabezpečení · AI Studio GHRAB"
+    data-title-en="Security Centre · AI Studio GHRAB"
+  >
+    <a class="skip-link" href="#main">Přejít na obsah</a>
+    <header class="site-header cosmic-header">
+      <a class="brand" href="../../" aria-label="AI Studio GHRAB — domů"
+        ><span class="brand-orbit"
+          ><img src="../../assets/brand/brand-mark.svg" alt="" width="46" height="46" /></span
+        ><span
+          ><strong>AI Studio <em>GHRAB</em></strong
+          ><small>Centrum zabezpečení</small></span
+        ></a
+      ><button class="nav-toggle" type="button" aria-expanded="false" aria-controls="main-nav">
+        ☰
+      </button>
+      <nav id="main-nav" class="main-nav" aria-label="Hlavní navigace">
+        <a href="../../" data-nav="home" data-cs="Aplikace" data-en="Applications">Aplikace</a
+        ><a href="../../library/" data-nav="library" data-cs="Materiály" data-en="Resources">Materiály</a
+        ><a href="../../manualy/" data-nav="manualy" data-cs="Manuály" data-en="Manuals">Manuály</a
+        ><a href="../../safety/" data-nav="safety" data-cs="Bezpečnost" data-en="Safety">Bezpečnost</a
+        ><a href="../../access/" data-nav="access" data-cs="Můj přístup" data-en="My access">Můj přístup</a
+        ><a href="../../changelog/" data-nav="changelog" data-cs="Katalog změn" data-en="Change catalogue">Katalog změn</a
+        ><a href="../../?view=teacher" data-ops-nav hidden data-colleague-preview-link data-nav="colleague-preview" data-cs="Pohled kolegy" data-en="Colleague view">Pohled kolegy</a
+        ><a href="../../automation/" data-ops-nav hidden data-nav="automation" data-cs="Správa" data-en="Administration">Správa</a
+        ><a href="../../demo/" data-admin-nav hidden data-nav="demo" data-cs="Prezentace" data-en="Presentation">Prezentace</a>
+      </nav>
+      <div class="header-actions">
+        <div class="segmented" aria-label="Jazyk">
+          <button type="button" data-lang="cs" aria-pressed="true">CZ</button
+          ><button type="button" data-lang="en" aria-pressed="false">EN</button>
+        </div>
+      </div>
+    </header>
+    <main id="main">
+      <section class="page-hero shell-wide">
+        <p class="breadcrumb"><a href="../../automation/">Správa</a> / Centrum zabezpečení</p>
+        <p class="eyebrow">POUZE HLAVNÍ SPRÁVCE</p>
+        <h1>Zneplatnění přístupu bez posílání soukromého klíče.</h1>
+        <p>
+          Studio vytvoří podpis přímo ve vašem prohlížeči. Soukromý konfigurační
+          klíč se nikam neodesílá, neukládá se do Studia a po deseti minutách nebo
+          po stažení výsledku se vymaže z paměti.
+        </p>
+      </section>
+
+      <section class="section shell-wide security-center">
+        <aside class="security-local-banner" role="note">
+          <strong>Soukromý klíč zůstává u vás.</strong>
+          <span>
+            Mně ani Claudovi pošlete pouze výsledný soubor začínající
+            <code>VEREJNA-AKTUALIZACE</code>. Soubor s názvem
+            <code>SOUKROMY-KONFIGURACNI-KLIC-NEPOSILAT</code> neposílejte nikdy.
+          </span>
+        </aside>
+
+        <div id="security-summary" class="security-summary" aria-live="polite"></div>
+
+        <article class="panel security-step">
+          <div class="security-step-number">1</div>
+          <div>
+            <p class="eyebrow">KONTROLA ZNEPLATNĚNÍ</p>
+            <h2>Co se má zablokovat</h2>
+            <p>
+              Seznam se přebírá z Evidence přístupů v tomto prohlížeči. Pokud zde
+              starý přístup nevidíte, vraťte se do evidence a zvolte u něj
+              <strong>Připravit zneplatnění</strong>.
+            </p>
+            <div id="pending-revocations" class="pending-revocations"></div>
+            <a class="button secondary" href="../access-registry/">Otevřít Evidenci přístupů</a>
+          </div>
+        </article>
+
+        <article class="panel security-step">
+          <div class="security-step-number">2</div>
+          <div>
+            <p class="eyebrow">MÍSTNÍ PODPIS</p>
+            <h2>Načtěte konfigurační podpisový klíč</h2>
+            <p>
+              Jde o nový konfigurační klíč vytvořený při zabezpečení verze 0.21.34,
+              nikoli o starší klíč pro vydávání oprávnění kolegům.
+            </p>
+            <label class="security-file-label" for="config-private-key">
+              <span>Vybrat soukromý konfigurační klíč</span>
+              <small>JSON · maximálně 64 kB · zpracování pouze v tomto okně</small>
+            </label>
+            <input
+              id="config-private-key"
+              class="security-file-input"
+              type="file"
+              accept="application/json,.json"
+            />
+            <div class="security-inline-actions">
+              <button id="clear-config-key" class="button ghost" type="button" disabled>
+                Vymazat klíč z paměti
+              </button>
+            </div>
+            <p id="key-feedback" class="form-feedback" role="status" aria-live="polite">
+              Klíč zatím není načten.
+            </p>
+          </div>
+        </article>
+
+        <article class="panel security-step">
+          <div class="security-step-number">3</div>
+          <div>
+            <p class="eyebrow">VEŘEJNÝ VÝSTUP</p>
+            <h2>Vytvořte bezpečný aktualizační balíček</h2>
+            <p>
+              Výstup obsahuje jen veřejný klíč, nový podepsaný seznam zneplatnění
+              a podpis. Samotné označení ani stažení souboru ještě přístup
+              centrálně neblokuje; balíček se musí ověřit, začlenit a nasadit.
+            </p>
+            <div class="security-inline-actions">
+              <button id="create-update-pack" class="button primary" type="button" disabled>
+                Vytvořit veřejný aktualizační balíček
+              </button>
+              <button id="download-update-pack" class="button secondary" type="button" hidden>
+                Stáhnout veřejný balíček znovu
+              </button>
+            </div>
+            <p id="security-feedback" class="form-feedback" role="status" aria-live="polite"></p>
+          </div>
+        </article>
+
+        <article class="panel security-finish">
+          <p class="eyebrow">CO POTOM</p>
+          <h2>Pošlete mi jen veřejný balíček a aktuální zdroják.</h2>
+          <ol>
+            <li>Stáhněte soubor <strong>VEREJNA-AKTUALIZACE…json</strong>.</li>
+            <li>V novém vlákně nahrajte tento veřejný JSON a aktuální ZIP AI Studia.</li>
+            <li>Já balíček ověřím, začlením a připravím kandidáta pro kontrolu Claude.</li>
+            <li>Teprve po nasazení nové zelené verze je starý přístup centrálně zablokovaný.</li>
+          </ol>
+        </article>
+      </section>
+    </main>
+    <footer class="site-footer">
+      <div class="shell-wide footer-inner">
+        <div>
+          <strong>AI Studio GHRAB</strong>
+          <p>
+            Autor a vývojový garant: Daniel Baláž · Školní projekt Gymnázia,
+            Ostrava-Hrabůvka · verze 0.21.40
+          </p>
+        </div>
+      </div>
+    </footer>
+    <script src="../../app.js?v=0.21.40" type="module"></script>
+    <script src="./security-center.js?v=0.21.40" type="module"></script>
+  </body>
+</html>

@@ -409,12 +409,21 @@ function startActiveTimeTracker(appId, keys) {
 }
 
 
+function safeGatePageUrl() {
+  try {
+    const url = new URL(location.href);
+    return `${url.origin}${url.pathname}`;
+  } catch {
+    return String(location.pathname || "");
+  }
+}
+
 async function copyGateDiagnostics(appId, access) {
   const payload = [
     "AI Studio GHRAB – diagnostika přístupové brány",
     `Aplikace: ${appId}`,
     `Důvod: ${access?.reason || "unknown"}`,
-    `Stránka: ${location.href}`,
+    `Stránka: ${safeGatePageUrl()}`,
     `Čas: ${new Date().toISOString()}`,
     `Online: ${navigator.onLine ? "ano" : "ne"}`,
     `Prohlížeč: ${navigator.userAgent}`,
@@ -596,6 +605,49 @@ export function unlockProtectedScripts(options = {}) {
   return helper(options);
 }
 
+function installLiveAccessMonitor(appId, options = {}, initialSnapshot = null) {
+  const key = `ghrabAccessMonitor${String(appId).replace(/[^a-z0-9]/gi, "_")}`;
+  if (globalThis[key]) return;
+  let refreshInFlight = false;
+  let invalidating = false;
+  const invalidateIfNeeded = () => {
+    if (invalidating) return;
+    const decision = hasAppAccess(appId);
+    if (decision.enabled) return;
+    invalidating = true;
+    try { location.reload(); }
+    catch { document.documentElement.dataset.ghrabAccess = "denied"; }
+  };
+  const refresh = async () => {
+    if (refreshInFlight || invalidating) return;
+    refreshInFlight = true;
+    try {
+      await initialiseAccess(options);
+      invalidateIfNeeded();
+    } catch {
+      invalidating = true;
+      try { location.reload(); }
+      catch { document.documentElement.dataset.ghrabAccess = "denied"; }
+    } finally {
+      refreshInFlight = false;
+    }
+  };
+  const onVisibility = () => { if (document.visibilityState !== "hidden") void refresh(); };
+  document.addEventListener("ghrab:access-changed", invalidateIfNeeded);
+  document.addEventListener("visibilitychange", onVisibility, { passive: true });
+  window.addEventListener("focus", () => void refresh(), { passive: true });
+  window.addEventListener("pageshow", () => void refresh(), { passive: true });
+  const interval = window.setInterval(() => void refresh(), 5 * 60 * 1000);
+  window.addEventListener("pagehide", () => window.clearInterval(interval), { once: true });
+  const expiresAt = Number(initialSnapshot?.permit?.exp);
+  if (Number.isFinite(expiresAt)) {
+    const skewMs = initialSnapshot?.mode === "server-session" ? 0 : 5 * 60 * 1000;
+    const delay = Math.max(0, Math.min(0x7fffffff, expiresAt * 1000 + skewMs + 1000 - Date.now()));
+    window.setTimeout(() => void refresh(), delay);
+  }
+  globalThis[key] = true;
+}
+
 export async function protectApp(appId, options = {}) {
   document.documentElement.dataset.ghrabAccess = "checking";
   await waitForLocalPlatformUnlock(options);
@@ -608,6 +660,7 @@ export async function protectApp(appId, options = {}) {
   const access = hasAppAccess(appId);
   if (snapshot.ready && access.enabled) {
     document.documentElement.dataset.ghrabAccess = "granted";
+    installLiveAccessMonitor(appId, options, snapshot);
     const mode = modeForSnapshot(snapshot);
     const keys = keysForMode(mode);
     if (options.telemetry !== false) {

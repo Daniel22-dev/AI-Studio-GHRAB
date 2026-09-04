@@ -1,0 +1,265 @@
+<!doctype html>
+<html lang="cs" data-theme="dark" data-ghrab-app-id="ai-studio" data-ghrab-app-version="0.21.40" data-ghrab-platform-contract="ghrab-platform-v1" data-theme-preference="dark">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width,initial-scale=1" />
+    <meta name="theme-color" content="#030915" />
+    <meta
+      http-equiv="Content-Security-Policy"
+      content="default-src 'self'; script-src 'self'; style-src 'self'; img-src 'self' data:; connect-src 'self'; object-src 'none'; base-uri 'self'; form-action 'self'"
+    />
+    <title>Pilot · AI Studio GHRAB</title>
+    <link rel="manifest" href="../manifest.webmanifest" />
+    <link rel="icon" href="../assets/brand/icon-32.png" sizes="32x32" />
+    <link rel="stylesheet" href="../styles.css?v=0.21.40" />
+    <link rel="stylesheet" href="../polish.css?v=0.21.40" />
+
+    <!-- GHRAB Platform 1.1.2 · generated -->
+    <link rel="stylesheet" href="../ghrab/ghrab-platform.css?v=0.21.40" data-ghrab-platform-style>
+    <script id="ghrab-platform-config" type="application/json">{"appId":"ai-studio","appName":"AI Studio GHRAB","appVersion":"0.21.40","requiredPlatformRange":">=1.1.2 \u003c2.0.0","platformContract":"ghrab-platform-v1","brandVersion":"1.0.0","autoFooter":true,"theme":{"supported":["dark"],"default":"dark"},"storageMigration":{"id":"p2-storage-namespace-v2","backup":"full","mappings":[{"legacy":"ghrab.language","canonical":"ghrab.ai-studio.language.v1"},{"legacy":"ghrab.motion","canonical":"ghrab.ai-studio.motion.v1"},{"legacy":"ghrab.workspace.v1","canonical":"ghrab.ai-studio.workspace.v1"},{"legacy":"ghrab.workflow.draft.v1","canonical":"ghrab.ai-studio.workflow.draft.v1"},{"legacy":"ghrab.report.settings.v2","canonical":"ghrab.ai-studio.report.settings.v2"},{"legacy":"ghrab.report.imports.v1","canonical":"ghrab.ai-studio.report.imports.v1"},{"legacy":"ghrab.access.issued-registry.v1","canonical":"ghrab.ai-studio.access.issued-registry.v1"},{"legacy":"ghrab.favoriteApps.v1","canonical":"ghrab.ai-studio.favoriteApps.v1"},{"legacy":"ghrab.pwa.install-dismissed-until","canonical":"ghrab.ai-studio.pwa.install-dismissed-until.v1"}]},"bridgeMaxBytes":500000,"artifactContract":"ghrab-artifact-envelope-v1","quality":{"schema":"ghrab-quality-consumer-v1","accessibilityContract":"ghrab-a11y-v1","performanceContract":"ghrab-performance-v1","moduleContract":"ghrab-lazy-modules-v1","requireBudget":true,"performanceBudget":{"distBytes":2250000,"entryHtmlBytes":50000,"entryCriticalBytes":500000,"largestInlineScriptBytes":30000,"precacheBytes":1800000,"largestFileBytes":200000,"duplicateLargeBytes":260000},"modules":{"required":["modules/portal-effects.js","modules/registry-client.js"]},"referenceProfile":{"cpuSlowdown":4,"viewport":"1366x768","memoryClassGb":4,"viewportWidths":[1280,390,320]},"stage":"P5","a11yContract":"ghrab-a11y-v1","requireRuntimeBudget":true,"runtimeBudget":{"maxDomNodes":1000,"maxRenderReadyMs":3000,"maxJsHeapUsedBytes":8000000,"maxLayoutDurationMs":1200,"maxTaskDurationMs":2700},"finalRelease":true,"cleanInstallRequired":true,"a11yGate":"ghrab-p5-runtime-a11y-v2","releaseGate":"ghrab-p5-release-v2","runtimeAudit":{"scriptsExecuted":true,"transport":"local-http","dialogStates":true,"viewports":[1280,390,320],"pages":["index.html","app/index.html","pilot/index.html","library/index.html","automation/index.html","safety/index.html","workflow/index.html","demo/index.html"]},"lazyMedia":{"prefixes":["assets/presentation/"],"maxBytes":65000000,"maxSingleFileBytes":60000000}}}</script>
+    <script defer src="../ghrab/ghrab-platform.js?v=0.21.40" data-ghrab-platform-loader></script>
+  </head>
+  <body
+    data-page="pilot"
+    data-title-cs="Pilot · AI Studio GHRAB"
+    data-title-en="Pilot · AI Studio GHRAB"
+  >
+    <a
+      class="skip-link"
+      href="#main"
+      data-cs="Přejít na obsah"
+      data-en="Skip to content"
+      >Přejít na obsah</a
+    >
+    <header class="site-header cosmic-header">
+      <a class="brand" href="../" aria-label="AI Studio GHRAB — domů"
+        ><span class="brand-orbit"
+          ><img
+            src="../assets/brand/brand-mark.svg"
+            alt=""
+            width="46"
+            height="46" /></span
+        ><span
+          ><strong>AI Studio <em>GHRAB</em></strong
+          ><small
+            data-cs="Průběžné ověřování ve školním roce"
+            data-en="School-year controlled evaluation"
+            >Průběžné ověřování ve školním roce</small
+          ></span
+        ></a
+      >
+      <button
+        class="nav-toggle"
+        type="button"
+        aria-expanded="false"
+        aria-controls="main-nav"
+        data-cs-aria="Otevřít navigaci"
+        data-en-aria="Open navigation"
+      >
+        ☰
+      </button>
+      <nav id="main-nav" class="main-nav" aria-label="Hlavn&#237; navigace">
+        <a href="../" data-nav="home" data-cs="Aplikace" data-en="Applications">Aplikace</a
+        ><a href="../library/" data-nav="library" data-cs="Materi&#225;ly" data-en="Resources">Materi&#225;ly</a
+        ><a href="../manualy/" data-nav="manualy" data-cs="Manu&#225;ly" data-en="Manuals">Manu&#225;ly</a
+        ><a href="../safety/" data-nav="safety" data-cs="Bezpe&#269;nost" data-en="Safety">Bezpe&#269;nost</a
+        ><a href="../access/" data-nav="access" data-cs="M&#367;j p&#345;&#237;stup" data-en="My access">M&#367;j p&#345;&#237;stup</a
+        ><a href="../changelog/" data-nav="changelog" data-cs="Katalog zm&#283;n" data-en="Change catalogue">Katalog zm&#283;n</a
+        ><a href="../?view=teacher" data-ops-nav hidden data-colleague-preview-link data-nav="colleague-preview" data-cs="Pohled kolegy" data-en="Colleague view">Pohled kolegy</a
+        ><a href="../automation/" data-ops-nav hidden data-nav="automation" data-cs="Spr&#225;va" data-en="Administration">Spr&#225;va</a
+        ><a href="../demo/" data-admin-nav hidden data-nav="demo" data-cs="Prezentace" data-en="Presentation">Prezentace</a>
+      </nav>
+      <div class="header-actions">
+        <div class="segmented" aria-label="Jazyk">
+          <button type="button" data-lang="cs" aria-pressed="true">CZ</button
+          ><button type="button" data-lang="en" aria-pressed="false">EN</button>
+        </div>
+      </div>
+    </header>
+    <main id="main">
+      <section class="page-hero shell-wide">
+        <p class="breadcrumb"><a href="../">AI Studio</a> / Pilot</p>
+        <p
+          class="eyebrow"
+          data-cs="ŠKOLNÍ ROK · MĚŘITELNÝ PŘÍNOS · BEZ SLEDOVÁNÍ LIDÍ"
+          data-en="SCHOOL YEAR · MEASURABLE IMPACT · NO PEOPLE TRACKING"
+        >
+          ŠKOLNÍ ROK · MĚŘITELNÝ PŘÍNOS · BEZ SLEDOVÁNÍ LIDÍ
+        </p>
+        <h1
+          data-cs="Nejdříve ověřit hodnotu. Potom profesionalizovat provoz."
+          data-en="Validate the value first. Professionalise operations afterwards."
+        >
+          Nejdříve ověřit hodnotu. Potom profesionalizovat provoz.
+        </h1>
+        <p
+          data-cs="Pilotní centrum automaticky eviduje spuštění, aktivní čas a technické výsledky generování. Nečte obsah práce ani klávesové vstupy. Data zůstávají v tomto prohlížeči a kolega je může bezpečně exportovat správci pilotu."
+          data-en="The pilot centre automatically records launches, active time and technical generation outcomes. It does not read work content or keystrokes. Data stay in this browser and can be safely exported to the pilot administrator."
+        >
+          Pilotní centrum automaticky eviduje spuštění, aktivní čas a technické
+          výsledky generování. Nečte obsah práce ani klávesové vstupy. Data
+          zůstávají v tomto prohlížeči a kolega je může bezpečně exportovat
+          správci pilotu.
+        </p>
+      </section>
+
+      <section class="section shell-wide pilot-dashboard">
+        <div class="pilot-main">
+          <div id="pilot-kpis" class="pilot-kpis"></div>
+          <section class="panel">
+            <div class="section-heading compact">
+              <div>
+                <p class="eyebrow" data-cs="PRŮBĚH" data-en="PROGRESS">
+                  PRŮBĚH
+                </p>
+                <h2
+                  data-cs="Volné fáze školního pilotu"
+                  data-en="Flexible school pilot phases"
+                >
+                  Volné fáze školního pilotu
+                </h2>
+              </div>
+              <div class="field week-field">
+                <label
+                  for="pilot-phase"
+                  data-cs="Aktuální fáze"
+                  data-en="Current phase"
+                  >Aktuální fáze</label
+                ><select id="pilot-phase">
+                  <option value="1">1 · Rámec</option>
+                  <option value="2">2 · Ověření</option>
+                  <option value="3">3 · Rozšíření</option>
+                  <option value="4">4 · Vyhodnocení</option>
+                </select>
+              </div>
+            </div>
+            <div id="pilot-timeline" class="timeline"></div>
+          </section>
+          <section class="panel">
+            <p class="eyebrow" data-cs="AKTIVITA" data-en="ACTIVITY">
+              AKTIVITA
+            </p>
+            <h2
+              data-cs="Poslední anonymní záznamy"
+              data-en="Latest anonymous entries"
+            >
+              Poslední anonymní záznamy
+            </h2>
+            <div id="pilot-events" class="pilot-event-list"></div>
+          </section>
+        </div>
+
+        <aside class="pilot-side">
+          <section class="panel">
+            <p
+              class="eyebrow"
+              data-cs="AUTOMATICKÉ MĚŘENÍ"
+              data-en="AUTOMATIC MEASUREMENT"
+            >
+              AUTOMATICKÉ MĚŘENÍ
+            </p>
+            <h2 data-cs="Bez ručního vykazování" data-en="No manual reporting">
+              Bez ručního vykazování
+            </h2>
+            <div class="measurement-list">
+              <div>
+                <strong
+                  data-cs="Spuštění aplikací"
+                  data-en="Application launches"
+                  >Spuštění aplikací</strong
+                >
+                <p
+                  data-cs="Započítá se otevření aplikace ze Studia."
+                  data-en="Opening an application from the Studio is counted."
+                >
+                  Započítá se otevření aplikace ze Studia.
+                </p>
+              </div>
+              <div>
+                <strong data-cs="Aktivní čas" data-en="Active time"
+                  >Aktivní čas</strong
+                >
+                <p
+                  data-cs="Počítá se jen viditelná karta se zaměřeným oknem a nedávnou interakcí. Po 5 minutách nečinnosti se měření zastaví."
+                  data-en="Only a visible tab in a focused window with recent interaction is counted. Tracking stops after 5 minutes of inactivity."
+                >
+                  Počítá se jen viditelná karta se zaměřeným oknem a nedávnou
+                  interakcí. Po 5 minutách nečinnosti se měření zastaví.
+                </p>
+              </div>
+              <div>
+                <strong data-cs="Generování testů" data-en="Test generation"
+                  >Generování testů</strong
+                >
+                <p
+                  data-cs="Generátor zapíše pouze technický výsledek: úspěch, chyba nebo zrušený pokus. Obsah testu se neukládá."
+                  data-en="The Generator records only the technical outcome: success, error or cancellation. Test content is not stored."
+                >
+                  Generátor zapíše pouze technický výsledek: úspěch, chyba nebo
+                  zrušený pokus. Obsah testu se neukládá.
+                </p>
+              </div>
+            </div>
+          </section>
+          <section class="panel">
+            <p
+              class="eyebrow"
+              data-cs="SOUHRNNÝ REPORT"
+              data-en="AGGREGATE REPORT"
+            >
+              SOUHRNNÝ REPORT
+            </p>
+            <div class="report-actions">
+              <a
+                class="button primary wide"
+                href="../report/"
+                data-cs="Otevřít souhrnný report kolegů"
+                data-en="Open colleagues aggregate report"
+                >Otevřít souhrnný report kolegů</a
+              >
+              <p
+                data-cs="Kolegové si měsíční anonymní JSON stahují ve svém Můj přístup a posílají jej správci. Zde jako správce soubory neodesíláte sám sobě; otevřete souhrnný report, importujete soubory kolegů a vytvoříte agregovaný výstup."
+                data-en="Colleagues download their monthly anonymous JSON in My access and send it to the administrator. As administrator you do not send a file to yourself here; open the aggregate report, import colleagues files and create the combined output."
+              >
+                Kolegové si měsíční anonymní JSON stahují ve svém Můj přístup
+                a posílají jej správci. Zde jako správce soubory neodesíláte
+                sám sobě; otevřete souhrnný report, importujete soubory kolegů
+                a vytvoříte agregovaný výstup.
+              </p><a
+                class="button ghost wide"
+                href="../manualy/pilot-report.html"
+                data-cs="Otevřít návod k měsíčnímu reportu"
+                data-en="Open the monthly report guide"
+                >Otevřít návod k měsíčnímu reportu</a
+              ><button
+                class="button danger wide"
+                id="reset-pilot"
+                type="button"
+                data-cs="Vymazat místní pilotní data"
+                data-en="Clear local pilot data"
+              >
+                Vymazat místní pilotní data
+              </button>
+            </div>
+          </section>
+        </aside>
+      </section>
+    </main>
+    <footer class="site-footer">
+      <div class="shell-wide footer-inner">
+        <div>
+          <strong>AI Studio GHRAB</strong>
+          <p
+            data-cs="Autor a vývojový garant: Daniel Baláž · Školní projekt Gymnázia, Ostrava-Hrabůvka · verze 0.21.40"
+            data-en="Author and development guarantor: Daniel Baláž · School project of Gymnázium, Ostrava-Hrabůvka · version 0.21.40"
+          >
+            Autor a vývojový garant: Daniel Baláž · Školní projekt Gymnázia,
+            Ostrava-Hrabůvka · verze 0.21.40
+          </p>
+        </div>
+      </div>
+    </footer>
+    <script src="../app.js?v=0.21.40" type="module"></script>
+    <script src="./pilot.js?v=0.21.40" type="module"></script>
+  </body>
+</html>

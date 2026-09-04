@@ -1,0 +1,21 @@
+{
+  "schema": "ghrab-server-ready-build-v1",
+  "app": "ai-studio-ghrab",
+  "appId": "ai-studio",
+  "version": "0.21.40",
+  "phase": "P5",
+  "profile": "school-server",
+  "builtAt": "2026-09-04T09:45:25.655Z",
+  "activeAuthMode": "server-session",
+  "activeAiTransport": "not-applicable",
+  "telemetryMode": "server",
+  "appBaseUrl": "/ai-studio/",
+  "apiBaseUrl": "/api/v1/",
+  "containsSecrets": false,
+  "localProviderKeysAllowed": false,
+  "serverSessionReady": true,
+  "schoolGatewayReady": false,
+  "aiCoreVersion": "1.0.0",
+  "contractVersion": "1",
+  "localRegistryUrls": true
+}

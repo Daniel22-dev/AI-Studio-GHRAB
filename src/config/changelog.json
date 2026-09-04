@@ -1,7 +1,157 @@
 {
   "schema": "ai-studio-changelog-v1",
-  "current": "0.21.35",
+  "current": "0.21.40",
   "items": [
+    {
+      "version": "0.21.40",
+      "date": "2026-09-04",
+      "title": {
+        "cs": "GARP 2.3 – suite-level ukončení sdílené relace",
+        "en": "GARP 2.3 – suite-level shared-session termination"
+      },
+      "changes": [
+        {
+          "cs": "GHRAB Platform 1.1.2 zavádí trvalou suite-session generační značku a kontrakt ghrab-suite-session-v1 pro koordinovaný úklid napříč aplikacemi na společném originu.",
+          "en": "GHRAB Platform 1.1.2 adds a persistent suite-session generation tombstone and the ghrab-suite-session-v1 contract for coordinated cleanup across apps sharing one origin."
+        },
+        {
+          "cs": "Destruktivní Ukončit práci v AI Studiu nově vyvolá suite-session signál; selhání signálu je fail-closed součástí výsledku ukončení práce.",
+          "en": "Destructive End Work in AI Studio now emits a suite-session signal; signal failure is a fail-closed part of the end-work result."
+        },
+        {
+          "cs": "Sdílený suite-session tombstone je vyjmut z vlastnictví AI Studia, takže explicitní smazání dat Studia nezruší dosud nevyzvednutý požadavek na úklid child aplikací.",
+          "en": "The shared suite-session tombstone is reserved from AI Studio ownership so explicit Studio deletion cannot erase a pending child-app cleanup request."
+        },
+        {
+          "cs": "E-01 zůstává ekosystémově otevřený do propagace Platformy 1.1.2 a napojení vlastního cleanupu všech devíti child aplikací; sdílené zařízení s reálnými daty proto zůstává zakázané.",
+          "en": "E-01 remains ecosystem-open until Platform 1.1.2 is propagated and all nine child apps wire their own cleanup; shared-device use with real data therefore remains prohibited."
+        }
+      ]
+    },
+    {
+      "version": "0.21.39",
+      "date": "2026-09-04",
+      "title": {
+        "cs": "GARP 2.3 – trvalé smazání proti Browser Back",
+        "en": "GARP 2.3 – durable deletion against Browser Back"
+      },
+      "changes": [
+        {
+          "cs": "Úplné „Smazat moje data“ po smazání rotuje neobsahovou generační značku relace stejně jako sdílené Ukončit práci, takže návrat přes Browser Back nemůže znovu zhmotnit starý formulářový obsah.",
+          "en": "Full Delete my data now rotates the non-content session-generation tombstone after deletion just like shared End Work, so Browser Back cannot re-materialize stale form content."
+        },
+        {
+          "cs": "SIM-03 browser regrese nyní používá skutečný platform-runtime a povinně ověřuje obě destruktivní cesty: endWork i deleteMyData, včetně následného psaní a nové karty.",
+          "en": "The SIM-03 browser regression now uses the real platform runtime and must verify both destructive paths: endWork and deleteMyData, including subsequent typing and a new tab."
+        },
+        {
+          "cs": "Selhání zápisu generační značky je fail-closed součástí výsledku destruktivní operace; operace nesmí hlásit úplný úspěch, pokud lifecycle ochrana nebyla obnovena.",
+          "en": "Failure to persist the generation tombstone is now a fail-closed part of destructive-operation success; the operation must not report full success if lifecycle protection was not restored."
+        },
+        {
+          "cs": "SIM-03 QA evidence se zapisuje mimo publikovatelný dist do qa-results, aby testovací report nebyl součástí veřejné aplikace.",
+          "en": "SIM-03 QA evidence is written outside the publishable dist into qa-results so the test report is not shipped with the public application."
+        }
+      ]
+    },
+    {
+      "version": "0.21.38",
+      "date": "2026-09-04",
+      "title": {
+        "cs": "GARP 2.3 – trvalé ukončení sdílené relace",
+        "en": "GARP 2.3 – durable shared-session termination"
+      },
+      "changes": [
+        {
+          "cs": "Sdílené ukončení práce rotuje generační značku relace a workflow ji váže k history.state, takže návrat přes Back, reload nebo bfcache nerozpracuje znovu obsah předchozího uživatele.",
+          "en": "Shared-device end work rotates a session-generation marker and the workflow binds it to history.state so Back, reload or bfcache cannot re-materialize the previous user content."
+        },
+        {
+          "cs": "Při detekci ukončené relace se zruší čekající autosave, formulář se vyčistí a další autosave se zablokuje; preventivní pagehide scrub odstraňuje citlivý obsah z bfcache DOM.",
+          "en": "When an ended session is detected, pending autosave is cancelled, the form is cleared and further autosave is blocked; a preventive pagehide scrub removes sensitive content from the bfcache DOM."
+        },
+        {
+          "cs": "Úplné mazání používá defaultní ownership ghrab.* s explicitními výjimkami registrovaných child aplikací, takže nový neznámý klíč AI Studia nemůže tiše uniknout datovému manifestu.",
+          "en": "Full deletion uses default ghrab.* ownership with explicit registered child-app exceptions so a new unknown AI Studio key cannot silently escape the data manifest."
+        },
+        {
+          "cs": "Storage coverage test rekurzivně skenuje celý src/**/*.js a SIM-03 shared-device Back/Restore je součástí browser release brány.",
+          "en": "The storage coverage test recursively scans all src/**/*.js and the SIM-03 shared-device Back/Restore scenario is part of the browser release gate."
+        }
+      ]
+    },
+    {
+      "version": "0.21.37",
+      "date": "2026-09-03",
+      "title": {
+        "cs": "GARP 2.3 – opravné kolo po nezávislé kontrole",
+        "en": "GARP 2.3 – corrective round after independent review"
+      },
+      "changes": [
+        {
+          "cs": "Datový manifest nyní pokrývá workflow koncepty, reporty, registr vydaných oprávnění, přístupovou relaci a další vlastněné storage cesty; úplné mazání po doběhnutí ověřuje, že žádný vlastněný klíč nezůstal.",
+          "en": "The data manifest now covers workflow drafts, reports, the issued-access registry, access session data and other owned storage paths; full deletion verifies that no owned key remains."
+        },
+        {
+          "cs": "Storage migrace p2-storage-namespace-v2 přesouvá obsahové a administrativní legacy klíče do namespace ghrab.ai-studio.* a zachovává rollbackový backup.",
+          "en": "Storage migration p2-storage-namespace-v2 moves content and administrative legacy keys into the ghrab.ai-studio.* namespace while retaining rollback backup."
+        },
+        {
+          "cs": "Release QA, browser gate a build-info odvozují verzi platformy z consumer kontraktu místo zamrzlé hodnoty 1.1.0.",
+          "en": "Release QA, browser gate and build-info derive the platform version from the consumer contract instead of a frozen 1.1.0 value."
+        },
+        {
+          "cs": "Sdílený helper Uložit do AI Studia nenaviguje při kolizi handoffu a workflow rozlišuje čekající předávku od skutečného selhání úložiště.",
+          "en": "The shared Save to AI Studio helper no longer navigates on handoff collision and the workflow distinguishes a pending handoff from an actual storage failure."
+        },
+        {
+          "cs": "GARP regrese byly rozšířeny z testů jednotlivých oprav na kontrolu úplnosti storage mapy, release-version surface a obou zapisovatelů handoffu.",
+          "en": "GARP regressions were expanded from fix-local tests to storage-map completeness, release-version surface and both handoff writers."
+        }
+      ]
+    },
+    {
+      "version": "0.21.36",
+      "date": "2026-09-03",
+      "title": {
+        "cs": "GARP 2.3 – zpevnění ukončení práce a soukromí",
+        "en": "GARP 2.3 – end-work and privacy hardening"
+      },
+      "changes": [
+        {
+          "cs": "Ukončení práce nyní fail-closed odstraňuje lokální podepsané oprávnění a synchronizuje odhlášení mezi otevřenými kartami.",
+          "en": "End Work now fail-closed removes the local signed permit and synchronizes logout across open tabs."
+        },
+        {
+          "cs": "School-server session bez explicitního seznamu aplikací již nezíská implicitní přístup ke všem aplikacím.",
+          "en": "A school-server session without an explicit application list no longer receives implicit access to all applications."
+        },
+        {
+          "cs": "Mazání lokálních dat pokrývá oba handoff klíče a při nedostupném datovém manifestu již nehlásí falešný úspěch.",
+          "en": "Local data deletion covers both handoff keys and no longer reports false success when the data manifest is unavailable."
+        },
+        {
+          "cs": "Pilotní telemetrie platformy 1.1.1 již neukládá materialId; AI Studio vyžaduje platformu alespoň 1.1.1.",
+          "en": "Platform 1.1.1 pilot telemetry no longer stores materialId; AI Studio now requires platform 1.1.1 or newer."
+        },
+        {
+          "cs": "Diagnostika přístupové brány kopíruje pouze origin a cestu bez query/hash a živě znovu ověřuje expiraci oprávnění.",
+          "en": "Access-gate diagnostics copies only origin and pathname without query/hash and live-revalidates permit expiry."
+        },
+        {
+          "cs": "Workflow už nepřenáší materialId do pilotní telemetrie ani do URL cílové aplikace; při startu se starší lokální pilotní události pročistí přes explicitní allowlist.",
+          "en": "The workflow no longer sends materialId to pilot telemetry or target-app URLs; startup sanitizes older local pilot events through an explicit allowlist."
+        },
+        {
+          "cs": "Současný handoff je fail-closed chráněn proti přepsání druhou souběžnou předávkou; nový handoff lze vytvořit až po spotřebování nebo expiraci předchozího.",
+          "en": "The current handoff now fails closed against overwrite by a concurrent second handoff; a new handoff can be created only after the previous one is consumed or expires."
+        },
+        {
+          "cs": "Platformní conformance test odvozuje previous/current/next verzi z deklarované platformy, takže patch bump 1.1.1 nezanechá falešně zastaralou release kontrolu.",
+          "en": "Platform conformance now derives previous/current/next versions from the declared platform so the 1.1.1 patch bump cannot leave a stale release assertion."
+        }
+      ]
+    },
     {
       "version": "0.21.35",
       "date": "2026-08-28",

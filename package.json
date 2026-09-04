@@ -1,6 +1,6 @@
 {
   "name": "ai-studio-ghrab",
-  "version": "0.21.35",
+  "version": "0.21.40",
   "private": true,
   "description": "Profesionální federované PWA devíti chráněných školních aplikací včetně Lesson Hubu, manuálů, řízeného přístupu a jednotné GHRAB QA brány",
   "type": "module",
@@ -8,7 +8,7 @@
     "sync": "node scripts/sync-registry.mjs && node scripts/sync-platform-consumers.mjs && node scripts/generate-ai-readiness.mjs && node scripts/sync-doc-app-versions.mjs",
     "sync:offline": "node scripts/sync-registry.mjs --offline && node scripts/sync-platform-consumers.mjs && node scripts/generate-ai-readiness.mjs && node scripts/sync-doc-app-versions.mjs",
     "build": "npm run generate:changelog && node scripts/verify-ai-core.mjs && node scripts/generate-ai-readiness.mjs && node scripts/build.mjs",
-    "test": "npm run generate:changelog && npm run qa:doc-versions && npm run qa:ecosystem && npm run format:check && node scripts/verify-ai-core.mjs && node scripts/generate-ai-readiness.mjs && node scripts/test.mjs && node scripts/test-platform-bootstrap.mjs && npm run test:audit-regressions && npm run test:security-regressions && npm run test:release-policy && npm run test:studio-ux && node scripts/test-maturita-external-launcher.mjs",
+    "test": "npm run generate:changelog && npm run qa:doc-versions && npm run qa:ecosystem && npm run format:check && node scripts/verify-ai-core.mjs && node scripts/generate-ai-readiness.mjs && node scripts/test.mjs && node scripts/test-platform-bootstrap.mjs && npm run test:audit-regressions && npm run test:security-regressions && npm run test:garp-security && npm run test:release-policy && npm run test:studio-ux && node scripts/test-maturita-external-launcher.mjs",
     "check": "node scripts/verify-ai-core.mjs && node scripts/generate-ai-readiness.mjs && npm run qa:ecosystem && node scripts/test.mjs",
     "generate:changelog": "node scripts/generate-changelog.mjs",
     "format": "node scripts/verify-ai-core.mjs && node scripts/format.mjs --ignore-path .prettierignore",
@@ -34,7 +34,7 @@
     "qa:quality": "node scripts/qa-p3-quality.mjs",
     "qa:p3": "npm run verify:platform && npm run qa:quality && npm run qa:browser && npm run qa:reflow && npm run qa:axe",
     "test:p3": "npm run build && npm run qa:p3",
-    "qa:browser": "node scripts/qa-p3-browser.mjs && node scripts/test-offline-start-browser.mjs && node scripts/test-platform-bootstrap-browser.mjs",
+    "qa:browser": "node scripts/qa-p3-browser.mjs && node scripts/test-offline-start-browser.mjs && node scripts/test-platform-bootstrap-browser.mjs && node scripts/test-shared-device-back-browser.mjs",
     "qa:axe": "node scripts/qa-p5-axe-runtime.mjs",
     "qa:reflow": "node scripts/qa-p5-runtime.mjs",
     "qa:p3:ci": "npm run verify:platform && npm run qa:quality && npm run qa:reflow && npm run qa:browser && npm run qa:axe:required",
@@ -60,7 +60,8 @@
     "access:validate-update": "node scripts/validate-access-update-pack.mjs",
     "access:sign": "node scripts/sign-access-bundle.mjs",
     "test:studio-ux": "node scripts/test-studio-ux.mjs",
-    "qa:ecosystem": "node scripts/sync-platform-consumers.mjs --check && node scripts/qa-ecosystem.mjs"
+    "qa:ecosystem": "node scripts/sync-platform-consumers.mjs --check && node scripts/qa-ecosystem.mjs",
+    "test:garp-security": "node scripts/test-garp-security-regressions.mjs"
   },
   "engines": {
     "node": ">=18"
@@ -69,6 +70,5 @@
     "axe-core": "4.12.1",
     "playwright": "1.61.1",
     "pngjs": "7.0.0"
-  },
-  "dependencies": {}
+  }
 }

@@ -2,7 +2,7 @@
   {
     "id": "ai-studio",
     "name": "AI Studio GHRAB",
-    "version": "0.21.35",
+    "version": "0.21.40",
     "slug": "ai-studio-ghrab",
     "paths": {
       "app": "https://daniel22-dev.github.io/AI-Studio-GHRAB/",
@@ -19,19 +19,19 @@
     ],
     "platform": {
       "contract": "ghrab-platform-v1",
-      "requiredPlatformRange": ">=1.1.0 <2.0.0",
+      "requiredPlatformRange": ">=1.1.2 <2.0.0",
       "brandVersion": "1.0.0",
       "themeContract": 1,
       "swContract": 1,
       "studioBridge": 2,
       "artifactEnvelope": 1,
       "storagePrefix": "ghrab.ai-studio.",
-      "platformVersion": "1.1.0",
+      "platformVersion": "1.1.2",
       "accessibilityContract": "ghrab-a11y-v1",
       "performanceContract": "ghrab-performance-v1",
       "moduleContract": "ghrab-lazy-modules-v1"
     },
-    "cacheName": "ghrab-ai-studio-v0.21.35",
+    "cacheName": "ghrab-ai-studio-v0.21.40",
     "theme": {
       "supported": [
         "dark"

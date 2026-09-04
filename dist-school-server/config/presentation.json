@@ -1,0 +1,20 @@
+{
+  "schema": "ai-studio-presentation-v1",
+  "loopPlaylist": true,
+  "sceneSeconds": 5,
+  "videos": [
+    {
+      "src": "assets/presentation/ai-studio-ghrab-showcase-2026.mp4",
+      "poster": "assets/presentation/ai-studio-ghrab-showcase-2026-poster.jpg",
+      "title": {
+        "cs": "AI Studio GHRAB · Showcase 2026",
+        "en": "AI Studio GHRAB · Showcase 2026"
+      },
+      "subtitle": {
+        "cs": "Prémiový přibližně 92sekundový PR film pro učebnu a projektor: ideový prolog, hotové demo výstupy osmi aplikací a klidné finále s hlavní vizí projektu.",
+        "en": "A premium roughly 92-second PR film for classroom projection: a manifesto opening, finished demo outputs from all eight applications and a calm finale with the project’s core vision."
+      },
+      "muted": false
+    }
+  ]
+}

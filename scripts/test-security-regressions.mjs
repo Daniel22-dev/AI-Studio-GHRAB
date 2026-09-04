@@ -83,6 +83,9 @@ async function verifySchoolProfileFailClosed() {
   ).replace(
     /^import \{ BAKED_DEPLOYMENT_CONFIG \} from "\.\.\/config\/deployment-baked\.js";$/m,
     `const BAKED_DEPLOYMENT_CONFIG = Object.freeze(${JSON.stringify(schoolProfile)});`,
+  ).replace(
+    /^import \{ endAccessSession \} from "\.\/access-control\.js";$/m,
+    `const endAccessSession = () => ({ ok: true });`,
   );
   const moduleUrl = `data:text/javascript;base64,${Buffer.from(runtimeSource).toString("base64")}`;
   const storage = new MemoryStorage();
