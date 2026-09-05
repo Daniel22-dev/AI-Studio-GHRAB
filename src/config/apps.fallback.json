@@ -633,8 +633,8 @@
     "schema": "ai-studio-app-manifest-v1",
     "id": "sortio",
     "name": {
-      "cs": "SORTIO – Organizátor třídy",
-      "en": "SORTIO – Classroom Organiser"
+      "cs": "SORTIO – Výukový panel",
+      "en": "SORTIO – Teaching Panel"
     },
     "version": "1.0.13",
     "status": {
@@ -642,8 +642,8 @@
       "en": "Ready for controlled pilot"
     },
     "description": {
-      "cs": "Produkční local-first organizátor třídy: import z IS, losování, chytré skupiny, role, zasedací pořádek, bezpečná projekce, třídní nástroje, spravedlivá historie, tisk/PDF, odolné zálohy a diagnostika bez osobních údajů.",
-      "en": "A production local-first classroom organiser with school-system import, random selection, smart groups, roles, seating, safe projection, classroom tools, fair engagement history, print/PDF, resilient backups and privacy-safe diagnostics."
+      "cs": "Organizace třídy a nástroje pro živou výuku. Losování, chytré skupiny, role, zasedací pořádek, časovače, hodiny, tabule, semafor, kostky, týmové skóre a projekční nástroje.",
+      "en": "Classroom organisation and live teaching tools. Random selection, smart groups, roles, seating plans, timers, clocks, boards, traffic lights, dice, team scoring and projection tools."
     },
     "launchUrl": "https://daniel22-dev.github.io/SORTIO/",
     "manualUrl": "https://daniel22-dev.github.io/SORTIO/manual/",
@@ -652,16 +652,16 @@
     "accent": "#5EE7FF",
     "tags": [
       {
-        "cs": "Organizace třídy",
-        "en": "Classroom organisation"
+        "cs": "Výukový panel",
+        "en": "Teaching panel"
       },
       {
-        "cs": "Chytré skupiny",
-        "en": "Smart groups"
+        "cs": "Skupiny a role",
+        "en": "Groups and roles"
       },
       {
-        "cs": "Role a zasedací pořádek",
-        "en": "Roles and seating"
+        "cs": "Projekční nástroje",
+        "en": "Projection tools"
       },
       {
         "cs": "Local-first",

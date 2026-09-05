@@ -188,6 +188,13 @@ if (!sortioFallback || !isVersionAtLeast(sortioFallback.version, "1.0.2"))
   fail("Fallback registr neobsahuje SORTIO 1.0.2 nebo novější.");
 if (!sources?.some((source) => source.id === "sortio"))
   fail("sources.json neobsahuje zdroj SORTIO.");
+if (sortio?.name?.cs !== "SORTIO – Výukový panel")
+  fail("Karta SORTIO nemá nový název Výukový panel.");
+if (!sortio?.description?.cs?.includes("nástroje pro živou výuku"))
+  fail("Karta SORTIO nemá nový popis výukových nástrojů.");
+const sortioSource = sources?.find((source) => source.id === "sortio");
+if (sortioSource?.studioOverrides?.name?.cs !== "SORTIO – Výukový panel")
+  fail("SORTIO nemá trvalý Studio-level override metadat karty.");
 const lessonHub = apps?.find((app) => app.id === "lesson-hub");
 const lessonHubFallback = fallback?.find((app) => app.id === "lesson-hub");
 if (!lessonHub || !isVersionAtLeast(lessonHub.version, "1.2.0"))

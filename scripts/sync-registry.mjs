@@ -142,6 +142,20 @@ function validate(app, expectedId, source) {
   return app;
 }
 
+function applyStudioOverrides(app, source, fallbackApp) {
+  const override = source?.studioOverrides;
+  const localIcon = fallbackById.get(source.id)?.icon || fallbackApp?.icon;
+  const merged = {
+    ...app,
+    ...(localIcon ? { icon: localIcon } : {}),
+  };
+  if (override?.name) merged.name = { ...merged.name, ...override.name };
+  if (override?.description)
+    merged.description = { ...merged.description, ...override.description };
+  if (Array.isArray(override?.tags)) merged.tags = override.tags;
+  return validate(merged, source.id, source);
+}
+
 function validateOperationsManifest(operations, app) {
   if (!operations || typeof operations !== "object")
     throw new Error("ai-operations manifest není objekt");
@@ -255,8 +269,7 @@ const resolveSource = async (source) => {
   }
   try {
     const fetched = await fetchManifest(source);
-    const localIcon = fallbackById.get(source.id)?.icon;
-    const app = localIcon ? { ...fetched.app, icon: localIcon } : fetched.app;
+    const app = applyStudioOverrides(fetched.app, source, fallbackApp);
     return {
       app,
       report: {
@@ -277,10 +290,7 @@ const resolveSource = async (source) => {
     if (!offline) {
       try {
         const repository = await fetchRepositoryManifest(source, snapshotApp);
-        const localIcon = fallbackById.get(source.id)?.icon;
-        const app = localIcon
-          ? { ...repository.app, icon: localIcon }
-          : repository.app;
+        const app = applyStudioOverrides(repository.app, source, fallbackApp);
         return {
           app,
           report: {
@@ -299,7 +309,7 @@ const resolveSource = async (source) => {
           },
         };
       } catch (repositoryError) {
-        const app = validate(snapshotApp, source.id, source);
+        const app = applyStudioOverrides(snapshotApp, source, fallbackApp);
         return {
           app,
           report: {
@@ -317,7 +327,7 @@ const resolveSource = async (source) => {
         };
       }
     }
-    const app = validate(snapshotApp, source.id, source);
+    const app = applyStudioOverrides(snapshotApp, source, fallbackApp);
     return {
       app,
       report: {

@@ -39,7 +39,35 @@
     "id": "sortio",
     "url": "https://daniel22-dev.github.io/SORTIO/studio-manifest.json",
     "repository": "daniel22-dev/SORTIO",
-    "branch": "main"
+    "branch": "main",
+    "studioOverrides": {
+      "name": {
+        "cs": "SORTIO – Výukový panel",
+        "en": "SORTIO – Teaching Panel"
+      },
+      "description": {
+        "cs": "Organizace třídy a nástroje pro živou výuku. Losování, chytré skupiny, role, zasedací pořádek, časovače, hodiny, tabule, semafor, kostky, týmové skóre a projekční nástroje.",
+        "en": "Classroom organisation and live teaching tools. Random selection, smart groups, roles, seating plans, timers, clocks, boards, traffic lights, dice, team scoring and projection tools."
+      },
+      "tags": [
+        {
+          "cs": "Výukový panel",
+          "en": "Teaching panel"
+        },
+        {
+          "cs": "Skupiny a role",
+          "en": "Groups and roles"
+        },
+        {
+          "cs": "Projekční nástroje",
+          "en": "Projection tools"
+        },
+        {
+          "cs": "Local-first",
+          "en": "Local-first"
+        }
+      ]
+    }
   },
   {
     "id": "lesson-hub",
