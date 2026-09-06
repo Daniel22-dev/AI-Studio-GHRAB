@@ -3,7 +3,7 @@
   "appId": "ai-studio-reporter",
   "appName": "AI Studio GHRAB – centrální reportér",
   "version": "0.21.44",
-  "createdAt": "2026-09-06T18:50:40.095Z",
+  "createdAt": "2026-09-06T19:03:03.975Z",
   "browser": {
     "status": "not-ready",
     "reason": "Spravovaná politika URLBlocklist blokuje všechny testovací stránky (/etc/chromium/policies/managed/000_policy_merge.json)."

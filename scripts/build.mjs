@@ -299,6 +299,15 @@ for (const relative of [
   "config/apps.generated.json",
   "config/apps.fallback.json",
   "config/platform-consumers.json",
+  "config/data-manifest.json",
+  "config/permissions.json",
+  "config/presentation.json",
+  "config/release-acceptance.json",
+  "config/security-headers.json",
+  "config/brand-manifest.json",
+  "config/ai-core.json",
+  "config/ai-runtime.json",
+  "config/platform-manifest.json",
   "manifest.webmanifest",
 ]) {
   const file = path.join(dist, relative);

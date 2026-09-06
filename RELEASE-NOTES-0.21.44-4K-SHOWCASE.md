@@ -22,3 +22,11 @@ Datum: 2026-09-06
 ## Bezpečnost
 
 Bezpečnostní logika GARP 2.3 se proti 0.21.43 nemění. Verze 0.21.44 je prezentační media/UX patch; stávající release blokace a požadavek nezávislého ověření zůstávají platné.
+
+## CI hotfix 2026-09-06 — P5 R2 dist budget
+
+První publish kandidát 0.21.44 prošel funkčními, bezpečnostními, platformními i lazy-media kontrolami, ale CI se zastavilo na `budget.distBytes`: 2 252 019 B při limitu 2 250 000 B. Překročení bylo 2 019 B a netýkalo se 4K filmu, který správně prošel jako lazy media.
+
+Oprava nezvyšuje žádný performance budget. Build nyní kompaktně serializuje i další strojově čitelné runtime JSON konfigurace (`data-manifest`, `permissions`, `presentation`, `release-acceptance`, `security-headers`, `brand-manifest`, `ai-core`, `ai-runtime`, `platform-manifest`). Zdrojové JSONy zůstávají čitelné a jejich datový obsah se nemění.
+
+Verze zůstává 0.21.44, protože předchozí pokus byl zastaven v CI před nasazením.
