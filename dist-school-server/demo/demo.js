@@ -156,7 +156,7 @@ function renderVideos() {
     const video = document.createElement("video");
     video.controls = true;
     video.playsInline = true;
-    video.preload = "metadata";
+    video.preload = "auto";
     video.src = resolveMediaUrl(item.src);
     if (item.poster) video.poster = resolveMediaUrl(item.poster);
     const title = document.createElement("h3");

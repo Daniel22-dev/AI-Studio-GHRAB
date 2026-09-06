@@ -1,12 +1,12 @@
-import { sanitizePilotEvent, sanitizePilotEventList } from "./privacy/pilot-event.js?v=0.21.42";
-import { validateMaterialPackage } from "./shared/material-validator.js?v=0.21.42";
-import { buildPilotSummary } from "./shared/safe-export.js?v=0.21.42";
+import { sanitizePilotEvent, sanitizePilotEventList } from "./privacy/pilot-event.js?v=0.21.44";
+import { validateMaterialPackage } from "./shared/material-validator.js?v=0.21.44";
+import { buildPilotSummary } from "./shared/safe-export.js?v=0.21.44";
 import {
   applyDeploymentToAppRegistry,
   loadDeploymentConfig,
-} from "./access/deployment-config.js?v=0.21.42";
-import { initialisePlatformRuntime } from "./access/platform-runtime.js?v=0.21.42";
-import { createRegistryClient } from "./modules/registry-client.js?v=0.21.42";
+} from "./access/deployment-config.js?v=0.21.44";
+import { initialisePlatformRuntime } from "./access/platform-runtime.js?v=0.21.44";
+import { createRegistryClient } from "./modules/registry-client.js?v=0.21.44";
 import {
   initialiseAccess,
   setPermitToken,
@@ -21,8 +21,8 @@ import {
   requiredTraining,
   formatReason,
   inspectPermitToken,
-} from "./access/access-control.js?v=0.21.42";
-const VERSION = "0.21.42";
+} from "./access/access-control.js?v=0.21.44";
+const VERSION = "0.21.44";
 const deploymentReady = loadDeploymentConfig({ appId: "ai-studio" });
 const root = document.documentElement;
 const page = document.body.dataset.page || "home";
@@ -1338,7 +1338,7 @@ function toggleFavoriteApp(appId) {
 }
 async function loadAppTestStatusModule() {
   if (!isAdmin() || isColleaguePreview()) return null;
-  appTestStatusModule ||= await import("./modules/app-test-status.js?v=0.21.42");
+  appTestStatusModule ||= await import("./modules/app-test-status.js?v=0.21.44");
   return appTestStatusModule;
 }
 function currentCoreAppIds() {
@@ -2495,7 +2495,7 @@ applyTheme();
 applyLanguage();
 applyMotion();
 renderHome();
-void import('./modules/portal-effects.js?v=0.21.42')
+void import('./modules/portal-effects.js?v=0.21.44')
   .then(({ setupPortalEffects }) => setupPortalEffects({ root }))
   .catch((error) => console.warn('Volitelne portalove efekty nebyly nacteny.', error));
 void refreshSharedAccessModuleCache();
@@ -2505,7 +2505,7 @@ accessReady.then(() => {
   updateTelemetryModeBanner();
   setupMonthlyReportReminder();
 });
-void Promise.all([deploymentReady, import("./access/app-guard.js?v=0.21.42")])
+void Promise.all([deploymentReady, import("./access/app-guard.js?v=0.21.44")])
   .then(([deployment, { startErrorReporterBestEffort }]) =>
     startErrorReporterBestEffort("ai-studio", {
       appName: "AI Studio GHRAB",

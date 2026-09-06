@@ -1,6 +1,8 @@
-# Release checklist AI Studio GHRAB 0.21.43
+# Release checklist AI Studio GHRAB 0.21.44
 
-> Aktuální verze: **0.21.43** · etapa P5
+> Aktuální verze: **0.21.44** · etapa P5
+
+> 0.21.44 je media-only prezentační patch nad bezpečnostním kandidátem 0.21.43; GARP 2.3 release blokace zůstává platná.
 
 ## Stav bezpečnostního kandidáta GARP 2.3
 

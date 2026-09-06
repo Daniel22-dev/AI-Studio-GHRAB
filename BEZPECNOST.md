@@ -1,6 +1,8 @@
-# Bezpečnostní hranice AI Studio GHRAB 0.21.43
+# Bezpečnostní hranice AI Studio GHRAB 0.21.44
 
-> Aktuální verze: **0.21.43** · etapa P5
+> Aktuální verze: **0.21.44** · etapa P5
+
+> 0.21.44 je prezentační media/načítací patch nad bezpečnostní logikou 0.21.43; bezpečnostní hranice a GARP 2.3 stav se nemění.
 
 
 ## Rychlá kontrola dat v portálu

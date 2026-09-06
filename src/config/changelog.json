@@ -1,7 +1,41 @@
 {
   "schema": "ai-studio-changelog-v1",
-  "current": "0.21.43",
+  "current": "0.21.44",
   "items": [
+    {
+      "version": "0.21.44",
+      "date": "2026-09-06",
+      "title": {
+        "cs": "4K prezentační showcase, plynulé intro a Maturita Desk",
+        "en": "4K presentation showcase, smoother intro and Maturita Desk"
+      },
+      "changes": [
+        {
+          "cs": "Hlavní film v záložce Prezentace je nově vyrenderovaný v 4K 3840×2160 / 30 fps při zachování původní délky 91,7 s a původní zvukové stopy.",
+          "en": "The main Presentation film is now rendered in 4K 3840×2160 / 30 fps while preserving the original 91.7-second duration and original audio track."
+        },
+        {
+          "cs": "Showcase přidává Maturita Desk 1.0.3 pouze se syntetickým/demo obsahem.",
+          "en": "The showcase adds Maturita Desk 1.0.3 using synthetic/demo content only."
+        },
+        {
+          "cs": "Krátký propad pohybu kolem 4,8–5,1 s byl odstraněn novým plynulým přechodem stejné délky, takže se časování zvuku ani zbytku filmu neposouvá.",
+          "en": "A brief motion stall around 4.8–5.1 seconds was removed with a new same-duration smooth transition, keeping audio and the rest of the film perfectly in sync."
+        },
+        {
+          "cs": "MP4 používá faststart, pravidelný jednasekundový GOP a nový 4K název souboru; prezentační karta přednačítá video přes preload=auto, aby první spuštění bylo plynulejší.",
+          "en": "The MP4 uses faststart, a regular one-second GOP and a new 4K filename; the Presentation card preloads it with preload=auto for smoother startup."
+        },
+        {
+          "cs": "Poster filmu je rovněž 4K. Velké prezentační médium zůstává mimo PWA precache a stávající lazy-media performance budget se nezvyšuje.",
+          "en": "The film poster is also 4K. Large presentation media remains outside the PWA precache and the existing lazy-media performance budget is unchanged."
+        },
+        {
+          "cs": "Bezpečnostní stav GARP 2.3 a bezpečnostní logika 0.21.43 zůstávají beze změny; tato verze mění pouze prezentační médium a jeho načítání.",
+          "en": "The GARP 2.3 security status and 0.21.43 security logic are unchanged; this release only changes presentation media and its loading behavior."
+        }
+      ]
+    },
     {
       "version": "0.21.43",
       "date": "2026-09-06",

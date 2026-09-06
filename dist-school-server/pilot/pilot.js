@@ -1,4 +1,4 @@
-import { safeStatistics } from "../shared/safe-export.js?v=0.21.42";
+import { safeStatistics } from "../shared/safe-export.js?v=0.21.44";
 
 await window.GHRAB.accessReady;
 if (window.GHRAB.canAccessAdminPage?.("pilot") && !window.GHRAB.isColleaguePreview?.()) {

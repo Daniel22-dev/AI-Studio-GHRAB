@@ -2,6 +2,16 @@
 
 > Tento soubor se generuje ze `src/config/changelog.json`. Neupravujte jej ručně.
 
+## 0.21.44 — 2026-09-06
+**4K prezentační showcase, plynulé intro a Maturita Desk**
+
+- Hlavní film v záložce Prezentace je nově vyrenderovaný v 4K 3840×2160 / 30 fps při zachování původní délky 91,7 s a původní zvukové stopy.
+- Showcase přidává Maturita Desk 1.0.3 pouze se syntetickým/demo obsahem.
+- Krátký propad pohybu kolem 4,8–5,1 s byl odstraněn novým plynulým přechodem stejné délky, takže se časování zvuku ani zbytku filmu neposouvá.
+- MP4 používá faststart, pravidelný jednasekundový GOP a nový 4K název souboru; prezentační karta přednačítá video přes preload=auto, aby první spuštění bylo plynulejší.
+- Poster filmu je rovněž 4K. Velké prezentační médium zůstává mimo PWA precache a stávající lazy-media performance budget se nezvyšuje.
+- Bezpečnostní stav GARP 2.3 a bezpečnostní logika 0.21.43 zůstávají beze změny; tato verze mění pouze prezentační médium a jeho načítání.
+
 ## 0.21.43 — 2026-09-06
 **CI hotfix – zachování performance budgetu**
 

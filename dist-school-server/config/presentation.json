@@ -4,15 +4,15 @@
   "sceneSeconds": 5,
   "videos": [
     {
-      "src": "assets/presentation/ai-studio-ghrab-showcase-2026.mp4",
-      "poster": "assets/presentation/ai-studio-ghrab-showcase-2026-poster.jpg",
+      "src": "assets/presentation/ai-studio-ghrab-showcase-2026-4k.mp4",
+      "poster": "assets/presentation/ai-studio-ghrab-showcase-2026-4k-poster.jpg",
       "title": {
         "cs": "AI Studio GHRAB · Showcase 2026",
         "en": "AI Studio GHRAB · Showcase 2026"
       },
       "subtitle": {
-        "cs": "Prémiový přibližně 92sekundový PR film pro učebnu a projektor: ideový prolog, hotové demo výstupy osmi aplikací a klidné finále s hlavní vizí projektu.",
-        "en": "A premium roughly 92-second PR film for classroom projection: a manifesto opening, finished demo outputs from all eight applications and a calm finale with the project’s core vision."
+        "cs": "4K film 3840×2160 / 30 fps: ideový prolog, demo výstupy devíti aplikací včetně Maturita Desk a závěrečná vize projektu. Úvodní přechod je plynule přerenderovaný.",
+        "en": "4K 3840×2160 / 30 fps film: a manifesto opening, demo outputs from nine applications including Maturita Desk, and the project vision. The opening transition is smoothly re-rendered."
       },
       "muted": false
     }

@@ -1,16 +1,16 @@
 {
   "schema": "ghrab-platform-build-v1",
   "appId": "ai-studio",
-  "appVersion": "0.21.42",
+  "appVersion": "0.21.44",
   "platformVersion": "1.1.2",
   "platformContract": "ghrab-platform-v1",
   "brandVersion": "1.0.0",
-  "cacheName": "ghrab-ai-studio-v0.21.42",
+  "cacheName": "ghrab-ai-studio-v0.21.44",
   "processedHtmlFiles": 24,
   "qualityContracts": {
     "accessibility": "ghrab-a11y-v1",
     "performance": "ghrab-performance-v1",
     "modules": "ghrab-lazy-modules-v1"
   },
-  "builtAt": "2026-09-06T13:14:43.751Z"
+  "builtAt": "2026-09-06T18:50:42.631Z"
 }

@@ -1,6 +1,8 @@
-# Přesný postup nahrání AI Studio GHRAB 0.21.43 na GitHub – až po schválení
+# Přesný postup nahrání AI Studio GHRAB 0.21.44 na GitHub – až po schválení
 
-> Aktuální verze: **0.21.43** · etapa P5
+> Aktuální verze: **0.21.44** · etapa P5
+
+> 0.21.44 je prezentační patch; bezpečnostní kandidát a jeho GARP 2.3 blokace zůstávají beze změny.
 
 > **BLOKACE NASAZENÍ:** nový nezávislý GARP 2.3 cyklus byl výslovně zahájen. Verze 0.21.43 je kandidát po opravě D-01 / HIGH z první nezávislé kontroly tohoto nového cyklu a před nasazením musí projít jeho druhou Claude kontrolou a uzavřením release gate. Do té doby se tento postup NESMÍ použít k produkčnímu nasazení a reálná studentská data se nesmí použít.
 
@@ -10,7 +12,7 @@ Nejprve musí být nasazeny KS 5.10.22, SORTIO 1.1.5, Lesson Hub 1.2.17, Diferen
 
 ## Nahrání
 
-1. Stáhněte a rozbalte `AI-Studio-GHRAB-0.21.43-GARP23-NOVY-CYKLUS-KANDIDAT-KOLO-2.zip`.
+1. Stáhněte a rozbalte `AI-Studio-GHRAB-0.21.44-4K-PREZENTACE.zip`.
 2. Do kořene repozitáře `AI-Studio-GHRAB` nahrajte přímo všechny soubory a složky z rozbaleného archivu.
 3. Commit pojmenujte například `AI Studio 0.21.43 – GARP 2.3 security hardening`.
 4. Vyčkejte na dokončení GitHub Actions. Workflow instaluje závislosti, synchronizuje manifesty, spustí regresi reportéru, celý GHRAB QA release gate, sestaví `dist` a až poté nasadí GitHub Pages.
