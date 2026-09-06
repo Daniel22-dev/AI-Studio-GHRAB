@@ -2,6 +2,13 @@
 
 > Tento soubor se generuje ze `src/config/changelog.json`. Neupravujte jej ručně.
 
+## 0.21.42 — 2026-09-06
+**Platform 1.1.2 – finální SORTIO wave-lock hotfix**
+
+- Release-wave lock nyní očekává finální SORTIO 1.1.5, které nahradilo 1.1.4 po opravě pouze testovacího negative-control harnessu.
+- Fail-closed ekosystémová brána zůstává beze změny: deploy vyžaduje 9/9 ověřených zdrojů, žádný snapshot a přesnou shodu verzí celé Platform 1.1.2 vlny.
+- E-01 zůstává otevřený do společného post-deploy ověření celé vlny; používat pouze syntetická data.
+
 ## 0.21.41 — 2026-09-06
 **Platform 1.1.2 – uzamčení release wave a ověření všech zdrojů**
 

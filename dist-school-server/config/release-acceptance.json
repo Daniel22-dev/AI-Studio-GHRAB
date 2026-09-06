@@ -2,7 +2,7 @@
   "schema": "ghrab-release-acceptance-v1",
   "stage": "P5",
   "appId": "ai-studio",
-  "appVersion": "0.21.41",
+  "appVersion": "0.21.42",
   "releaseStatus": "security-candidate-second-review",
   "primaryRuntime": {
     "mode": "standalone-github-pages",

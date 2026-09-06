@@ -2,7 +2,7 @@
 
 ## Aktuální stav
 
-Integrace je dokončena v Generátoru 7.1.22, Diferenciátoru 1.3.42, Hodnotiteli maturitních slohů 1.5.22, LUDUSu 1.16.20, Korespondenčním asistentovi 5.10.22, ACTIVA 0.5.22, SORTIO 1.1.4 a Lesson Hubu 1.2.17. Ochrana se nevztahuje jen na karty ve Studiu; probíhá také při přímém otevření každé aplikace.
+Integrace je dokončena v Generátoru 7.1.22, Diferenciátoru 1.3.42, Hodnotiteli maturitních slohů 1.5.22, LUDUSu 1.16.20, Korespondenčním asistentovi 5.10.22, ACTIVA 0.5.22, SORTIO 1.1.5 a Lesson Hubu 1.2.17. Ochrana se nevztahuje jen na karty ve Studiu; probíhá také při přímém otevření každé aplikace.
 
 ## Chování při vložení do AI Studia
 

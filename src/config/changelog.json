@@ -1,7 +1,29 @@
 {
   "schema": "ai-studio-changelog-v1",
-  "current": "0.21.41",
+  "current": "0.21.42",
   "items": [
+    {
+      "version": "0.21.42",
+      "date": "2026-09-06",
+      "title": {
+        "cs": "Platform 1.1.2 – finální SORTIO wave-lock hotfix",
+        "en": "Platform 1.1.2 – final SORTIO wave-lock hotfix"
+      },
+      "changes": [
+        {
+          "cs": "Release-wave lock nyní očekává finální SORTIO 1.1.5, které nahradilo 1.1.4 po opravě pouze testovacího negative-control harnessu.",
+          "en": "The release-wave lock now expects final SORTIO 1.1.5, replacing 1.1.4 after a test-only negative-control harness fix."
+        },
+        {
+          "cs": "Fail-closed ekosystémová brána zůstává beze změny: deploy vyžaduje 9/9 ověřených zdrojů, žádný snapshot a přesnou shodu verzí celé Platform 1.1.2 vlny.",
+          "en": "The fail-closed ecosystem gate is unchanged: deployment requires 9/9 verified sources, no snapshot and exact version agreement across the Platform 1.1.2 wave."
+        },
+        {
+          "cs": "E-01 zůstává otevřený do společného post-deploy ověření celé vlny; používat pouze syntetická data.",
+          "en": "E-01 remains open until the entire wave passes joint post-deploy verification; use synthetic data only."
+        }
+      ]
+    },
     {
       "version": "0.21.41",
       "date": "2026-09-06",

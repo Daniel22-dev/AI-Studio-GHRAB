@@ -1,6 +1,6 @@
 {
-  "version": "0.21.41",
-  "builtAt": "2026-09-06T12:13:16.550Z",
+  "version": "0.21.42",
+  "builtAt": "2026-09-06T13:14:43.728Z",
   "syncMode": "unverified",
   "platform": {
     "contract": "ghrab-platform-v1",
@@ -42,7 +42,7 @@
     },
     {
       "id": "sortio",
-      "version": "1.1.4"
+      "version": "1.1.5"
     },
     {
       "id": "lesson-hub",

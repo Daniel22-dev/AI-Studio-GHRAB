@@ -1,6 +1,6 @@
 {
   "schema": "ghrab-ai-readiness-report-v1",
-  "generatedAt": "2026-09-06T12:13:16.335Z",
+  "generatedAt": "2026-09-06T13:14:43.569Z",
   "activeCoreVersion": "1.0.0",
   "runtime": {
     "defaultMode": "direct-gemini",
@@ -110,7 +110,7 @@
     },
     {
       "appId": "sortio",
-      "appVersion": "1.1.4",
+      "appVersion": "1.1.5",
       "classification": "not-applicable",
       "status": "not-applicable",
       "coreVersion": null,

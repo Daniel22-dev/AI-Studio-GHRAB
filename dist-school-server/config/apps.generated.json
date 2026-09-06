@@ -601,7 +601,7 @@
       "cs": "SORTIO – Výukový panel",
       "en": "SORTIO – Teaching Panel"
     },
-    "version": "1.1.4",
+    "version": "1.1.5",
     "status": {
       "cs": "Připraveno k řízenému pilotu",
       "en": "Ready for controlled pilot"
@@ -746,7 +746,7 @@
       "studioBridge": "not-applicable",
       "artifactEnvelope": 1,
       "storagePrefix": "ghrab.sortio.",
-      "cacheName": "ghrab-sortio-v1.1.4"
+      "cacheName": "ghrab-sortio-v1.1.5"
     }
   },
   {

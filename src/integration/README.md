@@ -10,7 +10,7 @@ Ochranná vrstva je integrována v těchto vydáních:
 - LUDUS 1.16.20 — ID `ludus`,
 - Korespondenční asistent 5.10.22 — ID `correspondence`,
 - ACTIVA 0.5.22 — ID `activity-builder`,
-- SORTIO 1.1.4 — ID `sortio`,
+- SORTIO 1.1.5 — ID `sortio`,
 - Lesson Hub 1.2.17 — ID `lesson-hub`.
 
 Přímé otevření jejich veřejných adres používá stejné podepsané oprávnění jako spuštění z AI Studia.
