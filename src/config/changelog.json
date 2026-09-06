@@ -1,7 +1,21 @@
 {
   "schema": "ai-studio-changelog-v1",
-  "current": "0.21.42",
+  "current": "0.21.43",
   "items": [
+    {
+      "version": "0.21.43",
+      "date": "2026-09-06",
+      "title": {
+        "cs": "CI hotfix – zachování performance budgetu",
+        "en": "CI hotfix – preserve performance budget"
+      },
+      "changes": [
+        {
+          "cs": "Build-only release-wave manifest se již nepublikuje do runtime dist; release gate zůstává beze změny a původní performance budget se nezvyšuje.",
+          "en": "The build-only release-wave manifest is no longer published in runtime dist; the release gate is unchanged and the original performance budget is not increased."
+        }
+      ]
+    },
     {
       "version": "0.21.42",
       "date": "2026-09-06",

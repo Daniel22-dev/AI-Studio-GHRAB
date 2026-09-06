@@ -1,8 +1,8 @@
-# Přesný postup nahrání AI Studio GHRAB 0.21.42 na GitHub – až po schválení
+# Přesný postup nahrání AI Studio GHRAB 0.21.43 na GitHub – až po schválení
 
-> Aktuální verze: **0.21.42** · etapa P5
+> Aktuální verze: **0.21.43** · etapa P5
 
-> **BLOKACE NASAZENÍ:** nový nezávislý GARP 2.3 cyklus byl výslovně zahájen. Verze 0.21.42 je kandidát po opravě D-01 / HIGH z první nezávislé kontroly tohoto nového cyklu a před nasazením musí projít jeho druhou Claude kontrolou a uzavřením release gate. Do té doby se tento postup NESMÍ použít k produkčnímu nasazení a reálná studentská data se nesmí použít.
+> **BLOKACE NASAZENÍ:** nový nezávislý GARP 2.3 cyklus byl výslovně zahájen. Verze 0.21.43 je kandidát po opravě D-01 / HIGH z první nezávislé kontroly tohoto nového cyklu a před nasazením musí projít jeho druhou Claude kontrolou a uzavřením release gate. Do té doby se tento postup NESMÍ použít k produkčnímu nasazení a reálná studentská data se nesmí použít.
 
 ## Předpoklady
 
@@ -10,14 +10,14 @@ Nejprve musí být nasazeny KS 5.10.22, SORTIO 1.1.5, Lesson Hub 1.2.17, Diferen
 
 ## Nahrání
 
-1. Stáhněte a rozbalte `AI-Studio-GHRAB-0.21.42-GARP23-NOVY-CYKLUS-KANDIDAT-KOLO-2.zip`.
+1. Stáhněte a rozbalte `AI-Studio-GHRAB-0.21.43-GARP23-NOVY-CYKLUS-KANDIDAT-KOLO-2.zip`.
 2. Do kořene repozitáře `AI-Studio-GHRAB` nahrajte přímo všechny soubory a složky z rozbaleného archivu.
-3. Commit pojmenujte například `AI Studio 0.21.42 – GARP 2.3 security hardening`.
+3. Commit pojmenujte například `AI Studio 0.21.43 – GARP 2.3 security hardening`.
 4. Vyčkejte na dokončení GitHub Actions. Workflow instaluje závislosti, synchronizuje manifesty, spustí regresi reportéru, celý GHRAB QA release gate, sestaví `dist` a až poté nasadí GitHub Pages.
 
 ## Kontrola po nasazení
 
-- `dist/build-info.json`, PWA manifest a service worker musí uvádět 0.21.42.
+- `dist/build-info.json`, PWA manifest a service worker musí uvádět 0.21.43.
 - `dist/config/access-config-bundle.json` musí uvádět `access-p1-20260824175535Z-k_wtm7Zj`.
 - Staré učitelské oprávnění kolegyně musí být po online obnovení odmítnuto a v Evidenci přístupů označeno jako centrálně zneplatněné.
 - Nové oprávnění správce zástupce musí zůstat funkční; má jiné JTI a podpisový klíč oprávnění se v tomto vydání nemění.

@@ -1,22 +1,22 @@
-# Release checklist AI Studio GHRAB 0.21.42
+# Release checklist AI Studio GHRAB 0.21.43
 
-> Aktuální verze: **0.21.42** · etapa P5
+> Aktuální verze: **0.21.43** · etapa P5
 
 ## Stav bezpečnostního kandidáta GARP 2.3
 
 - [x] Claude na 0.21.38 nezávisle potvrdil C-01, C-02 a C-03, včetně přirozeného Browser Back na localhostu.
 - [x] D-01 / HIGH z kontroly 0.21.38 byl proti kódu potvrzen: `deleteMyData()` odstraňoval generační značku, ale po destruktivním smazání ji znovu nerotoval.
-- [x] 0.21.42 rotuje generační značku po `deleteMyData()` i shared-device `endWork()` a fail-closed odmítne plný úspěch při selhání zápisu tombstone.
+- [x] 0.21.43 rotuje generační značku po `deleteMyData()` i shared-device `endWork()` a fail-closed odmítne plný úspěch při selhání zápisu tombstone.
 - [x] GARP regrese obsahují samostatný případ `delete-rotates-generation`; sabotážní negative control bez rotace jej prokazatelně vyvolá do FAIL.
 - [x] SIM-03 browser harness testuje obě destruktivní cesty, následné psaní a novou kartu a zapisuje evidence mimo veřejný `dist/`.
 - [x] Nový nezávislý auditní cyklus byl uživatelem výslovně zahájen.
-- [ ] 0.21.42 musí projít druhým nezávislým Claude ověřením tohoto nového cyklu, protože obsahuje distribuovanou opravu D-01.
+- [ ] 0.21.43 musí projít druhým nezávislým Claude ověřením tohoto nového cyklu, protože obsahuje distribuovanou opravu D-01.
 - [ ] RT-16 account-side (MFA, branch protection, secret scanning, key custody) zůstává bez úplného důkazu.
 - [ ] Do uzavření všech gate kandidát není schválen pro reálná studentská data.
 
 ## Veřejný balík
 
-- [x] Verze 0.21.42 je shodná v package, PWA manifestu, QA manifestu, buildu, dokumentaci a changelogu.
+- [x] Verze 0.21.43 je shodná v package, PWA manifestu, QA manifestu, buildu, dokumentaci a changelogu.
 - [x] Všechny aplikace jsou ve výchozím stavu uzamčené.
 - [x] Veřejný balík obsahuje pouze veřejný ověřovací klíč.
 - [x] Centrum zabezpečení je dostupné jen plnému správci; zástupce může v evidenci pouze připravit JTI.
@@ -35,7 +35,7 @@
 - [x] Materiály jsou v běžné navigaci jako server-ready katalog; centrální Tvorba materiálů v navigaci není. Bez serveru zůstává sdílení viditelně neaktivní.
 - [x] Pilotní metriky jsou přesně označeny jako místní.
 - [x] PWA cache se generuje automaticky z produkčního stromu a neobsahuje neplatné cesty.
-- [x] Všechny lokální JS/CSS vstupy a relativní modulové importy mají ve výsledném buildu revizi `?v=0.21.42`.
+- [x] Všechny lokální JS/CSS vstupy a relativní modulové importy mají ve výsledném buildu revizi `?v=0.21.43`.
 - [x] Odkazy přístupové brány při vložení do iframe opustí rámec a otevřou AI Studio v hlavním okně.
 - [x] Viewer obsahuje pojistku proti vnořenému AI Studiu a styly brány odolávají obecnému CSS vložených aplikací.
 - [x] Serverový katalog se aktivuje pouze při `school-server` + `schoolServerConnected` + `sharedMaterialLibrary`; GitHub profil nemůže omylem publikovat materiál.

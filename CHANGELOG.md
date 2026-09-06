@@ -2,6 +2,11 @@
 
 > Tento soubor se generuje ze `src/config/changelog.json`. Neupravujte jej ručně.
 
+## 0.21.43 — 2026-09-06
+**CI hotfix – zachování performance budgetu**
+
+- Build-only release-wave manifest se již nepublikuje do runtime dist; release gate zůstává beze změny a původní performance budget se nezvyšuje.
+
 ## 0.21.42 — 2026-09-06
 **Platform 1.1.2 – finální SORTIO wave-lock hotfix**
 
