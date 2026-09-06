@@ -6,7 +6,7 @@
       "cs": "Maturita Desk",
       "en": "Maturita Desk"
     },
-    "version": "1.0.2",
+    "version": "1.0.3",
     "status": {
       "cs": "Řízený pilot · demo obsah",
       "en": "Controlled pilot · demo content"
@@ -48,7 +48,7 @@
       "studioMinVersion": "0.21.35",
       "studioBridge": "2.0",
       "platformContract": "ghrab-platform-v1",
-      "platformRange": ">=1.1.0 <2.0.0"
+      "platformRange": ">=1.1.2 <2.0.0"
     },
     "integration": {
       "launchMode": "external-protected",
@@ -62,15 +62,15 @@
     "platform": {
       "schema": "ghrab-platform-app-integration-v1",
       "contract": "ghrab-platform-v1",
-      "requiredPlatformRange": ">=1.1.0 <2.0.0",
-      "platformVersion": "1.1.0",
+      "requiredPlatformRange": ">=1.1.2 <2.0.0",
+      "platformVersion": "1.1.2",
       "brandVersion": "1.0.0",
       "themeContract": "ghrab-theme-v1",
       "swContract": 1,
       "studioBridge": "ghrab-studio-handoff-v2",
       "artifactEnvelope": "ghrab-artifact-envelope-v1",
       "storagePrefix": "ghrab.maturita-desk.",
-      "cacheName": "ghrab-maturita-desk-v1.0.2",
+      "cacheName": "ghrab-maturita-desk-v1.0.3",
       "accessibilityContract": "ghrab-a11y-v1",
       "performanceContract": "ghrab-performance-v1"
     }

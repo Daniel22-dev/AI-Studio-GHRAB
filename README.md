@@ -1,14 +1,14 @@
 # AI Studio GHRAB
 
-**Aktuální verze:** 0.21.40
+**Aktuální verze:** 0.21.41
 **Platforma:** GHRAB Platform 1.1.1 · etapa P5
 
-**Stav:** AMBER – KANDIDÁT NOVÉHO VÝSLOVNĚ ZAHÁJENÉHO GARP 2.3 CYKLU, NE FINÁLNÍ RELEASE. Nezávislá kontrola Claude nad 0.21.38 potvrdila C-01/C-02/C-03, ale našla D-01 / HIGH na cestě „Smazat moje data“ → Browser Back. D-01 je v 0.21.40 opraven a kandidát čeká na druhé nezávislé ověření tohoto nového cyklu. **Reálná studentská data nepoužívat.**
+**Stav:** AMBER – KANDIDÁT NOVÉHO VÝSLOVNĚ ZAHÁJENÉHO GARP 2.3 CYKLU, NE FINÁLNÍ RELEASE. Nezávislá kontrola Claude nad 0.21.38 potvrdila C-01/C-02/C-03, ale našla D-01 / HIGH na cestě „Smazat moje data“ → Browser Back. D-01 je v 0.21.41 opraven a kandidát čeká na druhé nezávislé ověření tohoto nového cyklu. **Reálná studentská data nepoužívat.**
 
-**Verze 0.21.40** sjednocuje destruktivní lifecycle ochranu: `deleteMyData()` i shared-device `endWork()` po smazání rotují neobsahovou generační tombstone. SIM-03 browser regrese testuje obě cesty, následné psaní i novou kartu a QA evidence se nepublikuje v `dist/`.
+**Verze 0.21.41** sjednocuje destruktivní lifecycle ochranu: `deleteMyData()` i shared-device `endWork()` po smazání rotují neobsahovou generační tombstone. SIM-03 browser regrese testuje obě cesty, následné psaní i novou kartu a QA evidence se nepublikuje v `dist/`.
 AI Studio GHRAB je centrální brána školních digitálních a AI nástrojů. Jednotlivé aplikace zůstávají v samostatných repozitářích; Studio zajišťuje společnou navigaci, Top 4, synchronizaci verzí, bezpečnostní rámec, pilotní měření, správu podepsaných přístupů a kanonický základ technického reportéru. Materiály jsou viditelnou součástí portálu, ale v dnešním bezserverovém režimu se vlastní obsah ukládá pouze místně.
 
-## Hlavní novinky 0.21.40
+## Hlavní novinky 0.21.41
 
 - `Smazat moje data` po úplném clear obnoví čerstvou neobsahovou generační tombstone, takže Browser Back nemůže znovu aktivovat starý workflow formulář a autosave.
 - Stejný fail-closed helper rotace používá i shared-device `Ukončit práci`; selhání zápisu generační značky je součástí neúspěchu destruktivní operace.
@@ -33,7 +33,7 @@ AI Studio GHRAB je centrální brána školních digitálních a AI nástrojů. 
 - Všechny aplikace používají jeden kanonický školní logotyp bez inline base64 kopií a jednotnou autorskou patičku.
 - Aplikační data mají namespace `ghrab.<appId>.*`; historické klíče se migrují vratně a před změnou vzniká úplná záloha.
 - Studio Bridge v2 zachovává kompatibilitu se starším handoffem v1 a strukturované exporty používají artifact envelope v1 se SHA-256.
-- Registr Studia je synchronizován s verzemi KS 5.10.9, SORTIO 1.0.13, Lesson Hub 1.2.12, Diferenciátor 1.3.36, ACTIVA 0.5.14, Hodnotitel 1.5.13, LUDUS 1.16.16 a Generátor 7.1.17.
+- Registr Studia je synchronizován s verzemi KS 5.10.22, SORTIO 1.1.4, Lesson Hub 1.2.17, Diferenciátor 1.3.42, ACTIVA 0.5.22, Hodnotitel 1.5.22, LUDUS 1.16.20 a Generátor 7.1.22.
 
 ## Serverová vrstva z P1
 

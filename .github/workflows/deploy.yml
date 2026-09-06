@@ -43,6 +43,9 @@ jobs:
       - name: Format generated registry files
         if: github.event_name != 'pull_request'
         run: npm run format:generated-json
+      - name: Verify Platform 1.1.2 release-wave sources
+        if: github.event_name != 'pull_request'
+        run: npm run qa:ecosystem:verified
       - name: Verify immutable Core before formatting
         run: npm run verify:ai-core
       - name: Normalize source formatting

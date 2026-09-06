@@ -2,6 +2,14 @@
 
 > Tento soubor se generuje ze `src/config/changelog.json`. Neupravujte jej ručně.
 
+## 0.21.41 — 2026-09-06
+**Platform 1.1.2 – uzamčení release wave a ověření všech zdrojů**
+
+- Centrální release-wave manifest zamyká očekávané verze všech devíti child aplikací, Platformu 1.1.2 a rozsah >=1.1.2 <2.0.0.
+- Deploy brána nově vyžaduje, aby každý zdroj byl skutečně ověřen z nasazeného manifestu nebo veřejného GitHub repozitáře; snapshot již nemůže projít deployem jako GREEN.
+- Maturita Desk je připraven na vlastní veřejný studio-manifest, takže po nasazení child verze 1.0.3 již nemá zůstávat na záložním snapshotu.
+- E-01 zůstává do společného ověření celé vlny otevřený a používají se pouze syntetická testovací data.
+
 ## 0.21.40 — 2026-09-04
 **GARP 2.3 – suite-level ukončení sdílené relace**
 

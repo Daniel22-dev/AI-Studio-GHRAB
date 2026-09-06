@@ -236,6 +236,8 @@ if (
   fail("Pojistná synchronizace nemá denní frekvenci.");
 if (!deployWorkflow.includes("cancel-in-progress: false"))
   fail("Naplánovaný běh může rušit právě probíhající nasazení.");
+if (!deployWorkflow.includes("Verify Platform 1.1.2 release-wave sources") || !deployWorkflow.includes("npm run qa:ecosystem:verified"))
+  fail("Deploy workflow neobsahuje povinnou fail-closed kontrolu všech release-wave zdrojů.");
 if (!prettierIgnore.includes("src/ai-core/releases/**"))
   fail(".prettierignore nechrání neměnné release artefakty GHRAB AI Core.");
 const formatScript = pkg?.scripts?.format || "";

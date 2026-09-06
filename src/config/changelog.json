@@ -1,7 +1,33 @@
 {
   "schema": "ai-studio-changelog-v1",
-  "current": "0.21.40",
+  "current": "0.21.41",
   "items": [
+    {
+      "version": "0.21.41",
+      "date": "2026-09-06",
+      "title": {
+        "cs": "Platform 1.1.2 – uzamčení release wave a ověření všech zdrojů",
+        "en": "Platform 1.1.2 – release-wave lock and all-source verification"
+      },
+      "changes": [
+        {
+          "cs": "Centrální release-wave manifest zamyká očekávané verze všech devíti child aplikací, Platformu 1.1.2 a rozsah >=1.1.2 <2.0.0.",
+          "en": "A central release-wave manifest locks the expected versions of all nine child apps, Platform 1.1.2 and the >=1.1.2 <2.0.0 range."
+        },
+        {
+          "cs": "Deploy brána nově vyžaduje, aby každý zdroj byl skutečně ověřen z nasazeného manifestu nebo veřejného GitHub repozitáře; snapshot již nemůže projít deployem jako GREEN.",
+          "en": "The deploy gate now requires every source to be verified from the deployed manifest or public GitHub repository; a snapshot can no longer pass deployment as GREEN."
+        },
+        {
+          "cs": "Maturita Desk je připraven na vlastní veřejný studio-manifest, takže po nasazení child verze 1.0.3 již nemá zůstávat na záložním snapshotu.",
+          "en": "Maturita Desk is prepared to publish its own studio manifest, so after child version 1.0.3 is deployed it should no longer remain on a fallback snapshot."
+        },
+        {
+          "cs": "E-01 zůstává do společného ověření celé vlny otevřený a používají se pouze syntetická testovací data.",
+          "en": "E-01 remains open until the entire wave is jointly verified and only synthetic test data is used."
+        }
+      ]
+    },
     {
       "version": "0.21.40",
       "date": "2026-09-04",

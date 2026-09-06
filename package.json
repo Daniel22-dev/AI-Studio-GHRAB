@@ -1,6 +1,6 @@
 {
   "name": "ai-studio-ghrab",
-  "version": "0.21.40",
+  "version": "0.21.41",
   "private": true,
   "description": "Profesionální federované PWA devíti chráněných školních aplikací včetně Lesson Hubu, manuálů, řízeného přístupu a jednotné GHRAB QA brány",
   "type": "module",
@@ -61,7 +61,8 @@
     "access:sign": "node scripts/sign-access-bundle.mjs",
     "test:studio-ux": "node scripts/test-studio-ux.mjs",
     "qa:ecosystem": "node scripts/sync-platform-consumers.mjs --check && node scripts/qa-ecosystem.mjs",
-    "test:garp-security": "node scripts/test-garp-security-regressions.mjs"
+    "test:garp-security": "node scripts/test-garp-security-regressions.mjs",
+    "qa:ecosystem:verified": "node scripts/sync-platform-consumers.mjs --check && node scripts/qa-ecosystem.mjs --require-source-verification"
   },
   "engines": {
     "node": ">=18"

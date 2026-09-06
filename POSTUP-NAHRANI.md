@@ -1,23 +1,23 @@
-# Přesný postup nahrání AI Studio GHRAB 0.21.40 na GitHub – až po schválení
+# Přesný postup nahrání AI Studio GHRAB 0.21.41 na GitHub – až po schválení
 
-> Aktuální verze: **0.21.40** · etapa P5
+> Aktuální verze: **0.21.41** · etapa P5
 
-> **BLOKACE NASAZENÍ:** nový nezávislý GARP 2.3 cyklus byl výslovně zahájen. Verze 0.21.40 je kandidát po opravě D-01 / HIGH z první nezávislé kontroly tohoto nového cyklu a před nasazením musí projít jeho druhou Claude kontrolou a uzavřením release gate. Do té doby se tento postup NESMÍ použít k produkčnímu nasazení a reálná studentská data se nesmí použít.
+> **BLOKACE NASAZENÍ:** nový nezávislý GARP 2.3 cyklus byl výslovně zahájen. Verze 0.21.41 je kandidát po opravě D-01 / HIGH z první nezávislé kontroly tohoto nového cyklu a před nasazením musí projít jeho druhou Claude kontrolou a uzavřením release gate. Do té doby se tento postup NESMÍ použít k produkčnímu nasazení a reálná studentská data se nesmí použít.
 
 ## Předpoklady
 
-Nejprve musí být nasazeny KS 5.10.9, SORTIO 1.0.13, Lesson Hub 1.2.12, Diferenciátor 1.3.36, ACTIVA 0.5.14, Hodnotitel 1.5.13, LUDUS 1.16.16 a Generátor 7.1.17. Jejich lokální reportér vypíná centrální instanci přes `errorReporter: false`.
+Nejprve musí být nasazeny KS 5.10.22, SORTIO 1.1.4, Lesson Hub 1.2.17, Diferenciátor 1.3.42, ACTIVA 0.5.22, Hodnotitel 1.5.22, LUDUS 1.16.20 a Generátor 7.1.22. Jejich lokální reportér vypíná centrální instanci přes `errorReporter: false`.
 
 ## Nahrání
 
-1. Stáhněte a rozbalte `AI-Studio-GHRAB-0.21.40-GARP23-NOVY-CYKLUS-KANDIDAT-KOLO-2.zip`.
+1. Stáhněte a rozbalte `AI-Studio-GHRAB-0.21.41-GARP23-NOVY-CYKLUS-KANDIDAT-KOLO-2.zip`.
 2. Do kořene repozitáře `AI-Studio-GHRAB` nahrajte přímo všechny soubory a složky z rozbaleného archivu.
-3. Commit pojmenujte například `AI Studio 0.21.40 – GARP 2.3 security hardening`.
+3. Commit pojmenujte například `AI Studio 0.21.41 – GARP 2.3 security hardening`.
 4. Vyčkejte na dokončení GitHub Actions. Workflow instaluje závislosti, synchronizuje manifesty, spustí regresi reportéru, celý GHRAB QA release gate, sestaví `dist` a až poté nasadí GitHub Pages.
 
 ## Kontrola po nasazení
 
-- `dist/build-info.json`, PWA manifest a service worker musí uvádět 0.21.40.
+- `dist/build-info.json`, PWA manifest a service worker musí uvádět 0.21.41.
 - `dist/config/access-config-bundle.json` musí uvádět `access-p1-20260824175535Z-k_wtm7Zj`.
 - Staré učitelské oprávnění kolegyně musí být po online obnovení odmítnuto a v Evidenci přístupů označeno jako centrálně zneplatněné.
 - Nové oprávnění správce zástupce musí zůstat funkční; má jiné JTI a podpisový klíč oprávnění se v tomto vydání nemění.
