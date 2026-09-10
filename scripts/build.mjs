@@ -173,6 +173,8 @@ for (const buildOnlyConfig of [
 for (const sourceOnlyDoc of [
   "library/SERVER-MATERIALS-CONTRACT.md",
   "integration/VERIFY-INTEGRATION.md",
+  "integration/SAVE-TO-STUDIO.md",
+  "ai-core/releases/1.0.0/README.md",
 ]) {
   await rm(path.join(dist, sourceOnlyDoc), { force: true });
 }
