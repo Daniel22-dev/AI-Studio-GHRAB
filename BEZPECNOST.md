@@ -1,8 +1,8 @@
-# Bezpečnostní hranice AI Studio GHRAB 0.21.45
+# Bezpečnostní hranice AI Studio GHRAB 0.21.46
 
-> Aktuální verze: **0.21.45** · etapa P5
+> Aktuální verze: **0.21.46** · etapa P5
 
-> 0.21.45 je čistý layout/PWA-cache hotfix nad 0.21.44; bezpečnostní hranice a GARP 2.3 stav se nemění.
+> 0.21.46 navazuje na layout/PWA-cache hotfix 0.21.45 a opravuje pouze nesoulad Platform 1.1.2 release-wave locku s aktuálními verzemi child aplikací; bezpečnostní hranice a GARP 2.3 stav se nemění.
 
 
 ## Rychlá kontrola dat v portálu
@@ -31,7 +31,7 @@ Záložka **Bezpečnost** obsahuje jednoduchý semafor a volitelnou pomůcku **N
 
 ## Stav ochrany přímých adres
 
-Ochranný bootstrap je integrován v Generátoru 7.1.22, Diferenciátoru 1.3.42, Hodnotiteli maturitních slohů 1.5.22, LUDUSu 1.16.20, Korespondenčním asistentovi 5.10.22, ACTIVA 0.5.22, SORTIO 1.1.5 a Lesson Hubu 1.2.17. Běžný vstupní bod těchto aplikací nejprve načte centrální modul a ověří podpis, platnost, revokaci, roli, ID aplikace a aktuální verzi školení. Jde o praktickou ochranu proti běžnému sdílení přímé adresy, nikoli o serverovou ochranu zdrojového kódu: technicky zkušený uživatel může veřejný statický kód stáhnout nebo spustit mimo standardní bootstrap. Při nedostupnosti centrální konfigurace robustní bootstrap zobrazí srozumitelnou chybovou obrazovku a aplikaci nespustí.
+Ochranný bootstrap je integrován v Generátoru 7.1.25, Diferenciátoru 1.3.46, Hodnotiteli maturitních slohů 1.5.25, LUDUSu 1.16.20, Korespondenčním asistentovi 5.10.25, ACTIVA 0.5.22, SORTIO 1.1.14 a Lesson Hubu 1.2.17. Běžný vstupní bod těchto aplikací nejprve načte centrální modul a ověří podpis, platnost, revokaci, roli, ID aplikace a aktuální verzi školení. Jde o praktickou ochranu proti běžnému sdílení přímé adresy, nikoli o serverovou ochranu zdrojového kódu: technicky zkušený uživatel může veřejný statický kód stáhnout nebo spustit mimo standardní bootstrap. Při nedostupnosti centrální konfigurace robustní bootstrap zobrazí srozumitelnou chybovou obrazovku a aplikaci nespustí.
 
 ## Klíče
 

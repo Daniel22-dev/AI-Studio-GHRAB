@@ -1,8 +1,8 @@
-# Nahrání AI Studio GHRAB 0.21.45
+# Nahrání AI Studio GHRAB 0.21.46
 
-> Aktuální verze: **0.21.45** · etapa P5
+> Aktuální verze: **0.21.46** · etapa P5
 
-> 0.21.45 je layout/PWA-cache hotfix; bezpečnostní kandidát a jeho GARP 2.3 blokace zůstávají beze změny.
+> 0.21.46 zachovává layout/PWA-cache hotfix a navíc opravuje release-wave lock; bezpečnostní kandidát a jeho GARP 2.3 blokace zůstávají beze změny.
 
 > **BLOKACE NASAZENÍ:** nový nezávislý GARP 2.3 cyklus byl výslovně zahájen. Verze 0.21.43 je kandidát po opravě D-01 / HIGH z první nezávislé kontroly tohoto nového cyklu a před nasazením musí projít jeho druhou Claude kontrolou a uzavřením release gate. Do té doby se tento postup NESMÍ použít k produkčnímu nasazení a reálná studentská data se nesmí použít.
 
@@ -10,11 +10,11 @@ Tato verze je opravný bezpečnostní kandidát nového výslovně zahájeného 
 
 ## Povinné pořadí
 
-1. Korespondenční asistent 5.10.22
-2. SORTIO 1.1.5
+1. Korespondenční asistent 5.10.25
+2. SORTIO 1.1.14
 3. Lesson Hub 1.2.17
-4. Diferenciátor 1.3.42
+4. Diferenciátor 1.3.46
 5. ACTIVA 0.5.22
-6. Hodnotitel maturitních slohů 1.5.22
+6. Hodnotitel maturitních slohů 1.5.25
 7. LUDUS 1.16.20
-8. Generátor interaktivních testů 7.1.22
+8. Generátor interaktivních testů 7.1.25

@@ -1,8 +1,8 @@
 # AI Studio GHRAB
 
-**Aktuální verze:** 0.21.45
+**Aktuální verze:** 0.21.46
 
-**Layout hotfix 0.21.45:** domovský portál už při běžném 100% zoomu a systémovém škálování Windows nespouští příliš agresivní výškový režim. Karty kolem brány se neřežou a desktopová navigace se nezalamuje do druhého řádku. Bezpečnostní logika se proti 0.21.44 nemění.
+**Hotfix 0.21.46:** zachovává opravu layoutu z 0.21.45 pro běžný 100% zoom a navíc srovnává Platform 1.1.2 release-wave lock s aktuálně ověřenými verzemi child aplikací. Bezpečnostní logika se nemění.
 **Platforma:** GHRAB Platform 1.1.2 · etapa P5
 
 **Stav:** AMBER – KANDIDÁT NOVÉHO VÝSLOVNĚ ZAHÁJENÉHO GARP 2.3 CYKLU, NE FINÁLNÍ RELEASE. Nezávislá kontrola Claude nad 0.21.38 potvrdila C-01/C-02/C-03, ale našla D-01 / HIGH na cestě „Smazat moje data“ → Browser Back. D-01 je v 0.21.43 opraven a kandidát čeká na druhé nezávislé ověření tohoto nového cyklu. **Reálná studentská data nepoužívat.**
@@ -10,12 +10,12 @@
 **Verze 0.21.43** sjednocuje destruktivní lifecycle ochranu: `deleteMyData()` i shared-device `endWork()` po smazání rotují neobsahovou generační tombstone. SIM-03 browser regrese testuje obě cesty, následné psaní i novou kartu a QA evidence se nepublikuje v `dist/`.
 AI Studio GHRAB je centrální brána školních digitálních a AI nástrojů. Jednotlivé aplikace zůstávají v samostatných repozitářích; Studio zajišťuje společnou navigaci, Top 4, synchronizaci verzí, bezpečnostní rámec, pilotní měření, správu podepsaných přístupů a kanonický základ technického reportéru. Materiály jsou viditelnou součástí portálu, ale v dnešním bezserverovém režimu se vlastní obsah ukládá pouze místně.
 
-## Hlavní novinky 0.21.45
+## Hlavní novinky 0.21.46
 
 - Výškový `presentation-fit` se aktivuje až u skutečně nízkých desktopových viewportů, ne při běžném škálování displeje.
 - Kompaktní režim už nevynucuje výšku karet podle viewportu; obsah karty může růst a stránka raději svisle scrolluje, než aby ořezala ovládací prvky.
 - Horní desktopová navigace se nezalamuje a v užším desktopovém pásmu používá kompaktnější mezery.
-- Patch verze 0.21.45 mění PWA cache klíč, takže po nasazení nezůstane aktivní staré CSS z 0.21.44.
+- Layout oprava z 0.21.45 zůstává zachována a release-wave lock je srovnán s aktuálními verzemi child aplikací. Patch 0.21.46 mění PWA cache klíč, takže se po nasazení nepoužije starší cache.
 
 ### Bezpečnostní základ převzatý z 0.21.43
 
@@ -44,7 +44,7 @@ AI Studio GHRAB je centrální brána školních digitálních a AI nástrojů. 
 - Všechny aplikace používají jeden kanonický školní logotyp bez inline base64 kopií a jednotnou autorskou patičku.
 - Aplikační data mají namespace `ghrab.<appId>.*`; historické klíče se migrují vratně a před změnou vzniká úplná záloha.
 - Studio Bridge v2 zachovává kompatibilitu se starším handoffem v1 a strukturované exporty používají artifact envelope v1 se SHA-256.
-- Registr Studia je synchronizován s verzemi KS 5.10.22, SORTIO 1.1.5, Lesson Hub 1.2.17, Diferenciátor 1.3.42, ACTIVA 0.5.22, Hodnotitel 1.5.22, LUDUS 1.16.20 a Generátor 7.1.22.
+- Registr Studia je synchronizován s verzemi KS 5.10.25, SORTIO 1.1.14, Lesson Hub 1.2.17, Diferenciátor 1.3.46, ACTIVA 0.5.22, Hodnotitel 1.5.25, LUDUS 1.16.20 a Generátor 7.1.25.
 
 ## Serverová vrstva z P1
 

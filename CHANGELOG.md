@@ -2,6 +2,13 @@
 
 > Tento soubor se generuje ze `src/config/changelog.json`. Neupravujte jej ručně.
 
+## 0.21.46 — 2026-09-10
+**Oprava CI release-wave po synchronizaci novějších aplikací**
+
+- Release-wave lock Platformy 1.1.2 byl srovnán s aktuálně ověřenými verzemi Generátoru 7.1.25, Diferenciátoru 1.3.46, Hodnotitele 1.5.25, Korespondenčního asistenta 5.10.25 a SORTIO 1.1.14.
+- Předchozí layout hotfix 0.21.45 zůstává zachován; tato verze opravuje pouze nesoulad centrálního wave-locku, který správně zastavil GitHub Pages deploy.
+- Patch zvyšuje verzi Studia na 0.21.46 a mění PWA cache klíč, aby po nasazení nebyla použita starší cache.
+
 ## 0.21.45 — 2026-09-10
 **Oprava rozložení portálu při běžném zoomu a škálování**
 
