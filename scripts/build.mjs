@@ -168,6 +168,15 @@ for (const buildOnlyConfig of [
   await rm(path.join(dist, "config", buildOnlyConfig), { force: true });
 }
 
+// Developer-only contracts remain in src/ and in the repository, but are not
+// runtime assets and therefore must not consume the production payload budget.
+for (const sourceOnlyDoc of [
+  "library/SERVER-MATERIALS-CONTRACT.md",
+  "integration/VERIFY-INTEGRATION.md",
+]) {
+  await rm(path.join(dist, sourceOnlyDoc), { force: true });
+}
+
 const allCacheFiles = (await walk(dist))
   .filter((file) => file !== path.join(dist, "sw.js"))
   .map((file) => `./${path.relative(dist, file).split(path.sep).join("/")}`)

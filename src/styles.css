@@ -3718,8 +3718,6 @@ html[data-motion="off"] .premium-launch-content {
     max-width: 720px;
   }
   html.presentation-fit .portal-stage {
-    /* Never force two content-rich cards into a viewport-derived height.
-       A short screen may scroll vertically, but card controls must remain visible. */
     min-height: 0;
     height: auto;
     margin-top: 10px;
