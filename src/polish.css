@@ -67,7 +67,8 @@ html:not(.access-ready) body[data-page="tests"] .site-footer {
   grid-template-columns: minmax(250px, auto) 1fr auto;
 }
 .main-nav {
-  flex-wrap: wrap;
+  flex-wrap: nowrap;
+  min-width: 0;
 }
 .main-nav a {
   white-space: nowrap;
@@ -605,6 +606,19 @@ html:not(.access-ready) body[data-page="tests"] .site-footer {
   border-radius: 0 12px 12px 0;
   background: rgba(80, 232, 255, 0.05);
   color: var(--soft);
+}
+@media (min-width: 901px) and (max-width: 1600px) {
+  .site-header {
+    gap: 14px;
+    padding-inline: clamp(16px, 2vw, 28px);
+  }
+  .main-nav {
+    gap: 0;
+  }
+  .main-nav a {
+    padding: 8px 7px;
+    font-size: 0.78rem;
+  }
 }
 @media (max-width: 1180px) {
   .main-nav a {

@@ -2236,7 +2236,11 @@ function setupPwaInstallPrompt() {
 
 function updatePresentationFit() {
   if (page !== "home") return;
-  const compactPresentation = innerWidth >= 1024 && innerHeight <= 980;
+  // Height-only compaction used to trigger on ordinary 1080p displays when
+  // Windows/browser scaling reduced the CSS viewport. Keep it only for
+  // genuinely short desktop viewports; the compact CSS below must still
+  // grow with its content instead of clipping application cards.
+  const compactPresentation = innerWidth >= 1024 && innerHeight <= 820;
   root.classList.toggle("presentation-fit", compactPresentation);
 }
 

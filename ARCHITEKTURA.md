@@ -1,8 +1,8 @@
-# Architektura AI Studio GHRAB 0.21.44
+# Architektura AI Studio GHRAB 0.21.45
 
-> Aktuální verze: **0.21.44** · etapa P5
+> Aktuální verze: **0.21.45** · etapa P5
 
-> 0.21.44 přidává 4K lazy-loaded showcase video; médium zůstává mimo PWA precache a nemění bezpečnostní architekturu.
+> 0.21.45 opravuje responzivní chování domovského portálu a mění patch verzi kvůli oddělení PWA cache; bezpečnostní architektura se nemění.
 
 ## Koherence aktualizace PWA
 

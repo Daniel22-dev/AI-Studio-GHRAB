@@ -2,6 +2,14 @@
 
 > Tento soubor se generuje ze `src/config/changelog.json`. Neupravujte jej ručně.
 
+## 0.21.45 — 2026-09-10
+**Oprava rozložení portálu při běžném zoomu a škálování**
+
+- Výškový režim presentation-fit se už nespouští na běžných desktopových viewpotech vzniklých například systémovým škálováním Windows; je vyhrazen jen skutečně nízkým oknům.
+- Kompaktní režim už nevynucuje pevnou výšku dvou řad karet ani výšku karty 100 %, takže ovládací prvky, přístupová informace a tlačítko spuštění nemohou být oříznuté.
+- Horní navigace se na desktopu nezalamuje do druhého řádku a mezi 901–1600 px používá kompaktnější rozestupy.
+- Patch zvyšuje verzi na 0.21.45, aby PWA a service worker neponechaly v cache staré CSS 0.21.44.
+
 ## 0.21.44 — 2026-09-06
 **4K prezentační showcase, plynulé intro a Maturita Desk**
 

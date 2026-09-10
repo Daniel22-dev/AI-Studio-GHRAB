@@ -1,7 +1,33 @@
 {
   "schema": "ai-studio-changelog-v1",
-  "current": "0.21.44",
+  "current": "0.21.45",
   "items": [
+    {
+      "version": "0.21.45",
+      "date": "2026-09-10",
+      "title": {
+        "cs": "Oprava rozložení portálu při běžném zoomu a škálování",
+        "en": "Portal layout fix for normal zoom and display scaling"
+      },
+      "changes": [
+        {
+          "cs": "Výškový režim presentation-fit se už nespouští na běžných desktopových viewpotech vzniklých například systémovým škálováním Windows; je vyhrazen jen skutečně nízkým oknům.",
+          "en": "The height-based presentation-fit mode no longer activates on ordinary desktop viewports created by display scaling; it is reserved for genuinely short windows."
+        },
+        {
+          "cs": "Kompaktní režim už nevynucuje pevnou výšku dvou řad karet ani výšku karty 100 %, takže ovládací prvky, přístupová informace a tlačítko spuštění nemohou být oříznuté.",
+          "en": "Compact mode no longer forces two card rows or cards into fixed viewport-derived heights, preventing controls, access notes and launch buttons from being clipped."
+        },
+        {
+          "cs": "Horní navigace se na desktopu nezalamuje do druhého řádku a mezi 901–1600 px používá kompaktnější rozestupy.",
+          "en": "Desktop navigation no longer wraps to a second row and uses tighter spacing between 901–1600 px."
+        },
+        {
+          "cs": "Patch zvyšuje verzi na 0.21.45, aby PWA a service worker neponechaly v cache staré CSS 0.21.44.",
+          "en": "The patch bumps the app to 0.21.45 so the PWA and service worker do not retain the old 0.21.44 CSS cache."
+        }
+      ]
+    },
     {
       "version": "0.21.44",
       "date": "2026-09-06",

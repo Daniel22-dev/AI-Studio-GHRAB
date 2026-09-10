@@ -1,12 +1,12 @@
-import { sanitizePilotEvent, sanitizePilotEventList } from "./privacy/pilot-event.js?v=0.21.44";
-import { validateMaterialPackage } from "./shared/material-validator.js?v=0.21.44";
-import { buildPilotSummary } from "./shared/safe-export.js?v=0.21.44";
+import { sanitizePilotEvent, sanitizePilotEventList } from "./privacy/pilot-event.js?v=0.21.45";
+import { validateMaterialPackage } from "./shared/material-validator.js?v=0.21.45";
+import { buildPilotSummary } from "./shared/safe-export.js?v=0.21.45";
 import {
   applyDeploymentToAppRegistry,
   loadDeploymentConfig,
-} from "./access/deployment-config.js?v=0.21.44";
-import { initialisePlatformRuntime } from "./access/platform-runtime.js?v=0.21.44";
-import { createRegistryClient } from "./modules/registry-client.js?v=0.21.44";
+} from "./access/deployment-config.js?v=0.21.45";
+import { initialisePlatformRuntime } from "./access/platform-runtime.js?v=0.21.45";
+import { createRegistryClient } from "./modules/registry-client.js?v=0.21.45";
 import {
   initialiseAccess,
   setPermitToken,
@@ -21,8 +21,8 @@ import {
   requiredTraining,
   formatReason,
   inspectPermitToken,
-} from "./access/access-control.js?v=0.21.44";
-const VERSION = "0.21.44";
+} from "./access/access-control.js?v=0.21.45";
+const VERSION = "0.21.45";
 const deploymentReady = loadDeploymentConfig({ appId: "ai-studio" });
 const root = document.documentElement;
 const page = document.body.dataset.page || "home";
@@ -1338,7 +1338,7 @@ function toggleFavoriteApp(appId) {
 }
 async function loadAppTestStatusModule() {
   if (!isAdmin() || isColleaguePreview()) return null;
-  appTestStatusModule ||= await import("./modules/app-test-status.js?v=0.21.44");
+  appTestStatusModule ||= await import("./modules/app-test-status.js?v=0.21.45");
   return appTestStatusModule;
 }
 function currentCoreAppIds() {
@@ -2236,7 +2236,11 @@ function setupPwaInstallPrompt() {
 
 function updatePresentationFit() {
   if (page !== "home") return;
-  const compactPresentation = innerWidth >= 1024 && innerHeight <= 980;
+  // Height-only compaction used to trigger on ordinary 1080p displays when
+  // Windows/browser scaling reduced the CSS viewport. Keep it only for
+  // genuinely short desktop viewports; the compact CSS below must still
+  // grow with its content instead of clipping application cards.
+  const compactPresentation = innerWidth >= 1024 && innerHeight <= 820;
   root.classList.toggle("presentation-fit", compactPresentation);
 }
 
@@ -2495,7 +2499,7 @@ applyTheme();
 applyLanguage();
 applyMotion();
 renderHome();
-void import('./modules/portal-effects.js?v=0.21.44')
+void import('./modules/portal-effects.js?v=0.21.45')
   .then(({ setupPortalEffects }) => setupPortalEffects({ root }))
   .catch((error) => console.warn('Volitelne portalove efekty nebyly nacteny.', error));
 void refreshSharedAccessModuleCache();
@@ -2505,7 +2509,7 @@ accessReady.then(() => {
   updateTelemetryModeBanner();
   setupMonthlyReportReminder();
 });
-void Promise.all([deploymentReady, import("./access/app-guard.js?v=0.21.44")])
+void Promise.all([deploymentReady, import("./access/app-guard.js?v=0.21.45")])
   .then(([deployment, { startErrorReporterBestEffort }]) =>
     startErrorReporterBestEffort("ai-studio", {
       appName: "AI Studio GHRAB",

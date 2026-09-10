@@ -1,5 +1,5 @@
-import { BAKED_DEPLOYMENT_CONFIG } from "../config/deployment-baked.js?v=0.21.44";
-import { endAccessSession } from "./access-control.js?v=0.21.44";
+import { BAKED_DEPLOYMENT_CONFIG } from "../config/deployment-baked.js?v=0.21.45";
+import { endAccessSession } from "./access-control.js?v=0.21.45";
 
 const PLATFORM_SCHEMA = "ghrab-platform-runtime-v1";
 const DATA_MANIFEST_SCHEMA = "ghrab-data-manifest-v1";

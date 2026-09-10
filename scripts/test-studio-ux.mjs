@@ -59,7 +59,11 @@ check(!/not\(\.access-ready\)[\s\S]{0,100}data-page="changelog"/.test(polishCss)
 check(polishCss.includes('.site-footer') && polishCss.includes('#0d4b78') && polishCss.includes('#0a355d'), "Paticka nema samostatny modry Studio blok bez cerneho pozadi.");
 
 const appJs = await text("src/app.js");
+const stylesCss = await text("src/styles.css");
 const appTestStatusJs = await text("src/modules/app-test-status.js");
+check(appJs.includes("innerHeight <= 820"), "Desktop presentation-fit se znovu spousti na beznem 1080p/scaled viewportu.");
+check(stylesCss.includes("grid-template-rows: repeat(2, auto)") && stylesCss.includes("justify-content: flex-start"), "Kompaktni portal znovu nuti karty do pevne vysky nebo centruje pretikajici obsah.");
+check(!/\.main-nav\s*\{[^}]*flex-wrap:\s*wrap/.test(polishCss), "Hlavni navigace se na desktopu znovu muze zalomit do druheho radku.");
 check(appJs.includes('if (page === "changelog") return;'), "Katalog zmen nema runtime kompatibilitu pro starsi podepsany policy bundle.");
 check(appJs.includes('[data-teacher-only]'), "Chybi role teacher-only.");
 check(appJs.includes('COLLEAGUE_PREVIEW_KEY') && appJs.includes('function isColleaguePreview()') && appJs.includes('function mountColleaguePreviewBanner()'), "Chybi session Pohled kolegy.");

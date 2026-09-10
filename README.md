@@ -1,8 +1,8 @@
 # AI Studio GHRAB
 
-**Aktuální verze:** 0.21.44
+**Aktuální verze:** 0.21.45
 
-**Prezentační patch 0.21.44:** hlavní showcase film je nově 4K a úvodní přechod kolem páté sekundy byl přerenderován bez krátkého záseku. Bezpečnostní logika GARP 2.3 se proti 0.21.43 nemění.
+**Layout hotfix 0.21.45:** domovský portál už při běžném 100% zoomu a systémovém škálování Windows nespouští příliš agresivní výškový režim. Karty kolem brány se neřežou a desktopová navigace se nezalamuje do druhého řádku. Bezpečnostní logika se proti 0.21.44 nemění.
 **Platforma:** GHRAB Platform 1.1.2 · etapa P5
 
 **Stav:** AMBER – KANDIDÁT NOVÉHO VÝSLOVNĚ ZAHÁJENÉHO GARP 2.3 CYKLU, NE FINÁLNÍ RELEASE. Nezávislá kontrola Claude nad 0.21.38 potvrdila C-01/C-02/C-03, ale našla D-01 / HIGH na cestě „Smazat moje data“ → Browser Back. D-01 je v 0.21.43 opraven a kandidát čeká na druhé nezávislé ověření tohoto nového cyklu. **Reálná studentská data nepoužívat.**
@@ -10,12 +10,12 @@
 **Verze 0.21.43** sjednocuje destruktivní lifecycle ochranu: `deleteMyData()` i shared-device `endWork()` po smazání rotují neobsahovou generační tombstone. SIM-03 browser regrese testuje obě cesty, následné psaní i novou kartu a QA evidence se nepublikuje v `dist/`.
 AI Studio GHRAB je centrální brána školních digitálních a AI nástrojů. Jednotlivé aplikace zůstávají v samostatných repozitářích; Studio zajišťuje společnou navigaci, Top 4, synchronizaci verzí, bezpečnostní rámec, pilotní měření, správu podepsaných přístupů a kanonický základ technického reportéru. Materiály jsou viditelnou součástí portálu, ale v dnešním bezserverovém režimu se vlastní obsah ukládá pouze místně.
 
-## Hlavní novinky 0.21.44
+## Hlavní novinky 0.21.45
 
-- Showcase v záložce Prezentace je 4K 3840×2160 / 30 fps a používá nový cache-busting název souboru.
-- Úvodní přechod kolem 4,8–5,1 s je přerenderovaný plynule bez krátkého motion stall.
-- MP4 má faststart a jednasekundové keyframy; prezentační karta používá `preload=auto`.
-- 4K video i poster zůstávají lazy media mimo PWA precache a stávající performance budget se nezvyšuje.
+- Výškový `presentation-fit` se aktivuje až u skutečně nízkých desktopových viewportů, ne při běžném škálování displeje.
+- Kompaktní režim už nevynucuje výšku karet podle viewportu; obsah karty může růst a stránka raději svisle scrolluje, než aby ořezala ovládací prvky.
+- Horní desktopová navigace se nezalamuje a v užším desktopovém pásmu používá kompaktnější mezery.
+- Patch verze 0.21.45 mění PWA cache klíč, takže po nasazení nezůstane aktivní staré CSS z 0.21.44.
 
 ### Bezpečnostní základ převzatý z 0.21.43
 
