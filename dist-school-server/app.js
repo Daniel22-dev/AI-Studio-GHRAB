@@ -1,12 +1,12 @@
-import { sanitizePilotEvent, sanitizePilotEventList } from "./privacy/pilot-event.js?v=0.21.46";
-import { validateMaterialPackage } from "./shared/material-validator.js?v=0.21.46";
-import { buildPilotSummary } from "./shared/safe-export.js?v=0.21.46";
+import { sanitizePilotEvent, sanitizePilotEventList } from "./privacy/pilot-event.js?v=0.21.47";
+import { validateMaterialPackage } from "./shared/material-validator.js?v=0.21.47";
+import { buildPilotSummary } from "./shared/safe-export.js?v=0.21.47";
 import {
   applyDeploymentToAppRegistry,
   loadDeploymentConfig,
-} from "./access/deployment-config.js?v=0.21.46";
-import { initialisePlatformRuntime } from "./access/platform-runtime.js?v=0.21.46";
-import { createRegistryClient } from "./modules/registry-client.js?v=0.21.46";
+} from "./access/deployment-config.js?v=0.21.47";
+import { initialisePlatformRuntime } from "./access/platform-runtime.js?v=0.21.47";
+import { createRegistryClient } from "./modules/registry-client.js?v=0.21.47";
 import {
   initialiseAccess,
   setPermitToken,
@@ -21,8 +21,8 @@ import {
   requiredTraining,
   formatReason,
   inspectPermitToken,
-} from "./access/access-control.js?v=0.21.46";
-const VERSION = "0.21.46";
+} from "./access/access-control.js?v=0.21.47";
+const VERSION = "0.21.47";
 const deploymentReady = loadDeploymentConfig({ appId: "ai-studio" });
 const root = document.documentElement;
 const page = document.body.dataset.page || "home";
@@ -1338,7 +1338,7 @@ function toggleFavoriteApp(appId) {
 }
 async function loadAppTestStatusModule() {
   if (!isAdmin() || isColleaguePreview()) return null;
-  appTestStatusModule ||= await import("./modules/app-test-status.js?v=0.21.46");
+  appTestStatusModule ||= await import("./modules/app-test-status.js?v=0.21.47");
   return appTestStatusModule;
 }
 function currentCoreAppIds() {
@@ -2102,8 +2102,10 @@ async function refreshSharedAccessModuleCache() {
   }
 }
 
-const PWA_INSTALL_DISMISSED_KEY = "ghrab.pwa.install-dismissed-until";
+const PWA_INSTALL_ONBOARDING_KEY = "ghrab.ai-studio.pwa.install-onboarding.v1";
 let deferredInstallPrompt = null;
+let pwaInstallRetry = 0;
+let releasePwaInstallIsolation = () => {};
 
 function isStandalonePwa() {
   return (
@@ -2111,127 +2113,143 @@ function isStandalonePwa() {
     navigator.standalone === true
   );
 }
-function isDesktopInstallSurface() {
-  return (
-    matchMedia("(min-width: 760px)").matches &&
-    matchMedia("(pointer: fine)").matches
+function pwaInstallOnboardingSeen() {
+  return safeGetItem(PWA_INSTALL_ONBOARDING_KEY) === "done";
+}
+function rememberPwaInstallOnboarding() {
+  safeSetItem(PWA_INSTALL_ONBOARDING_KEY, "done", { silent: true });
+}
+function pwaInstallHelp() {
+  const ua = navigator.userAgent || "";
+  const ios = /iPad|iPhone|iPod/.test(ua) ||
+    (navigator.platform === "MacIntel" && navigator.maxTouchPoints > 1);
+  if (ios)
+    return t(
+      "V Safari klepn\u011bte na Sd\u00edlet a zvolte P\u0159idat na plochu.",
+      "In Safari, tap Share and choose Add to Home Screen.",
+    );
+  if (/Android/i.test(ua))
+    return t(
+      "V nab\u00eddce prohl\u00ed\u017ee\u010de zvolte Nainstalovat aplikaci nebo P\u0159idat na plochu.",
+      "Use the browser menu and choose Install app or Add to Home screen.",
+    );
+  return t(
+    "Pokud prohl\u00ed\u017ee\u010d nenab\u00eddne p\u0159\u00edmou instalaci, v Chrome nebo Edge pou\u017eijte ikonu instalace vpravo v adresn\u00edm \u0159\u00e1dku nebo nab\u00eddku prohl\u00ed\u017ee\u010de.",
+    "If direct installation is unavailable, use the install icon in the Chrome or Edge address bar, or the browser menu.",
   );
 }
-function installPromptDismissed() {
-  const until = Date.parse(safeGetItem(PWA_INSTALL_DISMISSED_KEY) || "");
-  return Number.isFinite(until) && until > Date.now();
+function closePwaInstallModal({ remember = true } = {}) {
+  clearTimeout(pwaInstallRetry);
+  pwaInstallRetry = 0;
+  if (remember) rememberPwaInstallOnboarding();
+  document.querySelector(".pwa-install-overlay")?.remove();
+  releasePwaInstallIsolation();
+  releasePwaInstallIsolation = () => {};
 }
-function dismissPwaInstallCard(days = 30) {
-  const until = new Date(Date.now() + days * 86400000).toISOString();
-  safeSetItem(PWA_INSTALL_DISMISSED_KEY, until, { silent: true });
-  document.querySelector(".pwa-install-card")?.remove();
+function updatePwaInstallModal(message = "") {
+  const modal = document.querySelector(".pwa-install-modal");
+  if (!modal) return;
+  const primary = modal.querySelector(".pwa-install-primary");
+  const status = modal.querySelector(".pwa-install-status");
+  if (deferredInstallPrompt) {
+    primary.hidden = false;
+    primary.disabled = false;
+    primary.textContent = t("Nainstalovat", "Install");
+    status.textContent = message || t(
+      "P\u0159\u00edm\u00e1 instalace je p\u0159ipravena. Sta\u010d\u00ed jedno kliknut\u00ed.",
+      "Direct installation is ready. One click is enough.",
+    );
+  } else {
+    primary.hidden = true;
+    status.textContent = message || pwaInstallHelp();
+  }
 }
-function updatePwaInstallCard() {
-  const card = document.querySelector(".pwa-install-card");
-  if (!card) return;
-  const button = card.querySelector(".pwa-install-primary");
-  const hint = card.querySelector(".pwa-install-copy p");
-  if (button)
-    button.textContent = deferredInstallPrompt
-      ? t("Nainstalovat", "Install")
-      : t("Jak nainstalovat", "How to install");
-  if (hint)
-    hint.textContent = deferredInstallPrompt
-      ? t(
-          "Otevře se jako samostatná aplikace na počítači a bude vždy po ruce.",
-          "Open it as a standalone desktop app and keep it close at hand.",
-        )
-      : t(
-          "V Chrome nebo Edge lze Studio nainstalovat přes ikonu v adresním řádku.",
-          "In Chrome or Edge, install the Studio using the icon in the address bar.",
-        );
-}
-function renderPwaInstallCard() {
+function renderPwaInstallModal() {
   if (
     page !== "home" ||
     isStandalonePwa() ||
-    !isDesktopInstallSurface() ||
-    installPromptDismissed() ||
-    document.querySelector(".pwa-install-card")
-  )
+    pwaInstallOnboardingSeen() ||
+    document.querySelector(".pwa-install-overlay")
+  ) return;
+  const intro = document.querySelector(".studio-startup-intro");
+  if (intro && !intro.hidden && intro.classList.contains("is-active")) {
+    clearTimeout(pwaInstallRetry);
+    pwaInstallRetry = setTimeout(renderPwaInstallModal, 650);
     return;
+  }
 
-  const card = el("aside", "pwa-install-card");
-  card.setAttribute("role", "region");
-  card.setAttribute(
-    "aria-label",
-    t("Instalace AI Studia", "Install AI Studio"),
-  );
+  const overlay = el("div", "pwa-install-overlay");
+  const modal = el("section", "pwa-install-modal");
+  modal.setAttribute("role", "dialog");
+  modal.setAttribute("aria-modal", "true");
+  modal.setAttribute("aria-labelledby", "pwa-install-title");
   const icon = el("img", "pwa-install-icon");
   icon.src = `${base}assets/brand/icon-96.png`;
   icon.alt = "";
   const copy = el("div", "pwa-install-copy");
+  const title = el("h2", "", t("Nainstalovat AI Studio", "Install AI Studio"));
+  title.id = "pwa-install-title";
   copy.append(
-    el("strong", "", t("Nainstalovat AI Studio", "Install AI Studio")),
-    el("p", "", ""),
+    title,
+    el("p", "", t(
+      "Na tomto za\u0159\u00edzen\u00ed m\u016f\u017ee AI Studio b\u011b\u017eet jako samostatn\u00e1 aplikace. Instalace zabere jen chv\u00edli.",
+      "AI Studio can run as a standalone app on this device. Installation only takes a moment.",
+    )),
+    el("p", "pwa-install-status", ""),
   );
   const actions = el("div", "pwa-install-actions");
-  const install = el("button", "pwa-install-primary", "");
-  install.type = "button";
-  install.addEventListener("click", async () => {
-    if (!deferredInstallPrompt) {
-      showToast(
-        t(
-          "V Chrome nebo Edge klikněte na ikonu instalace vpravo v adresním řádku, případně otevřete nabídku prohlížeče a zvolte Nainstalovat AI Studio.",
-          "In Chrome or Edge, click the install icon on the right side of the address bar, or open the browser menu and choose Install AI Studio.",
-        ),
-      );
-      return;
-    }
-    install.disabled = true;
+  const primary = el("button", "button primary pwa-install-primary", "");
+  primary.type = "button";
+  primary.hidden = true;
+  primary.addEventListener("click", async () => {
+    if (!deferredInstallPrompt) return;
+    const prompt = deferredInstallPrompt;
+    deferredInstallPrompt = null;
+    primary.disabled = true;
     try {
-      deferredInstallPrompt.prompt();
-      const choice = await deferredInstallPrompt.userChoice;
+      await prompt.prompt();
+      const choice = await prompt.userChoice;
       if (choice?.outcome === "accepted") {
-        safeRemoveItem(PWA_INSTALL_DISMISSED_KEY);
-        card.remove();
+        rememberPwaInstallOnboarding();
+        closePwaInstallModal({ remember: false });
       } else {
-        install.disabled = false;
+        updatePwaInstallModal(t(
+          "Instalace byla zru\u0161ena. M\u016f\u017eete ji spustit znovu z instala\u010dn\u00ed ikony prohl\u00ed\u017ee\u010de. " + pwaInstallHelp(),
+          "Installation was cancelled. You can start it again from the browser install icon. " + pwaInstallHelp(),
+        ));
       }
     } catch {
-      install.disabled = false;
-      showToast(
-        t(
-          "Instalační nabídku se nepodařilo otevřít. Použijte ikonu instalace v adresním řádku prohlížeče.",
-          "The install prompt could not be opened. Use the install icon in the browser address bar.",
-        ),
-      );
+      updatePwaInstallModal(pwaInstallHelp());
     }
   });
-  const close = el("button", "pwa-install-close", "×");
-  close.type = "button";
-  close.setAttribute("aria-label", t("Skrýt nabídku", "Hide prompt"));
-  close.addEventListener("click", () => dismissPwaInstallCard(30));
-  actions.append(install);
-  card.append(icon, copy, actions, close);
-  document.body.append(card);
-  updatePwaInstallCard();
+  const later = el("button", "button ghost", t("Te\u010f ne", "Not now"));
+  later.type = "button";
+  later.addEventListener("click", () => closePwaInstallModal());
+  actions.append(primary, later);
+  modal.append(icon, copy, actions);
+  overlay.append(modal);
+  document.body.append(overlay);
+  releasePwaInstallIsolation = activateModalIsolation(overlay, {
+    onEscape: () => closePwaInstallModal(),
+  });
+  updatePwaInstallModal();
+  (deferredInstallPrompt ? primary : later).focus({ preventScroll: true });
 }
 function setupPwaInstallPrompt() {
   if (page !== "home" || isStandalonePwa()) return;
-  window.setTimeout(renderPwaInstallCard, 900);
   addEventListener("beforeinstallprompt", (event) => {
     event.preventDefault();
     deferredInstallPrompt = event;
-    renderPwaInstallCard();
-    updatePwaInstallCard();
+    renderPwaInstallModal();
+    updatePwaInstallModal();
   });
   addEventListener("appinstalled", () => {
     deferredInstallPrompt = null;
-    safeRemoveItem(PWA_INSTALL_DISMISSED_KEY);
-    document.querySelector(".pwa-install-card")?.remove();
-    showToast(t("AI Studio bylo nainstalováno.", "AI Studio was installed."));
+    rememberPwaInstallOnboarding();
+    closePwaInstallModal({ remember: false });
+    showToast(t("AI Studio bylo nainstalov\u00e1no.", "AI Studio was installed."));
   });
-  addEventListener("resize", () => {
-    if (!isDesktopInstallSurface())
-      document.querySelector(".pwa-install-card")?.remove();
-    else renderPwaInstallCard();
-  });
+  setTimeout(renderPwaInstallModal, 1200);
 }
 
 function updatePresentationFit() {
@@ -2495,7 +2513,7 @@ applyTheme();
 applyLanguage();
 applyMotion();
 renderHome();
-void import('./modules/portal-effects.js?v=0.21.46')
+void import('./modules/portal-effects.js?v=0.21.47')
   .then(({ setupPortalEffects }) => setupPortalEffects({ root }))
   .catch((error) => console.warn('Volitelne portalove efekty nebyly nacteny.', error));
 void refreshSharedAccessModuleCache();
@@ -2505,7 +2523,7 @@ accessReady.then(() => {
   updateTelemetryModeBanner();
   setupMonthlyReportReminder();
 });
-void Promise.all([deploymentReady, import("./access/app-guard.js?v=0.21.46")])
+void Promise.all([deploymentReady, import("./access/app-guard.js?v=0.21.47")])
   .then(([deployment, { startErrorReporterBestEffort }]) =>
     startErrorReporterBestEffort("ai-studio", {
       appName: "AI Studio GHRAB",

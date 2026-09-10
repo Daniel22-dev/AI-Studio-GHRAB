@@ -1,7 +1,33 @@
 {
   "schema": "ai-studio-changelog-v1",
-  "current": "0.21.46",
+  "current": "0.21.47",
   "items": [
+    {
+      "version": "0.21.47",
+      "date": "2026-09-10",
+      "title": {
+        "cs": "První instalační dialog PWA a oprava překrytého upozornění",
+        "en": "First-run PWA install dialog and overlapping-notice fix"
+      },
+      "changes": [
+        {
+          "cs": "Při prvním otevření na nenainstalovaném zařízení se po úvodní animaci zobrazí samostatný instalační dialog AI Studia.",
+          "en": "On the first visit from a device where AI Studio is not running as an installed app, a dedicated installation dialog appears after the startup intro."
+        },
+        {
+          "cs": "Pokud prohlížeč poskytne beforeinstallprompt, dialog nabídne přímé tlačítko Nainstalovat; na iOS, Androidu nebo v prohlížeči bez přímého API zobrazí postup pro dané zařízení.",
+          "en": "When the browser provides beforeinstallprompt, the dialog offers a direct Install button; on iOS, Android or browsers without the direct API it shows device-appropriate instructions."
+        },
+        {
+          "cs": "Původní karta vpravo dole už nepoužívá bílý toast schovaný pod kartou, který při kliknutí vypadal jako prázdné bílé okno a budil dojem, že se nic nestalo.",
+          "en": "The previous bottom-right card no longer uses a white toast hidden beneath it, which looked like an empty white panel and made the click appear ineffective."
+        },
+        {
+          "cs": "Po úspěšné instalaci nebo volbě Teď ne se onboarding na daném profilu prohlížeče už znovu nezobrazuje. PWA cache je verzovaná na 0.21.47.",
+          "en": "After successful installation or choosing Not now, the onboarding is not shown again in that browser profile. The PWA cache is versioned to 0.21.47."
+        }
+      ]
+    },
     {
       "version": "0.21.46",
       "date": "2026-09-10",

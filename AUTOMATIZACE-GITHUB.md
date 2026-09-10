@@ -1,8 +1,8 @@
-# Automatizace aktualizací AI Studio GHRAB 0.21.46
+# Automatizace aktualizací AI Studio GHRAB 0.21.47
 
-> Aktuální verze: **0.21.46** · etapa P5
+> Aktuální verze: **0.21.47** · etapa P5
 
-> 0.21.46 zachovává layout/PWA opravu z 0.21.45 a aktualizuje release-wave lock podle verzí, které workflow skutečně synchronizuje z child repozitářů; automatizační workflow samotné se nemění.
+> 0.21.47 přidává jednorázový instalační onboarding PWA s přímou instalací tam, kde ji prohlížeč podporuje; layout, release-wave a bezpečnostní logika zůstávají beze změny.
 
 ## Pravidelná synchronizace
 

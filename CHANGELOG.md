@@ -2,6 +2,14 @@
 
 > Tento soubor se generuje ze `src/config/changelog.json`. Neupravujte jej ručně.
 
+## 0.21.47 — 2026-09-10
+**První instalační dialog PWA a oprava překrytého upozornění**
+
+- Při prvním otevření na nenainstalovaném zařízení se po úvodní animaci zobrazí samostatný instalační dialog AI Studia.
+- Pokud prohlížeč poskytne beforeinstallprompt, dialog nabídne přímé tlačítko Nainstalovat; na iOS, Androidu nebo v prohlížeči bez přímého API zobrazí postup pro dané zařízení.
+- Původní karta vpravo dole už nepoužívá bílý toast schovaný pod kartou, který při kliknutí vypadal jako prázdné bílé okno a budil dojem, že se nic nestalo.
+- Po úspěšné instalaci nebo volbě Teď ne se onboarding na daném profilu prohlížeče už znovu nezobrazuje. PWA cache je verzovaná na 0.21.47.
+
 ## 0.21.46 — 2026-09-10
 **Oprava CI release-wave po synchronizaci novějších aplikací**
 

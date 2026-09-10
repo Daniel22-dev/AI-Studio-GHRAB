@@ -1295,10 +1295,11 @@ if (
   );
 if (
   !mainAppText.includes("beforeinstallprompt") ||
-  !mainAppText.includes("pwa-install-card") ||
+  !mainAppText.includes("pwa-install-modal") ||
+  !mainAppText.includes("PWA_INSTALL_ONBOARDING_KEY") ||
   !mainAppText.includes("Nainstalovat AI Studio")
 )
-  fail("Domovská stránka nemá instalační nabídku PWA pro počítač.");
+  fail("Domovská stránka nemá první instalační dialog PWA.");
 if (
   !deployWorkflow.includes("Format generated registry files") ||
   !deployWorkflow.includes("registry.npmjs.org")

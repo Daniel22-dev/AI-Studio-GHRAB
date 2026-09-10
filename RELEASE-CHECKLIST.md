@@ -1,8 +1,8 @@
-# Release checklist AI Studio GHRAB 0.21.46
+# Release checklist AI Studio GHRAB 0.21.47
 
-> Aktuální verze: **0.21.46** · etapa P5
+> Aktuální verze: **0.21.47** · etapa P5
 
-> 0.21.46 zachovává layout/PWA-cache hotfix 0.21.45 a srovnává release-wave lock s aktuálními verzemi child aplikací; bezpečnostní logika a stávající GARP 2.3 release blokace se tímto patchem nemění.
+> 0.21.47 přidává jednorázový instalační onboarding PWA s přímou instalací tam, kde ji prohlížeč podporuje; layout, release-wave a bezpečnostní logika zůstávají beze změny.
 
 ## Stav bezpečnostního kandidáta GARP 2.3
 

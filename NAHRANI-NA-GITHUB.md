@@ -1,8 +1,8 @@
-# Nahrání AI Studio GHRAB 0.21.46
+# Nahrání AI Studio GHRAB 0.21.47
 
-> Aktuální verze: **0.21.46** · etapa P5
+> Aktuální verze: **0.21.47** · etapa P5
 
-> 0.21.46 zachovává layout/PWA-cache hotfix a navíc opravuje release-wave lock; bezpečnostní kandidát a jeho GARP 2.3 blokace zůstávají beze změny.
+> 0.21.47 přidává jednorázový instalační onboarding PWA s přímou instalací tam, kde ji prohlížeč podporuje; layout, release-wave a bezpečnostní logika zůstávají beze změny.
 
 > **BLOKACE NASAZENÍ:** nový nezávislý GARP 2.3 cyklus byl výslovně zahájen. Verze 0.21.43 je kandidát po opravě D-01 / HIGH z první nezávislé kontroly tohoto nového cyklu a před nasazením musí projít jeho druhou Claude kontrolou a uzavřením release gate. Do té doby se tento postup NESMÍ použít k produkčnímu nasazení a reálná studentská data se nesmí použít.
 

@@ -1,8 +1,8 @@
-# Architektura AI Studio GHRAB 0.21.46
+# Architektura AI Studio GHRAB 0.21.47
 
-> Aktuální verze: **0.21.46** · etapa P5
+> Aktuální verze: **0.21.47** · etapa P5
 
-> 0.21.46 zachovává responzivní opravu portálu z 0.21.45 a navíc srovnává Platform 1.1.2 release-wave lock s aktuálně ověřenými verzemi child aplikací; bezpečnostní architektura se nemění.
+> 0.21.47 přidává jednorázový instalační onboarding PWA s přímou instalací tam, kde ji prohlížeč podporuje; layout, release-wave a bezpečnostní logika zůstávají beze změny.
 
 ## Koherence aktualizace PWA
 
