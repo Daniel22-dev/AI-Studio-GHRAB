@@ -177,9 +177,15 @@ for (const rel of [
   check(deployment.features?.livePresence === false, `${rel}: live presence nesmi byt v predavanem baliku aktivni bez backendu.`);
 }
 const automationHtml = await text("src/automation/index.html");
-check(automationHtml.includes('id="live-presence-panel"') && automationHtml.includes('data-full-admin-only'), "Sprava nema live presence panel omezeny na plneho spravce.");
+check(!automationHtml.includes('id="live-presence-panel"'), "Live presence zustala zbytecne ve Sprave.");
 const automationJs = await text("src/automation/automation.js");
-check(automationJs.includes('loadLivePresence') && automationJs.includes('window.GHRAB.isAdmin?.()'), "Spravcovsky live presence klient nema admin kontrolu.");
+check(!automationJs.includes('loadLivePresence') && !automationJs.includes('renderLivePresence'), "Sprava stale obsahuje live-presence runtime.");
+const appJs = await text("src/app.js");
+const headerPresence = await text("src/modules/header-live-presence.js");
+check(appJs.includes('import("./modules/header-live-presence.js")') && appJs.includes('setupHeaderLivePresence()'), "Hlavni Studio nenacita spravcovsky online prehled do horni listy.");
+check(headerPresence.includes('data.livePresenceMenu') || headerPresence.includes('dataset.livePresenceMenu'), "Horni online prehled nema vlastni datovy marker.");
+check(headerPresence.includes('dataset.fullAdminOnly') && headerPresence.includes('loadLivePresence'), "Horni online prehled neni omezen na plneho spravce nebo nenacita snapshot.");
+check(headerPresence.includes('30000') && headerPresence.includes('Právě online'), "Horni online prehled nema 30s obnovu nebo jasny popis.");
 const contract = await text("docs/LIVE-PRESENCE-SERVER-CONTRACT.md");
 check(contract.includes('neposílá jméno, e-mail') && contract.includes('TTL je 120 sekund') && contract.includes('neukládat historii'), "Serverovy kontrakt neobsahuje minimalizaci dat, TTL nebo zakaz historie.");
 

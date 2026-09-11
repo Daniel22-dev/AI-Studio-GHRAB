@@ -3,7 +3,7 @@ import {
   hasAppAccess,
   requiredTraining,
   formatReason,
-} from "./access-control.js?v=0.21.52";
+} from "./access-control.js?v=0.21.53";
 
 const LIVE_LAUNCHES_KEY = "ghrab.pilot.launches";
 const LIVE_EVENTS_KEY = "ghrab.pilot.events.v2";
@@ -672,7 +672,7 @@ export async function protectApp(appId, options = {}) {
       void startErrorReporterBestEffort(appId, options);
     if (options.platformRuntime !== false) {
       try {
-        const { initialisePlatformRuntime } = await import("./platform-runtime.js?v=0.21.52");
+        const { initialisePlatformRuntime } = await import("./platform-runtime.js?v=0.21.53");
         await initialisePlatformRuntime({
           appId,
           appVersion: options.appVersion || document.documentElement.dataset.appVersion || "unknown",

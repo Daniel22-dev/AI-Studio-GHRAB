@@ -1,18 +1,18 @@
 # AI Studio GHRAB
 
-**Aktuální verze:** 0.21.52
+**Aktuální verze:** 0.21.53
 
-**Aktualizace 0.21.52:** připravuje pro školní server živý správcovský přehled **kdo je právě online a kterou aplikaci používá**. Centrální platform-runtime všech chráněných aplikací umí posílat krátký heartbeat jen z viditelné a zaměřené karty; klient neposílá jméno ani e-mail, identitu doplní server z ověřené školní session. V GitHub Pages režimu zůstává funkce vypnutá a neprovádí žádný presence request. Dvoustránkový reporting z 0.21.51 zůstává beze změny.
+**Aktualizace 0.21.53:** zjednodušuje správcovský workflow. **Report** má přímý vstup v horní navigaci a na jedné stránce sdružuje provozní podklady, import souhrnů kolegů, evidenci práce garanta, manažerský souhrn i výsledné dvoustránkové PDF. Původní Pilotní dashboard je v rozhraní nahrazen **Statistikami používání** bez zastaralého fázového rozpisu. Živý přehled **kdo je právě online a kterou aplikaci používá** je přesunut ze Správy do rozbalovacího tlačítka vedle Nastavení; bez školního serveru zůstává vypnutý.
 **Platforma:** GHRAB Platform 1.1.2 · etapa P5
 
 **Stav:** AMBER – KANDIDÁT NOVÉHO VÝSLOVNĚ ZAHÁJENÉHO GARP 2.3 CYKLU, NE FINÁLNÍ RELEASE. Nezávislá kontrola Claude nad 0.21.38 potvrdila C-01/C-02/C-03, ale našla D-01 / HIGH na cestě „Smazat moje data“ → Browser Back. D-01 je v 0.21.43 opraven a kandidát čeká na druhé nezávislé ověření tohoto nového cyklu. **Reálná studentská data nepoužívat.**
 
 **Verze 0.21.43** sjednocuje destruktivní lifecycle ochranu: `deleteMyData()` i shared-device `endWork()` po smazání rotují neobsahovou generační tombstone. SIM-03 browser regrese testuje obě cesty, následné psaní i novou kartu a QA evidence se nepublikuje v `dist/`.
-AI Studio GHRAB je centrální brána školních digitálních a AI nástrojů. Jednotlivé aplikace zůstávají v samostatných repozitářích; Studio zajišťuje společnou navigaci, Top 4, synchronizaci verzí, bezpečnostní rámec, pilotní měření, správu podepsaných přístupů a kanonický základ technického reportéru. Materiály jsou viditelnou součástí portálu, ale v dnešním bezserverovém režimu se vlastní obsah ukládá pouze místně.
+AI Studio GHRAB je centrální brána školních digitálních a AI nástrojů. Jednotlivé aplikace zůstávají v samostatných repozitářích; Studio zajišťuje společnou navigaci, Top 4, synchronizaci verzí, bezpečnostní rámec, provozní měření, správu podepsaných přístupů a kanonický základ technického reportéru. Materiály jsou viditelnou součástí portálu, ale v dnešním bezserverovém režimu se vlastní obsah ukládá pouze místně.
 
-## Hlavní novinky 0.21.52
+## Hlavní novinky 0.21.53
 
-- Ve Správě Studia je připraven panel pouze pro plného správce: **online uživatel + právě používaná aplikace**.
+- V horní liště Studia vedle Nastavení je pro plného správce připraven rozbalovací přehled: **online uživatel + právě používaná aplikace**.
 - Heartbeat se aktivuje pouze v reálném `school-server` / `server-session` profilu s `schoolServerConnected=true` a `livePresence=true`; serverless provoz nic neodesílá.
 - Jméno uživatele se neposílá z klienta. Server jej odvodí z přihlášené školní identity a klient z výsledku použije jen `displayName`, `appId` a `lastSeenAt`.
 - Skrytá karta heartbeat neposílá; po focusu jiné aplikace se aktuální `appId` přepíše. Doporučený serverový TTL je 120 sekund.

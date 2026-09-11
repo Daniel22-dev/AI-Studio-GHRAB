@@ -652,7 +652,47 @@ function setupFullscreenControl(button) {
   updateFullscreenButton();
 }
 
+function ensureReportNavigation() {
+  const nav = document.querySelector(".main-nav");
+  if (!nav || nav.querySelector('[data-nav="report"]')) return;
+  const link = document.createElement("a");
+  link.href = `${base}report/`;
+  link.dataset.nav = "report";
+  link.dataset.opsNav = "";
+  link.dataset.cs = "Report";
+  link.dataset.en = "Report";
+  link.textContent = t("Report", "Report");
+  link.hidden = true;
+  const automation = nav.querySelector('[data-nav="automation"]');
+  nav.insertBefore(link, automation || null);
+}
+
+let headerLivePresenceMounted = false;
+async function setupHeaderLivePresence() {
+  if (headerLivePresenceMounted || !isAdmin() || isColleaguePreview()) return;
+  const actions = document.querySelector(".header-actions");
+  if (!actions) return;
+  headerLivePresenceMounted = true;
+  try {
+    const { mountHeaderLivePresence } = await import("./modules/header-live-presence.js");
+    mountHeaderLivePresence({
+      actions,
+      deploymentReady,
+      loadApps,
+      localised,
+      t,
+      isAdmin,
+      isColleaguePreview,
+    });
+    updateAdminVisibility();
+  } catch (error) {
+    headerLivePresenceMounted = false;
+    console.warn("AI Studio: horní přehled online uživatelů se nepodařilo načíst.", error);
+  }
+}
+
 function setupNavigation() {
+  ensureReportNavigation();
   const navToggle = document.querySelector(".nav-toggle");
   const nav = document.querySelector(".main-nav");
   if (navToggle && nav) {
@@ -847,8 +887,8 @@ function updateTelemetryModeBanner() {
   title.textContent = t("TESTOVACÍ REŽIM MĚŘENÍ", "TELEMETRY TEST MODE");
   const description = document.createElement("span");
   description.textContent = t(
-    "Spuštění, aktivní čas a výstupy správce se ukládají odděleně a nevstupují do pilotního reportu.",
-    "Administrator launches, active time and outputs are stored separately and excluded from the pilot report.",
+    "Spuštění, aktivní čas a výstupy správce se ukládají odděleně a nevstupují do měsíčního reportu.",
+    "Administrator launches, active time and outputs are stored separately and excluded from the monthly report.",
   );
   banner.append(title, description);
   document.body.prepend(banner);
@@ -2741,6 +2781,7 @@ registerPwa();
 accessReady.then(() => {
   updateTelemetryModeBanner();
   setupMonthlyReportReminder();
+  void setupHeaderLivePresence();
 });
 void Promise.all([deploymentReady, import("./access/app-guard.js")])
   .then(([deployment, { startErrorReporterBestEffort }]) =>
@@ -2772,5 +2813,6 @@ document.addEventListener("ghrab:access-changed", () => {
   void loadAppTestStatusModule().then(renderHomeCards, renderHomeCards);
   renderStudioOperationalControl();
   updateTelemetryModeBanner();
+  void setupHeaderLivePresence();
 });
 document.addEventListener("ghrab:favorites", renderHomeCards);

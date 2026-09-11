@@ -1,8 +1,8 @@
-# Bezpečnostní hranice AI Studio GHRAB 0.21.52
+# Bezpečnostní hranice AI Studio GHRAB 0.21.53
 
-> Aktuální verze: **0.21.52** · etapa P5
+> Aktuální verze: **0.21.53** · etapa P5
 
-> 0.21.52 připravuje pro skutečný školní server krátkodobou živou přítomnost: plný správce může po aktivaci backendu vidět jméno přihlášeného uživatele a naposledy aktivní aplikaci. Klient neposílá jméno ani e-mail a v GitHub Pages profilu se žádný presence request neprovádí. Dvoustránkový reporting z 0.21.51 zůstává zachován.
+> 0.21.53 připravuje pro skutečný školní server krátkodobou živou přítomnost: plný správce může po aktivaci backendu vidět jméno přihlášeného uživatele a naposledy aktivní aplikaci. Klient neposílá jméno ani e-mail a v GitHub Pages profilu se žádný presence request neprovádí. Dvoustránkový reporting z 0.21.51 zůstává zachován.
 
 
 ## Rychlá kontrola dat v portálu

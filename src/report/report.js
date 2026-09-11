@@ -951,7 +951,7 @@ if (window.GHRAB.canAccessAdminPage?.("report") && !window.GHRAB.isColleaguePrev
     ctx.fillText("Gymnázium Ostrava-Hrabůvka", 220, 82);
     ctx.fillStyle = palette.blue;
     ctx.font = "700 27px Arial";
-    ctx.fillText("AI Studio GHRAB - souhrn pilotního provozu", 220, 125);
+    ctx.fillText("AI Studio GHRAB - souhrn provozu", 220, 125);
     ctx.fillStyle = palette.muted;
     ctx.font = "400 20px Arial";
     const periodLabel = reportPeriodLabel(view);
@@ -1445,7 +1445,7 @@ if (window.GHRAB.canAccessAdminPage?.("report") && !window.GHRAB.isColleaguePrev
     const today = new Date();
     const from = new Date(today.getFullYear(), today.getMonth(), 1);
     $("#report-title").value =
-      settings.title || "Měsíční souhrn pilotního provozu";
+      settings.title || "Měsíční souhrn provozu";
     $("#report-from").value = settings.from || from.toISOString().slice(0, 10);
     $("#report-to").value = settings.to || today.toISOString().slice(0, 10);
     $("#report-include-local").checked = settings.includeLocal !== false;

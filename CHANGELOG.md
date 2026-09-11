@@ -2,6 +2,14 @@
 
 > Tento soubor se generuje ze `src/config/changelog.json`. Neupravujte jej ručně.
 
+## 0.21.53 — 2026-09-11
+**Jednodušší reporting a online přehled v horní liště**
+
+- Přehled kdo je online a kterou aplikaci právě používá se přesouvá ze Správy přímo do horní lišty Studia vedle Nastavení; zůstává dostupný pouze plnému správci a v bezserverovém režimu nic neodesílá.
+- Report dostává vlastní položku v horní navigaci a ve Správě samostatnou kartu Měsíční report pro vedení, takže už není schovaný za souhrnným reportem kolegů.
+- Stránka Report má nový rychlý rozcestník na provozní podklady, evidenci práce garanta, souhrn pro vedení a náhled/PDF; import souhrnů kolegů je součástí provozních podkladů.
+- Pilotní dashboard je v rozhraní nahrazen Statistikami používání. Zastaralý fázový rozpis školního pilotu byl odstraněn; samotné anonymní provozní metriky a bezpečné mazání místních statistik zůstávají zachovány.
+
 ## 0.21.52 — 2026-09-11
 **Živá přítomnost**
 

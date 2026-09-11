@@ -1,5 +1,5 @@
 <!doctype html>
-<html lang="cs" data-theme="dark" data-ghrab-app-id="ai-studio" data-ghrab-app-version="0.21.52">
+<html lang="cs" data-theme="dark" data-ghrab-app-id="ai-studio" data-ghrab-app-version="0.21.53">
   <head>
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width,initial-scale=1" />
@@ -103,7 +103,7 @@
         <article class="panel deputy-scope-note">
           <p class="eyebrow">ZÁSTUPCE SPRÁVCE</p>
           <h2>Provozní pravomoci bez nejcitlivějších zásahů</h2>
-          <p>Máte přístup k diagnostice, stavu aplikací, pilotním reportům a evidenci přístupů. Nemůžete vydávat správcovská oprávnění, měnit podpisové klíče ani zasahovat do bezpečnostní politiky. Při závažném incidentu použijte krizový manuál.</p>
+          <p>Máte přístup k diagnostice, stavu aplikací, měsíčnímu reportu a statistikám používání a evidenci přístupů. Nemůžete vydávat správcovská oprávnění, měnit podpisové klíče ani zasahovat do bezpečnostní politiky. Při závažném incidentu použijte krizový manuál.</p>
           <a class="button secondary" href="../manualy/deputy-admin.html">Otevřít krizový manuál zástupce</a>
         </article>
       </section>
@@ -162,16 +162,25 @@
           <a class="admin-command-card" href="../pilot/"
             ><span>◈</span>
             <div>
-              <strong data-cs="Pilotní dashboard" data-en="Pilot dashboard"
-                >Pilotní dashboard</strong
+              <strong data-cs="Statistiky používání" data-en="Usage statistics"
+                >Statistiky používání</strong
               ><small
-                data-cs="Automatické anonymní metriky, aktivní čas a stav generování"
-                data-en="Automatic anonymous metrics, active time and generation outcomes"
-                >Automatické anonymní metriky, aktivní čas a stav
-                generování</small
+                data-cs="Anonymní provozní metriky, aktivní čas a technické výsledky"
+                data-en="Anonymous operational metrics, active time and technical outcomes"
+                >Anonymní provozní metriky, aktivní čas a technické výsledky</small
               >
             </div></a
           >
+          <a class="admin-command-card" href="../report/">
+            <span>▤</span>
+            <div>
+              <strong data-cs="Měsíční report pro vedení" data-en="Monthly leadership report">Měsíční report pro vedení</strong>
+              <small
+                data-cs="Podklady, evidence práce, import dat kolegů, souhrn pro vedení a dvoustránkové PDF"
+                data-en="Inputs, work log, colleague data import, leadership summary and two-page PDF"
+                >Podklady, evidence práce, import dat kolegů, souhrn pro vedení a dvoustránkové PDF</small>
+            </div>
+          </a>
           <button
             class="admin-command-card"
             id="preview-monthly-reminder"
@@ -211,12 +220,12 @@
               Běžné používání, nebo bezpečné testování
             </h2>
             <p
-              data-cs="V živém režimu se vaše skutečné používání počítá do místních dat. Testovací režim ukládá spuštění, aktivní čas a výstupy odděleně, takže vývoj a kontrolní generování nezkreslí pilotní report."
-              data-en="In live mode, your real use is included in local data. Test mode stores launches, active time and outputs separately so development and test generations do not distort the pilot report."
+              data-cs="V živém režimu se vaše skutečné používání počítá do místních dat. Testovací režim ukládá spuštění, aktivní čas a výstupy odděleně, takže vývoj a kontrolní generování nezkreslí měsíční report."
+              data-en="In live mode, your real use is included in local data. Test mode stores launches, active time and outputs separately so development and test generations do not distort the monthly report."
             >
               V živém režimu se vaše skutečné používání počítá do místních dat.
               Testovací režim ukládá spuštění, aktivní čas a výstupy odděleně,
-              takže vývoj a kontrolní generování nezkreslí pilotní report.
+              takže vývoj a kontrolní generování nezkreslí měsíční report.
             </p>
           </div>
           <div class="telemetry-control-actions">
@@ -253,30 +262,6 @@
               Vymazat testovací data
             </button>
           </div>
-        </section>
-        <section
-          id="live-presence-panel"
-          class="panel automation-report"
-          data-full-admin-only
-          hidden
-          aria-labelledby="live-presence-title"
-        >
-          <div class="section-heading split-heading">
-            <div>
-              <p class="eyebrow" data-cs="ŽIVÁ PŘÍTOMNOST" data-en="LIVE PRESENCE">ŽIVÁ PŘÍTOMNOST</p>
-              <h2 id="live-presence-title" data-cs="Kdo je právě online a kterou aplikaci používá" data-en="Who is online and which application they are using">Kdo je právě online a kterou aplikaci používá</h2>
-            </div>
-            <button id="live-presence-refresh" type="button" class="button compact ghost" data-cs="Obnovit" data-en="Refresh">Obnovit</button>
-          </div>
-          <div id="live-presence-summary" class="automation-summary" aria-live="polite"></div>
-          <p id="live-presence-state" class="notice sync-neutral" aria-live="polite">Připraveno pro školní server.</p>
-          <div class="table-scroll">
-            <table class="sync-table" aria-label="Aktuálně online uživatelé">
-              <thead><tr><th data-cs="Uživatel" data-en="User">Uživatel</th><th data-cs="Právě používá" data-en="Currently using">Právě používá</th></tr></thead>
-              <tbody id="live-presence-table-body"></tbody>
-            </table>
-          </div>
-          <p class="notice" data-cs="Aktivní karta posílá jen ID aplikace; jméno doplní server. Bez obsahu a historie, záznam po neaktivitě zanikne." data-en="The active tab sends only the app ID; the server resolves the name. No content or history; the record expires after inactivity.">Aktivní karta posílá jen ID aplikace; jméno doplní server. Bez obsahu a historie, záznam po neaktivitě zanikne.</p>
         </section>
         <div
           id="automation-summary"

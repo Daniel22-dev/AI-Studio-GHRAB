@@ -1,8 +1,8 @@
-# Architektura AI Studio GHRAB 0.21.52
+# Architektura AI Studio GHRAB 0.21.53
 
-> Aktuální verze: **0.21.52** · etapa P5
+> Aktuální verze: **0.21.53** · etapa P5
 
-> 0.21.52 navazuje na dvoustránkový reporting a připravuje serverovou živou přítomnost: plný správce po aktivaci backendu uvidí, kdo je online a kterou aplikaci právě používá; v GitHub Pages režimu se žádné presence požadavky neposílají.
+> 0.21.53 navazuje na dvoustránkový reporting a připravuje serverovou živou přítomnost: plný správce po aktivaci backendu uvidí, kdo je online a kterou aplikaci právě používá; v GitHub Pages režimu se žádné presence požadavky neposílají.
 
 ## Koherence aktualizace PWA
 
@@ -112,4 +112,4 @@ Role `operator` je určena pro dlouhodobější nepřítomnost hlavního správc
 
 ## Živá přítomnost
 
-Od 0.21.52 je v centrálním `access/platform-runtime.js` připraven klientský heartbeat pro budoucí školní server. Protože chráněné aplikace načítají centrální `app-guard` Studia, není pro samotný heartbeat nutné duplikovat stejnou implementaci do každého aplikačního repozitáře. Heartbeat se aktivuje pouze při skutečném serverovém profilu s `livePresence=true`; serverless profil neprovádí síťový request. Správcovský seznam používá `modules/live-presence.js` a serverový kontrakt `docs/LIVE-PRESENCE-SERVER-CONTRACT.md`.
+Od 0.21.53 je v centrálním `access/platform-runtime.js` připraven klientský heartbeat pro budoucí školní server. Protože chráněné aplikace načítají centrální `app-guard` Studia, není pro samotný heartbeat nutné duplikovat stejnou implementaci do každého aplikačního repozitáře. Heartbeat se aktivuje pouze při skutečném serverovém profilu s `livePresence=true`; serverless profil neprovádí síťový request. Správcovský seznam používá `modules/live-presence.js` a serverový kontrakt `docs/LIVE-PRESENCE-SERVER-CONTRACT.md`.

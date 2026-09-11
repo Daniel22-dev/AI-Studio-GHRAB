@@ -206,8 +206,8 @@ document
     G.downloadPilotSummary();
     G.showToast(
       G.t(
-        "Anonymní souhrn byl stažen. Přiložte jej ke školnímu e-mailu správci pilotu.",
-        "The anonymous summary was downloaded. Attach it to a school email to the pilot administrator.",
+        "Anonymní souhrn byl stažen. Přiložte jej ke školnímu e-mailu správci AI Studia.",
+        "The anonymous summary was downloaded. Attach it to a school email to the AI Studio administrator.",
       ),
     );
   });

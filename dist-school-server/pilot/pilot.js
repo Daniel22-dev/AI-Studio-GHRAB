@@ -1,45 +1,10 @@
-import { safeStatistics } from "../shared/safe-export.js?v=0.21.52";
+import { safeStatistics } from "../shared/safe-export.js?v=0.21.53";
 
 await window.GHRAB.accessReady;
 if (window.GHRAB.canAccessAdminPage?.("pilot") && !window.GHRAB.isColleaguePreview?.()) {
   const G = window.GHRAB;
   const $ = (s) => document.querySelector(s);
   let apps = [];
-  const PHASE_KEY = "ghrab.pilot.phase";
-  const phases = [
-    {
-      id: 1,
-      title: ["Rámec", "Framework"],
-      text: [
-        "Dobrovolníci, pravidla AI, anonymizace, IT konzultace a první bezpečné scénáře.",
-        "Volunteers, AI rules, anonymisation, IT consultation and first safe scenarios.",
-      ],
-    },
-    {
-      id: 2,
-      title: ["Ověření", "Validation"],
-      text: [
-        "Reálné použití 2–3 nástrojů, automatická anonymní měření, učitelská kontrola a první výstupy do výuky.",
-        "Real use of 2–3 tools, automatic anonymous measurement, teacher review and first classroom outputs.",
-      ],
-    },
-    {
-      id: 3,
-      title: ["Rozšíření", "Expansion"],
-      text: [
-        "Dobrovolné zapojení dalších předmětových komisí, úpravy podle potřeb a miniškolení.",
-        "Voluntary involvement of other subject teams, adjustments based on needs and mini-training.",
-      ],
-    },
-    {
-      id: 4,
-      title: ["Vyhodnocení", "Evaluation"],
-      text: [
-        "Souhrn přínosu, rizik, nákladů a doporučení, zda pokračovat v oficiálním školním provozu.",
-        "Summary of benefits, risks, costs and recommendation on official school operation.",
-      ],
-    },
-  ];
   function eventLabel(e) {
     const types = {
       handoff: ["Předání materiálu", "Material handoff"],
@@ -124,33 +89,6 @@ if (window.GHRAB.canAccessAdminPage?.("pilot") && !window.GHRAB.isColleaguePrevi
       }),
     );
   }
-  function renderTimeline() {
-    const current = Math.max(
-      1,
-      Math.min(4, Number($("#pilot-phase").value || 1)),
-    );
-    G.safeSetItem(PHASE_KEY, String(current), { silent: true });
-    const host = $("#pilot-timeline");
-    host.replaceChildren(
-      ...phases.map((p) => {
-        const item = document.createElement("article");
-        item.className = "timeline-item";
-        if (current > p.id) item.classList.add("complete");
-        else if (current === p.id) item.classList.add("current");
-        const w = document.createElement("div");
-        w.className = "timeline-week";
-        w.textContent = `${G.t("Fáze", "Phase")} ${p.id}`;
-        const d = document.createElement("div");
-        const h = document.createElement("h2");
-        h.textContent = G.t(...p.title);
-        const text = document.createElement("p");
-        text.textContent = G.t(...p.text);
-        d.append(h, text);
-        item.append(w, d);
-        return item;
-      }),
-    );
-  }
   function renderEvents() {
     const list = G.getPilotEvents().slice().reverse().slice(0, 20),
       host = $("#pilot-events");
@@ -158,8 +96,8 @@ if (window.GHRAB.canAccessAdminPage?.("pilot") && !window.GHRAB.isColleaguePrevi
       const empty = document.createElement("div");
       empty.className = "empty-state";
       empty.textContent = G.t(
-        "Zatím nejsou žádné automatické pilotní záznamy.",
-        "There are no automatic pilot records yet.",
+        "Zatím nejsou žádné automatické provozní záznamy.",
+        "There are no automatic operational records yet.",
       );
       host.replaceChildren(empty);
       return;
@@ -185,24 +123,19 @@ if (window.GHRAB.canAccessAdminPage?.("pilot") && !window.GHRAB.isColleaguePrevi
   }
   function render() {
     renderKpis();
-    renderTimeline();
     renderEvents();
   }
-  $("#pilot-phase").value = G.safeGetItem(PHASE_KEY) || "1";
-  $("#pilot-phase").addEventListener("input", renderTimeline);
   $("#reset-pilot").addEventListener("click", () => {
     if (
       confirm(
         G.t(
-          "Opravdu vymazat místní počty spuštění, aktivní čas, technické události a nastavení fáze? Materiály v pracovním prostoru zůstanou zachovány.",
-          "Clear local launches, active time, technical events and phase setting? Workspace resources will remain.",
+          "Opravdu vymazat místní počty spuštění, aktivní čas a technické události? Materiály v pracovním prostoru zůstanou zachovány.",
+          "Clear local launches, active time and technical events? Workspace resources will remain.",
         ),
       )
     ) {
       G.safeRemoveItem("ghrab.pilot.launches");
       G.clearPilotEvents();
-      G.safeRemoveItem(PHASE_KEY);
-      $("#pilot-phase").value = "1";
       render();
     }
   });

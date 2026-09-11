@@ -1,7 +1,33 @@
 {
   "schema": "ai-studio-changelog-v1",
-  "current": "0.21.52",
+  "current": "0.21.53",
   "items": [
+    {
+      "version": "0.21.53",
+      "date": "2026-09-11",
+      "title": {
+        "cs": "Jednodušší reporting a online přehled v horní liště",
+        "en": "Simpler reporting and online view in the header"
+      },
+      "changes": [
+        {
+          "cs": "Přehled kdo je online a kterou aplikaci právě používá se přesouvá ze Správy přímo do horní lišty Studia vedle Nastavení; zůstává dostupný pouze plnému správci a v bezserverovém režimu nic neodesílá.",
+          "en": "The view of who is online and which app they are using moves from Administration directly to the Studio header next to Settings; it remains full-admin only and sends nothing in serverless mode."
+        },
+        {
+          "cs": "Report dostává vlastní položku v horní navigaci a ve Správě samostatnou kartu Měsíční report pro vedení, takže už není schovaný za souhrnným reportem kolegů.",
+          "en": "Report gets its own top-navigation item and a dedicated Monthly leadership report card in Administration, so it is no longer hidden behind the colleagues aggregate report."
+        },
+        {
+          "cs": "Stránka Report má nový rychlý rozcestník na provozní podklady, evidenci práce garanta, souhrn pro vedení a náhled/PDF; import souhrnů kolegů je součástí provozních podkladů.",
+          "en": "The Report page now has quick navigation to operational inputs, guarantor work log, leadership summary and preview/PDF; colleague-summary import is part of the operational inputs."
+        },
+        {
+          "cs": "Pilotní dashboard je v rozhraní nahrazen Statistikami používání. Zastaralý fázový rozpis školního pilotu byl odstraněn; samotné anonymní provozní metriky a bezpečné mazání místních statistik zůstávají zachovány.",
+          "en": "The Pilot dashboard is replaced in the UI by Usage statistics. The obsolete school-pilot phase timeline was removed; anonymous operational metrics and safe clearing of local statistics remain."
+        }
+      ]
+    },
     {
       "version": "0.21.52",
       "date": "2026-09-11",

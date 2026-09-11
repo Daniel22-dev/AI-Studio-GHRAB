@@ -78,5 +78,5 @@ Server má zachovat samostatnou provozní roli **Zástupce správce**. Ta smí k
 
 ## Živá přítomnost uživatelů
 
-Klientská část je připravena od 0.21.52, ale bez serveru zůstává vypnutá. Po aktivaci školního serveru mohou všechny chráněné aplikace přes společný `platform-runtime` posílat pouze krátký heartbeat s `appId`; jméno se odvodí ze serverové session. Správce pak ve Správě vidí právě online uživatele a jejich naposledy aktivní aplikaci. Přítomnost má být ephemeral stav s doporučeným TTL 120 sekund, bez historie přechodů, bez promptů, materiálů a studentských dat. Přesný API kontrakt je v `docs/LIVE-PRESENCE-SERVER-CONTRACT.md`.
+Klientský heartbeat je připraven od 0.21.52; od 0.21.53 je správcovský přehled přesunut přímo do horní lišty Studia vedle Nastavení. Bez serveru zůstává funkce vypnutá. Po aktivaci školního serveru mohou všechny chráněné aplikace přes společný `platform-runtime` posílat pouze krátký heartbeat s `appId`; jméno se odvodí ze serverové session. Správce pak přímo v horní liště Studia vedle Nastavení rozbalí seznam právě online uživatelů a jejich naposledy aktivní aplikaci. Přítomnost má být ephemeral stav s doporučeným TTL 120 sekund, bez historie přechodů, bez promptů, materiálů a studentských dat. Přesný API kontrakt je v `docs/LIVE-PRESENCE-SERVER-CONTRACT.md`.
 

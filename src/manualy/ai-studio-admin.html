@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<html lang="cs" data-theme="dark" data-ghrab-app-id="ai-studio" data-ghrab-app-version="0.21.52">
+<html lang="cs" data-theme="dark" data-ghrab-app-id="ai-studio" data-ghrab-app-version="0.21.53">
 <head>
  <meta charset="utf-8"/>
  <meta name="viewport" content="width=device-width,initial-scale=1"/>
@@ -30,7 +30,7 @@
   </nav>
  </header>
  <main id="main" class="studio-guide" hidden>
-  <div class="top"><a href="./">← Centrum manuálů</a><strong>AI Studio GHRAB · Administrátor · rozšířený manuál · verze 0.21.52</strong></div>
+  <div class="top"><a href="./">← Centrum manuálů</a><strong>AI Studio GHRAB · Administrátor · rozšířený manuál · verze 0.21.53</strong></div>
   <section class="hero admin">
    <span class="role-badge admin">Administrátor · rozšířený manuál</span>
    <h1>AI Studio GHRAB – manuál administrátora</h1>
@@ -90,7 +90,7 @@
    <section class="section admin-extra" id="administration">
     <span class="role-badge admin">Navíc pro administrátora</span>
     <h2>Co vidím navíc oproti učiteli</h2>
-    <p>Administrátor má běžné funkce Studia a navíc horní záložky <strong>Pohled kolegy</strong>, <strong>Správa</strong> a <strong>Prezentace</strong>. Ze Správy se dostává k vydávání a evidenci přístupů, pilotnímu dashboardu, náhledu měsíční prosby a interním kontrolním nástrojům. Běžný učitel tyto části v navigaci nemá.</p>
+    <p>Administrátor má běžné funkce Studia a navíc horní záložky <strong>Pohled kolegy</strong>, <strong>Report</strong>, <strong>Správa</strong> a <strong>Prezentace</strong>. Ze Správy se dostává k vydávání a evidenci přístupů, statistikám používání, měsíčnímu reportu, náhledu měsíční prosby a interním kontrolním nástrojům. Běžný učitel tyto části v navigaci nemá.</p>
     <h3>Přístupy po školení</h3>
     <ol class="steps">
      <li>Po absolvování školení vydat nebo aktualizovat kolegovi podepsané oprávnění pouze pro příslušné aplikace.</li>
@@ -98,14 +98,14 @@
      <li>Po změně přístupu ověřit chování z pohledu běžného učitele, nikoli jen z admin účtu.</li>
     </ol>
     <h3>Zástupce správce a dočasné plné zastoupení</h3>
-    <p>Role <strong>Zástupce správce</strong> slouží pro provozní zastupitelnost. Vidí Správu, diagnostiku, stav zdrojů, Pilotní dashboard, souhrnný report, Evidenci přístupů a Pohled kolegy, ale nemá Vydavatele oprávnění, Prezentaci ani citlivé zásahy do podpisových klíčů a bezpečnostní politiky.</p>
+    <p>Role <strong>Zástupce správce</strong> slouží pro provozní zastupitelnost. Vidí Správu, diagnostiku, stav zdrojů, Statistiky používání, měsíční report, Evidenci přístupů a Pohled kolegy, ale nemá Vydavatele oprávnění, Prezentaci ani citlivé zásahy do podpisových klíčů a bezpečnostní politiky.</p>
     <p><strong>Hlavní správce nepřichází uplynutím data o vlastnictví ani správu Studia.</strong> Končí pouze platnost konkrétního podepsaného souboru, aby případná zkopírovaná správcovská licence nezůstala použitelná navždy. Ve Vydavateli proto použijte volbu <strong>Hlavní správce · maximum</strong>, která nastaví aktuální bezpečnostní limit 90 dní; před koncem si vydáte nový soubor.</p>
     <p>Pokud je při delší nepřítomnosti nutný zásah vyžadující plná práva, administrátor může vystavit samostatné <strong>časově omezené správcovské oprávnění</strong>. Vydavatel nabízí rychlé nastavení 7, 14 nebo 30 dní; po expiraci se oprávnění automaticky stane neplatným.</p>
     <p>Pro zástupce je v centru Manuálů připraven samostatný krizový návod s triáží incidentů a hranicemi pravomocí.</p>
     <h3>Pohled kolegy</h3>
     <p><strong>Pohled kolegy</strong> dočasně zobrazí Studio jako modelový proškolený učitel se všemi aktuálně dostupnými aplikacemi. Slouží ke kontrole toho, co kolega skutečně uvidí; nemění podepsané správcovské oprávnění ani se nevydává za konkrétního uživatele. Náhled se drží jen v aktuální relaci a lze jej kdykoli ukončit z informačního pruhu.</p>
-    <h3>Pilotní reporting</h3>
-    <p>Kolegové generují měsíční anonymní souhrn ve svém Můj přístup. Administrátor v <strong>Pilotním dashboardu / Souhrnném reportu</strong> importuje jejich JSON soubory. Svoje provozní údaje nemusí exportovat a znovu nahrávat: pokud nechá zapnuté <strong>Zahrnout moje místní data do celku</strong>, Studio automaticky přidá data uložená v aktuálním prohlížeči/profilu pro zvolené období. Jiné zařízení se tím nepřenese.</p>
+    <h3>Měsíční reporting</h3>
+    <p>Kolegové generují měsíční anonymní souhrn ve svém Můj přístup. Administrátor otevře přímo horní záložku <strong>Report</strong> a importuje jejich JSON soubory. Statistiky používání jsou samostatný provozní přehled. Svoje provozní údaje nemusí exportovat a znovu nahrávat: pokud nechá zapnuté <strong>Zahrnout moje místní data do celku</strong>, Studio automaticky přidá data uložená v aktuálním prohlížeči/profilu pro zvolené období. Jiné zařízení se tím nepřenese.</p>
     <p>Výstup pro vedení je jeden <strong>dvoustránkový PDF report A4</strong>. První strana obsahuje agregované provozní využití aplikací, druhá lokálně evidovanou práci garanta a manažerský souhrn: školení a podporu, náklady, výsledky, rizika, potřebná rozhodnutí a priority. Soukromé poznámky z evidence práce se do PDF ani anonymního JSON/CSV exportu nepřenášejí.</p>
     <p><strong>Po skutečném připojení školního serveru</strong> je cílový workflow jednodušší: anonymní provozní data kolegů se centralizují automaticky, kolegové už nebudou posílat měsíční JSON soubory a správce pouze otevře report a vygeneruje stejné PDF. V aktuálním GitHub Pages režimu tato automatická centralizace ještě aktivní není.</p>
     <h3>Prezentace</h3>
@@ -130,7 +130,7 @@
    </section>
 
  </main>
- <footer class="site-footer"><div class="shell-wide footer-inner"><div><strong>AI Studio GHRAB</strong><p>Autor a vývojový garant: Daniel Baláž · Školní projekt Gymnázia, Ostrava-Hrabůvka · verze 0.21.52</p></div></div></footer>
+ <footer class="site-footer"><div class="shell-wide footer-inner"><div><strong>AI Studio GHRAB</strong><p>Autor a vývojový garant: Daniel Baláž · Školní projekt Gymnázia, Ostrava-Hrabůvka · verze 0.21.53</p></div></div></footer>
  <script src="../app.js" type="module"></script>
  <script src="./ai-studio-admin.js" type="module"></script>
 </body>

@@ -19,7 +19,7 @@ async function guardAdministratorGuide() {
   const title = document.createElement("h1");
   title.textContent = "Tato verze manuálu je určena administrátorovi AI Studia.";
   const text = document.createElement("p");
-  text.textContent = "Pro běžnou práci otevřete manuál učitele. Správcovský manuál navíc popisuje přístupy, pilotní reporting, prezentaci a release workflow.";
+  text.textContent = "Pro běžnou práci otevřete manuál učitele. Správcovský manuál navíc popisuje přístupy, měsíční reporting, prezentaci a release workflow.";
   const link = document.createElement("a");
   link.className = "button primary";
   link.href = "./ai-studio-teacher.html";

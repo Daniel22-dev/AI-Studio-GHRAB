@@ -68,6 +68,8 @@ check(!/\.main-nav\s*\{[^}]*flex-wrap:\s*wrap/.test(polishCss), "Hlavni navigace
 check(appJs.includes('if (page === "changelog") return;'), "Katalog zmen nema runtime kompatibilitu pro starsi podepsany policy bundle.");
 check(appJs.includes('[data-teacher-only]'), "Chybi role teacher-only.");
 check(appJs.includes('COLLEAGUE_PREVIEW_KEY') && appJs.includes('function isColleaguePreview()') && appJs.includes('function mountColleaguePreviewBanner()'), "Chybi session Pohled kolegy.");
+check(appJs.includes('function ensureReportNavigation()') && appJs.includes('link.dataset.nav = "report"') && appJs.includes('link.href = `${base}report/`'), "Report nema primy vstup v hlavni navigaci Studia.");
+check(appJs.includes('import("./modules/header-live-presence.js")') && appJs.includes('setupHeaderLivePresence()'), "Online prehled neni primo v horni liste Studia.");
 check(appJs.includes('const operator = isOperator() && !preview') && appJs.includes('const operations = admin || operator') && appJs.includes('snapshot.permit?.role === "teacher"'), "Role admin/operator/teacher se v UI nerozdeluji bezpecne.");
 check(appJs.includes('function swapCoreAppPositions') && appJs.includes('portal-drag-handle') && appJs.includes('dataTransfer'), "Top 4 nema drag-and-drop prehazovani pozic.");
 check(appJs.includes('if (index >= 0 && index < 4)') && !appJs.includes('if (isAdmin() && !isColleaguePreview() && index >= 0 && index < 4)'), "Presun Top 4 neni dostupny beznemu uciteli v jeho osobnim Top 4.");
@@ -92,16 +94,22 @@ check(/data-ops-only[^>]*hidden[\s\S]*?deputy-admin\.html/.test(manualsHtml), "C
 check(deputyGuide.includes('data-page="deputy-admin"') && deputyGuide.includes("GitHub Actions") && deputyGuide.includes("DOČASNÝ PLNÝ SPRÁVCE"), "Manual zastupce nema incidentni triaz a nouzove zastoupeni.");
 const teacherStudioGuide = await text("src/manualy/ai-studio-teacher.html");
 const adminStudioGuide = await text("src/manualy/ai-studio-admin.html");
+const automationHtml = await text("src/automation/index.html");
+const pilotHtml = await text("src/pilot/index.html");
+const reportHtml = await text("src/report/index.html");
+check(automationHtml.includes("Statistiky používání") && automationHtml.includes("Měsíční report pro vedení") && !automationHtml.includes("Pilotní dashboard"), "Sprava nema oddelene aktualni statistiky a primy mesicni report bez pilotniho oznaceni.");
+check(!automationHtml.includes('id="live-presence-panel"'), "Online prehled zustal ve Sprave misto horni listy.");
+check(pilotHtml.includes("Statistiky používání AI Studia") && !pilotHtml.includes("Volné fáze školního pilotu") && !pilotHtml.includes('id="pilot-phase"'), "Stranka statistik stale obsahuje zastaraly pilotni fazovy rozpis.");
+check(reportHtml.includes('class="section shell-wide report-input-map"') && reportHtml.includes('id="report-sources"') && reportHtml.includes('id="report-work-log"') && reportHtml.includes('id="report-management"') && reportHtml.includes('id="report-preview-panel"'), "Report nema rychly rozcestnik na podklady, evidenci, souhrn a PDF.");
 check(teacherStudioGuide.includes("Co běžný učitel nemusí řešit") && !teacherStudioGuide.includes("Pilotní dashboard / Souhrnném reportu"), "Manual ucitele neni zjednoduseny pro bezny provoz.");
-check(adminStudioGuide.includes("Co vidím navíc oproti učiteli") && adminStudioGuide.includes("pilotnímu dashboardu") && adminStudioGuide.includes("Souhrnném reportu") && adminStudioGuide.includes('data-page="manual-admin"'), "Manual administratora nema rozsirene spravcovske workflow.");
+check(adminStudioGuide.includes("Co vidím navíc oproti učiteli") && adminStudioGuide.includes("Statistiky používání") && adminStudioGuide.includes("horní záložku <strong>Report</strong>") && adminStudioGuide.includes('data-page="manual-admin"'), "Manual administratora nema aktualni reportingove workflow.");
 const adminStudioGuideGuard = await text("src/manualy/ai-studio-admin.js");
 check(adminStudioGuideGuard.includes("G.isAdmin()") && adminStudioGuideGuard.includes("ai-studio-teacher.html"), "Administratorsky manual nema runtime roli guard pro aktualni permit.");
 
 const adminHtml = await text("src/automation/index.html");
-for (const duplicate of ['href="../report/"', 'href="../changelog/"', 'href="../demo/"']) {
-  const command = new RegExp(`admin-command-card[\\s\\S]{0,300}${duplicate.replace(/[.*+?^${}()|[\\]\\]/g, "\\$&")}`);
-  check(!command.test(adminHtml), `Sprava stale obsahuje duplicitni prikaz ${duplicate}.`);
-}
+check(!adminHtml.includes('class="admin-command-card" href="../changelog/"'), "Sprava stale obsahuje duplicitni prikaz Katalog zmen.");
+check(!adminHtml.includes('class="admin-command-card" href="../demo/"'), "Sprava stale obsahuje duplicitni prikaz Prezentace.");
+check(adminHtml.includes('class="admin-command-card" href="../report/"'), "Sprava nema primy vstup do mesicniho reportu.");
 check(adminHtml.includes('id="preview-monthly-reminder"'), "Sprava nema nahled mesicni prosby.");
 const automationJs = await text("src/automation/automation.js");
 check(adminHtml.includes('data-full-admin-only') && adminHtml.includes('../tools/access-issuer/'), "Vydavatel opravneni neni ve Sprave omezen jen na plneho admina.");
@@ -141,7 +149,6 @@ check(securityCenterJs.includes("PRIVATE_KEY_TTL_MS = 10 * 60 * 1000") && securi
 check(!securityCenterJs.includes("localStorage.setItem") && !securityCenterJs.includes("sessionStorage.setItem"), "Centrum zabezpeceni nesmi ukladat soukromy klic do weboveho uloziste.");
 check(securityCenterCore.includes('schema: "ghrab-access-config-update-pack-v1"') && securityCenterCore.includes("findPrivateMaterial(pack)"), "Centrum nevytvari verejny kontrolovatelny aktualizacni balicek.");
 
-const reportHtml = await text("src/report/index.html");
 const reportJs = await text("src/report/report.js");
 check(reportHtml.includes('tomto prohlížeči a profilu') && reportHtml.includes('Není třeba nahrávat vlastní soubor'), "Souhrnny report nevysvetluje automaticke pridani mistnich dat aktualniho prohlizece/profilu.");
 check(reportHtml.includes('id="report-preview-management"') && reportHtml.includes('2 / 2 · Práce garanta a souhrn pro vedení'), "Souhrnny report nema druhou A4 stranu pro praci garanta.");
@@ -166,10 +173,9 @@ for (const app of appRegistry) {
   check(!/(local-first|PWA|workflow|CONFIDENTIAL-EXAM|architektur)/i.test(description), `${app.id}: karta stale pouziva technicky nebo interni pojem v popisu.`);
 }
 
-const pilotHtml = await text("src/pilot/index.html");
 const pilotJs = await text("src/pilot/pilot.js");
 check(!pilotHtml.includes('id="export-pilot"') && !pilotJs.includes('#export-pilot'), "Spravce stale exportuje kolegialni anonymni souhrn sam sobe.");
-check(pilotHtml.includes('href="../report/"'), "Pilotni dashboard nevede na souhrnny report kolegu.");
+check(pilotHtml.includes('href="../report/"') && pilotHtml.includes("Otevřít měsíční report pro vedení"), "Statistiky nemaji primy vstup do mesicniho reportu.");
 
 const safetyHtml = await text("src/safety/index.html");
 check(safetyHtml.includes("Rychl\u00e1 kontrola dat"), "Bezpecnost nema vysvetlenou rychlou kontrolu dat.");

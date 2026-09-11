@@ -1,12 +1,12 @@
-import { sanitizePilotEvent, sanitizePilotEventList } from "./privacy/pilot-event.js?v=0.21.52";
-import { validateMaterialPackage } from "./shared/material-validator.js?v=0.21.52";
-import { buildPilotSummary } from "./shared/safe-export.js?v=0.21.52";
+import { sanitizePilotEvent, sanitizePilotEventList } from "./privacy/pilot-event.js?v=0.21.53";
+import { validateMaterialPackage } from "./shared/material-validator.js?v=0.21.53";
+import { buildPilotSummary } from "./shared/safe-export.js?v=0.21.53";
 import {
   applyDeploymentToAppRegistry,
   loadDeploymentConfig,
-} from "./access/deployment-config.js?v=0.21.52";
-import { initialisePlatformRuntime } from "./access/platform-runtime.js?v=0.21.52";
-import { createRegistryClient } from "./modules/registry-client.js?v=0.21.52";
+} from "./access/deployment-config.js?v=0.21.53";
+import { initialisePlatformRuntime } from "./access/platform-runtime.js?v=0.21.53";
+import { createRegistryClient } from "./modules/registry-client.js?v=0.21.53";
 import {
   initialiseAccess,
   setPermitToken,
@@ -21,8 +21,8 @@ import {
   requiredTraining,
   formatReason,
   inspectPermitToken,
-} from "./access/access-control.js?v=0.21.52";
-const VERSION = "0.21.52";
+} from "./access/access-control.js?v=0.21.53";
+const VERSION = "0.21.53";
 const deploymentReady = loadDeploymentConfig({ appId: "ai-studio" });
 const root = document.documentElement;
 const page = document.body.dataset.page || "home";
@@ -652,7 +652,47 @@ function setupFullscreenControl(button) {
   updateFullscreenButton();
 }
 
+function ensureReportNavigation() {
+  const nav = document.querySelector(".main-nav");
+  if (!nav || nav.querySelector('[data-nav="report"]')) return;
+  const link = document.createElement("a");
+  link.href = `${base}report/`;
+  link.dataset.nav = "report";
+  link.dataset.opsNav = "";
+  link.dataset.cs = "Report";
+  link.dataset.en = "Report";
+  link.textContent = t("Report", "Report");
+  link.hidden = true;
+  const automation = nav.querySelector('[data-nav="automation"]');
+  nav.insertBefore(link, automation || null);
+}
+
+let headerLivePresenceMounted = false;
+async function setupHeaderLivePresence() {
+  if (headerLivePresenceMounted || !isAdmin() || isColleaguePreview()) return;
+  const actions = document.querySelector(".header-actions");
+  if (!actions) return;
+  headerLivePresenceMounted = true;
+  try {
+    const { mountHeaderLivePresence } = await import("./modules/header-live-presence.js?v=0.21.53");
+    mountHeaderLivePresence({
+      actions,
+      deploymentReady,
+      loadApps,
+      localised,
+      t,
+      isAdmin,
+      isColleaguePreview,
+    });
+    updateAdminVisibility();
+  } catch (error) {
+    headerLivePresenceMounted = false;
+    console.warn("AI Studio: horní přehled online uživatelů se nepodařilo načíst.", error);
+  }
+}
+
 function setupNavigation() {
+  ensureReportNavigation();
   const navToggle = document.querySelector(".nav-toggle");
   const nav = document.querySelector(".main-nav");
   if (navToggle && nav) {
@@ -847,8 +887,8 @@ function updateTelemetryModeBanner() {
   title.textContent = t("TESTOVACÍ REŽIM MĚŘENÍ", "TELEMETRY TEST MODE");
   const description = document.createElement("span");
   description.textContent = t(
-    "Spuštění, aktivní čas a výstupy správce se ukládají odděleně a nevstupují do pilotního reportu.",
-    "Administrator launches, active time and outputs are stored separately and excluded from the pilot report.",
+    "Spuštění, aktivní čas a výstupy správce se ukládají odděleně a nevstupují do měsíčního reportu.",
+    "Administrator launches, active time and outputs are stored separately and excluded from the monthly report.",
   );
   banner.append(title, description);
   document.body.prepend(banner);
@@ -1315,11 +1355,11 @@ function toggleFavoriteApp(appId) {
 }
 async function loadAppTestStatusModule() {
   if (!isAdmin() || isColleaguePreview()) return null;
-  appTestStatusModule ||= await import("./modules/app-test-status.js?v=0.21.52");
+  appTestStatusModule ||= await import("./modules/app-test-status.js?v=0.21.53");
   return appTestStatusModule;
 }
 async function loadOperationalStatusModule() {
-  operationalStatusModule ||= await import("./modules/operational-status.js?v=0.21.52");
+  operationalStatusModule ||= await import("./modules/operational-status.js?v=0.21.53");
   operationalStatusSnapshot = await operationalStatusModule.loadOperationalStatus(
     deploymentReady,
   );
@@ -2732,7 +2772,7 @@ applyTheme();
 applyLanguage();
 applyMotion();
 renderHome();
-void import('./modules/portal-effects.js?v=0.21.52')
+void import('./modules/portal-effects.js?v=0.21.53')
   .then(({ setupPortalEffects }) => setupPortalEffects({ root }))
   .catch((error) => console.warn('Volitelne portalove efekty nebyly nacteny.', error));
 void refreshSharedAccessModuleCache();
@@ -2741,8 +2781,9 @@ registerPwa();
 accessReady.then(() => {
   updateTelemetryModeBanner();
   setupMonthlyReportReminder();
+  void setupHeaderLivePresence();
 });
-void Promise.all([deploymentReady, import("./access/app-guard.js?v=0.21.52")])
+void Promise.all([deploymentReady, import("./access/app-guard.js?v=0.21.53")])
   .then(([deployment, { startErrorReporterBestEffort }]) =>
     startErrorReporterBestEffort("ai-studio", {
       appName: "AI Studio GHRAB",
@@ -2772,5 +2813,6 @@ document.addEventListener("ghrab:access-changed", () => {
   void loadAppTestStatusModule().then(renderHomeCards, renderHomeCards);
   renderStudioOperationalControl();
   updateTelemetryModeBanner();
+  void setupHeaderLivePresence();
 });
 document.addEventListener("ghrab:favorites", renderHomeCards);
