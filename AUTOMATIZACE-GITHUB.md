@@ -1,8 +1,8 @@
-# Automatizace aktualizací AI Studio GHRAB 0.21.57
+# Automatizace aktualizací AI Studio GHRAB 0.21.58
 
-> Aktuální verze: **0.21.57** · etapa P5
+> Aktuální verze: **0.21.58** · etapa P5
 
-> 0.21.57 zavádí řízené auto-patch promotion: GARP 2.5.1 zařazená aplikace může po ověření živého deploymentu přejít na vyšší patch bez ručního přepisu release-wave baseline.
+> 0.21.58 zavádí řízené auto-patch promotion: GARP 2.5.1 zařazená aplikace může po ověření živého deploymentu přejít na vyšší patch bez ručního přepisu release-wave baseline.
 
 ## Pravidelná synchronizace
 
@@ -13,7 +13,7 @@ GitHub může plánované workflow v dlouhodobě neaktivním veřejném repozit�
 
 ## Řízené auto-patch promotion release wave
 
-Od 0.21.57 se přesná verze v `release-wave.json` chápe jako schválený baseline pro danou major/minor wave, nikoli jako důvod ručně přepisovat každý legitimní patch. `src/config/release-promotion-policy.json` má výchozí `defaultMode: manual`; aplikace se do `auto-patch` režimu zařazuje jednorázově až po ověření jejího GARP 2.5.1 deployment pipeline.
+Od 0.21.58 se přesná verze v `release-wave.json` chápe jako schválený baseline pro danou major/minor wave, nikoli jako důvod ručně přepisovat každý legitimní patch. `src/config/release-promotion-policy.json` má výchozí `defaultMode: manual`; aplikace se do `auto-patch` režimu zařazuje jednorázově až po ověření jejího GARP 2.5.1 deployment pipeline.
 
 Automatické promotion je povoleno pouze v `qa:ecosystem:verified`, tedy po skutečné síťové synchronizaci. Candidate musí být vyšší stabilní patch ve stejné major/minor řadě a `sync-report.json` jej musí potvrdit jako `verification: deployment`. Repository fallback ani snapshot nestačí. Současně zůstávají aktivní všechny stávající kontroly repository identity, Platform 1.1.2, required range, Studio Bridge, artifact envelope, storage namespace, cache identity, readiness a AI operations manifestu.
 

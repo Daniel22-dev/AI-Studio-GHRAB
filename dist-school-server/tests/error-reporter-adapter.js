@@ -1,4 +1,4 @@
-import { setupErrorReporter } from '../access/error-reporter.js?v=0.21.57';
+import { setupErrorReporter } from '../access/error-reporter.js?v=0.21.58';
 
 function resolveTheme() {
   return document.documentElement.dataset.theme === 'light' ? 'light' : 'dark';
@@ -10,7 +10,7 @@ const studioUrl = new URL(deployment?.studioBaseUrl || '/AI-Studio-GHRAB/', glob
 setupErrorReporter({
   appId: 'ai-studio-reporter',
   appName: 'AI Studio GHRAB – centrální reportér',
-  appVersion: '0.21.57',
+  appVersion: '0.21.58',
   studioUrl,
   supportEmail: 'balaz@ghrabuvka.cz',
   guideUrl: deployment?.access?.guideUrl || new URL('manualy/error-report.html', studioUrl).href,

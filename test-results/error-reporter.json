@@ -2,8 +2,8 @@
   "schema": "ghrab-error-reporter-test-v1",
   "appId": "ai-studio-reporter",
   "appName": "AI Studio GHRAB – centrální reportér",
-  "version": "0.21.57",
-  "createdAt": "2026-09-11T19:28:04.500Z",
+  "version": "0.21.58",
+  "createdAt": "2026-09-11T19:50:16.521Z",
   "browser": {
     "status": "not-ready",
     "reason": "Spravovaná politika URLBlocklist blokuje všechny testovací stránky (/etc/chromium/policies/managed/000_policy_merge.json)."
@@ -14,7 +14,7 @@
     {
       "name": "Patch verze v package.json",
       "ok": true,
-      "detail": "0.21.57"
+      "detail": "0.21.58"
     },
     {
       "name": "Existuje src/access/error-reporter.js",
@@ -262,27 +262,27 @@
       "detail": ""
     },
     {
-      "name": "src/manifest.webmanifest: obsahuje verzi 0.21.57",
+      "name": "src/manifest.webmanifest: obsahuje verzi 0.21.58",
       "ok": true,
       "detail": ""
     },
     {
-      "name": "src/config/changelog.json: obsahuje verzi 0.21.57",
+      "name": "src/config/changelog.json: obsahuje verzi 0.21.58",
       "ok": true,
       "detail": ""
     },
     {
-      "name": "qa/qa-manifest.json: obsahuje verzi 0.21.57",
+      "name": "qa/qa-manifest.json: obsahuje verzi 0.21.58",
       "ok": true,
       "detail": ""
     },
     {
-      "name": "dist/build-info.json: obsahuje verzi 0.21.57",
+      "name": "dist/build-info.json: obsahuje verzi 0.21.58",
       "ok": true,
       "detail": ""
     },
     {
-      "name": "dist/sw.js: obsahuje verzi 0.21.57",
+      "name": "dist/sw.js: obsahuje verzi 0.21.58",
       "ok": true,
       "detail": ""
     },

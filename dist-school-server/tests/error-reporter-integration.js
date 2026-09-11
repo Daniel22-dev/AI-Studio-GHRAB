@@ -1,7 +1,7 @@
 import {
   deploymentUrls,
   loadDeploymentConfig,
-} from '../access/deployment-config.js?v=0.21.57';
+} from '../access/deployment-config.js?v=0.21.58';
 
 const deployment = await loadDeploymentConfig({ appId: 'ai-studio' });
 const urls = deploymentUrls(deployment);
@@ -11,4 +11,4 @@ await protectApp('ai-studio-reporter', {
   studioUrl: urls.studioUrl,
   errorReporter: false,
 });
-await import('./error-reporter-adapter.js?v=0.21.57');
+await import('./error-reporter-adapter.js?v=0.21.58');

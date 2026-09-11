@@ -1,8 +1,8 @@
 # AI Studio GHRAB
 
-**Aktuální verze:** 0.21.57
+**Aktuální verze:** 0.21.58
 
-**Aktualizace 0.21.57:** zavádí řízené auto-patch promotion release wave. U GARP 2.5.1 zařazené aplikace může Studio po živém deployment ověření přijmout vyšší patch bez ručního přepisu wave baseline; významnější nebo neověřené změny zůstávají fail-closed.
+**Aktualizace 0.21.58:** rozšiřuje řízené auto-patch promotion release wave. U GARP 2.5.1 zařazené aplikace může Studio po živém deployment ověření přijmout vyšší patch bez ručního přepisu wave baseline; významnější nebo neověřené změny zůstávají fail-closed.
 **Platforma:** GHRAB Platform 1.1.2 · etapa P5
 
 **Stav:** AMBER – KANDIDÁT NOVÉHO VÝSLOVNĚ ZAHÁJENÉHO GARP 2.3 CYKLU, NE FINÁLNÍ RELEASE. Nezávislá kontrola Claude nad 0.21.38 potvrdila C-01/C-02/C-03, ale našla D-01 / HIGH na cestě „Smazat moje data“ → Browser Back. D-01 je v 0.21.43 opraven a kandidát čeká na druhé nezávislé ověření tohoto nového cyklu. **Reálná studentská data nepoužívat.**
@@ -10,12 +10,13 @@
 **Verze 0.21.43** sjednocuje destruktivní lifecycle ochranu: `deleteMyData()` i shared-device `endWork()` po smazání rotují neobsahovou generační tombstone. SIM-03 browser regrese testuje obě cesty, následné psaní i novou kartu a QA evidence se nepublikuje v `dist/`.
 AI Studio GHRAB je centrální brána školních digitálních a AI nástrojů. Jednotlivé aplikace zůstávají v samostatných repozitářích; Studio zajišťuje společnou navigaci, Top 4, synchronizaci verzí, bezpečnostní rámec, provozní měření, správu podepsaných přístupů a kanonický základ technického reportéru. Materiály jsou viditelnou součástí portálu, ale v dnešním bezserverovém režimu se vlastní obsah ukládá pouze místně.
 
-## Hlavní novinky 0.21.57
+## Hlavní novinky 0.21.58
 
 - Verified ecosystem gate nově umí **řízené auto-patch promotion**: u GARP 2.5.1 zařazené aplikace přijme vyšší patch z živého nasazení bez ručního přepisu `release-wave.json`.
 - `release-wave.json` se během QA skrytě nemění; zůstává schváleným baseline lockem pro danou major/minor řadu.
 - Repository fallback, snapshot, rollback, prerelease, minor/major změna a drift Platform/repository/storage/cache kontraktů automatické promotion blokují.
-- Přechodová politika má výchozí stav `manual`; nyní je auto-patch aktivní pouze pro Korespondenčního asistenta od 5.10.25.
+- Studio Bridge profil je pro každý enrollment explicitně zamčen: KS a LUDUS používají v2, Hodnotitel `not-applicable`; změna profilu patch promotion zablokuje.
+- Přechodová politika má výchozí stav `manual`; auto-patch je nyní aktivní pro Korespondenčního asistenta od 5.10.25, Hodnotitel maturitních slohů od 1.5.25 a LUDUS od 1.16.23. Lesson Hub, Diferenciátor a Generátor zůstávají do uzavření přesné aktuální nezávislé GARP evidence v režimu `manual`.
 - Každý verified běh vytváří auditní `qa-results/release-promotion-report.json`.
 
 - Plný správce má v horní navigaci novou záložku **AI Akademie**.

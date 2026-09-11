@@ -28,6 +28,12 @@ export function classifyVersionChange(fromVersion, toVersion) {
   return "patch";
 }
 
+export function normalizeStudioBridge(value) {
+  if ([2, "2", "2.0", "ghrab-studio-handoff-v2"].includes(value)) return "v2";
+  if (value === "not-applicable") return "not-applicable";
+  return null;
+}
+
 export function validatePromotionPolicy(policy, knownAppIds = []) {
   const errors = [];
   if (!policy || typeof policy !== "object") return ["promotion policy chybi nebo neni objekt."];
@@ -50,6 +56,7 @@ export function validatePromotionPolicy(policy, knownAppIds = []) {
     if (!parseStrictSemver(entry.minimumVersion)) errors.push(`${entry.id}: minimumVersion neni stabilni SemVer.`);
     if (entry.assuranceBaseline !== "GARP-2.5.1-SHIELD-PREP") errors.push(`${entry.id}: chybi schvaleny GARP 2.5.1 SHIELD-PREP baseline.`);
     if (entry.requiredVerification !== "deployment") errors.push(`${entry.id}: auto-patch musi vyzadovat zive deployment overeni.`);
+    if (!["v2", "not-applicable"].includes(entry.expectedStudioBridge)) errors.push(`${entry.id}: chybi explicitni expectedStudioBridge baseline.`);
   }
   return errors;
 }
@@ -121,7 +128,10 @@ export function evaluateAutoPromotion({
   if (app?.compatibility?.platformRange !== wave?.requiredPlatformRange) return blocked("COMPATIBILITY_RANGE", "Candidate meni compatibility platform range.");
   if (platform.storagePrefix !== `ghrab.${app.id}.`) return blocked("STORAGE_NAMESPACE", "Candidate meni nebo porusuje storage namespace.");
   if (platform.cacheName !== `ghrab-${app.id}-v${toVersion}`) return blocked("CACHE_IDENTITY", "Candidate nema cache navazanou na appId a verzi.");
-  if (![2, "ghrab-studio-handoff-v2"].includes(platform.studioBridge)) return blocked("STUDIO_BRIDGE", "Candidate meni podporovany Studio Bridge contract.");
+  const expectedStudioBridge = policyEntry.expectedStudioBridge;
+  if (!["v2", "not-applicable"].includes(expectedStudioBridge)) return blocked("POLICY_STUDIO_BRIDGE", "Promotion policy nema explicitni Studio Bridge baseline.");
+  if (normalizeStudioBridge(platform.studioBridge) !== expectedStudioBridge) return blocked("STUDIO_BRIDGE", "Candidate meni Studio Bridge profil proti schvalenemu GARP enrollment baseline.");
+  if (normalizeStudioBridge(app?.compatibility?.studioBridge) !== expectedStudioBridge) return blocked("COMPATIBILITY_STUDIO_BRIDGE", "Candidate meni compatibility Studio Bridge profil proti schvalenemu GARP enrollment baseline.");
   if (![1, "ghrab-artifact-envelope-v1"].includes(platform.artifactEnvelope)) return blocked("ARTIFACT_ENVELOPE", "Candidate meni podporovany artifact envelope contract.");
 
   return eligible();

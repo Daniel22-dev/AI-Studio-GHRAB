@@ -10,7 +10,26 @@
       "minimumVersion": "5.10.25",
       "assuranceBaseline": "GARP-2.5.1-SHIELD-PREP",
       "requiredVerification": "deployment",
-      "note": "Enrolled from the reviewed Korespondencni asistent 5.10.25 GARP 2.5.1 deployment pipeline. Future minor/major waves remain manual."
+      "note": "Enrolled from the reviewed Korespondencni asistent 5.10.25 GARP 2.5.1 deployment pipeline. Future minor/major waves remain manual.",
+      "expectedStudioBridge": "v2"
+    },
+    {
+      "id": "essay-evaluator",
+      "mode": "auto-patch",
+      "minimumVersion": "1.5.25",
+      "assuranceBaseline": "GARP-2.5.1-SHIELD-PREP",
+      "requiredVerification": "deployment",
+      "note": "Enrolled from independently reviewed Hodnotitel 1.5.25 GARP 2.5.1 SHIELD-PREP baseline (Claude Role B round 3). Future minor/major waves remain manual.",
+      "expectedStudioBridge": "not-applicable"
+    },
+    {
+      "id": "ludus",
+      "mode": "auto-patch",
+      "minimumVersion": "1.16.23",
+      "assuranceBaseline": "GARP-2.5.1-SHIELD-PREP",
+      "requiredVerification": "deployment",
+      "note": "Enrolled from independently reviewed LUDUS 1.16.23 GARP 2.5.1 SHIELD-PREP baseline (Claude Role B round 3). Future minor/major waves remain manual.",
+      "expectedStudioBridge": "v2"
     }
   ]
 }

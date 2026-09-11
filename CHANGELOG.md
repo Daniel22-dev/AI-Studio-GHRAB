@@ -2,6 +2,13 @@
 
 > Tento soubor se generuje ze `src/config/changelog.json`. Neupravujte jej ručně.
 
+## 0.21.58 — 2026-09-11
+**Rozšíření GARP auto-patch enrollmentu**
+
+- Do řízené auto-patch promotion policy jsou po nezávislém GARP 2.5.1 SHIELD-PREP ověření zařazeny Hodnotitel maturitních slohů od 1.5.25 a LUDUS od 1.16.23; Korespondenční asistent zůstává zařazen od 5.10.25.
+- Lesson Hub 1.2.22, Diferenciátor 1.3.46 a Generátor testů 7.1.25 zůstávají výchozím způsobem manual, protože pro jejich přesnou aktuální verzi není v dostupné evidenci uzavřené nezávislé review; auto-promotion je proto fail-closed nepovolí.
+- Promotion bezpečnostní logika navíc zamyká očekávaný Studio Bridge profil každé zařazené baseline: KS a LUDUS zůstávají na v2, Hodnotitel na not-applicable; změna profilu je fail-closed blokující.
+
 ## 0.21.57 — 2026-09-11
 **Řízené auto-patch promotion release wave**
 

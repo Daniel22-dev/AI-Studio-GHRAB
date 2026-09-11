@@ -2,11 +2,11 @@ import {
   initialiseAccess,
   hasAppAccess,
   formatReason,
-} from "../access/access-control.js?v=0.21.57";
+} from "../access/access-control.js?v=0.21.58";
 import {
   applyDeploymentToAppRegistry,
   loadDeploymentConfig,
-} from "../access/deployment-config.js?v=0.21.57";
+} from "../access/deployment-config.js?v=0.21.58";
 
 // Viewer is always a top-level workspace. Older access gates could navigate
 // only their iframe back to Studio and accidentally nest another viewer.

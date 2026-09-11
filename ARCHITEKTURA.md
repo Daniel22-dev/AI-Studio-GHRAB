@@ -1,8 +1,8 @@
-# Architektura AI Studio GHRAB 0.21.57
+# Architektura AI Studio GHRAB 0.21.58
 
-> Aktuální verze: **0.21.57** · etapa P5
+> Aktuální verze: **0.21.58** · etapa P5
 
-> 0.21.57 odděluje ručně schválený release-wave baseline od bezpečně odvozeného auto-patch promotion pro GARP 2.5.1 zařazené aplikace.
+> 0.21.58 odděluje ručně schválený release-wave baseline od bezpečně odvozeného auto-patch promotion pro GARP 2.5.1 zařazené aplikace.
 
 ## Koherence aktualizace PWA
 
