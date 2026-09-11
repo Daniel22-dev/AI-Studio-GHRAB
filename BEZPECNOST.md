@@ -1,8 +1,8 @@
-# Bezpečnostní hranice AI Studio GHRAB 0.21.47
+# Bezpečnostní hranice AI Studio GHRAB 0.21.48
 
-> Aktuální verze: **0.21.47** · etapa P5
+> Aktuální verze: **0.21.48** · etapa P5
 
-> 0.21.47 přidává jednorázový instalační onboarding PWA s přímou instalací tam, kde ji prohlížeč podporuje; layout, release-wave a bezpečnostní logika zůstávají beze změny.
+> 0.21.48 zjednodušuje karty aplikací, přesouvá ovládací prvky do pravého horního rohu a připravuje centrální serverový provozní semafor; bezpečnostní logika GARP zůstává beze změny.
 
 
 ## Rychlá kontrola dat v portálu

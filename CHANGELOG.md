@@ -2,6 +2,16 @@
 
 > Tento soubor se generuje ze `src/config/changelog.json`. Neupravujte jej ručně.
 
+## 0.21.48 — 2026-09-11
+**Zjednodušení karet aplikací a příprava centrálního provozního semaforu**
+
+- Karty aplikací už nezobrazují historické pilotní štítky ani technické tagy; malé ovládací prvky jsou sjednocené v pravém horním rohu a číslo verze zůstává viditelné.
+- Přístup je na kartě vyjádřen jedinou ikonou odemčeno/zamčeno. U uzamčené aplikace se zobrazí jednoduchá věta, že se otevře až po absolvování příslušného školení.
+- Popisy všech aplikací byly přepsány do běžného učitelského jazyka a karty jsou po odstranění nadbytečných metadat kompaktnější.
+- Je připraven serverový kontrakt pro centrální zelený/oranžový/červený provozní stav aplikací i celého Studia. Funkce se neukládá lokálně a zobrazí se až po skutečném napojení a aktivaci školního serveru.
+- Oranžový stav počítá s přístupem pouze správce a informačním oknem pro ostatní; červený stav blokuje běžné spuštění. Serverová dokumentace výslovně vyžaduje stejné vynucení také na cílových trasách aplikací.
+- Patch zvyšuje verzi AI Studia a PWA cache na 0.21.48.
+
 ## 0.21.47 — 2026-09-10
 **První instalační dialog PWA a oprava překrytého upozornění**
 

@@ -1,8 +1,8 @@
-# Přesný postup nahrání AI Studio GHRAB 0.21.47 na GitHub – až po schválení
+# Přesný postup nahrání AI Studio GHRAB 0.21.48 na GitHub – až po schválení
 
-> Aktuální verze: **0.21.47** · etapa P5
+> Aktuální verze: **0.21.48** · etapa P5
 
-> 0.21.47 přidává jednorázový instalační onboarding PWA s přímou instalací tam, kde ji prohlížeč podporuje; layout, release-wave a bezpečnostní logika zůstávají beze změny.
+> 0.21.48 zjednodušuje karty aplikací, přesouvá ovládací prvky do pravého horního rohu a připravuje centrální serverový provozní semafor; bezpečnostní logika GARP zůstává beze změny.
 
 > **BLOKACE NASAZENÍ:** nový nezávislý GARP 2.3 cyklus byl výslovně zahájen. Verze 0.21.43 je kandidát po opravě D-01 / HIGH z první nezávislé kontroly tohoto nového cyklu a před nasazením musí projít jeho druhou Claude kontrolou a uzavřením release gate. Do té doby se tento postup NESMÍ použít k produkčnímu nasazení a reálná studentská data se nesmí použít.
 
@@ -12,9 +12,9 @@ Nejprve musí být nasazeny KS 5.10.25, SORTIO 1.1.14, Lesson Hub 1.2.17, Difere
 
 ## Nahrání
 
-1. Stáhněte a rozbalte `AI-Studio-GHRAB-0.21.47-PWA-INSTALL-HOTFIX.zip`.
+1. Stáhněte a rozbalte `AI-Studio-GHRAB-0.21.48-PWA-INSTALL-HOTFIX.zip`.
 2. Do kořene repozitáře `AI-Studio-GHRAB` nahrajte přímo všechny soubory a složky z rozbaleného archivu.
-3. Commit pojmenujte například `AI Studio 0.21.47 – PWA install onboarding hotfix`.
+3. Commit pojmenujte například `AI Studio 0.21.48 – PWA install onboarding hotfix`.
 4. Vyčkejte na dokončení GitHub Actions. Workflow instaluje závislosti, synchronizuje manifesty, spustí regresi reportéru, celý GHRAB QA release gate, sestaví `dist` a až poté nasadí GitHub Pages.
 
 ## Kontrola po nasazení

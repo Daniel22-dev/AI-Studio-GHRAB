@@ -1,12 +1,12 @@
-import { sanitizePilotEvent, sanitizePilotEventList } from "./privacy/pilot-event.js?v=0.21.47";
-import { validateMaterialPackage } from "./shared/material-validator.js?v=0.21.47";
-import { buildPilotSummary } from "./shared/safe-export.js?v=0.21.47";
+import { sanitizePilotEvent, sanitizePilotEventList } from "./privacy/pilot-event.js?v=0.21.48";
+import { validateMaterialPackage } from "./shared/material-validator.js?v=0.21.48";
+import { buildPilotSummary } from "./shared/safe-export.js?v=0.21.48";
 import {
   applyDeploymentToAppRegistry,
   loadDeploymentConfig,
-} from "./access/deployment-config.js?v=0.21.47";
-import { initialisePlatformRuntime } from "./access/platform-runtime.js?v=0.21.47";
-import { createRegistryClient } from "./modules/registry-client.js?v=0.21.47";
+} from "./access/deployment-config.js?v=0.21.48";
+import { initialisePlatformRuntime } from "./access/platform-runtime.js?v=0.21.48";
+import { createRegistryClient } from "./modules/registry-client.js?v=0.21.48";
 import {
   initialiseAccess,
   setPermitToken,
@@ -21,8 +21,8 @@ import {
   requiredTraining,
   formatReason,
   inspectPermitToken,
-} from "./access/access-control.js?v=0.21.47";
-const VERSION = "0.21.47";
+} from "./access/access-control.js?v=0.21.48";
+const VERSION = "0.21.48";
 const deploymentReady = loadDeploymentConfig({ appId: "ai-studio" });
 const root = document.documentElement;
 const page = document.body.dataset.page || "home";
@@ -48,6 +48,9 @@ const TEST_EVENTS_KEY = "ghrab.pilot.test.events.v2";
 const TELEMETRY_MODE_KEY = "ghrab.pilot.telemetry.mode";
 const FAVORITE_APPS_KEY = "ghrab.favoriteApps.v1";
 let appTestStatusModule = null;
+let operationalStatusModule = null;
+let operationalStatusSnapshot = null;
+let operationalStatusRefreshTimer = 0;
 const COLLEAGUE_PREVIEW_KEY = "ghrab.ai-studio.role-preview.v1";
 let draggedCoreAppId = null;
 const ISSUED_ACCESS_KEY = "ghrab.access.issued-registry.v1";
@@ -1293,32 +1296,6 @@ function accessExplanation(access, appId) {
   }
   return formatReason(access.reason, state.language);
 }
-function accessChip(access, appId) {
-  const chip = el(
-    "span",
-    `chip access-chip ${access.enabled ? "access-ok" : "access-locked"}`,
-    access.enabled ? t("Odemčeno", "Unlocked") : t("Uzamčeno", "Locked"),
-  );
-  chip.title = accessExplanation(access, appId);
-  return chip;
-}
-function permissionInfoFor(app) {
-  return requiredTraining(app.id);
-}
-function permissionChip(info) {
-  if (!info?.trainingRequired) return null;
-  const label = t(
-    `Školení ${info.trainingCode}`,
-    `Training ${info.trainingCode}`,
-  );
-  const chip = el("span", "chip training-chip", label);
-  chip.title = t(
-    `Aktuální verze školení: ${info.trainingVersion || "—"}.`,
-    `Current training version: ${info.trainingVersion || "—"}.`,
-  );
-  return chip;
-}
-
 function getFavoriteApps() {
   const list = parseLocal(FAVORITE_APPS_KEY, []);
   return Array.isArray(list) ? list.filter(Boolean).slice(0, 4) : [];
@@ -1338,8 +1315,62 @@ function toggleFavoriteApp(appId) {
 }
 async function loadAppTestStatusModule() {
   if (!isAdmin() || isColleaguePreview()) return null;
-  appTestStatusModule ||= await import("./modules/app-test-status.js?v=0.21.47");
+  appTestStatusModule ||= await import("./modules/app-test-status.js?v=0.21.48");
   return appTestStatusModule;
+}
+async function loadOperationalStatusModule() {
+  operationalStatusModule ||= await import("./modules/operational-status.js?v=0.21.48");
+  operationalStatusSnapshot = await operationalStatusModule.loadOperationalStatus(
+    deploymentReady,
+  );
+  return operationalStatusModule;
+}
+function operationalStatusFor(appId) {
+  return operationalStatusModule?.statusFor(operationalStatusSnapshot, appId) || "operational";
+}
+function operationalStatusEnabled() {
+  return Boolean(
+    operationalStatusSnapshot?.enabled && operationalStatusSnapshot?.connected,
+  );
+}
+async function updateOperationalStatus(targetId, status) {
+  if (!operationalStatusModule || !operationalStatusEnabled()) return false;
+  try {
+    operationalStatusSnapshot = await operationalStatusModule.setOperationalStatus(
+      deploymentReady,
+      targetId,
+      status,
+    );
+    renderHomeCards();
+    renderStudioOperationalControl();
+    return true;
+  } catch (error) {
+    console.error("AI Studio: změna provozního stavu selhala.", error);
+    showToast(
+      t(
+        "Provozní stav se nepodařilo změnit. Zkontrolujte serverové připojení.",
+        "The operational status could not be changed. Check the server connection.",
+      ),
+    );
+    return false;
+  }
+}
+function startOperationalStatusRefresh() {
+  clearInterval(operationalStatusRefreshTimer);
+  operationalStatusRefreshTimer = 0;
+  if (!operationalStatusSnapshot?.enabled || !operationalStatusModule) return;
+  operationalStatusRefreshTimer = setInterval(async () => {
+    try {
+      operationalStatusSnapshot = await operationalStatusModule.loadOperationalStatus(
+        deploymentReady,
+      );
+      renderHomeCards();
+      renderStudioOperationalControl();
+      enforceStudioOperationalStatus();
+    } catch {
+      /* loadOperationalStatus already fails soft; keep the current UI usable */
+    }
+  }, 30000);
 }
 function currentCoreAppIds() {
   if (!homeContext?.apps?.length) return [];
@@ -1672,21 +1703,148 @@ function launchApp(app, article) {
   return true;
 }
 
-function portalStatusLabel(app) {
-  const raw = localised(app.status);
-  const pilotText = `${app.status?.cs || ""} ${app.status?.en || ""}`.toLowerCase();
-  if (/pilot|ověř|pracovní/.test(pilotText))
-    return t("Připraveno k řízenému pilotu", "Ready for controlled pilot");
-  return raw;
+function createAccessLockIndicator(access, appId) {
+  const indicator = el(
+    "span",
+    `portal-access-lock ${access.enabled ? "is-unlocked" : "is-locked"}`,
+    access.enabled ? "🔓" : "🔒",
+  );
+  const label = access.enabled ? t("Odemčeno", "Unlocked") : t("Uzamčeno", "Locked");
+  indicator.setAttribute("role", "img");
+  indicator.setAttribute("aria-label", label);
+  indicator.title = `${label}. ${accessExplanation(access, appId)}`;
+  return indicator;
+}
+
+function createOperationalStatusButton(targetId, targetName) {
+  if (!isAdmin() || isColleaguePreview() || !operationalStatusEnabled()) return null;
+  const status = operationalStatusFor(targetId);
+  const next = operationalStatusModule.nextOperationalStatus(status);
+  const button = el("button", "icon-button operational-status-button", "●");
+  button.type = "button";
+  button.dataset.operationalStatus = status;
+  const currentLabel = operationalStatusModule.statusLabel(status, state.language);
+  const nextLabel = operationalStatusModule.statusLabel(next, state.language);
+  button.setAttribute(
+    "aria-label",
+    t(
+      `${targetName}: provozní stav ${currentLabel}. Kliknutím nastavit ${nextLabel}.`,
+      `${targetName}: operational status ${currentLabel}. Click to set ${nextLabel}.`,
+    ),
+  );
+  button.title = t(
+    `Provoz: ${currentLabel} · kliknutím změnit na ${nextLabel}`,
+    `Operation: ${currentLabel} · click to change to ${nextLabel}`,
+  );
+  button.addEventListener("click", async (event) => {
+    event.preventDefault();
+    event.stopPropagation();
+    button.disabled = true;
+    const changed = await updateOperationalStatus(targetId, next);
+    if (changed) {
+      showToast(
+        t(
+          `${targetName}: ${operationalStatusModule.statusLabel(next, "cs")}.`,
+          `${targetName}: ${operationalStatusModule.statusLabel(next, "en")}.`,
+        ),
+      );
+    } else {
+      button.disabled = false;
+    }
+  });
+  return button;
+}
+
+function operationalStatusNote(status) {
+  if (status === "maintenance")
+    return t(
+      "Probíhá údržba. Aplikace je dočasně dostupná pouze správci.",
+      "Maintenance is in progress. The application is temporarily available only to the administrator.",
+    );
+  if (status === "outage")
+    return t(
+      "Aplikace je momentálně mimo provoz.",
+      "The application is currently out of service.",
+    );
+  return "";
+}
+
+function showOperationalNotice(app, status, { blocking = false } = {}) {
+  document.querySelector(".operational-notice-overlay")?.remove();
+  const overlay = el("div", "operational-notice-overlay");
+  const dialog = el("section", "operational-notice-modal");
+  dialog.setAttribute("role", "dialog");
+  dialog.setAttribute("aria-modal", "true");
+  dialog.setAttribute("aria-labelledby", "operational-notice-title");
+  dialog.tabIndex = -1;
+  const mark = el(
+    "span",
+    `operational-notice-mark ${status === "maintenance" ? "maintenance" : "outage"}`,
+    status === "maintenance" ? "●" : "×",
+  );
+  const title = el(
+    "h2",
+    "",
+    status === "maintenance"
+      ? t("Probíhá údržba", "Maintenance in progress")
+      : t("Aplikace je mimo provoz", "Application out of service"),
+  );
+  title.id = "operational-notice-title";
+  const copy = el(
+    "p",
+    "",
+    status === "maintenance"
+      ? t(
+          `${localised(app.name)} je právě v režimu údržby. Prosíme o strpení a zkuste aplikaci později.`,
+          `${localised(app.name)} is currently under maintenance. Please try again later.`,
+        )
+      : t(
+          `${localised(app.name)} je momentálně nedostupná. Zkuste aplikaci později.`,
+          `${localised(app.name)} is currently unavailable. Please try again later.`,
+        ),
+  );
+  const action = el(
+    "button",
+    "button compact",
+    blocking ? t("Zkusit znovu", "Try again") : t("Rozumím", "OK"),
+  );
+  action.type = "button";
+  let releaseIsolation = () => {};
+  const dismiss = () => {
+    releaseIsolation();
+    overlay.remove();
+  };
+  if (blocking) {
+    action.addEventListener("click", () => location.reload());
+  } else {
+    action.addEventListener("click", dismiss);
+    overlay.addEventListener("click", (event) => {
+      if (event.target === overlay) dismiss();
+    });
+  }
+  dialog.append(mark, title, copy, action);
+  overlay.append(dialog);
+  document.body.append(overlay);
+  releaseIsolation = activateModalIsolation(overlay, {
+    onEscape: blocking ? undefined : dismiss,
+  });
+  requestAnimationFrame(() => action.focus());
+}
+
+function canLaunchForOperationalStatus(status) {
+  if (status === "operational") return true;
+  if (status === "maintenance") return isAdmin() && !isColleaguePreview();
+  return false;
 }
 
 function portalAppCard(app, index, permissions) {
-  const info = permissionInfoFor(app);
   const access = hasAppAccess(app.id);
   const favorites = getFavoriteApps();
+  const operationalStatus = operationalStatusFor(app.id);
   const article = el("article", "portal-app-card");
   article.dataset.position = String(index);
   article.dataset.appId = app.id;
+  article.dataset.operationalStatus = operationalStatus;
   article.style.setProperty("--app-accent", app.accent || "#50e8ff");
   article.classList.add(`accent-${app.id}`);
   if (!access.enabled) article.classList.add("is-locked");
@@ -1697,9 +1855,8 @@ function portalAppCard(app, index, permissions) {
   const icon = el("img", "portal-app-icon");
   icon.src = app.icon?.startsWith("http") ? app.icon : `${base}${app.icon}`;
   icon.alt = "";
-  const identityText = el("div");
-  identityText.append(el("span", "status", portalStatusLabel(app)));
-  identity.append(icon, identityText);
+  identity.append(icon);
+
   const headActions = el("div", "portal-card-actions");
   if (index >= 0 && index < 4) {
     const dragHandle = el("button", "icon-button portal-drag-handle", "⠿");
@@ -1794,26 +1951,43 @@ function portalAppCard(app, index, permissions) {
   pin.title = pin.getAttribute("aria-label");
   pin.addEventListener("click", (event) => {
     event.preventDefault();
+    event.stopPropagation();
     toggleFavoriteApp(app.id);
   });
-  headActions.append(pin, el("span", "chip version-chip", `v${app.version}`));
+  headActions.append(pin);
+  const operationalButton = createOperationalStatusButton(app.id, localised(app.name));
+  if (operationalButton) headActions.append(operationalButton);
+  headActions.append(
+    el("span", "chip version-chip", `v${app.version}`),
+    createAccessLockIndicator(access, app.id),
+  );
   head.append(identity, headActions);
 
   const title = el("h2", "", localised(app.name));
-  const description = el("p", "", localised(app.description));
-  const meta = el("div", "portal-card-meta");
-  (app.tags || [])
-    .slice(0, 3)
-    .forEach((tag) => meta.append(el("span", "chip", localised(tag))));
-  const pchip = permissionChip(info);
-  if (pchip) meta.append(pchip);
-  meta.append(accessChip(access, app.id));
+  const description = el("p", "portal-card-description", localised(app.description));
+  const notes = el("div", "portal-card-notes");
+  if (!access.enabled) {
+    notes.append(
+      el(
+        "p",
+        "portal-training-note",
+        t(
+          "Daná aplikace se otevře až po absolvování příslušného školení.",
+          "This application will open after the relevant training has been completed.",
+        ),
+      ),
+    );
+  }
+  if (operationalStatus !== "operational") {
+    notes.append(
+      el(
+        "p",
+        `portal-operational-note ${operationalStatus}`,
+        operationalStatusNote(operationalStatus),
+      ),
+    );
+  }
 
-  const accessNote = el(
-    "p",
-    `portal-access-note ${access.enabled ? "ok" : "locked"}`,
-    accessExplanation(access, app.id),
-  );
   const actions = el("div", "portal-card-bottom");
   if (access.enabled) {
     const launch = el(
@@ -1822,7 +1996,15 @@ function portalAppCard(app, index, permissions) {
       t("Spustit aplikaci", "Launch application"),
     );
     launch.type = "button";
-    launch.addEventListener("click", () => launchApp(app, article));
+    launch.addEventListener("click", (event) => {
+      event.preventDefault();
+      event.stopPropagation();
+      if (!canLaunchForOperationalStatus(operationalStatus)) {
+        showOperationalNotice(app, operationalStatus);
+        return;
+      }
+      launchApp(app, article);
+    });
     actions.append(launch);
     article.tabIndex = 0;
     article.setAttribute("role", "link");
@@ -1831,15 +2013,22 @@ function portalAppCard(app, index, permissions) {
       `${t("Spustit", "Launch")} ${localised(app.name)}`,
     );
     article.addEventListener("click", (event) => {
-      if (!event.target.closest("button,a,input,select,textarea,label"))
-        launchApp(app, article);
+      if (event.target.closest("button,a,input,select,textarea,label")) return;
+      if (!canLaunchForOperationalStatus(operationalStatus)) {
+        showOperationalNotice(app, operationalStatus);
+        return;
+      }
+      launchApp(app, article);
     });
     article.addEventListener("keydown", (event) => {
       if (event.target.closest("button,a,input,select,textarea,label")) return;
-      if (["Enter", " "].includes(event.key)) {
-        event.preventDefault();
-        launchApp(app, article);
+      if (!["Enter", " "].includes(event.key)) return;
+      event.preventDefault();
+      if (!canLaunchForOperationalStatus(operationalStatus)) {
+        showOperationalNotice(app, operationalStatus);
+        return;
       }
+      launchApp(app, article);
     });
   } else {
     const details = el(
@@ -1850,9 +2039,12 @@ function portalAppCard(app, index, permissions) {
     details.href = `${base}access/`;
     actions.append(details);
   }
-  article.append(head, title, description, meta, accessNote, actions);
+  article.append(head, title, description);
+  if (notes.childElementCount) article.append(notes);
+  article.append(actions);
   return article;
 }
+
 
 function renderExtraApps(apps) {
   document.querySelector(".extra-destinations")?.remove();
@@ -1970,12 +2162,36 @@ function renderHomeAccessSummary() {
   link.href = `${base}access/`;
   host.append(icon, body, link);
 }
+function renderStudioOperationalControl() {
+  const host = document.querySelector("#studio-status");
+  host?.querySelector(".studio-operational-control")?.remove();
+  if (!host || !operationalStatusEnabled()) return;
+  const button = createOperationalStatusButton("ai-studio", "AI Studio GHRAB");
+  if (!button) return;
+  button.classList.add("studio-operational-control");
+  host.append(button);
+}
+
+function enforceStudioOperationalStatus() {
+  if (!operationalStatusEnabled()) return;
+  const status = operationalStatusFor("ai-studio");
+  if (status === "operational" || (isAdmin() && !isColleaguePreview())) return;
+  showOperationalNotice(
+    { name: { cs: "AI Studio GHRAB", en: "AI Studio GHRAB" } },
+    status,
+    { blocking: true },
+  );
+}
+
 async function renderHome() {
   const grid = document.querySelector("#portal-apps");
   if (!grid) return;
   try {
     await accessReady;
-    await loadAppTestStatusModule().catch(() => {});
+    await Promise.all([
+      loadAppTestStatusModule().catch(() => {}),
+      loadOperationalStatusModule().catch(() => {}),
+    ]);
     const [apps, permissions, platformConsumers] = await Promise.all([
       loadApps(),
       loadPermissions(),
@@ -1985,6 +2201,9 @@ async function renderHome() {
     window.__GHRAB_PLATFORM_CONSUMERS__ = platformConsumers;
     homeContext = { grid, apps, permissions, platformConsumers };
     renderHomeCards();
+    renderStudioOperationalControl();
+    enforceStudioOperationalStatus();
+    startOperationalStatusRefresh();
   } catch {
     grid.replaceChildren(
       el(
@@ -2513,7 +2732,7 @@ applyTheme();
 applyLanguage();
 applyMotion();
 renderHome();
-void import('./modules/portal-effects.js?v=0.21.47')
+void import('./modules/portal-effects.js?v=0.21.48')
   .then(({ setupPortalEffects }) => setupPortalEffects({ root }))
   .catch((error) => console.warn('Volitelne portalove efekty nebyly nacteny.', error));
 void refreshSharedAccessModuleCache();
@@ -2523,7 +2742,7 @@ accessReady.then(() => {
   updateTelemetryModeBanner();
   setupMonthlyReportReminder();
 });
-void Promise.all([deploymentReady, import("./access/app-guard.js?v=0.21.47")])
+void Promise.all([deploymentReady, import("./access/app-guard.js?v=0.21.48")])
   .then(([deployment, { startErrorReporterBestEffort }]) =>
     startErrorReporterBestEffort("ai-studio", {
       appName: "AI Studio GHRAB",
@@ -2542,6 +2761,7 @@ void Promise.all([deploymentReady, import("./access/app-guard.js?v=0.21.47")])
 document.addEventListener("ghrab:language", () => {
   renderHomeCards();
   renderHomeAccessSummary();
+  renderStudioOperationalControl();
   mountColleaguePreviewBanner();
 });
 document.addEventListener("ghrab:access-changed", () => {
@@ -2550,6 +2770,7 @@ document.addEventListener("ghrab:access-changed", () => {
   mountColleaguePreviewBanner();
   renderPageAccessGate();
   void loadAppTestStatusModule().then(renderHomeCards, renderHomeCards);
+  renderStudioOperationalControl();
   updateTelemetryModeBanner();
 });
 document.addEventListener("ghrab:favorites", renderHomeCards);

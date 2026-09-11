@@ -42,7 +42,8 @@
     "aiGenerate": "ai/generate",
     "aiHealth": "ai/health",
     "materials": "materials",
-    "commissions": "commissions"
+    "commissions": "commissions",
+    "operationalStatus": "operations/status"
   },
   "features": {
     "schoolServerReady": true,
@@ -58,7 +59,8 @@
     "materialVersioningReady": true,
     "classroomValidationReady": true,
     "commissionReviewReady": true,
-    "sharedMaterialLibrary": true
+    "sharedMaterialLibrary": true,
+    "centralOperationalStatus": false
   },
   "appId": "ai-studio",
   "appBaseUrl": "/ai-studio/",

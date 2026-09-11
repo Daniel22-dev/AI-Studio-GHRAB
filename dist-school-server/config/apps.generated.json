@@ -12,8 +12,8 @@
       "en": "Ready for controlled pilot"
     },
     "description": {
-      "cs": "Tvorba procvičování a klasifikovaných testů, variant, kódů i bezpečného offline odevzdání.",
-      "en": "Create practice and graded tests, variants, access codes and secure offline submissions."
+      "cs": "Pomáhá rychle vytvářet procvičování i klasifikované testy, připravit více variant a zadat je žákům.",
+      "en": "Helps you quickly create practice and graded tests, prepare multiple variants and assign them to students."
     },
     "launchUrl": "/apps/generator-testu/",
     "manualUrl": "/apps/generator-testu/manual/",
@@ -100,8 +100,8 @@
       "en": "Ready for controlled pilot"
     },
     "description": {
-      "cs": "Převádí jeden materiál do pedagogicky smysluplných variant pro různé potřeby žáků.",
-      "en": "Transforms one resource into pedagogically meaningful variants for different learner needs."
+      "cs": "Z jednoho výukového materiálu vytvoří jednodušší i náročnější varianty pro různé potřeby žáků.",
+      "en": "Creates simpler and more demanding versions of one learning resource for different student needs."
     },
     "launchUrl": "/apps/diferenciator/",
     "manualUrl": "/apps/diferenciator/manual/",
@@ -183,8 +183,8 @@
       "en": "Ready for controlled pilot"
     },
     "description": {
-      "cs": "Kompletní třídní workflow pro anonymizaci, důkazní hodnocení, validaci, učitelské schválení, profesionální školní reporty, anonymní analytiku a bezpečnou distribuci zpětné vazby k maturitním slohům.",
-      "en": "Complete class workflow for anonymisation, evidence-based essay assessment, validation, teacher approval, professional school reports, anonymous analytics and secure feedback delivery."
+      "cs": "Pomáhá hodnotit maturitní slohy z angličtiny podle zadaných kritérií, připravit zpětnou vazbu a přehled výsledků pro učitele.",
+      "en": "Helps assess English Matura essays using the selected criteria, prepare feedback and give teachers a clear overview of results."
     },
     "launchUrl": "/apps/hodnotitel-slohu/",
     "manualUrl": "/apps/hodnotitel-slohu/manual/",
@@ -305,8 +305,8 @@
       "en": "Working pilot release"
     },
     "description": {
-      "cs": "Pomáhá rozebrat příchozí zprávu, anonymizovat ji a připravit profesionální školní odpověď.",
-      "en": "Helps analyse an incoming message, anonymise it and prepare a professional school reply."
+      "cs": "Pomáhá připravit profesionální odpovědi na školní e-maily a zprávy a před použitím AI odstranit citlivé údaje.",
+      "en": "Helps prepare professional replies to school emails and messages and remove sensitive data before using AI."
     },
     "launchUrl": "/apps/korespondencni-asistent/",
     "manualUrl": "/apps/korespondencni-asistent/manual/",
@@ -388,8 +388,8 @@
       "en": "Being validated in pilot"
     },
     "description": {
-      "cs": "Dílna výukových her, která převádí učivo do různých herních světů a mechanik.",
-      "en": "A learning-game workshop that transforms content into different game worlds and mechanics."
+      "cs": "Převádí učivo do výukových her a herních aktivit, které lze využít při práci jednotlivců, dvojic i týmů.",
+      "en": "Turns learning content into educational games and activities for individuals, pairs and teams."
     },
     "launchUrl": "/apps/ludus/",
     "manualUrl": "/apps/ludus/manual/",
@@ -476,8 +476,8 @@
       "en": "Ready for controlled pilot"
     },
     "description": {
-      "cs": "Originální prémiové redakční studio pro tvorbu pracovních listů a výukových aktivit ve všech předmětech. Nabízí 39 formátů, diferenciaci, varianty A/B/C, tiskové PDF, projekci bez telefonů, lokální knihovnu, přenosné sdílení, úplný manuál, interní testovací centrum a architekturu připravenou na budoucí školní server.",
-      "en": "Original premium editorial studio for creating worksheets and learning activities across all subjects. It offers 39 formats, differentiation, A/B/C variants, print-ready PDF, phone-free projection, a local library, portable sharing, a complete manual, an internal test centre and architecture ready for a future school server."
+      "cs": "Pomáhá vytvářet pracovní listy a další výukové aktivity pro různé předměty, včetně variant pro různé úrovně a PDF k tisku.",
+      "en": "Helps create worksheets and other learning activities across subjects, including level-based variants and printable PDFs."
     },
     "launchUrl": "/apps/activa/",
     "manualUrl": "/apps/activa/manual/",
@@ -607,8 +607,8 @@
       "en": "Ready for controlled pilot"
     },
     "description": {
-      "cs": "Organizace třídy a nástroje pro živou výuku. Losování, chytré skupiny, role, zasedací pořádek, časovače, hodiny, tabule, semafor, kostky, týmové skóre a projekční nástroje.",
-      "en": "Classroom organisation and live teaching tools. Random selection, smart groups, roles, seating plans, timers, clocks, boards, traffic lights, dice, team scoring and projection tools."
+      "cs": "Pomáhá organizovat práci ve třídě: losování, skupiny a role, zasedací pořádek, časovače, tabule a další nástroje pro živou výuku.",
+      "en": "Helps organise classroom work with random selection, groups and roles, seating plans, timers, boards and other live-teaching tools."
     },
     "launchUrl": "/apps/sortio/",
     "manualUrl": "/apps/sortio/manual/",
@@ -762,8 +762,8 @@
       "en": "Ready for controlled pilot"
     },
     "description": {
-      "cs": "Local-first osobní paměť učitele pro kontinuitu skupin, plánování a záznam výuky, povinnosti, materiály, šablony, bezpečné zálohy, komunikaci a zastupování.",
-      "en": "A local-first personal teacher memory for group continuity, lesson planning and records, tasks, materials, templates, safe backups, communication and substitution."
+      "cs": "Osobní pracovní prostor učitele pro plánování výuky, záznam hodin, povinnosti, materiály a přípravu zastupování.",
+      "en": "A personal teacher workspace for lesson planning, lesson records, tasks, materials and preparing cover lessons."
     },
     "launchUrl": "/apps/lesson-hub/",
     "manualUrl": "/apps/lesson-hub/manual/",
@@ -877,8 +877,8 @@
       "en": "Controlled pilot · demo content"
     },
     "description": {
-      "cs": "Učitelská PWA pro přípravu a průběh ústní maturitní zkoušky z anglického jazyka. Tato dlaždice nyní otevírá pouze veřejný demo režim se syntetickým obsahem.",
-      "en": "Teacher PWA for preparing and running the English oral Matura exam. This tile currently opens only the public demo mode with synthetic content."
+      "cs": "Pomáhá připravit a vést ústní maturitní zkoušku z angličtiny. Ve Studiu je nyní dostupné pouze demo s ukázkovými daty.",
+      "en": "Helps prepare and run the English oral Matura exam. The Studio currently provides only a demo with sample data."
     },
     "launchUrl": "/",
     "manualUrl": "/manual/",

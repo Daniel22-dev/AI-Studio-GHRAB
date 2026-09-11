@@ -43,7 +43,8 @@
     "aiGenerate": "ai/generate",
     "aiHealth": "ai/health",
     "materials": "materials",
-    "commissions": "commissions"
+    "commissions": "commissions",
+    "operationalStatus": "operations/status"
   },
   "features": {
     "schoolServerReady": true,
@@ -59,7 +60,8 @@
     "materialVersioningReady": true,
     "classroomValidationReady": true,
     "commissionReviewReady": true,
-    "sharedMaterialLibrary": false
+    "sharedMaterialLibrary": false,
+    "centralOperationalStatus": false
   },
   "appId": "ai-studio",
   "appBaseUrl": "/AI-Studio-GHRAB/",

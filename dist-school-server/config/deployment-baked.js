@@ -43,7 +43,8 @@ export const BAKED_DEPLOYMENT_CONFIG = Object.freeze({
     "aiGenerate": "ai/generate",
     "aiHealth": "ai/health",
     "materials": "materials",
-    "commissions": "commissions"
+    "commissions": "commissions",
+    "operationalStatus": "operations/status"
   },
   "features": {
     "schoolServerReady": true,
@@ -59,7 +60,8 @@ export const BAKED_DEPLOYMENT_CONFIG = Object.freeze({
     "materialVersioningReady": true,
     "classroomValidationReady": true,
     "commissionReviewReady": true,
-    "sharedMaterialLibrary": true
+    "sharedMaterialLibrary": true,
+    "centralOperationalStatus": false
   },
   "appId": "ai-studio",
   "appBaseUrl": "/ai-studio/",

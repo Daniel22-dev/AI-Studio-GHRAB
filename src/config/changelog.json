@@ -1,7 +1,41 @@
 {
   "schema": "ai-studio-changelog-v1",
-  "current": "0.21.47",
+  "current": "0.21.48",
   "items": [
+    {
+      "version": "0.21.48",
+      "date": "2026-09-11",
+      "title": {
+        "cs": "Zjednodušení karet aplikací a příprava centrálního provozního semaforu",
+        "en": "Simplified application cards and central operational-status groundwork"
+      },
+      "changes": [
+        {
+          "cs": "Karty aplikací už nezobrazují historické pilotní štítky ani technické tagy; malé ovládací prvky jsou sjednocené v pravém horním rohu a číslo verze zůstává viditelné.",
+          "en": "Application cards no longer show historical pilot labels or technical tags; compact controls are consolidated in the top-right corner and the version remains visible."
+        },
+        {
+          "cs": "Přístup je na kartě vyjádřen jedinou ikonou odemčeno/zamčeno. U uzamčené aplikace se zobrazí jednoduchá věta, že se otevře až po absolvování příslušného školení.",
+          "en": "Access is represented by a single locked/unlocked icon. Locked applications show a simple sentence explaining that the relevant training must be completed first."
+        },
+        {
+          "cs": "Popisy všech aplikací byly přepsány do běžného učitelského jazyka a karty jsou po odstranění nadbytečných metadat kompaktnější.",
+          "en": "All application descriptions were rewritten in plain teacher-facing language and the cards are more compact after redundant metadata was removed."
+        },
+        {
+          "cs": "Je připraven serverový kontrakt pro centrální zelený/oranžový/červený provozní stav aplikací i celého Studia. Funkce se neukládá lokálně a zobrazí se až po skutečném napojení a aktivaci školního serveru.",
+          "en": "A server contract is prepared for central green/amber/red operational status across applications and the Studio itself. The feature is never stored locally and only appears after the school server is genuinely connected and enabled."
+        },
+        {
+          "cs": "Oranžový stav počítá s přístupem pouze správce a informačním oknem pro ostatní; červený stav blokuje běžné spuštění. Serverová dokumentace výslovně vyžaduje stejné vynucení také na cílových trasách aplikací.",
+          "en": "Amber status is designed for administrator-only access with a maintenance notice for others; red blocks normal launch. Server documentation explicitly requires the same enforcement on the application routes themselves."
+        },
+        {
+          "cs": "Patch zvyšuje verzi AI Studia a PWA cache na 0.21.48.",
+          "en": "The patch bumps AI Studio and its PWA cache to 0.21.48."
+        }
+      ]
+    },
     {
       "version": "0.21.47",
       "date": "2026-09-10",

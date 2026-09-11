@@ -61,6 +61,7 @@ check(polishCss.includes('.site-footer') && polishCss.includes('#0d4b78') && pol
 const appJs = await text("src/app.js");
 const stylesCss = await text("src/styles.css");
 const appTestStatusJs = await text("src/modules/app-test-status.js");
+const operationalStatusJs = await text("src/modules/operational-status.js");
 check(appJs.includes("innerHeight <= 820"), "Desktop presentation-fit se znovu spousti na beznem 1080p/scaled viewportu.");
 check(stylesCss.includes("grid-template-rows: repeat(2, auto)") && stylesCss.includes("justify-content: flex-start"), "Kompaktni portal znovu nuti karty do pevne vysky nebo centruje pretikajici obsah.");
 check(!/\.main-nav\s*\{[^}]*flex-wrap:\s*wrap/.test(polishCss), "Hlavni navigace se na desktopu znovu muze zalomit do druheho radku.");
@@ -140,7 +141,17 @@ check(securityCenterCore.includes('schema: "ghrab-access-config-update-pack-v1"'
 
 const reportHtml = await text("src/report/index.html");
 check(reportHtml.includes('tomto prohlížeči a profilu') && reportHtml.includes('Není třeba nahrávat vlastní soubor'), "Souhrnny report nevysvetluje automaticke pridani mistnich dat aktualniho prohlizece/profilu.");
-check(appJs.includes('function portalStatusLabel(app)') && appJs.includes('Připraveno k řízenému pilotu'), "Portal nesjednocuje historicke pilotni statusy aplikaci.");
+check(!appJs.includes('function portalStatusLabel(app)') && !appJs.includes('identityText.append(el("span", "status"'), "Karty stale zobrazuji historicky pilotni status.");
+check(!appJs.includes('(app.tags || [])') && !appJs.includes('portal-card-meta",'), "Karty stale renderuji technicke tagy nebo metadata chipy.");
+check(appJs.includes('portal-access-lock') && appJs.includes('Daná aplikace se otevře až po absolvování příslušného školení.'), "Karty nemaji jednoduchou ikonu zamku a srozumitelnou vetu o skoleni.");
+check(appJs.includes('headActions.append(pin)') && appJs.includes('createOperationalStatusButton(app.id') && appJs.includes('createAccessLockIndicator(access, app.id)'), "Pravy horni blok karty nema sjednocene ovladaci prvky.");
+check(operationalStatusJs.includes('schoolServerConnected === true') && operationalStatusJs.includes('centralOperationalStatus === true') && operationalStatusJs.includes('ghrab-operational-status-v1'), "Centralni provozni stav neni podminen skutecnym skolnim serverem nebo nema kontrakt.");
+check(operationalStatusJs.includes('method: "PUT"') && !operationalStatusJs.includes('localStorage'), "Provozni semafor neni serverove autoritativni nebo se uklada lokalne.");
+const appRegistry = JSON.parse(await text("src/config/apps.generated.json"));
+for (const app of appRegistry) {
+  const description = app.description?.cs || "";
+  check(!/(local-first|PWA|workflow|CONFIDENTIAL-EXAM|architektur)/i.test(description), `${app.id}: karta stale pouziva technicky nebo interni pojem v popisu.`);
+}
 
 const pilotHtml = await text("src/pilot/index.html");
 const pilotJs = await text("src/pilot/pilot.js");

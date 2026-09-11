@@ -2,11 +2,11 @@ import {
   initialiseAccess,
   hasAppAccess,
   formatReason,
-} from "../../access/access-control.js?v=0.21.47";
+} from "../../access/access-control.js?v=0.21.48";
 import {
   applyDeploymentToAppRegistry,
   loadDeploymentConfig,
-} from "../../access/deployment-config.js?v=0.21.47";
+} from "../../access/deployment-config.js?v=0.21.48";
 
 const deploymentReady = loadDeploymentConfig({ appId: "ai-studio" });
 const language = (() => {
