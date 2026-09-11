@@ -1,0 +1,131 @@
+/* AI Studio GHRAB 0.21.55 - styles scoped to the leadership reporting page. */
+.a4-preview-stack {
+  display: grid;
+  gap: 26px;
+}
+.a4-preview-page {
+  display: grid;
+  gap: 9px;
+}
+.a4-preview-label {
+  width: min(100%, 760px);
+  margin: 0 auto;
+  color: var(--muted);
+  font-size: 0.72rem;
+  font-weight: 800;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+}
+.report-period-note,
+.report-work-summary {
+  margin: 0 0 14px;
+  color: var(--muted);
+  font-size: 0.78rem;
+  line-height: 1.5;
+}
+.report-management-form,
+.report-work-form {
+  display: grid;
+  gap: 14px;
+}
+.report-management-form .field.full,
+.report-work-form .field.full {
+  grid-column: 1 / -1;
+}
+.report-management-form textarea,
+.report-work-form textarea {
+  resize: vertical;
+  min-height: 88px;
+}
+.report-work-form #report-work-private {
+  min-height: 68px;
+}
+.report-work-form-actions,
+.report-work-actions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 9px;
+}
+.report-work-list {
+  display: grid;
+  gap: 11px;
+  margin-top: 15px;
+}
+.report-work-card {
+  background: rgba(6, 22, 38, 0.78);
+}
+.report-work-card .report-private-note {
+  border-top-color: rgba(242, 202, 111, 0.2);
+}
+.report-work-card .report-private-note span,
+.report-work-card .report-private-note b {
+  color: var(--gold);
+}
+.report-work-card > .report-work-actions {
+  justify-content: flex-end;
+  margin: 12px 0 0;
+}
+.button.compact {
+  min-height: 0;
+  padding: 7px 10px;
+  font-size: 0.72rem;
+}
+.server-reporting-note {
+  border-color: rgba(112, 224, 255, 0.24);
+  background: rgba(33, 179, 221, 0.08);
+}
+
+.report-input-map {
+  padding-top: 0;
+  padding-bottom: 0;
+}
+.report-input-map-panel {
+  display: grid;
+  grid-template-columns: minmax(0, 1.1fr) minmax(320px, 0.9fr);
+  gap: 22px;
+  align-items: center;
+}
+.report-input-map-panel h2 {
+  margin-bottom: 8px;
+}
+.report-input-map-panel p:last-child {
+  margin-bottom: 0;
+}
+.report-input-map-actions {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 9px;
+}
+.report-input-map-actions .button {
+  justify-content: flex-start;
+  text-align: left;
+}
+#report-scope,
+#report-sources,
+#report-api-costs,
+#report-imports,
+#report-work-log,
+#report-management,
+#report-preview-panel {
+  scroll-margin-top: 96px;
+}
+@media (max-width: 980px) {
+  .report-input-map-panel {
+    grid-template-columns: 1fr;
+  }
+}
+@media (max-width: 560px) {
+  .report-input-map-actions {
+    grid-template-columns: 1fr;
+  }
+}
+
+.report-api-cost-grid {
+  margin-top: 14px;
+}
+.report-api-cost-card b {
+  font-variant-numeric: tabular-nums;
+}
+.report-api-cost-status {
+  margin-bottom: 0;
+}

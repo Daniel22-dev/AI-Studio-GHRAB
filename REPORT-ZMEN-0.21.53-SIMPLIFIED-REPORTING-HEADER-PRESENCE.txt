@@ -1,0 +1,45 @@
+AI Studio GHRAB 0.21.53
+Simplified reporting workflow + header live presence
+Date: 2026-09-11
+
+SCOPE
+- Moves the full-admin live presence control from Administration to the Studio header next to Settings.
+- Keeps live presence server-only and disabled in GitHub Pages/serverless mode.
+- Adds a direct Report item to the main Studio navigation for users with operations/report access.
+- Replaces user-facing Pilot Dashboard wording with Usage statistics.
+- Removes the obsolete four-phase pilot breakdown from the statistics page.
+- Separates Administration entry cards for Usage statistics and Monthly leadership report.
+- Adds a report input map: operational inputs, colleague imports, guarantor work log, leadership summary, preview/PDF.
+- Removes remaining pilot wording from the active monthly report title and telemetry-test explanation.
+
+LIVE PRESENCE PRIVACY
+- Client heartbeat remains minimal: schema + appId only.
+- Client does not send user name or e-mail.
+- Server derives identity and time from the authenticated school session.
+- No presence history is created by the client design.
+- Recommended server TTL remains 120 seconds.
+
+COMPATIBILITY
+- Internal ghrab.pilot.* storage keys and /pilot/ route are retained to avoid breaking existing local data and access policy.
+- Historical changelog entries are retained unchanged.
+- The two-page A4 leadership report introduced in 0.21.51 remains intact.
+
+QA
+- npm test: PASS
+- Audit regressions: 50/50 PASS
+- Security regressions: 16/16 PASS
+- GARP security regressions: 19/19 PASS
+- Studio UX regression: PASS
+- Live presence QA: PASS
+- Platform verification: PASS (203/203)
+- Quality gate: PASS (188/188)
+- entryCriticalBytes: 498665 / 500000
+- distBytes: 2306845 / 2310000
+- Security QA: PASS, 0 findings
+- PWA QA: PASS, 0 findings
+- Technical QA: PASS, 0 findings
+- Combinatorial QA: PASS, pairwise 100%
+- school-server build: PASS
+
+BROWSER QA LIMITATION
+The Playwright-based visual/critical gates could not be executed in this container because the development dependencies are not installed in the source archive. An attempted npm ci did not complete within the execution limit and was removed. Static, functional, security, PWA, performance and build gates all passed. A browser smoke test should still run in the normal GitHub/CI environment after upload.

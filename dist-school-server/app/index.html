@@ -1,0 +1,161 @@
+<!doctype html>
+<html lang="cs" data-theme="dark" data-ghrab-app-id="ai-studio" data-ghrab-app-version="0.21.55" data-ghrab-no-footer data-ghrab-platform-contract="ghrab-platform-v1" data-theme-preference="dark">
+  <head>
+    <meta charset="utf-8" />
+    <meta
+      name="viewport"
+      content="width=device-width,initial-scale=1,viewport-fit=cover"
+    />
+    <meta name="theme-color" content="#030915" />
+    <meta
+      name="description"
+      content="Pracovní prostor aplikací AI Studia GHRAB."
+    />
+    <meta
+      http-equiv="Content-Security-Policy"
+      content="default-src 'self'; script-src 'self'; style-src 'self'; img-src 'self' data:; connect-src 'self'; frame-src 'self'; object-src 'none'; base-uri 'self'; form-action 'self'"
+    />
+    <title>Aplikace · AI Studio GHRAB</title>
+    <link rel="manifest" href="../manifest.webmanifest" />
+    <link rel="icon" href="../assets/brand/icon-32.png" sizes="32x32" />
+    <link rel="apple-touch-icon" href="../assets/brand/apple-touch-icon.png" />
+    <link rel="stylesheet" href="../styles.css?v=0.21.55" />
+    <link rel="stylesheet" href="../polish.css?v=0.21.55" />
+    <link rel="stylesheet" href="./viewer.css?v=0.21.55" />
+
+    <!-- GHRAB Platform 1.1.2 · generated -->
+    <link rel="stylesheet" href="../ghrab/ghrab-platform.css?v=0.21.55" data-ghrab-platform-style>
+    <script id="ghrab-platform-config" type="application/json">{"appId":"ai-studio","appName":"AI Studio GHRAB","appVersion":"0.21.55","requiredPlatformRange":">=1.1.2 \u003c2.0.0","platformContract":"ghrab-platform-v1","brandVersion":"1.0.0","autoFooter":false,"theme":{"supported":["dark"],"default":"dark"},"storageMigration":{"id":"p2-storage-namespace-v2","backup":"full","mappings":[{"legacy":"ghrab.language","canonical":"ghrab.ai-studio.language.v1"},{"legacy":"ghrab.motion","canonical":"ghrab.ai-studio.motion.v1"},{"legacy":"ghrab.workspace.v1","canonical":"ghrab.ai-studio.workspace.v1"},{"legacy":"ghrab.workflow.draft.v1","canonical":"ghrab.ai-studio.workflow.draft.v1"},{"legacy":"ghrab.report.settings.v2","canonical":"ghrab.ai-studio.report.settings.v2"},{"legacy":"ghrab.report.imports.v1","canonical":"ghrab.ai-studio.report.imports.v1"},{"legacy":"ghrab.access.issued-registry.v1","canonical":"ghrab.ai-studio.access.issued-registry.v1"},{"legacy":"ghrab.favoriteApps.v1","canonical":"ghrab.ai-studio.favoriteApps.v1"},{"legacy":"ghrab.pwa.install-dismissed-until","canonical":"ghrab.ai-studio.pwa.install-dismissed-until.v1"}]},"bridgeMaxBytes":500000,"artifactContract":"ghrab-artifact-envelope-v1","quality":{"schema":"ghrab-quality-consumer-v1","accessibilityContract":"ghrab-a11y-v1","performanceContract":"ghrab-performance-v1","moduleContract":"ghrab-lazy-modules-v1","requireBudget":true,"performanceBudget":{"distBytes":2350000,"entryHtmlBytes":50000,"entryCriticalBytes":500000,"largestInlineScriptBytes":30000,"precacheBytes":1800000,"largestFileBytes":200000,"duplicateLargeBytes":260000},"modules":{"required":["modules/portal-effects.js","modules/registry-client.js"]},"referenceProfile":{"cpuSlowdown":4,"viewport":"1366x768","memoryClassGb":4,"viewportWidths":[1280,390,320]},"stage":"P5","a11yContract":"ghrab-a11y-v1","requireRuntimeBudget":true,"runtimeBudget":{"maxDomNodes":1000,"maxRenderReadyMs":3000,"maxJsHeapUsedBytes":8000000,"maxLayoutDurationMs":1200,"maxTaskDurationMs":2700},"finalRelease":true,"cleanInstallRequired":true,"a11yGate":"ghrab-p5-runtime-a11y-v2","releaseGate":"ghrab-p5-release-v2","runtimeAudit":{"scriptsExecuted":true,"transport":"local-http","dialogStates":true,"viewports":[1280,390,320],"pages":["index.html","app/index.html","pilot/index.html","library/index.html","automation/index.html","safety/index.html","workflow/index.html","demo/index.html"]},"lazyMedia":{"prefixes":["assets/presentation/"],"maxBytes":65000000,"maxSingleFileBytes":60000000}}}</script>
+    <script defer src="../ghrab/ghrab-platform.js?v=0.21.55" data-ghrab-platform-loader></script>
+  </head>
+  <body class="embedded-app-page">
+    <a
+      class="skip-link"
+      href="#embedded-app-frame"
+      data-cs="Přejít do aplikace"
+      data-en="Skip to application"
+      >Přejít do aplikace</a
+    >
+    <header class="embedded-app-header">
+      <a
+        id="embedded-back"
+        class="embedded-back"
+        href="../#applications"
+        aria-label="Zpět do AI Studia"
+      >
+        <span aria-hidden="true">←</span>
+        <span id="embedded-back-label">AI Studio</span>
+      </a>
+      <div class="embedded-app-identity">
+        <img
+          id="embedded-app-icon"
+          src="../assets/brand/brand-mark.svg"
+          alt=""
+        />
+        <div>
+          <small
+            id="embedded-app-context"
+            data-cs="APLIKACE OTEVŘENÁ V AI STUDIU"
+            data-en="APPLICATION OPEN IN AI STUDIO"
+            >APLIKACE OTEVŘENÁ V AI STUDIU</small
+          >
+          <strong id="embedded-app-name">Načítám aplikaci…</strong>
+        </div>
+      </div>
+      <div class="embedded-app-actions">
+        <button
+          id="embedded-reload"
+          type="button"
+          data-cs-aria="Znovu načíst aplikaci"
+          data-en-aria="Reload application"
+          title="Znovu načíst"
+        >
+          ↻
+        </button>
+        <button
+          id="embedded-fullscreen"
+          type="button"
+          data-cs-aria="Celá obrazovka"
+          data-en-aria="Full screen"
+          title="Celá obrazovka"
+        >
+          ⛶
+        </button>
+        <button
+          id="embedded-external"
+          type="button"
+          class="embedded-external"
+          data-cs="Otevřít samostatně"
+          data-en="Open separately"
+        >
+          Otevřít samostatně
+        </button>
+      </div>
+    </header>
+
+    <main class="embedded-app-workspace">
+      <div
+        id="embedded-loading"
+        class="embedded-loading"
+        role="status"
+        aria-live="polite"
+      >
+        <div class="embedded-loader-rings" aria-hidden="true">
+          <span></span><span></span><span></span>
+        </div>
+        <strong
+          data-cs="Načítám aplikaci v pracovním prostoru Studia…"
+          data-en="Loading the application inside the Studio workspace…"
+          >Načítám aplikaci v pracovním prostoru Studia…</strong
+        >
+        <small
+          data-cs="Aplikace zůstane v jednom okně bez otevírání dalších záložek."
+          data-en="The application stays in one window without opening extra tabs."
+          >Aplikace zůstane v jednom okně bez otevírání dalších záložek.</small
+        >
+      </div>
+      <section id="embedded-error" class="embedded-error panel" hidden>
+        <p
+          class="eyebrow"
+          data-cs="APLIKACI SE NEPODAŘILO OTEVŘÍT"
+          data-en="APPLICATION COULD NOT BE OPENED"
+        >
+          APLIKACI SE NEPODAŘILO OTEVŘÍT
+        </p>
+        <h1
+          id="embedded-error-title"
+          data-cs="Pracovní prostor není dostupný."
+          data-en="The workspace is unavailable."
+        >
+          Pracovní prostor není dostupný.
+        </h1>
+        <p id="embedded-error-copy"></p>
+        <div class="app-actions">
+          <a
+            class="button primary"
+            href="../#applications"
+            data-cs="Zpět do Studia"
+            data-en="Back to Studio"
+            >Zpět do Studia</a
+          >
+          <button
+            id="embedded-error-external"
+            type="button"
+            class="button secondary"
+            data-cs="Otevřít aplikaci samostatně"
+            data-en="Open application separately"
+          >
+            Otevřít aplikaci samostatně
+          </button>
+        </div>
+      </section>
+      <iframe
+        id="embedded-app-frame"
+        title="Aplikace AI Studia"
+        allow="clipboard-write; fullscreen"
+        allowfullscreen
+      ></iframe>
+    </main>
+    <script src="./viewer.js?v=0.21.55" type="module"></script>
+  </body>
+</html>

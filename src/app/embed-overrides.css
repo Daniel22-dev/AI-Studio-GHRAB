@@ -1,0 +1,38 @@
+/* App-specific visual corrections applied only inside the Studio iframe. */
+html.ghrab-studio-embedded-app[data-ghrab-embedded-app="essay-evaluator"]
+  img.ghrab-studio-compact-footer-logo {
+  display: block !important;
+  width: auto !important;
+  height: auto !important;
+  max-width: clamp(104px, 11vw, 152px) !important;
+  max-height: 126px !important;
+  margin: 0 auto !important;
+  object-fit: contain !important;
+}
+
+html.ghrab-studio-embedded-app[data-ghrab-embedded-app="essay-evaluator"]
+  .ghrab-studio-compact-footer-logo-wrap {
+  display: grid !important;
+  place-items: center !important;
+  width: auto !important;
+  height: auto !important;
+  min-width: 0 !important;
+  min-height: 0 !important;
+  aspect-ratio: auto !important;
+  padding: clamp(12px, 1.8vw, 22px) !important;
+}
+
+html.ghrab-studio-embedded-app[data-ghrab-embedded-app="essay-evaluator"]
+  .ghrab-studio-compact-footer-logo-cell {
+  height: auto !important;
+  min-height: 0 !important;
+  align-items: center !important;
+}
+
+@media (max-width: 760px) {
+  html.ghrab-studio-embedded-app[data-ghrab-embedded-app="essay-evaluator"]
+    img.ghrab-studio-compact-footer-logo {
+    max-width: 104px !important;
+    max-height: 92px !important;
+  }
+}

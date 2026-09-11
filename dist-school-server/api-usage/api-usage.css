@@ -1,0 +1,124 @@
+.api-usage-toolbar-section {
+  padding-top: 0;
+}
+.api-usage-toolbar {
+  display: flex;
+  align-items: end;
+  justify-content: space-between;
+  gap: 18px;
+}
+.api-usage-range {
+  width: min(560px, 100%);
+}
+.api-usage-status {
+  margin: 14px 0 0;
+}
+.api-usage-kpis {
+  display: grid;
+  grid-template-columns: repeat(4, minmax(0, 1fr));
+  gap: 16px;
+  padding-top: 0;
+}
+.api-usage-kpi {
+  display: grid;
+  gap: 8px;
+  min-height: 154px;
+  align-content: center;
+}
+.api-usage-kpi > span,
+.api-token-grid span {
+  color: var(--muted);
+  font-size: 0.74rem;
+  font-weight: 800;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+}
+.api-usage-kpi strong {
+  color: var(--text);
+  font-size: clamp(1.65rem, 3vw, 2.45rem);
+  line-height: 1;
+}
+.api-usage-kpi small {
+  color: var(--muted);
+}
+.api-usage-kpi progress {
+  width: 100%;
+  height: 10px;
+  accent-color: var(--accent);
+}
+.api-usage-technical-grid {
+  display: grid;
+  grid-template-columns: minmax(0, 1.1fr) minmax(320px, 0.9fr);
+  gap: 16px;
+  padding-top: 0;
+}
+.api-token-grid {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 12px;
+}
+.api-token-grid > div {
+  display: grid;
+  gap: 7px;
+  padding: 16px;
+  border: 1px solid rgba(116, 214, 255, 0.14);
+  border-radius: 14px;
+  background: rgba(4, 18, 34, 0.54);
+}
+.api-token-grid strong {
+  font-size: 1.25rem;
+}
+.api-usage-privacy-note h2 {
+  margin: 0 0 8px;
+}
+.api-usage-breakdowns {
+  display: grid;
+  gap: 16px;
+  padding-top: 0;
+}
+.api-usage-table {
+  width: 100%;
+  border-collapse: collapse;
+}
+.api-usage-table th,
+.api-usage-table td {
+  padding: 11px 12px;
+  border-bottom: 1px solid rgba(116, 214, 255, 0.12);
+  text-align: left;
+  vertical-align: top;
+}
+.api-usage-table th:not(:first-child),
+.api-usage-table td:not(:first-child) {
+  text-align: right;
+}
+.api-usage-table th {
+  color: var(--muted);
+  font-size: 0.72rem;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+}
+.api-usage-empty td {
+  color: var(--muted);
+  text-align: center !important;
+}
+@media (max-width: 980px) {
+  .api-usage-kpis {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+  .api-usage-technical-grid {
+    grid-template-columns: 1fr;
+  }
+}
+@media (max-width: 640px) {
+  .api-usage-toolbar {
+    align-items: stretch;
+    flex-direction: column;
+  }
+  .api-usage-kpis,
+  .api-token-grid {
+    grid-template-columns: 1fr;
+  }
+  .api-usage-table {
+    min-width: 620px;
+  }
+}

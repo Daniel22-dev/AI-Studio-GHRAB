@@ -1,0 +1,132 @@
+[
+  {
+    "id": "generator",
+    "url": "https://daniel22-dev.github.io/generator-testu/studio-manifest.json",
+    "repository": "daniel22-dev/generator-testu",
+    "branch": "main",
+    "studioOverrides": {
+      "description": {
+        "cs": "Pomáhá rychle vytvářet procvičování i klasifikované testy, připravit více variant a zadat je žákům.",
+        "en": "Helps you quickly create practice and graded tests, prepare multiple variants and assign them to students."
+      }
+    }
+  },
+  {
+    "id": "differentiator",
+    "url": "https://daniel22-dev.github.io/diferenciator/studio-manifest.json",
+    "repository": "daniel22-dev/diferenciator",
+    "branch": "main",
+    "studioOverrides": {
+      "description": {
+        "cs": "Z jednoho výukového materiálu vytvoří jednodušší i náročnější varianty pro různé potřeby žáků.",
+        "en": "Creates simpler and more demanding versions of one learning resource for different student needs."
+      }
+    }
+  },
+  {
+    "id": "essay-evaluator",
+    "url": "https://daniel22-dev.github.io/Hodnotitel-maturitnich-slohu/studio-manifest.json",
+    "repository": "daniel22-dev/Hodnotitel-maturitnich-slohu",
+    "branch": "main",
+    "studioOverrides": {
+      "description": {
+        "cs": "Pomáhá hodnotit maturitní slohy z angličtiny podle zadaných kritérií, připravit zpětnou vazbu a přehled výsledků pro učitele.",
+        "en": "Helps assess English Matura essays using the selected criteria, prepare feedback and give teachers a clear overview of results."
+      }
+    }
+  },
+  {
+    "id": "correspondence",
+    "url": "https://daniel22-dev.github.io/korespondencni-asistent/studio-manifest.json",
+    "repository": "daniel22-dev/korespondencni-asistent",
+    "branch": "main",
+    "studioOverrides": {
+      "description": {
+        "cs": "Pomáhá připravit profesionální odpovědi na školní e-maily a zprávy a před použitím AI odstranit citlivé údaje.",
+        "en": "Helps prepare professional replies to school emails and messages and remove sensitive data before using AI."
+      }
+    }
+  },
+  {
+    "id": "ludus",
+    "url": "https://daniel22-dev.github.io/Ludus/studio-manifest.json",
+    "repository": "daniel22-dev/Ludus",
+    "branch": "main",
+    "studioOverrides": {
+      "description": {
+        "cs": "Převádí učivo do výukových her a herních aktivit, které lze využít při práci jednotlivců, dvojic i týmů.",
+        "en": "Turns learning content into educational games and activities for individuals, pairs and teams."
+      }
+    }
+  },
+  {
+    "id": "activity-builder",
+    "url": "https://daniel22-dev.github.io/ACTIVA/studio-manifest.json",
+    "repository": "daniel22-dev/ACTIVA",
+    "branch": "main",
+    "studioOverrides": {
+      "description": {
+        "cs": "Pomáhá vytvářet pracovní listy a další výukové aktivity pro různé předměty, včetně variant pro různé úrovně a PDF k tisku.",
+        "en": "Helps create worksheets and other learning activities across subjects, including level-based variants and printable PDFs."
+      }
+    }
+  },
+  {
+    "id": "sortio",
+    "url": "https://daniel22-dev.github.io/SORTIO/studio-manifest.json",
+    "repository": "daniel22-dev/SORTIO",
+    "branch": "main",
+    "studioOverrides": {
+      "name": {
+        "cs": "SORTIO – Výukový panel",
+        "en": "SORTIO – Teaching Panel"
+      },
+      "description": {
+        "cs": "Pomáhá organizovat práci ve třídě: losování, skupiny a role, zasedací pořádek, časovače, tabule a další nástroje pro živou výuku.",
+        "en": "Helps organise classroom work with random selection, groups and roles, seating plans, timers, boards and other live-teaching tools."
+      },
+      "tags": [
+        {
+          "cs": "Výukový panel",
+          "en": "Teaching panel"
+        },
+        {
+          "cs": "Skupiny a role",
+          "en": "Groups and roles"
+        },
+        {
+          "cs": "Projekční nástroje",
+          "en": "Projection tools"
+        },
+        {
+          "cs": "Local-first",
+          "en": "Local-first"
+        }
+      ]
+    }
+  },
+  {
+    "id": "lesson-hub",
+    "url": "https://daniel22-dev.github.io/lesson-hub/studio-manifest.json",
+    "repository": "daniel22-dev/lesson-hub",
+    "branch": "main",
+    "studioOverrides": {
+      "description": {
+        "cs": "Osobní pracovní prostor učitele pro plánování výuky, záznam hodin, povinnosti, materiály a přípravu zastupování.",
+        "en": "A personal teacher workspace for lesson planning, lesson records, tasks, materials and preparing cover lessons."
+      }
+    }
+  },
+  {
+    "id": "maturita-desk",
+    "url": "https://daniel22-dev.github.io/maturita-desk/studio-manifest.json",
+    "repository": "Daniel22-dev/maturita-desk",
+    "branch": "main",
+    "studioOverrides": {
+      "description": {
+        "cs": "Pomáhá připravit a vést ústní maturitní zkoušku z angličtiny. Ve Studiu je nyní dostupné pouze demo s ukázkovými daty.",
+        "en": "Helps prepare and run the English oral Matura exam. The Studio currently provides only a demo with sample data."
+      }
+    }
+  }
+]

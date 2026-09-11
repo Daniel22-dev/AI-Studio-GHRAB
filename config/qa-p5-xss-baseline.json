@@ -1,0 +1,13 @@
+{
+  "schema": "ghrab-p5-xss-baseline-v1",
+  "appId": "ai-studio",
+  "counts": {
+    "innerHTML": 0,
+    "insertAdjacentHTML": 0,
+    "outerHTML": 0,
+    "documentWrite": 0,
+    "eval": 0,
+    "newFunction": 0
+  },
+  "note": "Security hardening baseline: executable sources contain no approved HTML injection sinks; any new occurrence blocks the release gate."
+}

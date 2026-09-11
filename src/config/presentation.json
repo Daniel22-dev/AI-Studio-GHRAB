@@ -1,0 +1,20 @@
+{
+  "schema": "ai-studio-presentation-v1",
+  "loopPlaylist": true,
+  "sceneSeconds": 5,
+  "videos": [
+    {
+      "src": "assets/presentation/ai-studio-ghrab-showcase-2026-4k.mp4",
+      "poster": "assets/presentation/ai-studio-ghrab-showcase-2026-4k-poster.jpg",
+      "title": {
+        "cs": "AI Studio GHRAB · Showcase 2026",
+        "en": "AI Studio GHRAB · Showcase 2026"
+      },
+      "subtitle": {
+        "cs": "4K film 3840×2160 / 30 fps: ideový prolog, demo výstupy devíti aplikací včetně Maturita Desk a závěrečná vize projektu. Úvodní přechod je plynule přerenderovaný.",
+        "en": "4K 3840×2160 / 30 fps film: a manifesto opening, demo outputs from nine applications including Maturita Desk, and the project vision. The opening transition is smoothly re-rendered."
+      },
+      "muted": false
+    }
+  ]
+}

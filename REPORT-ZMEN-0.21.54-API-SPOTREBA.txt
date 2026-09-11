@@ -1,0 +1,65 @@
+AI STUDIO GHRAB 0.21.54 - REPORT ZMEN: API SPOTREBA A NAKLADY
+Datum: 11. 9. 2026
+
+REALIZOVANO
+1. Sprava -> nove full-admin tlacitko "API a spotreba".
+2. Nova stranka API a spotreba:
+   - skutecna utrata za zvolene obdobi,
+   - mesicni rozpocet a procento vyuziti,
+   - pocet API pozadavku,
+   - input/output/cache tokeny,
+   - rozpad podle projektu, aplikace a modelu.
+3. Zadna falesna ani odhadovana financni data v rezimu bez skolniho serveru.
+4. API/admin klic se neposila do prohlizece a uzivatel jej nepotrebuje znat.
+5. Mesicni report pro vedeni automaticky pouziva stejny zdroj dat.
+6. Druha strana dvoustrankoveho PDF ma box "OpenAI API - automaticky" se skutecnou utratou,
+   rozpoctem, vyuzitim a poctem pozadavku. Pri nedostupnosti serveru se zobrazi pouze stav,
+   nikoli odhad.
+7. Rucni pole bylo prejmenovano na "Dalsi prime naklady AI (Kc)" a zustava pro jine placene sluzby.
+8. Pridan serverovy kontrakt docs/API-USAGE-SERVER-CONTRACT.md.
+9. Pridan samostatny kontraktovy test scripts/test-api-usage.mjs a zapojen do npm test.
+10. Full-admin ochrana nove trasy api-usage je kompatibilni i se stavajicim podepsanym access bundlem.
+
+AKTIVACE PO PRIPOJENI SKOLNIHO SERVERU
+Klient je pripraven, ale realne volani je zamerne vypnute. IT/backend musi nasadit endpoint
+GET /api/v1/admin/api-usage a potom aktivovat serverovy profil dle kontraktu:
+- authMode = server-session
+- features.schoolServerConnected = true
+- features.apiUsageReady = true
+- features.apiUsage = true
+- endpoints.apiUsage = admin/api-usage
+Administratorsky OpenAI klic zustava pouze jako serverove tajemstvi.
+
+BEZPECNOST
+- same-origin request,
+- credentials=same-origin,
+- cache=no-store,
+- pouze kratka 30s pametova cache,
+- zadne localStorage/sessionStorage pro financni data,
+- endpoint nesmi vracet API klice, prompty, odpovedi ani osobni/studentska data.
+
+DOPLNKOVE SROVNANI BALICKU
+Interni registry LUDUS byly srovnany s release-wave, ktery uz v dodanem balicku pozadoval verzi 1.16.23.
+Po srovnani ecosystem gate nehlasi version drift.
+
+FINALNI LOKALNI KONTROLY
+- npm test: PASS
+- GHRAB ecosystem gate: PASS (9 aplikaci + AI Studio, bez driftu)
+- Studio UX/regression: PASS
+- Live presence QA: PASS
+- API usage contract: PASS
+- qa:technical: PASS, 0 nalezu
+- qa:security: PASS, 0 nalezu
+- qa:pwa: PASS, 0 nalezu
+- qa:quality: PASS, 194/194, 0 warnings
+- build:school-server: PASS
+
+POZNAMKA K BROWSER QA
+Playwright/axe browser runtime gate nelze v tomto izolovanem sandboxu spustit, protoze zde neni
+nainstalovan Playwright a sitove doinstalovani zavislosti neni dostupne. Tento jeden typ runtime gate
+proto musi definitivne potvrdit GitHub Actions po nahrani. Nejde o nalezenou chybu aplikace; jde o
+omezeni lokalniho QA prostredi. Vsechny zde dostupne release, bezpecnostni, PWA, kontraktove a
+regresni kontroly prosly bez chyby.
+
+VERZE
+0.21.53 -> 0.21.54

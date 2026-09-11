@@ -1,0 +1,142 @@
+<!doctype html>
+<html lang="cs" data-theme="dark" data-ghrab-app-id="ai-studio" data-ghrab-app-version="0.21.55">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width,initial-scale=1" />
+    <meta name="theme-color" content="#030915" />
+    <meta
+      http-equiv="Content-Security-Policy"
+      content="default-src 'self'; script-src 'self'; style-src 'self'; img-src 'self' data:; connect-src 'self'; object-src 'none'; base-uri 'self'; form-action 'self'"
+    />
+    <title>API a spotřeba · AI Studio GHRAB</title>
+    <link rel="manifest" href="../manifest.webmanifest" />
+    <link rel="icon" href="../assets/brand/icon-32.png" sizes="32x32" />
+    <link rel="stylesheet" href="../styles.css" />
+    <link rel="stylesheet" href="../polish.css" />
+    <link rel="stylesheet" href="./api-usage.css" />
+  </head>
+  <body
+    data-page="api-usage"
+    data-title-cs="API a spotřeba · AI Studio GHRAB"
+    data-title-en="API usage and costs · AI Studio GHRAB"
+  >
+    <a class="skip-link" href="#main" data-cs="Přejít na obsah" data-en="Skip to content">Přejít na obsah</a>
+    <header class="site-header cosmic-header">
+      <a class="brand" href="../" aria-label="AI Studio GHRAB — domů"
+        ><span class="brand-orbit"
+          ><img src="../assets/brand/brand-mark.svg" alt="" width="46" height="46" /></span
+        ><span
+          ><strong>AI Studio <em>GHRAB</em></strong
+          ><small data-cs="API spotřeba a náklady" data-en="API usage and costs">API spotřeba a náklady</small></span
+        ></a
+      >
+      <button
+        class="nav-toggle"
+        type="button"
+        aria-expanded="false"
+        aria-controls="main-nav"
+        data-cs-aria="Otevřít navigaci"
+        data-en-aria="Open navigation"
+      >☰</button>
+      <nav id="main-nav" class="main-nav" aria-label="Hlavní navigace">
+        <a href="../" data-nav="home" data-cs="Aplikace" data-en="Applications">Aplikace</a
+        ><a href="../library/" data-nav="library" data-cs="Materiály" data-en="Resources">Materiály</a
+        ><a href="../manualy/" data-nav="manualy" data-cs="Manuály" data-en="Manuals">Manuály</a
+        ><a href="../safety/" data-nav="safety" data-cs="Bezpečnost" data-en="Safety">Bezpečnost</a
+        ><a href="../access/" data-nav="access" data-cs="Můj přístup" data-en="My access">Můj přístup</a
+        ><a href="../changelog/" data-nav="changelog" data-cs="Katalog změn" data-en="Change catalogue">Katalog změn</a
+        ><a href="../?view=teacher" data-ops-nav hidden data-colleague-preview-link data-nav="colleague-preview" data-cs="Pohled kolegy" data-en="Colleague view">Pohled kolegy</a
+        ><a href="../automation/" data-ops-nav hidden data-nav="automation" data-cs="Správa" data-en="Administration">Správa</a
+        ><a href="../demo/" data-admin-nav hidden data-nav="demo" data-cs="Prezentace" data-en="Presentation">Prezentace</a>
+      </nav>
+      <div class="header-actions">
+        <div class="segmented" aria-label="Jazyk">
+          <button type="button" data-lang="cs" aria-pressed="true">CZ</button
+          ><button type="button" data-lang="en" aria-pressed="false">EN</button>
+        </div>
+      </div>
+    </header>
+    <main id="main">
+      <section class="page-hero shell-wide">
+        <p class="breadcrumb"><a href="../">AI Studio</a> / <a href="../automation/">Správa</a> / <span>API a spotřeba</span></p>
+        <p class="eyebrow" data-cs="OPENAI API · ROZPOČET · SKUTEČNÉ NÁKLADY" data-en="OPENAI API · BUDGET · ACTUAL COSTS">OPENAI API · ROZPOČET · SKUTEČNÉ NÁKLADY</p>
+        <h1 data-cs="API a spotřeba" data-en="API usage and costs">API a spotřeba</h1>
+        <p
+          data-cs="Správcovský přehled skutečných nákladů a technické spotřeby. API ani administrátorský klíč se do prohlížeče nikdy neposílají; Studio načítá pouze agregované údaje ze školního serveru."
+          data-en="Administrator overview of actual costs and technical usage. API and administrator keys are never sent to the browser; Studio loads only aggregated data from the school server."
+        >Správcovský přehled skutečných nákladů a technické spotřeby. API ani administrátorský klíč se do prohlížeče nikdy neposílají; Studio načítá pouze agregované údaje ze školního serveru.</p>
+      </section>
+
+      <section class="section shell-wide api-usage-toolbar-section">
+        <div class="panel api-usage-toolbar">
+          <div class="form-grid two-col api-usage-range">
+            <div class="field">
+              <label for="api-usage-from" data-cs="Od" data-en="From">Od</label>
+              <input id="api-usage-from" type="date" />
+            </div>
+            <div class="field">
+              <label for="api-usage-to" data-cs="Do" data-en="To">Do</label>
+              <input id="api-usage-to" type="date" />
+            </div>
+          </div>
+          <button class="button primary" id="api-usage-refresh" type="button" data-cs="Obnovit data" data-en="Refresh data">Obnovit data</button>
+        </div>
+        <p id="api-usage-status" class="notice api-usage-status" role="status" aria-live="polite"></p>
+      </section>
+
+      <section class="section shell-wide api-usage-kpis" aria-label="Souhrn spotřeby">
+        <article class="panel api-usage-kpi"><span data-cs="Výdaje za období" data-en="Period spend">Výdaje za období</span><strong id="api-usage-spend">—</strong><small id="api-usage-spend-note">OpenAI API</small></article>
+        <article class="panel api-usage-kpi"><span data-cs="Měsíční rozpočet" data-en="Monthly budget">Měsíční rozpočet</span><strong id="api-usage-budget">—</strong><small id="api-usage-budget-note">—</small></article>
+        <article class="panel api-usage-kpi"><span data-cs="Využití rozpočtu" data-en="Budget used">Využití rozpočtu</span><strong id="api-usage-utilisation">—</strong><progress id="api-usage-progress" max="100" value="0">0 %</progress></article>
+        <article class="panel api-usage-kpi"><span data-cs="API požadavky" data-en="API requests">API požadavky</span><strong id="api-usage-requests">—</strong><small id="api-usage-generated">—</small></article>
+      </section>
+
+      <section class="section shell-wide api-usage-technical-grid">
+        <article class="panel">
+          <p class="eyebrow" data-cs="TOKENY" data-en="TOKENS">TOKENY</p>
+          <div class="api-token-grid">
+            <div><span data-cs="Vstupní" data-en="Input">Vstupní</span><strong id="api-usage-input-tokens">—</strong></div>
+            <div><span data-cs="Výstupní" data-en="Output">Výstupní</span><strong id="api-usage-output-tokens">—</strong></div>
+            <div><span data-cs="Vstup z cache" data-en="Cached input">Vstup z cache</span><strong id="api-usage-cached-tokens">—</strong></div>
+          </div>
+        </article>
+        <article class="panel api-usage-privacy-note">
+          <p class="eyebrow" data-cs="BEZPEČNÉ ZOBRAZENÍ" data-en="SAFE DISPLAY">BEZPEČNÉ ZOBRAZENÍ</p>
+          <h2 data-cs="Bez klíčů a bez obsahu" data-en="No keys and no content">Bez klíčů a bez obsahu</h2>
+          <p
+            data-cs="Přehled nesmí obsahovat API klíče, prompty, výstupy, osobní údaje, studentská data ani IP adresy. Zobrazuje pouze agregované finanční a technické počty."
+            data-en="The overview must not contain API keys, prompts, outputs, personal data, student data or IP addresses. It displays only aggregated financial and technical counts."
+          >
+            Přehled nesmí obsahovat API klíče, prompty, výstupy, osobní údaje, studentská data ani IP adresy.
+            Zobrazuje pouze agregované finanční a technické počty.
+          </p>
+        </article>
+      </section>
+
+      <section class="section shell-wide api-usage-breakdowns">
+        <article class="panel">
+          <div class="section-heading compact"><div><p class="eyebrow" data-cs="PROJEKTY" data-en="PROJECTS">PROJEKTY</p><h2 data-cs="AI Studio a Forge" data-en="AI Studio and Forge">AI Studio a Forge</h2></div></div>
+          <div class="table-wrap"><table class="api-usage-table"><thead><tr><th data-cs="Projekt" data-en="Project">Projekt</th><th data-cs="Náklady" data-en="Cost">Náklady</th><th data-cs="Požadavky" data-en="Requests">Požadavky</th><th data-cs="Tokeny" data-en="Tokens">Tokeny</th></tr></thead><tbody id="api-usage-projects"></tbody></table></div>
+        </article>
+        <article class="panel">
+          <div class="section-heading compact"><div><p class="eyebrow" data-cs="APLIKACE" data-en="APPLICATIONS">APLIKACE</p><h2 data-cs="Rozpad podle aplikací" data-en="Breakdown by application">Rozpad podle aplikací</h2></div></div>
+          <div class="table-wrap"><table class="api-usage-table"><thead><tr><th data-cs="Aplikace" data-en="Application">Aplikace</th><th data-cs="Náklady" data-en="Cost">Náklady</th><th data-cs="Požadavky" data-en="Requests">Požadavky</th><th data-cs="Tokeny" data-en="Tokens">Tokeny</th></tr></thead><tbody id="api-usage-applications"></tbody></table></div>
+        </article>
+        <article class="panel">
+          <div class="section-heading compact"><div><p class="eyebrow" data-cs="MODELY" data-en="MODELS">MODELY</p><h2 data-cs="Rozpad podle modelů" data-en="Breakdown by model">Rozpad podle modelů</h2></div></div>
+          <div class="table-wrap"><table class="api-usage-table"><thead><tr><th data-cs="Model" data-en="Model">Model</th><th data-cs="Náklady" data-en="Cost">Náklady</th><th data-cs="Požadavky" data-en="Requests">Požadavky</th><th data-cs="Tokeny" data-en="Tokens">Tokeny</th></tr></thead><tbody id="api-usage-models"></tbody></table></div>
+        </article>
+      </section>
+    </main>
+    <footer class="site-footer">
+      <div class="shell-wide footer-inner">
+        <div>
+          <strong>AI Studio GHRAB</strong>
+          <p data-cs="Autor a vývojový garant: Daniel Baláž · Školní projekt Gymnázia, Ostrava-Hrabůvka · verze __APP_VERSION__" data-en="Author and development guarantor: Daniel Baláž · School project of Gymnázium, Ostrava-Hrabůvka · version __APP_VERSION__">Autor a vývojový garant: Daniel Baláž · Školní projekt Gymnázia, Ostrava-Hrabůvka · verze __APP_VERSION__</p>
+        </div>
+      </div>
+    </footer>
+    <script src="../app.js" type="module"></script>
+    <script src="./api-usage.js" type="module"></script>
+  </body>
+</html>

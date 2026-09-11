@@ -1,0 +1,113 @@
+KANDIDÁT K NEZÁVISLÉ BEZPEČNOSTNÍ KONTROLE
+AI Studio GHRAB 0.21.32
+Datum: 2026-08-24
+Kontrolní kolo Claude: 1 ze 2 (maximum)
+
+1. ÚČEL VERZE
+
+Verze 0.21.32 přidává hlavnímu správci lokální Centrum zabezpečení. Správce v něm může:
+- převzít JTI připravená v místní Evidenci přístupů;
+- lokálně načíst soukromý konfigurační podpisový klíč;
+- ověřit dosavadní podepsaný access bundle;
+- vytvořit nový podepsaný bundle se sjednoceným revokačním seznamem;
+- stáhnout jediný veřejný aktualizační balíček bez soukromého klíče.
+
+Toto vydání samo ještě žádný konkrétní starý přístup nezneplatňuje. Nejprve se nasadí 0.21.32, správce v ní vytvoří veřejný aktualizační balíček a ten se v následujícím kroku nezávisle ověří, začlení a nasadí.
+
+2. BEZPEČNOSTNÍ HRANICE, KTERÉ MUSÍ ZŮSTAT ZACHOVÁNY
+
+- Centrum zabezpečení smí otevřít a spustit pouze role admin, nikdy operator ani teacher.
+- Operator smí v Evidenci přístupů pouze připravit JTI. Nesmí dostat konfigurační soukromý klíč ani vytvářet podpis.
+- Soukromý konfigurační klíč se nesmí uložit do localStorage, sessionStorage, IndexedDB, cache, logu, URL ani síťového požadavku.
+- Reference na klíč se musí odstranit po úspěšném podpisu, po 10 minutách a při pagehide.
+- Klíč musí přesně odpovídat současnému veřejnému trust anchoru podle kty, crv, x, y a kid.
+- Před vytvořením nové verze se musí ověřit podpis současného bundle.
+- Nový bundle musí zachovat bezpečnostní politiku, veřejný klíč uživatelských oprávnění, časové limity a revokedBefore.
+- Nový revokační seznam musí být sjednocením všech dosavadních a nově připravených JTI; nesmí starší revokaci odstranit.
+- Výsledný veřejný balíček nesmí obsahovat soukromou vlastnost d ani objekt privateKey/privateJwk.
+- Stažení balíčku samo nesmí být v UI vydáváno za účinné zneplatnění. Účinek nastává až po ověření, začlenění a nasazení.
+- Soukromý klíč pro vydávání uživatelských oprávnění a veřejný permitový klíč se v této verzi nemění.
+
+3. SOUBORY S HLAVNÍMI ZMĚNAMI
+
+- src/tools/security-center/index.html
+- src/tools/security-center/security-center.css
+- src/tools/security-center/security-center.js
+- src/tools/security-center/security-center-core.js
+- src/tools/access-registry/index.html
+- src/tools/access-registry/registry.js
+- src/automation/index.html
+- src/app.js
+- scripts/test-security-center.mjs
+- scripts/validate-access-update-pack.mjs
+- scripts/test.mjs
+- scripts/test-studio-ux.mjs
+- src/manualy/access-management.html
+- MANUAL-CENTRUM-ZABEZPECENI-AI-STUDIO-0.21.32.md
+- RELEASE-NOTES-0.21.32.md
+- AKTUALIZACE-0.21.32.md
+
+4. DŮKAZ, ŽE STÁVAJÍCÍ PODEPSANÁ KONFIGURACE NEBYLA BEZ KLÍČE ZMĚNĚNA
+
+Následující SHA-256 jsou shodné se zdrojem verze 0.21.31:
+- access-config-bundle.json: 5c991f25866d305457288d9c65a00b60154b618163be1c35360f117807f8dc98
+- access-config-bundle.sig.json: 7fff09a339c79debdb4aa8889014d85c40b7be8505462db8ae2c22dc1fce79d2
+- access-config-verify-key.json: 9799f9124db5253eef41552d1dcfcb7818b20310c52a0ecbeab1fb0d21df00c5
+- access-policy.json: 131f513dc9d200995fb42addc0a2348baf3545d811861ed6a38f1648d684ee37
+- access-public-key.json: b31a7cd6319439fc91ecc435933840ef7b3744051e3316204640f2848f0d6daa
+
+Aktivní bundle zůstává access-p1-20260822195407Z-fxjS8DK9. Nová stránka je pro starší podepsanou politiku bezpečně zařazena mezi explicitně hlídané správcovské routy; canAccessAdminPage vrací plnému adminovi true, zatímco operator nemá security-center v operatorPages.
+
+5. PROVEDENÉ KONTROLY PŘED PŘEDÁNÍM
+
+PROŠLO:
+- hlavní statická a build sada scripts/test.mjs;
+- platform bootstrap a service-worker transition regrese;
+- auditní regrese 49/49;
+- bezpečnostní regrese 16/16;
+- nový kryptografický test Centra zabezpečení;
+- release-policy self-test;
+- Studio UX/regression test;
+- QA security: PASS, 0 nálezů;
+- QA technical: PASS, 0 nálezů;
+- QA PWA: PASS, 0 nálezů;
+- produkční dist build 0.21.32;
+- school-server build 0.21.32.
+
+LOKÁLNĚ NEPROVEDENO:
+- Playwright kritická browser sada. Přiložený pracovní strom nemá nainstalovaný balíček playwright. Nejde o nalezenou chybu produktu; po nahrání musí GitHub Actions provést npm ci a všechny povinné browser/release kontroly musí být zelené.
+
+6. ÚKOL PRO CLAUDE
+
+Proveď nezávislou bezpečnostní kontrolu celého přiloženého zdrojového ZIPu, se zvláštním důrazem na:
+
+1) obejití rolí a přímé otevření URL Centra zabezpečení;
+2) únik nebo perzistenci soukromého konfiguračního klíče;
+3) správnost ES256/WebCrypto formátu podpisu a kanonikalizace JSON;
+4) možnost podepsat zfalšovaný nebo pozměněný výchozí bundle;
+5) možnost použít cizí soukromý klíč;
+6) rollback nebo odstranění již nasazených revokací;
+7) nechtěnou změnu policy, accessPublicKey, revokedBefore nebo časových limitů;
+8) přítomnost soukromého materiálu ve veřejném výstupu;
+9) manipulaci se vstupním souborem, XSS, nebezpečné DOM sinky, DoS velikostí souboru a CSP;
+10) správnost validátoru veřejného aktualizačního balíčku a regresních testů;
+11) pravdivost manuálu a skutečnost, že revokace začne platit až po nasazení;
+12) nezměněnou funkčnost existujících platných uživatelských a správcovských oprávnění.
+
+Nevkládej ani nevyžaduj žádný skutečný soukromý klíč. Pro kryptografické testy generuj pouze dočasný testovací pár.
+
+7. POŽADOVANÝ VÝSTUP CLAUDE
+
+Vrať jeden TXT soubor s názvem například:
+AUDIT-CLAUDE-BEZPECNOST-AI-STUDIO-0.21.32-KOLO-1.txt
+
+Struktura:
+- Verdikt: PROŠLO / PROŠLO S VÝHRADAMI / NEPROŠLO
+- Nálezy podle závažnosti: BLOCKER, CRITICAL, HIGH, MEDIUM, LOW
+- U každého nálezu: přesný soubor, funkce nebo úsek, scénář zneužití, dopad a konkrétní doporučená oprava
+- Ověřené bezpečnostní invarianty bez nálezu
+- Spuštěné testy a jejich výsledky
+- Zbytková rizika
+- Jednoznačné doporučení, zda kandidáta lze nasadit
+
+Pokud nalezneš problém, neupravuj zdroják potají. Popiš jej přesně v TXT. Uživatel vrátí tento TXT a stejný kandidátní ZIP ChatGPT/Codexu k ověření a opravě. Celý kontrolní cyklus má maximálně dvě kola.

@@ -1,0 +1,235 @@
+AI STUDIO GHRAB 0.21.51 - REPORT ZMEN
+SARKA REPORTING / DVOUSTRANKOVY MESICNI REPORT
+Datum: 11. 9. 2026
+Vstupni verze: 0.21.50
+Vystupni verze: 0.21.51
+
+======================================================================
+1. ROZSAH TOHOTO KROKU
+======================================================================
+
+Tento release resi pouze druhy krok domluveneho postupu: reporting pro vedeni
+skoly. Funkce "kdo je online + jakou aplikaci ma prave spustenou" NENI v tomto
+release implementovana ani rozpracovana. Bude samostatny navazujici zasah.
+
+Neni take aktivovana centralni serverova telemetrie. Soucasny GitHub Pages /
+bezserverovy rezim zustava funkcne zachovan. Serverovy workflow je pouze
+pravdive popsany a pripraven jako budouci cil: po realnem pripojeni skolniho
+serveru se anonymni provozni data budou centralizovat a kolegove nebudou muset
+posilat mesicni JSON soubory.
+
+======================================================================
+2. HLAVNI FUNKCNI ZMENY
+======================================================================
+
+A) Jeden dvoustrankovy A4 report pro vedeni
+-------------------------------------------
+- Stavajici prvni strana reportu zustava zamerena na anonymni provozni data:
+  aktivni cas, spusteni, vystupy, uspesnost a prehled podle aplikaci.
+- Prvni strana je oznacena jako 1/2.
+- Pribyla druha A4: "Prace garanta a souhrn pro vedeni".
+- Nahled ve Studiu zobrazuje obe A4 pod sebou.
+- Barevny i cernobily export vytvari JEDEN PDF soubor se dvema stranami.
+
+B) Evidence prace garanta primo v AI Studiu
+-------------------------------------------
+Spravce muze vytvaret a upravovat lokalni pracovni zaznamy s poli:
+- datum,
+- cas v minutach,
+- kategorie,
+- oblast / aplikace,
+- pravidelna agenda nebo mimoradny ukol,
+- popis cinnosti,
+- vysledek,
+- soukroma poznamka.
+
+Kategorie:
+- Provoz a sprava
+- Podpora uzivatelu
+- Skoleni a metodika
+- Bezpecnost, GDPR a spoluprace s IT
+- Dokumentace a reporting
+- Rozvoj existujici aplikace
+- Nova aplikace / mimoradny projekt
+- Prezentace a reprezentace skoly
+
+Druha strana automaticky agreguje evidovany cas podle kategorii a ukazuje
+souhrnne KPI: celkovy evidovany cas, skoleni + podporu, mimoradnou praci a
+prime AI naklady.
+
+C) Manazersky souhrn pro konkretni obdobi
+-----------------------------------------
+Pro reportovane obdobi lze ulozit:
+- Klicove vysledky
+- Skoleni a podpora
+- Rizika / problemy
+- Potrebna rozhodnuti vedeni
+- Priority na dalsi obdobi
+- Prime AI naklady v Kc
+- Poznamku k nakladum
+
+Nezadane naklady se zobrazi jako "Neuvedeno". Nezamenuji se za skutecnou
+nulovou hodnotu.
+
+D) Jednoduchy workflow bez serveru a se serverem
+------------------------------------------------
+AKTUALNE BEZ SERVERU:
+1. Kolega stahne anonymni mesicni JSON jako dosud.
+2. Spravce souhrny importuje jako dosud.
+3. Spravce muze zahrnout/vyloucit sva lokalni provozni data jako dosud.
+4. Ve Studiu vede svou pracovni evidenci a manazersky souhrn.
+5. Jednim tlacitkem vygeneruje dvoustrankove PDF pro vedeni.
+
+BUDOUCI SERVEROVY REZIM:
+- rucni mesicni posilani JSON od kolegu ma odpadnout,
+- anonymni provozni data se maji centralizovat automaticky,
+- spravce ma pouze otevrit report a vygenerovat stejne dvoustrankove PDF.
+
+Automaticke serverove odeslani PDF e-mailem neni v 0.21.51 implementovano.
+
+======================================================================
+3. SOUKROMI A DATOVE HRANICE
+======================================================================
+
+- Soukroma poznamka z pracovni evidence se NIKDY nekresli do PDF.
+- Soukroma poznamka se NIKDY nepridava do anonymniho JSON ani technickeho CSV.
+- Cela evidence prace garanta a manazersky souhrn jsou oddeleny od anonymniho
+  provozniho exportu prvni strany.
+- UI vyslovne upozornuje, aby se do manazerskeho souhrnu nevkladaly osobni
+  udaje studentu ani obsah jejich praci.
+- Nove lokalni klice pouzivaji vlastneny namespace Studia:
+  ghrab.ai-studio.report.worklog.v1
+  ghrab.ai-studio.report.management.v1
+- Tyto klice spadaji pod existujici data-manifest vlastnictvi
+  ghrab.ai-studio.* a explicitni mazani dat.
+- Puvodni anonymni provozni exporty a jejich datovy obsah nebyly rozsirovany o
+  pracovni evidenci garanta.
+
+======================================================================
+4. PDF A VYKRESLOVANI
+======================================================================
+
+Puvodni vlastni PDF generator umel jednu stranu. Nyni umi vice stran a pro
+report pouziva dve A4 canvasy.
+
+Overeno samostatnym testem nad aktualni implementaci:
+- Pages: 2
+- Page size: 595.276 x 841.89 pt (A4)
+- PDF version: 1.4
+- pdftoppm uspesne vyrenderoval obe strany.
+
+Druha strana zachovava vizualni jazyk prvni strany: skolni logo, branu AI
+Studia, modrou identitu, karty, KPI a jednotnou paticku.
+
+======================================================================
+5. VYKON A CSS
+======================================================================
+
+Nova funkcionalita zvysila nemedialni build nad puvodni limit distBytes
+2 250 000 B. Po kontrole nebyl limit vypnut; byl explicitne posunut na
+2 300 000 B (cca +2,2 %), protoze jde o skutecne novou funkci.
+
+Finalni namerene hodnoty quality gate:
+- distBytes:          2 287 118 / 2 300 000 B
+- entryHtmlBytes:        15 901 /    50 000 B
+- entryCriticalBytes:   497 215 /   500 000 B
+- precacheBytes:      1 765 107 / 1 800 000 B
+- largestFileBytes:     183 529 /   200 000 B
+- duplicateLargeBytes:   45 186 /   260 000 B
+
+Styly noveho reportingu byly presunuty do src/report/report.css. Puvodni
+src/polish.css je proti vstupnimu zdrojaku beze zmeny, takze reportovaci styly
+nezatezuji globalni hlavni CSS vice, nez je nutne.
+
+======================================================================
+6. VERZE A DOKUMENTACE
+======================================================================
+
+Verze byla zvysena z 0.21.50 na 0.21.51, aby PWA cache nemohla smichat novy
+HTML/reporting se starym JavaScriptem.
+
+Aktualizovano mimo jine:
+- package.json / package-lock.json
+- GHRAB Platform consumer a platformni metadata
+- data manifest / PWA version metadata
+- changelog + RELEASE-NOTES-0.21.51.md
+- README
+- administratorsky manual
+- navod k mesicnimu anonymnimu souhrnu pro kolegy
+- release/upload dokumentace
+- regresni testy reportingu
+- dist-school-server byl znovu sestaven z finalniho zdroje 0.21.51.
+
+======================================================================
+7. QA / TESTY
+======================================================================
+
+FINALNI VYSLEDKY:
+- npm test: PASS
+- scripts/test.mjs: PASS
+- Studio UX/reporting regression: PASS
+- dokumentacni verze: PASS
+- ecosystem gate: PASS, 9 aplikaci + AI Studio bez driftu
+- audit regressions: 50/50 PASS
+- security regressions: 16/16 PASS
+- security-center: PASS
+- deployed-revocation: PASS
+- GARP security regressions: 19/19 PASS (pouze synteticka data)
+- release-policy self-test: PASS
+- technical QA: PASS, 0 nalezu
+- security QA: PASS, 0 nalezu
+- PWA QA: PASS, 0 nalezu
+- combinatorial QA: PASS, pairwise 100 % (9/36 scenaru)
+- quality gate: PASS, 188/188 kontrol, 0 warnings
+- XSS sink audit: PASS, zadny novy sink nad baseline
+- lockfile audit: PASS
+- platform conformance po buildu: 203/203 PASS
+- finalni school-server build: PASS
+- samostatny dvoustrankovy PDF builder test: PASS
+
+OMEZENI PROSTREDI - NENI OZNACENO JAKO PASS:
+Plny browserovy vizualni/runtime/axe pruchod nebyl v tomto kontejneru mozny.
+Spravovana Chromium politika ma URLBlocklist='*' a blokuje testovaci stranky.
+Vestaveny error-reporter test to spravne zaznamenava jako browser
+"not-ready"; jeho 56 nebrowserovych kontrol je PASS / 0 FAIL. Pokus o npm ci
+navic v tomto prostredi drive narazil na nedostupnou sit (EAI_AGAIN), takze
+nebylo mozne doplnit lokalni Playwright devDependencies. Tento bod neni
+prezentovan jako uspesny browser test.
+
+======================================================================
+8. CO BYLO ZAMERNE PONECHANO BEZE ZMENY
+======================================================================
+
+- Zpusob anonymniho mesicniho JSON reportu kolegu v soucasnem bezserverovem
+  rezimu.
+- Volba zahrnout / nezahrnout lokalni provozni data spravce.
+- Obsah bezpecneho anonymniho JSON a technickeho CSV.
+- Pristupovy model a GARP bezpecnostni logika.
+- Online presence.
+- Zobrazeni jmena online uzivatele a prave spustene aplikace.
+- Prime odesilani PDF reditelce e-mailem ze serveru.
+
+======================================================================
+9. HLAVNI SOUBORY FUNKCNI ZMENY
+======================================================================
+
+src/report/report.js
+src/report/index.html
+src/report/report.css                 (novy soubor)
+scripts/test-studio-ux.mjs
+scripts/test.mjs
+src/manualy/ai-studio-admin.html
+src/manualy/pilot-report.html
+src/config/changelog.json
+RELEASE-NOTES-0.21.51.md
+README.md
+
+a dalsi soubory s nutnym propagovanim verze 0.21.51 / PWA cache metadat.
+
+======================================================================
+10. ZAVER
+======================================================================
+
+0.21.51 implementuje pouze novy reporting pro vedeni podle dohodnuteho
+workflow. Online uzivatele + prave pouzivana aplikace zustavaji ciste oddelenym
+navazujicim krokem.
