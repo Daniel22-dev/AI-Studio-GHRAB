@@ -45,7 +45,8 @@
     "materials": "materials",
     "commissions": "commissions",
     "operationalStatus": "operations/status",
-    "presence": "presence"
+    "presence": "presence",
+    "apiUsage": "admin/api-usage"
   },
   "features": {
     "schoolServerReady": true,
@@ -64,7 +65,9 @@
     "sharedMaterialLibrary": false,
     "centralOperationalStatus": false,
     "livePresenceReady": true,
-    "livePresence": false
+    "livePresence": false,
+    "apiUsageReady": true,
+    "apiUsage": false
   },
   "appId": "ai-studio",
   "appBaseUrl": "/AI-Studio-GHRAB/",

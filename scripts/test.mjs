@@ -859,6 +859,7 @@ const standardPages = new Set([
   "automation/index.html",
   "workflow/index.html",
   "report/index.html",
+  "api-usage/index.html",
   "demo/index.html",
   "library/index.html",
   "manualy/index.html",
@@ -923,6 +924,7 @@ for (const [file, guard] of [
   ["automation/automation.js", "canAccessAdminPage"],
   ["pilot/pilot.js", "canAccessAdminPage"],
   ["report/report.js", "canAccessAdminPage"],
+  ["api-usage/api-usage.js", "canAccessAdminPage"],
   ["demo/demo.js", "isAdmin"],
   ["tests/tests.js", "canAccessAdminPage"],
   ["tools/security-center/security-center.js", "isAdmin"],
@@ -1094,7 +1096,7 @@ const deploymentConfigText = await readFile(
   path.join(src, "access/deployment-config.js"),
   "utf8",
 );
-if (!mainAppText.includes('["issuer", "access-registry", "security-center"].includes(page)'))
+if (!mainAppText.includes('["issuer", "access-registry", "security-center", "api-usage"].includes(page)'))
   fail("Správcovské nástroje nezvýrazňují záložku Správa.");
 const issuerScriptText = await readFile(
   path.join(src, "tools/access-issuer/issuer.js"),

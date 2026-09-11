@@ -231,6 +231,7 @@ if (missingRequired.length)
   );
 const excludedOptionalPrefixes = [
   "./tools/",
+  "./api-usage/",
   "./tests/",
   "./integration/",
   "./schemas/",

@@ -1,4 +1,4 @@
-/* AI Studio GHRAB 0.21.53 - styles scoped to the leadership reporting page. */
+/* AI Studio GHRAB 0.21.54 - styles scoped to the leadership reporting page. */
 .a4-preview-stack {
   display: grid;
   gap: 26px;
@@ -102,6 +102,7 @@
 }
 #report-scope,
 #report-sources,
+#report-api-costs,
 #report-imports,
 #report-work-log,
 #report-management,
@@ -117,4 +118,14 @@
   .report-input-map-actions {
     grid-template-columns: 1fr;
   }
+}
+
+.report-api-cost-grid {
+  margin-top: 14px;
+}
+.report-api-cost-card b {
+  font-variant-numeric: tabular-nums;
+}
+.report-api-cost-status {
+  margin-bottom: 0;
 }

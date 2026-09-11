@@ -1,6 +1,6 @@
 {
   "schema": "ghrab-ai-readiness-report-v1",
-  "generatedAt": "2026-09-11T11:43:43.661Z",
+  "generatedAt": "2026-09-11T17:33:14.801Z",
   "activeCoreVersion": "1.0.0",
   "runtime": {
     "defaultMode": "direct-gemini",
@@ -84,7 +84,7 @@
     },
     {
       "appId": "ludus",
-      "appVersion": "1.16.20",
+      "appVersion": "1.16.23",
       "classification": "ai-consumer",
       "status": "ready",
       "coreVersion": "1.0.0",

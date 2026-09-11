@@ -1,8 +1,8 @@
-# Architektura AI Studio GHRAB 0.21.53
+# Architektura AI Studio GHRAB 0.21.54
 
-> Aktuální verze: **0.21.53** · etapa P5
+> Aktuální verze: **0.21.54** · etapa P5
 
-> 0.21.53 navazuje na dvoustránkový reporting a připravuje serverovou živou přítomnost: plný správce po aktivaci backendu uvidí, kdo je online a kterou aplikaci právě používá; v GitHub Pages režimu se žádné presence požadavky neposílají.
+> 0.21.54 přidává server-ready přehled skutečné spotřeby OpenAI API a automatické finanční údaje do měsíčního reportu. API klíče zůstávají výhradně na školním serveru; GitHub Pages režim žádná finanční data neodhaduje ani API-usage endpoint nevolá.
 
 ## Koherence aktualizace PWA
 
@@ -113,3 +113,7 @@ Role `operator` je určena pro dlouhodobější nepřítomnost hlavního správc
 ## Živá přítomnost
 
 Od 0.21.53 je v centrálním `access/platform-runtime.js` připraven klientský heartbeat pro budoucí školní server. Protože chráněné aplikace načítají centrální `app-guard` Studia, není pro samotný heartbeat nutné duplikovat stejnou implementaci do každého aplikačního repozitáře. Heartbeat se aktivuje pouze při skutečném serverovém profilu s `livePresence=true`; serverless profil neprovádí síťový request. Správcovský seznam používá `modules/live-presence.js` a serverový kontrakt `docs/LIVE-PRESENCE-SERVER-CONTRACT.md`.
+
+## API spotřeba a náklady
+
+Od 0.21.54 je připraven klientský adaptér `modules/api-usage.js` a full-admin stránka `api-usage/`. Klient nikdy nečte OpenAI administrátorský klíč přímo; po skutečném připojení školního serveru načítá pouze agregovaný kontrakt `admin/api-usage`. Stejný adaptér používá měsíční report, takže finanční údaje mají jeden serverový zdroj pravdy. Přesný kontrakt je v `docs/API-USAGE-SERVER-CONTRACT.md`.

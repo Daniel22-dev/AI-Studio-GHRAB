@@ -45,7 +45,8 @@ export const BAKED_DEPLOYMENT_CONFIG = Object.freeze({
     "materials": "materials",
     "commissions": "commissions",
     "operationalStatus": "operations/status",
-    "presence": "presence"
+    "presence": "presence",
+    "apiUsage": "admin/api-usage"
   },
   "features": {
     "schoolServerReady": true,
@@ -64,7 +65,9 @@ export const BAKED_DEPLOYMENT_CONFIG = Object.freeze({
     "sharedMaterialLibrary": true,
     "centralOperationalStatus": false,
     "livePresenceReady": true,
-    "livePresence": false
+    "livePresence": false,
+    "apiUsageReady": true,
+    "apiUsage": false
   },
   "appId": "ai-studio",
   "appBaseUrl": "/ai-studio/",

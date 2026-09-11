@@ -707,7 +707,7 @@ function setupNavigation() {
       navToggle?.setAttribute("aria-expanded", "false");
     }),
   );
-  const activeNavPage = ["issuer", "access-registry", "security-center"].includes(page)
+  const activeNavPage = ["issuer", "access-registry", "security-center", "api-usage"].includes(page)
     ? "automation"
     : ["manual-teacher", "manual-admin"].includes(page)
       ? "manualy"
@@ -2630,6 +2630,9 @@ function renderPageAccessGate() {
     // The centre is a full-admin-only compatibility route. Older signed
     // policies do not name it yet, so the runtime gates it explicitly here.
     "security-center",
+    // API costs are privileged financial data. Keep this route full-admin-only
+    // even while older signed access bundles do not list it yet.
+    "api-usage",
   ]);
   if (!administratorPages.has(page) || (canAccessAdminPage(page) && !isColleaguePreview())) return;
   const main = document.querySelector("main");

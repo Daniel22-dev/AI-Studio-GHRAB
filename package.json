@@ -1,6 +1,6 @@
 {
   "name": "ai-studio-ghrab",
-  "version": "0.21.53",
+  "version": "0.21.54",
   "private": true,
   "description": "Profesionální federované PWA devíti chráněných školních aplikací včetně Lesson Hubu, manuálů, řízeného přístupu a jednotné GHRAB QA brány",
   "type": "module",
@@ -8,7 +8,7 @@
     "sync": "node scripts/sync-registry.mjs && node scripts/sync-platform-consumers.mjs && node scripts/generate-ai-readiness.mjs && node scripts/sync-doc-app-versions.mjs",
     "sync:offline": "node scripts/sync-registry.mjs --offline && node scripts/sync-platform-consumers.mjs && node scripts/generate-ai-readiness.mjs && node scripts/sync-doc-app-versions.mjs",
     "build": "npm run generate:changelog && node scripts/verify-ai-core.mjs && node scripts/generate-ai-readiness.mjs && node scripts/build.mjs",
-    "test": "npm run generate:changelog && npm run qa:doc-versions && npm run qa:ecosystem && npm run format:check && node scripts/verify-ai-core.mjs && node scripts/generate-ai-readiness.mjs && node scripts/test.mjs && node scripts/test-platform-bootstrap.mjs && npm run test:audit-regressions && npm run test:security-regressions && npm run test:garp-security && npm run test:release-policy && npm run test:studio-ux && npm run test:live-presence && node scripts/test-maturita-external-launcher.mjs",
+    "test": "npm run generate:changelog && npm run qa:doc-versions && npm run qa:ecosystem && npm run format:check && node scripts/verify-ai-core.mjs && node scripts/generate-ai-readiness.mjs && node scripts/test.mjs && node scripts/test-platform-bootstrap.mjs && npm run test:audit-regressions && npm run test:security-regressions && npm run test:garp-security && npm run test:release-policy && npm run test:studio-ux && npm run test:live-presence && npm run test:api-usage && node scripts/test-maturita-external-launcher.mjs",
     "check": "node scripts/verify-ai-core.mjs && node scripts/generate-ai-readiness.mjs && npm run qa:ecosystem && node scripts/test.mjs",
     "generate:changelog": "node scripts/generate-changelog.mjs",
     "format": "node scripts/verify-ai-core.mjs && node scripts/format.mjs --ignore-path .prettierignore",
@@ -63,7 +63,8 @@
     "qa:ecosystem": "node scripts/sync-platform-consumers.mjs --check && node scripts/qa-ecosystem.mjs",
     "test:garp-security": "node scripts/test-garp-security-regressions.mjs",
     "qa:ecosystem:verified": "node scripts/sync-platform-consumers.mjs --check && node scripts/qa-ecosystem.mjs --require-source-verification",
-    "test:live-presence": "node scripts/test-live-presence.mjs"
+    "test:live-presence": "node scripts/test-live-presence.mjs",
+    "test:api-usage": "node scripts/test-api-usage.mjs"
   },
   "engines": {
     "node": ">=18"

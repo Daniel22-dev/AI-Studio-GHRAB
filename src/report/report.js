@@ -4,6 +4,7 @@ import {
   safeEvent,
   safeStatistics,
 } from "../shared/safe-export.js";
+import { loadApiUsage } from "../modules/api-usage.js";
 
 await window.GHRAB.accessReady;
 if (window.GHRAB.canAccessAdminPage?.("report") && !window.GHRAB.isColleaguePreview?.()) {
@@ -118,6 +119,14 @@ if (window.GHRAB.canAccessAdminPage?.("report") && !window.GHRAB.isColleaguePrev
     if (value === null || value === undefined || value === "") return "Neuvedeno";
     const amount = Math.max(0, Number(value || 0));
     return `${Math.round(amount).toLocaleString("cs-CZ")} K\u010d`;
+  }
+  function formatApiMoney(value, currency = "usd") {
+    if (value === null || value === undefined || !Number.isFinite(Number(value))) return "—";
+    return `${Math.max(0, Number(value)).toLocaleString("cs-CZ", { minimumFractionDigits: 2, maximumFractionDigits: 2 })} ${String(currency || "usd").toUpperCase()}`;
+  }
+  function apiUsagePercent(apiUsage) {
+    if (!apiUsage?.connected || !Number.isFinite(Number(apiUsage.budget?.amount)) || Number(apiUsage.budget.amount) <= 0) return null;
+    return Math.min(999, (Number(apiUsage.totals?.cost || 0) / Number(apiUsage.budget.amount)) * 100);
   }
   function managementPeriodKey(settings) {
     const fromMonth = String(settings.from || "").slice(0, 7);
@@ -463,6 +472,42 @@ if (window.GHRAB.canAccessAdminPage?.("report") && !window.GHRAB.isColleaguePrev
       textEl("small", subtitle),
     );
     return card;
+  }
+  function apiUsageCard(title, value, subtitle) {
+    const card = document.createElement("article");
+    card.className = "source-summary-card report-api-cost-card";
+    card.append(textEl("strong", title), textEl("b", value), textEl("small", subtitle));
+    return card;
+  }
+  function renderApiUsageSummary(view) {
+    const host = $("#report-api-cost-summary");
+    const status = $("#report-api-cost-status");
+    if (!host || !status) return;
+    const usage = view.apiUsage;
+    if (usage?.connected) {
+      const percent = apiUsagePercent(usage);
+      host.replaceChildren(
+        apiUsageCard("Skutečná útrata", formatApiMoney(usage.totals.cost, usage.currency), "OpenAI API ve zvoleném období"),
+        apiUsageCard("Měsíční rozpočet", formatApiMoney(usage.budget.amount, usage.currency), "Limit předaný školním serverem"),
+        apiUsageCard("Využití rozpočtu", percent === null ? "—" : `${percent.toLocaleString("cs-CZ", { maximumFractionDigits: 1 })} %`, "Útrata vůči nastavenému rozpočtu"),
+        apiUsageCard("API požadavky", Math.round(Number(usage.totals.requests || 0)).toLocaleString("cs-CZ"), "Agregovaný technický počet"),
+      );
+      status.className = "notice report-api-cost-status success";
+      status.textContent = `Automaticky načteno ze školního serveru${usage.generatedAt ? ` · serverový souhrn ${new Date(usage.generatedAt).toLocaleString("cs-CZ")}` : ""}. API klíč se do prohlížeče nepřenáší.`;
+      return;
+    }
+    host.replaceChildren(
+      apiUsageCard("Skutečná útrata", "—", "Bez odhadu, dokud není server připojen"),
+      apiUsageCard("Měsíční rozpočet", "—", "Načte se ze serverové konfigurace"),
+      apiUsageCard("Využití rozpočtu", "—", "Vypočítá se až ze skutečných nákladů"),
+      apiUsageCard("API požadavky", "—", "Načtou se jako agregovaný údaj"),
+    );
+    status.className = `notice report-api-cost-status${usage?.status === "error" ? " error" : ""}`;
+    status.textContent = usage?.status === "error"
+      ? "Automatickou API spotřebu se nepodařilo načíst. Do reportu se proto nevkládá odhad ani náhradní číslo."
+      : usage?.prepared
+        ? "Přehled je připravený; skutečná API spotřeba se doplní automaticky po aktivaci serverového endpointu."
+        : "Tento deployment ještě nemá aktivní serverový zdroj API spotřeby. Do reportu se nevkládají odhadované náklady.";
   }
   function renderSources(view) {
     $("#report-source-summary").replaceChildren(
@@ -1305,13 +1350,40 @@ if (window.GHRAB.canAccessAdminPage?.("report") && !window.GHRAB.isColleaguePrev
     ctx.stroke();
     ctx.fillStyle = palette.navy;
     ctx.font = "800 21px Arial";
-    ctx.fillText("N\u00e1kladov\u00e1 pozn\u00e1mka", noteX + 22, distY + 40);
-    ctx.fillStyle = palette.ink;
-    ctx.font = "400 17px Arial";
-    drawWrapped(ctx, view.management.costNote || "Neuvedeno.", noteX + 22, distY + 78, noteW - 44, 24, 6);
-    ctx.fillStyle = palette.muted;
-    ctx.font = "400 15px Arial";
-    drawWrapped(ctx, "Soukrom\u00e9 pozn\u00e1mky z evidence se do PDF nikdy nep\u0159en\u00e1\u0161ej\u00ed.", noteX + 22, distY + 226, noteW - 44, 21, 3);
+    ctx.fillText("OpenAI API - automaticky", noteX + 22, distY + 40);
+    const apiUsage = view.apiUsage;
+    if (apiUsage?.connected) {
+      const percent = apiUsagePercent(apiUsage);
+      const rows = [
+        ["Skutečná útrata", formatApiMoney(apiUsage.totals.cost, apiUsage.currency)],
+        ["Měsíční rozpočet", formatApiMoney(apiUsage.budget.amount, apiUsage.currency)],
+        ["Využití", percent === null ? "—" : `${percent.toLocaleString("cs-CZ", { maximumFractionDigits: 1 })} %`],
+        ["API požadavky", Math.round(Number(apiUsage.totals.requests || 0)).toLocaleString("cs-CZ")],
+      ];
+      rows.forEach(([label, value], index) => {
+        const y = distY + 82 + index * 35;
+        ctx.fillStyle = palette.muted;
+        ctx.font = "600 15px Arial";
+        ctx.textAlign = "left";
+        ctx.fillText(label, noteX + 22, y);
+        ctx.fillStyle = palette.navy;
+        ctx.font = "800 16px Arial";
+        ctx.textAlign = "right";
+        ctx.fillText(value, noteX + noteW - 22, y);
+      });
+      ctx.textAlign = "left";
+      ctx.fillStyle = palette.muted;
+      ctx.font = "400 14px Arial";
+      drawWrapped(ctx, view.management.costNote ? `Poznámka: ${view.management.costNote}` : "Agregováno školním serverem; bez API klíče v prohlížeči.", noteX + 22, distY + 228, noteW - 44, 18, 3);
+    } else {
+      ctx.fillStyle = palette.ink;
+      ctx.font = "400 17px Arial";
+      drawWrapped(ctx, apiUsage?.status === "error" ? "Automatickou API spotřebu se nepodařilo načíst. Report proto nepoužívá odhad." : "Automatická API spotřeba čeká na připojení školního serveru. Report proto nepoužívá odhad.", noteX + 22, distY + 78, noteW - 44, 24, 5);
+      ctx.fillStyle = palette.muted;
+      ctx.font = "400 14px Arial";
+      drawWrapped(ctx, "API klíč zůstává pouze na serveru a do prohlížeče ani PDF se nepřenáší.", noteX + 22, distY + 210, noteW - 44, 19, 3);
+    }
+    ctx.textAlign = "left";
 
     const gridY = 842;
     const cardGap = 20;
@@ -1430,8 +1502,13 @@ if (window.GHRAB.canAccessAdminPage?.("report") && !window.GHRAB.isColleaguePrev
   async function render() {
     const token = ++renderToken;
     const settings = saveSettings();
-    currentView = buildView(settings);
+    const baseView = buildView(settings);
+    currentView = { ...baseView, apiUsage: null };
+    const apiUsage = await loadApiUsage(G.deploymentReady, { from: settings.from, to: settings.to });
+    if (token !== renderToken) return;
+    currentView = { ...baseView, apiUsage };
     renderSources(currentView);
+    renderApiUsageSummary(currentView);
     renderImports(currentView);
     renderOutputDetails(currentView);
     renderManagementControls(currentView);

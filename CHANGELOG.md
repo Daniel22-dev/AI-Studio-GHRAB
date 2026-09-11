@@ -2,6 +2,15 @@
 
 > Tento soubor se generuje ze `src/config/changelog.json`. Neupravujte jej ručně.
 
+## 0.21.54 — 2026-09-11
+**API spotřeba a automatické náklady v reportu**
+
+- Ve Správě přibývá full-admin sekce API a spotřeba pro skutečné OpenAI API náklady, rozpočet a rozpad podle projektů, aplikací a modelů.
+- Přehled je server-ready a bezpečný: API ani administrátorský klíč se neposílají do prohlížeče; GitHub Pages režim nevolá žádný API-usage endpoint a nevytváří odhadované náklady.
+- Dvoustránkový měsíční report automaticky přebírá stejná agregovaná data pro zvolené období a na druhé straně ukazuje skutečnou útratu, rozpočet, využití a počet API požadavků.
+- Připraven je serverový kontrakt admin/api-usage včetně no-store, session ochrany a oddělení tajných klíčů od klienta; aktivace zůstává vypnutá do nasazení školního backendu.
+- Celkový dist budget je po přidání nové správcovské stránky úzce upraven z 2 310 000 na 2 350 000 B; kritický vstupní a precache budget se nezvyšují.
+
 ## 0.21.53 — 2026-09-11
 **Jednodušší reporting a online přehled v horní liště**
 

@@ -1,8 +1,8 @@
-# Automatizace aktualizací AI Studio GHRAB 0.21.53
+# Automatizace aktualizací AI Studio GHRAB 0.21.54
 
-> Aktuální verze: **0.21.53** · etapa P5
+> Aktuální verze: **0.21.54** · etapa P5
 
-> 0.21.53 navazuje na dvoustránkový reporting a připravuje serverovou živou přítomnost: plný správce po aktivaci backendu uvidí, kdo je online a kterou aplikaci právě používá; v GitHub Pages režimu se žádné presence požadavky neposílají.
+> 0.21.54 přidává server-ready přehled skutečné spotřeby OpenAI API a automatické finanční údaje do měsíčního reportu. API klíče zůstávají výhradně na školním serveru; GitHub Pages režim žádná finanční data neodhaduje ani API-usage endpoint nevolá.
 
 ## Pravidelná synchronizace
 

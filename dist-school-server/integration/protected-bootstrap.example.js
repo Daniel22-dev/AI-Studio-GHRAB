@@ -23,7 +23,7 @@ try {
   const allowed = await protectApp(APP_ID, {
     studioUrl: "https://daniel22-dev.github.io/AI-Studio-GHRAB/",
   });
-  if (allowed) await import("./app.js?v=0.21.53");
+  if (allowed) await import("./app.js?v=0.21.54");
 } catch (error) {
   console.error("AI Studio access bootstrap failed", error);
   showBootstrapFailure();

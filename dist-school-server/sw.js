@@ -1,7 +1,7 @@
 const GHRAB_SW_CONTRACT='ghrab-service-worker-v1';
 /* GHRAB service-worker contract v1 · update activation is user-controlled. */
-const APP_VERSION = "0.21.53";
-const CACHE = "ghrab-ai-studio-v0.21.53";
+const APP_VERSION = "0.21.54";
+const CACHE = "ghrab-ai-studio-v0.21.54";
 const CACHE_PREFIXES = ["ghrab-ai-studio-v", "ai-studio-ghrab-v"];
 const CORE_REQUIRED = [
   "./",
@@ -112,6 +112,7 @@ const CORE_OPTIONAL = [
   "./manualy/viewer.css",
   "./manualy/viewer.html",
   "./manualy/viewer.js",
+  "./modules/api-usage.js",
   "./modules/app-test-status.js",
   "./modules/header-live-presence.css",
   "./modules/header-live-presence.js",
@@ -242,5 +243,5 @@ self.addEventListener('fetch', (event) => {
 
 /* GHRAB_PLATFORM_P3_START */
 const GHRAB_PLATFORM_P3_ASSETS=["./ghrab/ghrab-platform.js","./ghrab/ghrab-platform.css","./ghrab/ghrab-artifact-envelope-v1.schema.json","./ghrab/ghrab-app-registry-v2.schema.json","./ghrab/ghrab-platform-manifest-1.1.2.json","./assets/brand/school-logo.png","./ghrab-platform.consumer.json"];
-self.addEventListener('install',event=>event.waitUntil((async()=>{const cache=await caches.open("ghrab-ai-studio-v0.21.53");const results=await Promise.allSettled(GHRAB_PLATFORM_P3_ASSETS.map(asset=>cache.add(asset)));const failed=results.filter(item=>item.status==='rejected');if(failed.length)throw new Error('GHRAB Platform P3 precache selhal: '+failed.length);})()));
+self.addEventListener('install',event=>event.waitUntil((async()=>{const cache=await caches.open("ghrab-ai-studio-v0.21.54");const results=await Promise.allSettled(GHRAB_PLATFORM_P3_ASSETS.map(asset=>cache.add(asset)));const failed=results.filter(item=>item.status==='rejected');if(failed.length)throw new Error('GHRAB Platform P3 precache selhal: '+failed.length);})()));
 /* GHRAB_PLATFORM_P3_END */

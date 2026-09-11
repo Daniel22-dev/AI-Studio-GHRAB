@@ -1,7 +1,37 @@
 {
   "schema": "ai-studio-changelog-v1",
-  "current": "0.21.53",
+  "current": "0.21.54",
   "items": [
+    {
+      "version": "0.21.54",
+      "date": "2026-09-11",
+      "title": {
+        "cs": "API spotřeba a automatické náklady v reportu",
+        "en": "API usage and automatic costs in reporting"
+      },
+      "changes": [
+        {
+          "cs": "Ve Správě přibývá full-admin sekce API a spotřeba pro skutečné OpenAI API náklady, rozpočet a rozpad podle projektů, aplikací a modelů.",
+          "en": "Administration adds a full-admin API usage and costs section for actual OpenAI API costs, budget and breakdowns by project, application and model."
+        },
+        {
+          "cs": "Přehled je server-ready a bezpečný: API ani administrátorský klíč se neposílají do prohlížeče; GitHub Pages režim nevolá žádný API-usage endpoint a nevytváří odhadované náklady.",
+          "en": "The overview is server-ready and safe: no API or administrator key is sent to the browser; GitHub Pages makes no API-usage endpoint call and never invents estimated costs."
+        },
+        {
+          "cs": "Dvoustránkový měsíční report automaticky přebírá stejná agregovaná data pro zvolené období a na druhé straně ukazuje skutečnou útratu, rozpočet, využití a počet API požadavků.",
+          "en": "The two-page monthly report automatically reuses the same aggregated data for the selected period and shows actual spend, budget utilisation and API request count on page two."
+        },
+        {
+          "cs": "Připraven je serverový kontrakt admin/api-usage včetně no-store, session ochrany a oddělení tajných klíčů od klienta; aktivace zůstává vypnutá do nasazení školního backendu.",
+          "en": "A server contract for admin/api-usage is prepared with no-store, session protection and secret-key separation from the client; activation remains off until the school backend is deployed."
+        },
+        {
+          "cs": "Celkový dist budget je po přidání nové správcovské stránky úzce upraven z 2 310 000 na 2 350 000 B; kritický vstupní a precache budget se nezvyšují.",
+          "en": "After adding the new administration page, the total dist budget is narrowly adjusted from 2,310,000 to 2,350,000 B; entry-critical and precache budgets are unchanged."
+        }
+      ]
+    },
     {
       "version": "0.21.53",
       "date": "2026-09-11",

@@ -28,7 +28,7 @@ check(home.includes('class="first-run-guide"') && home.includes('ai-studio-teach
 
 const standardHtml = [
   "src/index.html", "src/access/index.html", "src/automation/index.html", "src/demo/index.html",
-  "src/pilot/index.html", "src/report/index.html", "src/safety/index.html", "src/manualy/index.html",
+  "src/pilot/index.html", "src/report/index.html", "src/api-usage/index.html", "src/safety/index.html", "src/manualy/index.html",
   "src/changelog/index.html", "src/tests/index.html", "src/tools/access-issuer/index.html",
   "src/tools/access-registry/index.html", "src/tools/security-center/index.html", "src/workflow/index.html", "src/library/index.html",
 ];
@@ -150,6 +150,16 @@ check(!securityCenterJs.includes("localStorage.setItem") && !securityCenterJs.in
 check(securityCenterCore.includes('schema: "ghrab-access-config-update-pack-v1"') && securityCenterCore.includes("findPrivateMaterial(pack)"), "Centrum nevytvari verejny kontrolovatelny aktualizacni balicek.");
 
 const reportJs = await text("src/report/report.js");
+const apiUsageHtml = await text("src/api-usage/index.html");
+const apiUsageJs = await text("src/api-usage/api-usage.js");
+const apiUsageModule = await text("src/modules/api-usage.js");
+check(home !== null && (await text("src/automation/index.html")).includes('href="../api-usage/"') && (await text("src/automation/index.html")).includes('data-full-admin-only hidden'), "Sprava nema full-admin vstup API a spotreba.");
+check(appJs.includes('"api-usage"') && apiUsageJs.includes('canAccessAdminPage?.("api-usage")'), "API a spotreba nema plnou administratorskou strankovou branu.");
+check(apiUsageHtml.includes('API a spotřeba') && apiUsageHtml.includes('id="api-usage-applications"') && apiUsageHtml.includes('id="api-usage-models"'), "API a spotreba nema ocekavany prehled a rozpad.");
+check(apiUsageHtml.includes('API klíče') && !apiUsageJs.includes('localStorage') && !apiUsageJs.includes('sessionStorage'), "API a spotreba nema bezpecne zachazeni s financnimi a klicovymi udaji.");
+check(apiUsageModule.includes('credentials: "same-origin"') && apiUsageModule.includes('cache: "no-store"') && !apiUsageModule.includes('OPENAI_ADMIN_KEY'), "API usage klient nema server-only/no-store kontrakt.");
+check(reportHtml.includes('id="report-api-cost-summary"') && reportHtml.includes('automaticky propíší do druhé strany PDF reportu'), "Mesicni report nema automaticky API financni prehled.");
+check(reportJs.includes('loadApiUsage(G.deploymentReady') && reportJs.includes('OpenAI API - automaticky'), "Druha strana PDF neni napojena na automatickou API spotrebu.");
 check(reportHtml.includes('tomto prohlížeči a profilu') && reportHtml.includes('Není třeba nahrávat vlastní soubor'), "Souhrnny report nevysvetluje automaticke pridani mistnich dat aktualniho prohlizece/profilu.");
 check(reportHtml.includes('id="report-preview-management"') && reportHtml.includes('2 / 2 · Práce garanta a souhrn pro vedení'), "Souhrnny report nema druhou A4 stranu pro praci garanta.");
 check(reportHtml.includes('id="report-management-form"') && reportHtml.includes('id="report-work-form"'), "Souhrnny report nema formular manazerskeho souhrnu nebo evidenci prace garanta.");

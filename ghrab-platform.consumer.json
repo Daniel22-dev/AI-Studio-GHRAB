@@ -2,7 +2,7 @@
   "schema": "ghrab-platform-consumer-v1",
   "appId": "ai-studio",
   "appName": "AI Studio GHRAB",
-  "appVersion": "0.21.53",
+  "appVersion": "0.21.54",
   "platform": {
     "version": "1.1.2",
     "contract": "ghrab-platform-v1",
@@ -89,7 +89,7 @@
     ]
   },
   "cache": {
-    "name": "ghrab-ai-studio-v0.21.53",
+    "name": "ghrab-ai-studio-v0.21.54",
     "updateMessage": "GHRAB_SKIP_WAITING"
   },
   "html": {
@@ -110,7 +110,7 @@
     "moduleContract": "ghrab-lazy-modules-v1",
     "requireBudget": true,
     "performanceBudget": {
-      "distBytes": 2310000,
+      "distBytes": 2350000,
       "entryHtmlBytes": 50000,
       "entryCriticalBytes": 500000,
       "largestInlineScriptBytes": 30000,

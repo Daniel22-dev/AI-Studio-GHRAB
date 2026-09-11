@@ -1,5 +1,5 @@
 <!doctype html>
-<html lang="cs" data-theme="dark" data-force-language="cs" data-ghrab-app-id="ai-studio" data-ghrab-app-version="0.21.53">
+<html lang="cs" data-theme="dark" data-force-language="cs" data-ghrab-app-id="ai-studio" data-ghrab-app-version="0.21.54">
   <head>
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width,initial-scale=1" />
@@ -86,11 +86,11 @@
           Měsíční report pro vedení
         </h1>
         <p
-          data-cs="První strana shrnuje anonymní provozní data o používání aplikací. Druhá přidává práci garanta, školení a podporu, náklady, výsledky, rizika, rozhodnutí a priority - bez promptů a obsahu kolegů nebo studentů."
-          data-en="The first page summarises anonymous operational app usage. The second adds guarantor work, training and support, costs, results, risks, decisions and priorities - without colleagues' or students' prompts or content."
+          data-cs="První strana shrnuje anonymní provozní data o používání aplikací. Druhá přidává práci garanta, školení a podporu, automatickou OpenAI API spotřebu, náklady, výsledky, rizika, rozhodnutí a priority - bez promptů a obsahu kolegů nebo studentů."
+          data-en="The first page summarises anonymous operational app usage. The second adds guarantor work, training and support, automatic OpenAI API usage, costs, results, risks, decisions and priorities - without colleagues' or students' prompts or content."
         >
           První strana shrnuje anonymní provozní data o používání aplikací.
-          Druhá přidává práci garanta, školení a podporu, náklady, výsledky,
+          Druhá přidává práci garanta, školení a podporu, automatickou OpenAI API spotřebu, náklady, výsledky,
           rizika, rozhodnutí a priority.
         </p>
       </section>
@@ -217,6 +217,21 @@
             <p class="notice" id="report-test-status"></p>
           </section>
 
+          <section id="report-api-costs" class="panel">
+            <p class="eyebrow" data-cs="AUTOMATICKY · OPENAI API" data-en="AUTOMATIC · OPENAI API">
+              AUTOMATICKY · OPENAI API
+            </p>
+            <div class="section-heading compact">
+              <div>
+                <h2 data-cs="Spotřeba a finanční náklady" data-en="Usage and financial costs">Spotřeba a finanční náklady</h2>
+                <p data-cs="Po připojení školního serveru se skutečná spotřeba doplní sama a stejná data se automaticky propíší do druhé strany PDF reportu." data-en="Once the school server is connected, actual usage is loaded automatically and the same data are added to page two of the PDF report.">Po připojení školního serveru se skutečná spotřeba doplní sama a stejná data se automaticky propíší do druhé strany PDF reportu.</p>
+              </div>
+              <a class="button secondary" href="../api-usage/" data-full-admin-only hidden data-cs="Otevřít detail API" data-en="Open API details">Otevřít detail API</a>
+            </div>
+            <div id="report-api-cost-summary" class="source-summary-grid report-api-cost-grid"></div>
+            <p id="report-api-cost-status" class="notice report-api-cost-status" role="status" aria-live="polite"></p>
+          </section>
+
           <section id="report-imports" class="panel">
             <p
               class="eyebrow"
@@ -338,12 +353,12 @@
             <form id="report-management-form" class="report-management-form">
               <div class="form-grid two-col">
                 <div class="field">
-                  <label for="report-management-cost" data-cs="Přímé náklady AI (Kč)" data-en="Direct AI costs (CZK)">Přímé náklady AI (Kč)</label>
+                  <label for="report-management-cost" data-cs="Další přímé náklady AI (Kč)" data-en="Other direct AI costs (CZK)">Další přímé náklady AI (Kč)</label>
                   <input id="report-management-cost" type="number" min="0" max="10000000" step="0.01" inputmode="decimal" />
                 </div>
                 <div class="field">
                   <label for="report-management-cost-note" data-cs="Poznámka k nákladům" data-en="Cost note">Poznámka k nákladům</label>
-                  <input id="report-management-cost-note" type="text" maxlength="240" placeholder="např. OpenAI API + další služby" />
+                  <input id="report-management-cost-note" type="text" maxlength="240" placeholder="např. další placené služby mimo automatický API přehled" />
                 </div>
                 <div class="field full">
                   <label for="report-management-results" data-cs="Klíčové výsledky" data-en="Key results">Klíčové výsledky</label>

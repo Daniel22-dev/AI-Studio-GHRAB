@@ -1,8 +1,8 @@
 # AI Studio GHRAB
 
-**Aktuální verze:** 0.21.53
+**Aktuální verze:** 0.21.54
 
-**Aktualizace 0.21.53:** zjednodušuje správcovský workflow. **Report** má přímý vstup v horní navigaci a na jedné stránce sdružuje provozní podklady, import souhrnů kolegů, evidenci práce garanta, manažerský souhrn i výsledné dvoustránkové PDF. Původní Pilotní dashboard je v rozhraní nahrazen **Statistikami používání** bez zastaralého fázového rozpisu. Živý přehled **kdo je právě online a kterou aplikaci používá** je přesunut ze Správy do rozbalovacího tlačítka vedle Nastavení; bez školního serveru zůstává vypnutý.
+**Aktualizace 0.21.54:** přidává ve Správě sekci **API a spotřeba** pro skutečné OpenAI API náklady, rozpočet a rozpad podle projektů/aplikací/modelů. Stejná agregovaná data se automaticky propisují do druhé strany měsíčního reportu. Funkce je připravená pro školní server; API klíč se do prohlížeče nikdy neposílá a do aktivace backendu se nezobrazují žádné vymyšlené odhady.
 **Platforma:** GHRAB Platform 1.1.2 · etapa P5
 
 **Stav:** AMBER – KANDIDÁT NOVÉHO VÝSLOVNĚ ZAHÁJENÉHO GARP 2.3 CYKLU, NE FINÁLNÍ RELEASE. Nezávislá kontrola Claude nad 0.21.38 potvrdila C-01/C-02/C-03, ale našla D-01 / HIGH na cestě „Smazat moje data“ → Browser Back. D-01 je v 0.21.43 opraven a kandidát čeká na druhé nezávislé ověření tohoto nového cyklu. **Reálná studentská data nepoužívat.**
@@ -10,8 +10,12 @@
 **Verze 0.21.43** sjednocuje destruktivní lifecycle ochranu: `deleteMyData()` i shared-device `endWork()` po smazání rotují neobsahovou generační tombstone. SIM-03 browser regrese testuje obě cesty, následné psaní i novou kartu a QA evidence se nepublikuje v `dist/`.
 AI Studio GHRAB je centrální brána školních digitálních a AI nástrojů. Jednotlivé aplikace zůstávají v samostatných repozitářích; Studio zajišťuje společnou navigaci, Top 4, synchronizaci verzí, bezpečnostní rámec, provozní měření, správu podepsaných přístupů a kanonický základ technického reportéru. Materiály jsou viditelnou součástí portálu, ale v dnešním bezserverovém režimu se vlastní obsah ukládá pouze místně.
 
-## Hlavní novinky 0.21.53
+## Hlavní novinky 0.21.54
 
+- Ve **Správě** je nové full-admin tlačítko **API a spotřeba**.
+- Přehled ukazuje skutečné náklady, měsíční rozpočet, požadavky, tokeny a rozpad podle projektů, aplikací a modelů, jakmile je zapojen školní server.
+- **Měsíční dvoustránkový report** automaticky přebírá API náklady do manažerské druhé strany.
+- API/administrátorský klíč zůstává pouze na serveru; klient přijímá jen agregovaná data.
 - V horní liště Studia vedle Nastavení je pro plného správce připraven rozbalovací přehled: **online uživatel + právě používaná aplikace**.
 - Heartbeat se aktivuje pouze v reálném `school-server` / `server-session` profilu s `schoolServerConnected=true` a `livePresence=true`; serverless provoz nic neodesílá.
 - Jméno uživatele se neposílá z klienta. Server jej odvodí z přihlášené školní identity a klient z výsledku použije jen `displayName`, `appId` a `lastSeenAt`.
@@ -55,7 +59,7 @@ AI Studio GHRAB je centrální brána školních digitálních a AI nástrojů. 
 - Všechny aplikace používají jeden kanonický školní logotyp bez inline base64 kopií a jednotnou autorskou patičku.
 - Aplikační data mají namespace `ghrab.<appId>.*`; historické klíče se migrují vratně a před změnou vzniká úplná záloha.
 - Studio Bridge v2 zachovává kompatibilitu se starším handoffem v1 a strukturované exporty používají artifact envelope v1 se SHA-256.
-- Registr Studia je synchronizován s verzemi KS 5.10.25, SORTIO 1.1.14, Lesson Hub 1.2.22, Diferenciátor 1.3.46, ACTIVA 0.5.22, Hodnotitel 1.5.25, LUDUS 1.16.20 a Generátor 7.1.25.
+- Registr Studia je synchronizován s verzemi KS 5.10.25, SORTIO 1.1.14, Lesson Hub 1.2.22, Diferenciátor 1.3.46, ACTIVA 0.5.22, Hodnotitel 1.5.25, LUDUS 1.16.23 a Generátor 7.1.25.
 
 ## Serverová vrstva z P1
 

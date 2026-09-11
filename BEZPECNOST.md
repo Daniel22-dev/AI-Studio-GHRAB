@@ -1,8 +1,8 @@
-# Bezpečnostní hranice AI Studio GHRAB 0.21.53
+# Bezpečnostní hranice AI Studio GHRAB 0.21.54
 
-> Aktuální verze: **0.21.53** · etapa P5
+> Aktuální verze: **0.21.54** · etapa P5
 
-> 0.21.53 připravuje pro skutečný školní server krátkodobou živou přítomnost: plný správce může po aktivaci backendu vidět jméno přihlášeného uživatele a naposledy aktivní aplikaci. Klient neposílá jméno ani e-mail a v GitHub Pages profilu se žádný presence request neprovádí. Dvoustránkový reporting z 0.21.51 zůstává zachován.
+> 0.21.54 přidává server-ready přehled skutečné spotřeby OpenAI API a automatické finanční údaje do měsíčního reportu. API klíče zůstávají výhradně na školním serveru; GitHub Pages režim žádná finanční data neodhaduje ani API-usage endpoint nevolá.
 
 
 ## Rychlá kontrola dat v portálu
@@ -31,7 +31,7 @@ Záložka **Bezpečnost** obsahuje jednoduchý semafor a volitelnou pomůcku **N
 
 ## Stav ochrany přímých adres
 
-Ochranný bootstrap je integrován v Generátoru 7.1.25, Diferenciátoru 1.3.46, Hodnotiteli maturitních slohů 1.5.25, LUDUSu 1.16.20, Korespondenčním asistentovi 5.10.25, ACTIVA 0.5.22, SORTIO 1.1.14 a Lesson Hubu 1.2.22. Běžný vstupní bod těchto aplikací nejprve načte centrální modul a ověří podpis, platnost, revokaci, roli, ID aplikace a aktuální verzi školení. Jde o praktickou ochranu proti běžnému sdílení přímé adresy, nikoli o serverovou ochranu zdrojového kódu: technicky zkušený uživatel může veřejný statický kód stáhnout nebo spustit mimo standardní bootstrap. Při nedostupnosti centrální konfigurace robustní bootstrap zobrazí srozumitelnou chybovou obrazovku a aplikaci nespustí.
+Ochranný bootstrap je integrován v Generátoru 7.1.25, Diferenciátoru 1.3.46, Hodnotiteli maturitních slohů 1.5.25, LUDUSu 1.16.23, Korespondenčním asistentovi 5.10.25, ACTIVA 0.5.22, SORTIO 1.1.14 a Lesson Hubu 1.2.22. Běžný vstupní bod těchto aplikací nejprve načte centrální modul a ověří podpis, platnost, revokaci, roli, ID aplikace a aktuální verzi školení. Jde o praktickou ochranu proti běžnému sdílení přímé adresy, nikoli o serverovou ochranu zdrojového kódu: technicky zkušený uživatel může veřejný statický kód stáhnout nebo spustit mimo standardní bootstrap. Při nedostupnosti centrální konfigurace robustní bootstrap zobrazí srozumitelnou chybovou obrazovku a aplikaci nespustí.
 
 ## Klíče
 
@@ -92,3 +92,7 @@ Bez serveru se hlášení neodesílá samo. Aplikace vytvoří jediný ZIP a ote
 ## GHRAB AI Core
 
 Studio publikuje pouze veřejné artefakty Core, jejich SHA-256 a runtime bez tajných klíčů. `automaticFallback` je zakázán. Školní API klíč ani serverová autentizace nejsou v klientském balíku.
+
+## API spotřeba bez zpřístupnění klíče
+
+Od 0.21.54 je finanční přehled navržen jako server-only integrace. OpenAI administrátorský klíč nesmí být součástí HTML/JS, webového úložiště ani odpovědi prohlížeči. Klient přijímá jen agregované technické a finanční hodnoty přes same-origin serverovou session; odpověď se načítá s `no-store`. V bezserverovém režimu se endpoint nevolá a náklady se neodhadují.

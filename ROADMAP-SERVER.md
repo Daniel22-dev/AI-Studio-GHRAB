@@ -80,3 +80,7 @@ Server má zachovat samostatnou provozní roli **Zástupce správce**. Ta smí k
 
 Klientský heartbeat je připraven od 0.21.52; od 0.21.53 je správcovský přehled přesunut přímo do horní lišty Studia vedle Nastavení. Bez serveru zůstává funkce vypnutá. Po aktivaci školního serveru mohou všechny chráněné aplikace přes společný `platform-runtime` posílat pouze krátký heartbeat s `appId`; jméno se odvodí ze serverové session. Správce pak přímo v horní liště Studia vedle Nastavení rozbalí seznam právě online uživatelů a jejich naposledy aktivní aplikaci. Přítomnost má být ephemeral stav s doporučeným TTL 120 sekund, bez historie přechodů, bez promptů, materiálů a studentských dat. Přesný API kontrakt je v `docs/LIVE-PRESENCE-SERVER-CONTRACT.md`.
 
+
+## API spotřeba a finanční reporting
+
+Od AI Studia 0.21.54 je klientská část připravená. Školní backend má implementovat `GET /api/v1/admin/api-usage`, držet OpenAI administrátorský klíč pouze jako serverový secret a vracet agregované náklady, rozpočet, tokeny a požadavky za zvolené období. Po aktivaci se data zobrazí ve Správě a automaticky na druhé straně měsíčního PDF reportu. Viz `docs/API-USAGE-SERVER-CONTRACT.md`.

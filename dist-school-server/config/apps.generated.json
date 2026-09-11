@@ -382,7 +382,7 @@
       "cs": "LUDUS",
       "en": "LUDUS"
     },
-    "version": "1.16.20",
+    "version": "1.16.23",
     "status": {
       "cs": "Ověřováno v pilotu",
       "en": "Being validated in pilot"
@@ -460,7 +460,7 @@
       "studioBridge": 2,
       "artifactEnvelope": 1,
       "storagePrefix": "ghrab.ludus.",
-      "cacheName": "ghrab-ludus-v1.16.20"
+      "cacheName": "ghrab-ludus-v1.16.23"
     }
   },
   {

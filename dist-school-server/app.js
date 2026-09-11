@@ -1,12 +1,12 @@
-import { sanitizePilotEvent, sanitizePilotEventList } from "./privacy/pilot-event.js?v=0.21.53";
-import { validateMaterialPackage } from "./shared/material-validator.js?v=0.21.53";
-import { buildPilotSummary } from "./shared/safe-export.js?v=0.21.53";
+import { sanitizePilotEvent, sanitizePilotEventList } from "./privacy/pilot-event.js?v=0.21.54";
+import { validateMaterialPackage } from "./shared/material-validator.js?v=0.21.54";
+import { buildPilotSummary } from "./shared/safe-export.js?v=0.21.54";
 import {
   applyDeploymentToAppRegistry,
   loadDeploymentConfig,
-} from "./access/deployment-config.js?v=0.21.53";
-import { initialisePlatformRuntime } from "./access/platform-runtime.js?v=0.21.53";
-import { createRegistryClient } from "./modules/registry-client.js?v=0.21.53";
+} from "./access/deployment-config.js?v=0.21.54";
+import { initialisePlatformRuntime } from "./access/platform-runtime.js?v=0.21.54";
+import { createRegistryClient } from "./modules/registry-client.js?v=0.21.54";
 import {
   initialiseAccess,
   setPermitToken,
@@ -21,8 +21,8 @@ import {
   requiredTraining,
   formatReason,
   inspectPermitToken,
-} from "./access/access-control.js?v=0.21.53";
-const VERSION = "0.21.53";
+} from "./access/access-control.js?v=0.21.54";
+const VERSION = "0.21.54";
 const deploymentReady = loadDeploymentConfig({ appId: "ai-studio" });
 const root = document.documentElement;
 const page = document.body.dataset.page || "home";
@@ -674,7 +674,7 @@ async function setupHeaderLivePresence() {
   if (!actions) return;
   headerLivePresenceMounted = true;
   try {
-    const { mountHeaderLivePresence } = await import("./modules/header-live-presence.js?v=0.21.53");
+    const { mountHeaderLivePresence } = await import("./modules/header-live-presence.js?v=0.21.54");
     mountHeaderLivePresence({
       actions,
       deploymentReady,
@@ -707,7 +707,7 @@ function setupNavigation() {
       navToggle?.setAttribute("aria-expanded", "false");
     }),
   );
-  const activeNavPage = ["issuer", "access-registry", "security-center"].includes(page)
+  const activeNavPage = ["issuer", "access-registry", "security-center", "api-usage"].includes(page)
     ? "automation"
     : ["manual-teacher", "manual-admin"].includes(page)
       ? "manualy"
@@ -1355,11 +1355,11 @@ function toggleFavoriteApp(appId) {
 }
 async function loadAppTestStatusModule() {
   if (!isAdmin() || isColleaguePreview()) return null;
-  appTestStatusModule ||= await import("./modules/app-test-status.js?v=0.21.53");
+  appTestStatusModule ||= await import("./modules/app-test-status.js?v=0.21.54");
   return appTestStatusModule;
 }
 async function loadOperationalStatusModule() {
-  operationalStatusModule ||= await import("./modules/operational-status.js?v=0.21.53");
+  operationalStatusModule ||= await import("./modules/operational-status.js?v=0.21.54");
   operationalStatusSnapshot = await operationalStatusModule.loadOperationalStatus(
     deploymentReady,
   );
@@ -2630,6 +2630,9 @@ function renderPageAccessGate() {
     // The centre is a full-admin-only compatibility route. Older signed
     // policies do not name it yet, so the runtime gates it explicitly here.
     "security-center",
+    // API costs are privileged financial data. Keep this route full-admin-only
+    // even while older signed access bundles do not list it yet.
+    "api-usage",
   ]);
   if (!administratorPages.has(page) || (canAccessAdminPage(page) && !isColleaguePreview())) return;
   const main = document.querySelector("main");
@@ -2772,7 +2775,7 @@ applyTheme();
 applyLanguage();
 applyMotion();
 renderHome();
-void import('./modules/portal-effects.js?v=0.21.53')
+void import('./modules/portal-effects.js?v=0.21.54')
   .then(({ setupPortalEffects }) => setupPortalEffects({ root }))
   .catch((error) => console.warn('Volitelne portalove efekty nebyly nacteny.', error));
 void refreshSharedAccessModuleCache();
@@ -2783,7 +2786,7 @@ accessReady.then(() => {
   setupMonthlyReportReminder();
   void setupHeaderLivePresence();
 });
-void Promise.all([deploymentReady, import("./access/app-guard.js?v=0.21.53")])
+void Promise.all([deploymentReady, import("./access/app-guard.js?v=0.21.54")])
   .then(([deployment, { startErrorReporterBestEffort }]) =>
     startErrorReporterBestEffort("ai-studio", {
       appName: "AI Studio GHRAB",
