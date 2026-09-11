@@ -1,4 +1,4 @@
-import { BAKED_DEPLOYMENT_CONFIG } from "../config/deployment-baked.js?v=0.21.49";
+import { BAKED_DEPLOYMENT_CONFIG } from "../config/deployment-baked.js?v=0.21.50";
 
 const CONFIG_SCHEMA = "ghrab-deployment-config-v1";
 const CONFIG_VERSION = 1;

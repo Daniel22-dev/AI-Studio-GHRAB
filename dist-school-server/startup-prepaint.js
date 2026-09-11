@@ -1,6 +1,6 @@
 (() => {
   const root = document.documentElement;
-  const version = root.dataset.appVersion || "0.21.49";
+  const version = root.dataset.appVersion || "0.21.50";
   const WATCHDOG_MS = 6000;
   let showIntro = true;
   let watchdog = 0;

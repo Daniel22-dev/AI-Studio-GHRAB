@@ -1,7 +1,33 @@
 {
   "schema": "ai-studio-changelog-v1",
-  "current": "0.21.49",
+  "current": "0.21.50",
   "items": [
+    {
+      "version": "0.21.50",
+      "date": "2026-09-11",
+      "title": {
+        "cs": "Oprava PWA cache pro osobní Top 4 v Pohledu kolegy",
+        "en": "PWA cache fix for personal Top 4 in Colleague View"
+      },
+      "changes": [
+        {
+          "cs": "Hvězdička pro osobní Top 4 je dostupná každému učiteli na všech kartách a přesun je dostupný u jeho čtyř aplikací kolem brány, včetně Pohledu kolegy.",
+          "en": "The personal Top 4 star is available to every teacher on every card, and reordering is available for the four applications around the gateway, including Colleague View."
+        },
+        {
+          "cs": "Předchozí R3 změnil runtime logiku, ale ponechal číslo 0.21.49; service worker proto mohl dál obsluhovat starý 0.21.49 JavaScript, ve kterém byly tyto prvky admin-only.",
+          "en": "The previous R3 changed runtime logic but kept version 0.21.49, allowing the service worker to keep serving the older 0.21.49 JavaScript where these controls were admin-only."
+        },
+        {
+          "cs": "Verze je zvýšena na 0.21.50, čímž se mění PWA cache namespace i verzované URL assetů a prohlížeč načte opravený runtime.",
+          "en": "The version is bumped to 0.21.50, changing both the PWA cache namespace and versioned asset URLs so browsers load the corrected runtime."
+        },
+        {
+          "cs": "Správcovský zůstává stav testování a změna centrálního provozního semaforu; personalizace Top 4 není správcovská funkce.",
+          "en": "Testing status and central operational-status changes remain administrator-only; personal Top 4 customization is not an administrator feature."
+        }
+      ]
+    },
     {
       "version": "0.21.49",
       "date": "2026-09-11",

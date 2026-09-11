@@ -1,0 +1,58 @@
+AI STUDIO GHRAB 0.21.50
+REPORT OPRAVY: TOP 4 V POHLEDU KOLEGY / PWA CACHE
+Datum: 2026-09-11
+
+1. POZOROVANY PROBLEM
+Changelog verze 0.21.49 R3 uvadel, ze hvezdicka osobniho Top 4 a presun Top 4 jsou dostupne i v Pohledu kolegy. V realnem prohlizeci se ale v Pohledu kolegy hvezdicky nezobrazovaly.
+
+2. SKUTECNA PRICINA
+Zdrojovy kod R3 byl opraven spravne, ale R3 znovu pouzil stejne cislo verze 0.21.49 jako predchozi R2.
+
+R2 obsahoval admin-only podminky:
+- presun Top 4 pouze pri isAdmin() && !isColleaguePreview()
+- hvezdicka Top 4 pouze pri isAdmin() && !isColleaguePreview()
+
+R3 tyto podminky ze zdrojoveho app.js odstranil, ale protoze zustala verze 0.21.49:
+- service worker dale pouzival cache namespace ghrab-ai-studio-v0.21.49,
+- runtime asset byl stale verzovan jako app.js?v=0.21.49,
+- prohlizec tedy mohl dale obsluhovat starsi R2 app.js z cache.
+
+To vysvetluje rozpor: dokumentace/changelog byl novy, ale runtime v prohlizeci se mohl chovat jako stary R2.
+
+3. OPRAVA
+Verze byla zvysena na 0.21.50.
+
+V aktualnim runtime plati:
+- hvezdicka Top 4: kazdy ucitel, vsechny karty,
+- presun Top 4: kazdy ucitel, jeho ctyri aplikace kolem brany,
+- Pohled kolegy: hvezdicka i presun jsou viditelne,
+- stav testovani: pouze skutecny spravce,
+- zmena centralniho provozniho semaforu: pouze skutecny spravce po aktivaci serverove funkce.
+
+4. PWA / CACHE OPRAVA
+V dist-school-server bylo overeno:
+- APP_VERSION = 0.21.50
+- CACHE = ghrab-ai-studio-v0.21.50
+- hlavni runtime se nacita jako app.js?v=0.21.50
+
+Tim se stary cache klic 0.21.49 prestava pouzivat pro novy runtime. I kdyby jeste kratce bezela stara 0.21.49 service-worker instance, jeji logika pro asset s jinou ?v= hodnotou pouzije sit misto stare cache.
+
+5. PREVENCE OPAKOVANI
+Do RELEASE-CHECKLIST.md bylo pridano pravidlo, ze zmena runtime JS/CSS/UI musi dostat nove cislo aplikacni verze. Stejne cislo verze se nesmi znovu pouzit pro zmeneny runtime, protoze PWA cache je vazana na verzi aplikace.
+
+6. OVERENI
+- npm test: PASS
+- Studio UX/regression: PASS
+- audit regressions: 50/50 PASS
+- security regressions: 16/16 PASS
+- GARP security regressions: 19/19 PASS
+- build:school-server: PASS
+- platform conformance: PASS
+- P3 quality/performance: 188/188 PASS
+- dist-school-server app.js: hvezdicka bez admin podminky potvrzena
+- dist-school-server app.js: presun Top 4 bez admin podminky potvrzen
+- dist-school-server app.js: stav testovani zustava admin-only potvrzen
+- dist-school-server sw.js: cache 0.21.50 potvrzena
+- dist-school-server index.html: app.js?v=0.21.50 potvrzeno
+
+Poznamka: browserova Playwright sada nebyla v tomto lokalnim archivu spustena, protoze archiv neobsahuje node_modules/Playwright. Funkcni a buildove kontroly vyse prosly; GitHub Actions muze browserovou sadu spustit ve svem standardnim CI prostredi.

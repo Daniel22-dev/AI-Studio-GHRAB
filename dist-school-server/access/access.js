@@ -6,7 +6,7 @@ import {
   hasAppAccess,
   formatReason,
   initialiseAccess,
-} from "./access-control.js?v=0.21.49";
+} from "./access-control.js?v=0.21.50";
 const G = window.GHRAB;
 const current = document.querySelector("#access-current");
 const appsHost = document.querySelector("#access-apps");

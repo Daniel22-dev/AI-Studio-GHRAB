@@ -2,6 +2,14 @@
 
 > Tento soubor se generuje ze `src/config/changelog.json`. Neupravujte jej ručně.
 
+## 0.21.50 — 2026-09-11
+**Oprava PWA cache pro osobní Top 4 v Pohledu kolegy**
+
+- Hvězdička pro osobní Top 4 je dostupná každému učiteli na všech kartách a přesun je dostupný u jeho čtyř aplikací kolem brány, včetně Pohledu kolegy.
+- Předchozí R3 změnil runtime logiku, ale ponechal číslo 0.21.49; service worker proto mohl dál obsluhovat starý 0.21.49 JavaScript, ve kterém byly tyto prvky admin-only.
+- Verze je zvýšena na 0.21.50, čímž se mění PWA cache namespace i verzované URL assetů a prohlížeč načte opravený runtime.
+- Správcovský zůstává stav testování a změna centrálního provozního semaforu; personalizace Top 4 není správcovská funkce.
+
 ## 0.21.49 — 2026-09-11
 **Osobní Top 4 pro každého učitele a oprava Lesson Hub release-wave**
 

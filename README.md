@@ -1,8 +1,8 @@
 # AI Studio GHRAB
 
-**Aktuální verze:** 0.21.49
+**Aktuální verze:** 0.21.50
 
-**Aktualizace 0.21.49:** zjednodušuje karty aplikací, přesouvá jejich kompaktní ovládání do pravého horního rohu, zavádí jednotnou ikonu zamčeno/odemčeno a přepisuje technické popisy do běžného učitelského jazyka. Současně připravuje serverový kontrakt pro centrální provozní semafor aplikací a AI Studia; v dnešním GitHub Pages režimu zůstává tato funkce vypnutá.
+**Aktualizace 0.21.50:** zjednodušuje karty aplikací, přesouvá jejich kompaktní ovládání do pravého horního rohu, zavádí jednotnou ikonu zamčeno/odemčeno a přepisuje technické popisy do běžného učitelského jazyka. Současně připravuje serverový kontrakt pro centrální provozní semafor aplikací a AI Studia; v dnešním GitHub Pages režimu zůstává tato funkce vypnutá.
 **Platforma:** GHRAB Platform 1.1.2 · etapa P5
 
 **Stav:** AMBER – KANDIDÁT NOVÉHO VÝSLOVNĚ ZAHÁJENÉHO GARP 2.3 CYKLU, NE FINÁLNÍ RELEASE. Nezávislá kontrola Claude nad 0.21.38 potvrdila C-01/C-02/C-03, ale našla D-01 / HIGH na cestě „Smazat moje data“ → Browser Back. D-01 je v 0.21.43 opraven a kandidát čeká na druhé nezávislé ověření tohoto nového cyklu. **Reálná studentská data nepoužívat.**
@@ -10,7 +10,7 @@
 **Verze 0.21.43** sjednocuje destruktivní lifecycle ochranu: `deleteMyData()` i shared-device `endWork()` po smazání rotují neobsahovou generační tombstone. SIM-03 browser regrese testuje obě cesty, následné psaní i novou kartu a QA evidence se nepublikuje v `dist/`.
 AI Studio GHRAB je centrální brána školních digitálních a AI nástrojů. Jednotlivé aplikace zůstávají v samostatných repozitářích; Studio zajišťuje společnou navigaci, Top 4, synchronizaci verzí, bezpečnostní rámec, pilotní měření, správu podepsaných přístupů a kanonický základ technického reportéru. Materiály jsou viditelnou součástí portálu, ale v dnešním bezserverovém režimu se vlastní obsah ukládá pouze místně.
 
-## Hlavní novinky 0.21.49
+## Hlavní novinky 0.21.50
 
 - Z karet aplikací zmizely pilotní štítky, tagy a duplicitní přístupová metadata.
 - Přetažení, stav testování, oblíbenost, budoucí provozní semafor, verze a ikona přístupu jsou sjednocené v pravém horním bloku karty.
