@@ -1,8 +1,8 @@
-# Release checklist AI Studio GHRAB 0.21.56
+# Release checklist AI Studio GHRAB 0.21.57
 
-> Aktuální verze: **0.21.56** · etapa P5
+> Aktuální verze: **0.21.57** · etapa P5
 
-> 0.21.56 přidává adminské obousměrné propojení s AI Akademií. Záložku ve Studiu vidí pouze plný správce; přístupový token se mezi aplikacemi nepřenáší.
+> 0.21.57 přidává řízené auto-patch promotion release wave pro GARP 2.5.1 zařazené aplikace; default zůstává manual a pouze živý deployment může být auto-promoted.
 
 ## Stav bezpečnostního kandidáta GARP 2.3
 
@@ -18,7 +18,7 @@
 
 ## Veřejný balík
 
-- [x] Verze 0.21.56 je shodná v package, PWA manifestu, QA manifestu, buildu, dokumentaci a changelogu.
+- [x] Verze 0.21.57 je shodná v package, PWA manifestu, QA manifestu, buildu, dokumentaci a changelogu.
 - [x] Všechny aplikace jsou ve výchozím stavu uzamčené.
 - [x] Veřejný balík obsahuje pouze veřejný ověřovací klíč.
 - [x] Centrum zabezpečení je dostupné jen plnému správci; zástupce může v evidenci pouze připravit JTI.
@@ -38,7 +38,7 @@
 - [x] Pilotní metriky jsou přesně označeny jako místní.
 - [x] PWA cache se generuje automaticky z produkčního stromu a neobsahuje neplatné cesty.
 - [x] Každá změna runtime UI musí zvýšit verzi aplikace; stejná verze nesmí být znovu použita pro změněné JS/CSS, protože PWA cache je verzovaná číslem aplikace.
-- [x] Všechny lokální JS/CSS vstupy a relativní modulové importy mají ve výsledném buildu revizi `?v=0.21.56`.
+- [x] Všechny lokální JS/CSS vstupy a relativní modulové importy mají ve výsledném buildu revizi `?v=0.21.57`.
 - [x] Odkazy přístupové brány při vložení do iframe opustí rámec a otevřou AI Studio v hlavním okně.
 - [x] Viewer obsahuje pojistku proti vnořenému AI Studiu a styly brány odolávají obecnému CSS vložených aplikací.
 - [x] Serverový katalog se aktivuje pouze při `school-server` + `schoolServerConnected` + `sharedMaterialLibrary`; GitHub profil nemůže omylem publikovat materiál.
@@ -76,6 +76,12 @@
 - [ ] Nikdy nenahrát na GitHub ani nesdílet s kolegy.
 
 ## Dílčí aplikace
+
+- [x] `release-promotion-policy.json` má `defaultMode: manual`, `atomic: true` a auto-patch nepovoluje aplikaci bez explicitního GARP 2.5.1 enrollmentu.
+- [x] Verified ecosystem gate povoluje auto-patch pouze z `verification: deployment`; repository fallback ani snapshot nesmí patch povýšit.
+- [x] Syntetická regrese potvrzuje PASS pro `5.10.25 → 5.10.26` a BLOCK pro minor, rollback, source drift, repository drift, Platform drift a neověřený AI operations manifest.
+- [x] `release-wave.json` se při QA nemutuje a audit rozhodnutí vzniká pouze v gitignorovaném `qa-results/release-promotion-report.json`.
+
 
 - [ ] Vložit správný `*-access-bootstrap.example.js` do každého repozitáře.
 - [ ] Upravit poslední dynamický import podle skutečného vstupního modulu.

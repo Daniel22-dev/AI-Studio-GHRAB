@@ -1,7 +1,33 @@
 {
   "schema": "ai-studio-changelog-v1",
-  "current": "0.21.56",
+  "current": "0.21.57",
   "items": [
+    {
+      "version": "0.21.57",
+      "date": "2026-09-11",
+      "title": {
+        "cs": "Řízené auto-patch promotion release wave",
+        "en": "Controlled release-wave auto-patch promotion"
+      },
+      "changes": [
+        {
+          "cs": "Ověřený ecosystem gate umí u jednou GARP 2.5.1 zařazené aplikace přijmout vyšší patch verzi z živého deploymentu bez ručního přepisování release-wave baseline.",
+          "en": "The verified ecosystem gate can accept a higher patch version from a live deployment for an app enrolled in GARP 2.5.1 without manually rewriting the release-wave baseline."
+        },
+        {
+          "cs": "Auto-promotion je fail-closed: repository fallback, snapshot, rollback, prerelease, minor/major změna, změna repozitáře, Platform contract/range, storage namespace, cache identity nebo neověřený AI operations manifest release zablokují.",
+          "en": "Auto-promotion is fail-closed: repository fallback, snapshots, rollbacks, prereleases, minor/major changes, repository changes, Platform contract/range drift, storage namespace drift, cache identity drift or an unverified AI operations manifest block the release."
+        },
+        {
+          "cs": "Přechodová politika má default manual a nyní automaticky zařazuje pouze Korespondenčního asistenta od 5.10.25, jehož dodaný GARP 2.5.1 SHIELD-PREP deployment pipeline byl ověřen.",
+          "en": "The transitional policy defaults to manual and currently auto-enrols only Correspondence Assistant from 5.10.25, whose supplied GARP 2.5.1 SHIELD-PREP deployment pipeline was verified."
+        },
+        {
+          "cs": "Každý verified běh vytváří auditní qa-results/release-promotion-report.json; release-wave.json se během QA skrytě nemění a zůstává schváleným baseline lockem pro minor wave.",
+          "en": "Each verified run creates qa-results/release-promotion-report.json; release-wave.json is never silently mutated during QA and remains the approved baseline lock for the minor wave."
+        }
+      ]
+    },
     {
       "version": "0.21.56",
       "date": "2026-09-11",

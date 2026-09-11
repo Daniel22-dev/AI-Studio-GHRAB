@@ -1,8 +1,8 @@
-# Bezpečnostní hranice AI Studio GHRAB 0.21.56
+# Bezpečnostní hranice AI Studio GHRAB 0.21.57
 
-> Aktuální verze: **0.21.56** · etapa P5
+> Aktuální verze: **0.21.57** · etapa P5
 
-> 0.21.56 přidává adminské obousměrné propojení s AI Akademií. Záložku ve Studiu vidí pouze plný správce; přístupový token se mezi aplikacemi nepřenáší.
+> 0.21.57 přidává fail-closed auto-patch promotion pro jednou GARP 2.5.1 zařazené aplikace. Automatické přijetí vyžaduje živé deployment ověření a nesmí obejít Platform, repository ani ecosystem kontrakty.
 
 
 ## Rychlá kontrola dat v portálu
@@ -21,6 +21,11 @@ Záložka **Bezpečnost** obsahuje jednoduchý semafor a volitelnou pomůcku **N
 - exportuje pouze omezené anonymní provozní údaje.
 
 ## Co bez serveru nezajišťuje
+
+### Release-wave promotion
+
+Od 0.21.57 se běžný patch GARP 2.5.1 zařazené aplikace může přijmout automaticky pouze tehdy, když Studio ověří její skutečný živý deployment. Repository fallback a snapshot jsou pro auto-promotion nedostatečné. Výchozí režim všech nezařazených aplikací je manuální; rollback, prerelease, minor/major změna a drift repository/Platform/storage/cache kontraktů se blokují. `release-wave.json` se během QA nepřepisuje.
+
 
 - spolehlivé ověření totožnosti osoby,
 - zákaz předání platného přístupového souboru,

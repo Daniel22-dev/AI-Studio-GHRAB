@@ -64,6 +64,9 @@ const apps = await loadJson(path.join(src, "config/apps.generated.json"));
 const fallback = await loadJson(path.join(src, "config/apps.fallback.json"));
 const sources = await loadJson(path.join(src, "config/sources.json"));
 const syncReport = await loadJson(path.join(src, "config/sync-report.json"));
+const releasePromotionPolicy = await loadJson(
+  path.join(src, "config/release-promotion-policy.json"),
+);
 const catalog = await loadJson(path.join(src, "library/catalog.json"));
 const manifest = await loadJson(path.join(src, "manifest.webmanifest"));
 const permissions = await loadJson(path.join(src, "config/permissions.json"));
@@ -91,6 +94,10 @@ const syncScript = await readFile(
 );
 const deployWorkflow = await readFile(
   path.join(root, ".github/workflows/deploy.yml"),
+  "utf8",
+);
+const ecosystemQaScript = await readFile(
+  path.join(root, "scripts/qa-ecosystem.mjs"),
   "utf8",
 );
 const prettierIgnore = await readFile(
@@ -238,6 +245,36 @@ if (!deployWorkflow.includes("cancel-in-progress: false"))
   fail("Naplánovaný běh může rušit právě probíhající nasazení.");
 if (!deployWorkflow.includes("Verify Platform 1.1.2 release-wave sources") || !deployWorkflow.includes("npm run qa:ecosystem:verified"))
   fail("Deploy workflow neobsahuje povinnou fail-closed kontrolu všech release-wave zdrojů.");
+const verifiedEcosystemScript = pkg?.scripts?.["qa:ecosystem:verified"] || "";
+if (
+  !verifiedEcosystemScript.includes("--require-source-verification") ||
+  !verifiedEcosystemScript.includes("--allow-auto-promotion") ||
+  !verifiedEcosystemScript.includes("--promotion-report qa-results/release-promotion-report.json")
+)
+  fail("Ověřený ecosystem gate nemá zapnuté auditované fail-closed auto-patch promotion.");
+if (
+  !ecosystemQaScript.includes("evaluateAutoPromotion") ||
+  !ecosystemQaScript.includes("AUTO-PROMOTION") ||
+  !ecosystemQaScript.includes("release-promotion-report-v1")
+)
+  fail("Ecosystem QA neobsahuje řízené release-wave auto-promotion a auditní report.");
+if (
+  releasePromotionPolicy?.schema !== "ghrab-release-promotion-policy-v1" ||
+  releasePromotionPolicy?.mode !== "transitional" ||
+  releasePromotionPolicy?.atomic !== true ||
+  releasePromotionPolicy?.defaultMode !== "manual"
+)
+  fail("Release promotion policy nemá fail-closed transitional baseline.");
+const correspondencePromotion = releasePromotionPolicy?.applications?.find(
+  (entry) => entry.id === "correspondence",
+);
+if (
+  correspondencePromotion?.mode !== "auto-patch" ||
+  correspondencePromotion?.minimumVersion !== "5.10.25" ||
+  correspondencePromotion?.assuranceBaseline !== "GARP-2.5.1-SHIELD-PREP" ||
+  correspondencePromotion?.requiredVerification !== "deployment"
+)
+  fail("Korespondenční asistent není správně zařazen do GARP 2.5.1 auto-patch politiky.");
 if (!prettierIgnore.includes("src/ai-core/releases/**"))
   fail(".prettierignore nechrání neměnné release artefakty GHRAB AI Core.");
 const formatScript = pkg?.scripts?.format || "";

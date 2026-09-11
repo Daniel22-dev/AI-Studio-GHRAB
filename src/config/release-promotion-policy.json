@@ -1,0 +1,16 @@
+{
+  "schema": "ghrab-release-promotion-policy-v1",
+  "mode": "transitional",
+  "atomic": true,
+  "defaultMode": "manual",
+  "applications": [
+    {
+      "id": "correspondence",
+      "mode": "auto-patch",
+      "minimumVersion": "5.10.25",
+      "assuranceBaseline": "GARP-2.5.1-SHIELD-PREP",
+      "requiredVerification": "deployment",
+      "note": "Enrolled from the reviewed Korespondencni asistent 5.10.25 GARP 2.5.1 deployment pipeline. Future minor/major waves remain manual."
+    }
+  ]
+}

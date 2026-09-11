@@ -2,6 +2,14 @@
 
 > Tento soubor se generuje ze `src/config/changelog.json`. Neupravujte jej ručně.
 
+## 0.21.57 — 2026-09-11
+**Řízené auto-patch promotion release wave**
+
+- Ověřený ecosystem gate umí u jednou GARP 2.5.1 zařazené aplikace přijmout vyšší patch verzi z živého deploymentu bez ručního přepisování release-wave baseline.
+- Auto-promotion je fail-closed: repository fallback, snapshot, rollback, prerelease, minor/major změna, změna repozitáře, Platform contract/range, storage namespace, cache identity nebo neověřený AI operations manifest release zablokují.
+- Přechodová politika má default manual a nyní automaticky zařazuje pouze Korespondenčního asistenta od 5.10.25, jehož dodaný GARP 2.5.1 SHIELD-PREP deployment pipeline byl ověřen.
+- Každý verified běh vytváří auditní qa-results/release-promotion-report.json; release-wave.json se během QA skrytě nemění a zůstává schváleným baseline lockem pro minor wave.
+
 ## 0.21.56 — 2026-09-11
 **PWA-safe přechod do AI Akademie**
 

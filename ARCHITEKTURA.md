@@ -1,8 +1,8 @@
-# Architektura AI Studio GHRAB 0.21.56
+# Architektura AI Studio GHRAB 0.21.57
 
-> Aktuální verze: **0.21.56** · etapa P5
+> Aktuální verze: **0.21.57** · etapa P5
 
-> 0.21.56 přidává adminské obousměrné propojení s AI Akademií. Záložku ve Studiu vidí pouze plný správce; přístupový token se mezi aplikacemi nepřenáší.
+> 0.21.57 odděluje ručně schválený release-wave baseline od bezpečně odvozeného auto-patch promotion pro GARP 2.5.1 zařazené aplikace.
 
 ## Koherence aktualizace PWA
 
@@ -21,6 +21,13 @@ samostatné aplikace ─ manifesty ─► AI Studio
                                    ├─ bezpečnost a diagnostika
                                    └─ pilot a report
 ```
+
+
+## Release-wave a přechod na GARP 2.5.1
+
+`release-wave.json` zůstává explicitní baseline lock. Nová policy vrstva `release-promotion-policy.json` dovoluje pouze vybraným GARP 2.5.1 aplikacím odvodit bezpečné patch promotion z živě ověřeného deploymentu. Nejde o mutaci wave během QA: verified gate pouze rozhodne `CURRENT / ELIGIBLE / BLOCKED` a výsledek uloží jako auditní evidence.
+
+Tím se odděluje **detekce verze** od **promotion politiky**. Synchronizace může znát novou verzi každé aplikace, ale automaticky je přijat pouze vyšší patch u předem zařazeného GARP pipeline. Minor/major změna nebo změna integračních invariantů zůstává člověkem řízenou změnou wave.
 
 ## Server-ready katalog materiálů
 

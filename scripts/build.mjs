@@ -159,6 +159,7 @@ for (const buildOnlyConfig of [
   "apps.local.json",
   "sources.json",
   "release-wave.json",
+  "release-promotion-policy.json",
   "ai-readiness-baseline.json",
   "ai-core-consumers.json",
   // Historical P0 compatibility profile is source-only. It enables direct-provider
