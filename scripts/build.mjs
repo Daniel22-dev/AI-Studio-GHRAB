@@ -309,6 +309,8 @@ for (const relative of [
   "config/changelog.json",
   "config/apps.generated.json",
   "config/apps.fallback.json",
+  "config/ai-readiness.generated.json",
+  "config/sync-report.json",
   "config/platform-consumers.json",
   "config/data-manifest.json",
   "config/permissions.json",
@@ -320,6 +322,9 @@ for (const relative of [
   "config/ai-runtime.json",
   "config/platform-manifest.json",
   "manifest.webmanifest",
+  "ghrab-platform.consumer.json",
+  "build-info.json",
+  "platform-build-info.json",
 ]) {
   const file = path.join(dist, relative);
   try {
@@ -330,13 +335,29 @@ for (const relative of [
   }
 }
 
-// Keep at least one whitespace separator between HTML lines while removing only
-// indentation before tags. This is deliberately not a general HTML minifier.
+// P5 performance hygiene for the portal shell. Keep source CSS/HTML readable, but
+// remove indentation and blank lines from the two application-owned critical CSS
+// files and the root entry document in dist. Platform CSS is deliberately excluded
+// because its byte identity is verified against the canonical vendor bundle.
+for (const relative of ["styles.css", "polish.css"]) {
+  const file = path.join(dist, relative);
+  const text = await readFile(file, "utf8");
+  const compacted = `${text
+    .split(/\r?\n/u)
+    .map((line) => line.trim())
+    .filter(Boolean)
+    .join("\n")}\n`;
+  if (compacted !== text) await writeFile(file, compacted, "utf8");
+}
+
+// The root entry has no whitespace-sensitive <pre>/<textarea> content. Line-level
+// trimming preserves HTML text separation while reducing the measured critical shell.
 const rootIndex = path.join(dist, "index.html");
 const rootIndexText = await readFile(rootIndex, "utf8");
-const rootIndexCompacted = rootIndexText
-  .split("\n")
-  .map((line) => line.replace(/^[ \\t]+(?=<)/u, ""))
-  .join("\n");
+const rootIndexCompacted = `${rootIndexText
+  .split(/\r?\n/u)
+  .map((line) => line.trim())
+  .filter(Boolean)
+  .join("\n")}\n`;
 if (rootIndexCompacted !== rootIndexText) await writeFile(rootIndex, rootIndexCompacted, "utf8");
 
