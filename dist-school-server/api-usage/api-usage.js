@@ -1,4 +1,4 @@
-import { clearApiUsageCache, loadApiUsage } from "../modules/api-usage.js?v=0.21.55";
+import { clearApiUsageCache, loadApiUsage } from "../modules/api-usage.js?v=0.21.56";
 
 await window.GHRAB.accessReady;
 if (window.GHRAB.canAccessAdminPage?.("api-usage") && !window.GHRAB.isColleaguePreview?.()) {

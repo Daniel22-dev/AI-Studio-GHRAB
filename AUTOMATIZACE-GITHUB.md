@@ -1,8 +1,8 @@
-# Automatizace aktualizací AI Studio GHRAB 0.21.55
+# Automatizace aktualizací AI Studio GHRAB 0.21.56
 
-> Aktuální verze: **0.21.55** · etapa P5
+> Aktuální verze: **0.21.56** · etapa P5
 
-> 0.21.55 přidává adminské obousměrné propojení s AI Akademií. Záložku ve Studiu vidí pouze plný správce; přístupový token se mezi aplikacemi nepřenáší.
+> 0.21.56 přidává adminské obousměrné propojení s AI Akademií. Záložku ve Studiu vidí pouze plný správce; přístupový token se mezi aplikacemi nepřenáší.
 
 ## Pravidelná synchronizace
 

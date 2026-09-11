@@ -1,12 +1,12 @@
-# Nahrání AI Studio GHRAB 0.21.55
+# Nahrání AI Studio GHRAB 0.21.56
 
-> Aktuální verze: **0.21.55** · etapa P5
+> Aktuální verze: **0.21.56** · etapa P5
 
-> 0.21.55 přidává adminské obousměrné propojení s AI Akademií. Záložku ve Studiu vidí pouze plný správce; přístupový token se mezi aplikacemi nepřenáší.
+> 0.21.56 přidává adminské obousměrné propojení s AI Akademií. Záložku ve Studiu vidí pouze plný správce; přístupový token se mezi aplikacemi nepřenáší.
 
 > **PŘED NASAZENÍM:** aktuální release musí projít standardní P5/access gate v GitHub Actions. Pro produkční použití musí být zelené i povinné browserové kontroly CI; do uzavření těchto gate se nemají používat reálná studentská data.
 
-Verze 0.21.55 navazuje na stávající P5/GARP bezpečnostní baseline a na reporting/server-ready změny z 0.21.54. Přidává pouze full-admin propojení s AI Akademií; podepisovací klíče, existující revokace a vydaná oprávnění se tímto releasem nemění.
+Verze 0.21.56 navazuje na stávající P5/GARP bezpečnostní baseline a na reporting/server-ready změny z 0.21.54. Přidává pouze full-admin propojení s AI Akademií; podepisovací klíče, existující revokace a vydaná oprávnění se tímto releasem nemění.
 
 ## Povinné pořadí
 

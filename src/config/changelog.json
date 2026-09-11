@@ -1,7 +1,29 @@
 {
   "schema": "ai-studio-changelog-v1",
-  "current": "0.21.55",
+  "current": "0.21.56",
   "items": [
+    {
+      "version": "0.21.56",
+      "date": "2026-09-11",
+      "title": {
+        "cs": "PWA-safe přechod do AI Akademie",
+        "en": "PWA-safe launch of AI Academy"
+      },
+      "changes": [
+        {
+          "cs": "AI Akademie se ze Studia otevírá v samostatné kartě nebo okně, takže nainstalované Studio neopouští svůj PWA scope a Chrome už nezobrazuje bílou out-of-scope lištu.",
+          "en": "AI Academy now opens from Studio in a separate tab or window, so the installed Studio never leaves its PWA scope and Chrome no longer shows the white out-of-scope toolbar."
+        },
+        {
+          "cs": "Odkaz zůstává dostupný pouze plnému správci a používá noopener/noreferrer; způsob ověřování rolí ani přístupové tokeny se nemění.",
+          "en": "The link remains full-admin only and uses noopener/noreferrer; role verification and access tokens are unchanged."
+        },
+        {
+          "cs": "Verze a PWA cache jsou zvýšeny na 0.21.56, aby se opravená navigace načetla i uživatelům se starší cache.",
+          "en": "The version and PWA cache are bumped to 0.21.56 so users with an older cache receive the corrected navigation."
+        }
+      ]
+    },
     {
       "version": "0.21.55",
       "date": "2026-09-11",

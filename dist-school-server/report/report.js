@@ -3,8 +3,8 @@ import {
   periodOfDate,
   safeEvent,
   safeStatistics,
-} from "../shared/safe-export.js?v=0.21.55";
-import { loadApiUsage } from "../modules/api-usage.js?v=0.21.55";
+} from "../shared/safe-export.js?v=0.21.56";
+import { loadApiUsage } from "../modules/api-usage.js?v=0.21.56";
 
 await window.GHRAB.accessReady;
 if (window.GHRAB.canAccessAdminPage?.("report") && !window.GHRAB.isColleaguePreview?.()) {

@@ -2,6 +2,13 @@
 
 > Tento soubor se generuje ze `src/config/changelog.json`. Neupravujte jej ručně.
 
+## 0.21.56 — 2026-09-11
+**PWA-safe přechod do AI Akademie**
+
+- AI Akademie se ze Studia otevírá v samostatné kartě nebo okně, takže nainstalované Studio neopouští svůj PWA scope a Chrome už nezobrazuje bílou out-of-scope lištu.
+- Odkaz zůstává dostupný pouze plnému správci a používá noopener/noreferrer; způsob ověřování rolí ani přístupové tokeny se nemění.
+- Verze a PWA cache jsou zvýšeny na 0.21.56, aby se opravená navigace načetla i uživatelům se starší cache.
+
 ## 0.21.55 — 2026-09-11
 **Adminské propojení s AI Akademií**
 

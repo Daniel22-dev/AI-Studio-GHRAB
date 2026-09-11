@@ -1,4 +1,4 @@
-import { safeExportSelfTest } from "../shared/safe-export.js?v=0.21.55";
+import { safeExportSelfTest } from "../shared/safe-export.js?v=0.21.56";
 const T = window.GHRAB;
 await T.accessReady;
 if (T.canAccessAdminPage?.("tests")) {

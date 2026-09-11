@@ -75,6 +75,7 @@ const academyBridgeSource = academyBridgeStart >= 0 && academyBridgeEnd > academ
   ? appJs.slice(academyBridgeStart, academyBridgeEnd)
   : "";
 check(academyBridgeSource.includes('function ensureAcademyNavigation()') && academyBridgeSource.includes('link.dataset.nav = "academy"') && academyBridgeSource.includes('link.dataset.adminNav = ""'), "AI Akademie nema full-admin vstup v hlavni navigaci Studia.");
+check(academyBridgeSource.includes('link.target = "_blank"') && academyBridgeSource.includes('link.rel = "noopener noreferrer"'), "AI Akademie se ze Studia neotevira mimo PWA scope v novem bezpecnem kontextu.");
 check(/target\.searchParams\.set\(\s*["']studio/i.test(academyBridgeSource) && academyBridgeSource.includes("target.origin !== location.origin") && !/searchParams\.set\(["'](?:token|permit|access)/i.test(academyBridgeSource), "Propojeni s AI Akademii nepredava pouze bezpecnou same-origin navratovou adresu Studia.");
 const deploymentConfig = JSON.parse(await text("src/config/deployment.json"));
 const deploymentSchoolConfig = JSON.parse(await text("src/config/deployment.school-server.json"));
