@@ -1,20 +1,20 @@
-# Přesný postup nahrání AI Studio GHRAB 0.21.48 na GitHub – až po schválení
+# Přesný postup nahrání AI Studio GHRAB 0.21.49 na GitHub – až po schválení
 
-> Aktuální verze: **0.21.48** · etapa P5
+> Aktuální verze: **0.21.49** · etapa P5
 
-> 0.21.48 zjednodušuje karty aplikací, přesouvá ovládací prvky do pravého horního rohu a připravuje centrální serverový provozní semafor; bezpečnostní logika GARP zůstává beze změny.
+> 0.21.49 zjednodušuje karty aplikací, přesouvá ovládací prvky do pravého horního rohu a připravuje centrální serverový provozní semafor; bezpečnostní logika GARP zůstává beze změny.
 
 > **BLOKACE NASAZENÍ:** nový nezávislý GARP 2.3 cyklus byl výslovně zahájen. Verze 0.21.43 je kandidát po opravě D-01 / HIGH z první nezávislé kontroly tohoto nového cyklu a před nasazením musí projít jeho druhou Claude kontrolou a uzavřením release gate. Do té doby se tento postup NESMÍ použít k produkčnímu nasazení a reálná studentská data se nesmí použít.
 
 ## Předpoklady
 
-Nejprve musí být nasazeny KS 5.10.25, SORTIO 1.1.14, Lesson Hub 1.2.17, Diferenciátor 1.3.46, ACTIVA 0.5.22, Hodnotitel 1.5.25, LUDUS 1.16.20 a Generátor 7.1.25. Jejich lokální reportér vypíná centrální instanci přes `errorReporter: false`.
+Nejprve musí být nasazeny KS 5.10.25, SORTIO 1.1.14, Lesson Hub 1.2.22, Diferenciátor 1.3.46, ACTIVA 0.5.22, Hodnotitel 1.5.25, LUDUS 1.16.20 a Generátor 7.1.25. Jejich lokální reportér vypíná centrální instanci přes `errorReporter: false`.
 
 ## Nahrání
 
-1. Stáhněte a rozbalte `AI-Studio-GHRAB-0.21.48-PWA-INSTALL-HOTFIX.zip`.
+1. Stáhněte a rozbalte `AI-Studio-GHRAB-0.21.49-PWA-INSTALL-HOTFIX.zip`.
 2. Do kořene repozitáře `AI-Studio-GHRAB` nahrajte přímo všechny soubory a složky z rozbaleného archivu.
-3. Commit pojmenujte například `AI Studio 0.21.48 – PWA install onboarding hotfix`.
+3. Commit pojmenujte například `AI Studio 0.21.49 – PWA install onboarding hotfix`.
 4. Vyčkejte na dokončení GitHub Actions. Workflow instaluje závislosti, synchronizuje manifesty, spustí regresi reportéru, celý GHRAB QA release gate, sestaví `dist` a až poté nasadí GitHub Pages.
 
 ## Kontrola po nasazení

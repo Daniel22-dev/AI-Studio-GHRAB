@@ -1,8 +1,8 @@
-# Release checklist AI Studio GHRAB 0.21.48
+# Release checklist AI Studio GHRAB 0.21.49
 
-> Aktuální verze: **0.21.48** · etapa P5
+> Aktuální verze: **0.21.49** · etapa P5
 
-> 0.21.48 zjednodušuje karty aplikací, přesouvá ovládací prvky do pravého horního rohu a připravuje centrální serverový provozní semafor; bezpečnostní logika GARP zůstává beze změny.
+> 0.21.49 zjednodušuje karty aplikací, přesouvá ovládací prvky do pravého horního rohu a připravuje centrální serverový provozní semafor; bezpečnostní logika GARP zůstává beze změny.
 
 ## Stav bezpečnostního kandidáta GARP 2.3
 

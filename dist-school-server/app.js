@@ -1,12 +1,12 @@
-import { sanitizePilotEvent, sanitizePilotEventList } from "./privacy/pilot-event.js?v=0.21.48";
-import { validateMaterialPackage } from "./shared/material-validator.js?v=0.21.48";
-import { buildPilotSummary } from "./shared/safe-export.js?v=0.21.48";
+import { sanitizePilotEvent, sanitizePilotEventList } from "./privacy/pilot-event.js?v=0.21.49";
+import { validateMaterialPackage } from "./shared/material-validator.js?v=0.21.49";
+import { buildPilotSummary } from "./shared/safe-export.js?v=0.21.49";
 import {
   applyDeploymentToAppRegistry,
   loadDeploymentConfig,
-} from "./access/deployment-config.js?v=0.21.48";
-import { initialisePlatformRuntime } from "./access/platform-runtime.js?v=0.21.48";
-import { createRegistryClient } from "./modules/registry-client.js?v=0.21.48";
+} from "./access/deployment-config.js?v=0.21.49";
+import { initialisePlatformRuntime } from "./access/platform-runtime.js?v=0.21.49";
+import { createRegistryClient } from "./modules/registry-client.js?v=0.21.49";
 import {
   initialiseAccess,
   setPermitToken,
@@ -21,8 +21,8 @@ import {
   requiredTraining,
   formatReason,
   inspectPermitToken,
-} from "./access/access-control.js?v=0.21.48";
-const VERSION = "0.21.48";
+} from "./access/access-control.js?v=0.21.49";
+const VERSION = "0.21.49";
 const deploymentReady = loadDeploymentConfig({ appId: "ai-studio" });
 const root = document.documentElement;
 const page = document.body.dataset.page || "home";
@@ -1315,11 +1315,11 @@ function toggleFavoriteApp(appId) {
 }
 async function loadAppTestStatusModule() {
   if (!isAdmin() || isColleaguePreview()) return null;
-  appTestStatusModule ||= await import("./modules/app-test-status.js?v=0.21.48");
+  appTestStatusModule ||= await import("./modules/app-test-status.js?v=0.21.49");
   return appTestStatusModule;
 }
 async function loadOperationalStatusModule() {
-  operationalStatusModule ||= await import("./modules/operational-status.js?v=0.21.48");
+  operationalStatusModule ||= await import("./modules/operational-status.js?v=0.21.49");
   operationalStatusSnapshot = await operationalStatusModule.loadOperationalStatus(
     deploymentReady,
   );
@@ -1858,7 +1858,7 @@ function portalAppCard(app, index, permissions) {
   identity.append(icon);
 
   const headActions = el("div", "portal-card-actions");
-  if (index >= 0 && index < 4) {
+  if (isAdmin() && !isColleaguePreview() && index >= 0 && index < 4) {
     const dragHandle = el("button", "icon-button portal-drag-handle", "⠿");
     dragHandle.type = "button";
     dragHandle.draggable = true;
@@ -1936,25 +1936,27 @@ function portalAppCard(app, index, permissions) {
       appTestStatusModule.createAppTestStatusButton(app, article, state.language),
     );
   }
-  const pin = el(
-    "button",
-    `icon-button pin-button ${favorites.includes(app.id) ? "is-pinned" : ""}`,
-    "★",
-  );
-  pin.type = "button";
-  pin.setAttribute(
-    "aria-label",
-    favorites.includes(app.id)
-      ? t("Odebrat z Top 4", "Remove from Top 4")
-      : t("Přidat do Top 4", "Add to Top 4"),
-  );
-  pin.title = pin.getAttribute("aria-label");
-  pin.addEventListener("click", (event) => {
-    event.preventDefault();
-    event.stopPropagation();
-    toggleFavoriteApp(app.id);
-  });
-  headActions.append(pin);
+  if (isAdmin() && !isColleaguePreview()) {
+    const pin = el(
+      "button",
+      `icon-button pin-button ${favorites.includes(app.id) ? "is-pinned" : ""}`,
+      "★",
+    );
+    pin.type = "button";
+    pin.setAttribute(
+      "aria-label",
+      favorites.includes(app.id)
+        ? t("Odebrat z Top 4", "Remove from Top 4")
+        : t("Přidat do Top 4", "Add to Top 4"),
+    );
+    pin.title = pin.getAttribute("aria-label");
+    pin.addEventListener("click", (event) => {
+      event.preventDefault();
+      event.stopPropagation();
+      toggleFavoriteApp(app.id);
+    });
+    headActions.append(pin);
+  }
   const operationalButton = createOperationalStatusButton(app.id, localised(app.name));
   if (operationalButton) headActions.append(operationalButton);
   headActions.append(
@@ -2732,7 +2734,7 @@ applyTheme();
 applyLanguage();
 applyMotion();
 renderHome();
-void import('./modules/portal-effects.js?v=0.21.48')
+void import('./modules/portal-effects.js?v=0.21.49')
   .then(({ setupPortalEffects }) => setupPortalEffects({ root }))
   .catch((error) => console.warn('Volitelne portalove efekty nebyly nacteny.', error));
 void refreshSharedAccessModuleCache();
@@ -2742,7 +2744,7 @@ accessReady.then(() => {
   updateTelemetryModeBanner();
   setupMonthlyReportReminder();
 });
-void Promise.all([deploymentReady, import("./access/app-guard.js?v=0.21.48")])
+void Promise.all([deploymentReady, import("./access/app-guard.js?v=0.21.49")])
   .then(([deployment, { startErrorReporterBestEffort }]) =>
     startErrorReporterBestEffort("ai-studio", {
       appName: "AI Studio GHRAB",

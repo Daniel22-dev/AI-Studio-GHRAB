@@ -11,7 +11,7 @@ Ochranná vrstva je integrována v těchto vydáních:
 - Korespondenční asistent 5.10.25 — ID `correspondence`,
 - ACTIVA 0.5.22 — ID `activity-builder`,
 - SORTIO 1.1.14 — ID `sortio`,
-- Lesson Hub 1.2.17 — ID `lesson-hub`.
+- Lesson Hub 1.2.22 — ID `lesson-hub`.
 
 Přímé otevření jejich veřejných adres používá stejné podepsané oprávnění jako spuštění z AI Studia.
 

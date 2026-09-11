@@ -756,7 +756,7 @@
       "cs": "Lesson Hub",
       "en": "Lesson Hub"
     },
-    "version": "1.2.17",
+    "version": "1.2.22",
     "status": {
       "cs": "Připraveno k řízenému pilotu",
       "en": "Ready for controlled pilot"
@@ -860,7 +860,7 @@
       "studioBridge": 2,
       "artifactEnvelope": 1,
       "storagePrefix": "ghrab.lesson-hub.",
-      "cacheName": "ghrab-lesson-hub-v1.2.17",
+      "cacheName": "ghrab-lesson-hub-v1.2.22",
       "suiteSessionContract": "ghrab-suite-session-v1"
     }
   },

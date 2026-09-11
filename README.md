@@ -1,8 +1,8 @@
 # AI Studio GHRAB
 
-**Aktuální verze:** 0.21.48
+**Aktuální verze:** 0.21.49
 
-**Aktualizace 0.21.48:** zjednodušuje karty aplikací, přesouvá jejich kompaktní ovládání do pravého horního rohu, zavádí jednotnou ikonu zamčeno/odemčeno a přepisuje technické popisy do běžného učitelského jazyka. Současně připravuje serverový kontrakt pro centrální provozní semafor aplikací a AI Studia; v dnešním GitHub Pages režimu zůstává tato funkce vypnutá.
+**Aktualizace 0.21.49:** zjednodušuje karty aplikací, přesouvá jejich kompaktní ovládání do pravého horního rohu, zavádí jednotnou ikonu zamčeno/odemčeno a přepisuje technické popisy do běžného učitelského jazyka. Současně připravuje serverový kontrakt pro centrální provozní semafor aplikací a AI Studia; v dnešním GitHub Pages režimu zůstává tato funkce vypnutá.
 **Platforma:** GHRAB Platform 1.1.2 · etapa P5
 
 **Stav:** AMBER – KANDIDÁT NOVÉHO VÝSLOVNĚ ZAHÁJENÉHO GARP 2.3 CYKLU, NE FINÁLNÍ RELEASE. Nezávislá kontrola Claude nad 0.21.38 potvrdila C-01/C-02/C-03, ale našla D-01 / HIGH na cestě „Smazat moje data“ → Browser Back. D-01 je v 0.21.43 opraven a kandidát čeká na druhé nezávislé ověření tohoto nového cyklu. **Reálná studentská data nepoužívat.**
@@ -10,7 +10,7 @@
 **Verze 0.21.43** sjednocuje destruktivní lifecycle ochranu: `deleteMyData()` i shared-device `endWork()` po smazání rotují neobsahovou generační tombstone. SIM-03 browser regrese testuje obě cesty, následné psaní i novou kartu a QA evidence se nepublikuje v `dist/`.
 AI Studio GHRAB je centrální brána školních digitálních a AI nástrojů. Jednotlivé aplikace zůstávají v samostatných repozitářích; Studio zajišťuje společnou navigaci, Top 4, synchronizaci verzí, bezpečnostní rámec, pilotní měření, správu podepsaných přístupů a kanonický základ technického reportéru. Materiály jsou viditelnou součástí portálu, ale v dnešním bezserverovém režimu se vlastní obsah ukládá pouze místně.
 
-## Hlavní novinky 0.21.48
+## Hlavní novinky 0.21.49
 
 - Z karet aplikací zmizely pilotní štítky, tagy a duplicitní přístupová metadata.
 - Přetažení, stav testování, oblíbenost, budoucí provozní semafor, verze a ikona přístupu jsou sjednocené v pravém horním bloku karty.
@@ -47,7 +47,7 @@ AI Studio GHRAB je centrální brána školních digitálních a AI nástrojů. 
 - Všechny aplikace používají jeden kanonický školní logotyp bez inline base64 kopií a jednotnou autorskou patičku.
 - Aplikační data mají namespace `ghrab.<appId>.*`; historické klíče se migrují vratně a před změnou vzniká úplná záloha.
 - Studio Bridge v2 zachovává kompatibilitu se starším handoffem v1 a strukturované exporty používají artifact envelope v1 se SHA-256.
-- Registr Studia je synchronizován s verzemi KS 5.10.25, SORTIO 1.1.14, Lesson Hub 1.2.17, Diferenciátor 1.3.46, ACTIVA 0.5.22, Hodnotitel 1.5.25, LUDUS 1.16.20 a Generátor 7.1.25.
+- Registr Studia je synchronizován s verzemi KS 5.10.25, SORTIO 1.1.14, Lesson Hub 1.2.22, Diferenciátor 1.3.46, ACTIVA 0.5.22, Hodnotitel 1.5.25, LUDUS 1.16.20 a Generátor 7.1.25.
 
 ## Serverová vrstva z P1
 

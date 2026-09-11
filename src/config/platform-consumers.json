@@ -2,7 +2,7 @@
   {
     "id": "ai-studio",
     "name": "AI Studio GHRAB",
-    "version": "0.21.48",
+    "version": "0.21.49",
     "slug": "ai-studio-ghrab",
     "paths": {
       "app": "https://daniel22-dev.github.io/AI-Studio-GHRAB/",
@@ -31,7 +31,7 @@
       "performanceContract": "ghrab-performance-v1",
       "moduleContract": "ghrab-lazy-modules-v1"
     },
-    "cacheName": "ghrab-ai-studio-v0.21.48",
+    "cacheName": "ghrab-ai-studio-v0.21.49",
     "theme": {
       "supported": [
         "dark"
@@ -292,7 +292,7 @@
   {
     "id": "lesson-hub",
     "name": "Lesson Hub",
-    "version": "1.2.17",
+    "version": "1.2.22",
     "slug": "lesson-hub",
     "paths": {
       "app": "https://daniel22-dev.github.io/lesson-hub/",
@@ -321,7 +321,7 @@
       "performanceContract": "ghrab-performance-v1",
       "moduleContract": "ghrab-lazy-modules-v1"
     },
-    "cacheName": "ghrab-lesson-hub-v1.2.17",
+    "cacheName": "ghrab-lesson-hub-v1.2.22",
     "theme": {
       "supported": [
         "light",

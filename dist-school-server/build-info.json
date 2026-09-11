@@ -1,6 +1,6 @@
 {
-  "version": "0.21.48",
-  "builtAt": "2026-09-11T06:31:38.886Z",
+  "version": "0.21.49",
+  "builtAt": "2026-09-11T06:48:19.906Z",
   "syncMode": "unverified",
   "platform": {
     "contract": "ghrab-platform-v1",
@@ -46,7 +46,7 @@
     },
     {
       "id": "lesson-hub",
-      "version": "1.2.17"
+      "version": "1.2.22"
     },
     {
       "id": "maturita-desk",
