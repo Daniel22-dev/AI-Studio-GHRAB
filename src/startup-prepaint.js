@@ -16,7 +16,6 @@
     try {
       globalThis.__GHRAB_STARTUP_RELEASE_ISOLATION__?.();
     } catch {
-      /* fail open even when modal cleanup itself fails */
     }
     globalThis.__GHRAB_STARTUP_RELEASE_ISOLATION__ = null;
     root.classList.remove(
@@ -46,7 +45,6 @@
       sessionStorage.getItem(`ghrab.startup-intro.${version}`) === "seen";
     showIntro = motion !== "off" && !alreadySeen;
   } catch {
-    // Storage may be unavailable; the intro remains the safe visual default.
   }
 
   if (

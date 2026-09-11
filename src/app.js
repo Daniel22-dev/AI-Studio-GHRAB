@@ -113,8 +113,6 @@ function detectedMotionMode() {
     matchMedia("(pointer: coarse)").matches;
   const saveData = Boolean(navigator.connection?.saveData);
   if (reduced) return "off";
-  // On desktop the gateway animation remains fully visible even on ordinary school PCs.
-  // The economy mode is reserved for mobile/coarse-pointer devices or explicit data saving.
   if (compact || saveData) return "lite";
   return "full";
 }
@@ -301,7 +299,6 @@ function storageUsage() {
       bytes += new Blob([key || "", value]).size;
     }
   } catch {
-    /* best effort */
   }
   return {
     bytes,
@@ -772,14 +769,12 @@ function previewStorageSet(value) {
   try {
     sessionStorage.setItem(COLLEAGUE_PREVIEW_KEY, value);
   } catch {
-    /* Role preview remains optional when sessionStorage is unavailable. */
   }
 }
 function previewStorageClear() {
   try {
     sessionStorage.removeItem(COLLEAGUE_PREVIEW_KEY);
   } catch {
-    /* no-op */
   }
 }
 function canPreviewColleague() {
@@ -1452,7 +1447,6 @@ function startOperationalStatusRefresh() {
       renderStudioOperationalControl();
       enforceStudioOperationalStatus();
     } catch {
-      /* loadOperationalStatus already fails soft; keep the current UI usable */
     }
   }, 30000);
 }
@@ -2591,7 +2585,6 @@ function setupStartupIntro() {
   try {
     alreadySeen = sessionStorage.getItem(key) === "seen";
   } catch {
-    /* continue */
   }
   const shouldSkip =
     !intro ||
@@ -2621,7 +2614,6 @@ function setupStartupIntro() {
     try {
       sessionStorage.setItem(key, "seen");
     } catch {
-      /* optional */
     }
     root.classList.remove("startup-intro-pending");
     root.classList.add("startup-intro-revealing");
@@ -2650,7 +2642,6 @@ function setupStartupIntro() {
   try {
     skip.focus({ preventScroll: true });
   } catch {
-    /* The timer and click handler already guarantee a fail-open path. */
   }
 }
 
@@ -2659,20 +2650,15 @@ async function registerPwa() {
     try {
       await navigator.serviceWorker.register(`${base}sw.js`);
     } catch {
-      /* optional */
     }
   }
 }
 
 function renderPageAccessGate() {
-  // Changelog was made public in 0.21.0. Keep that route public even when an
-  // older still-valid signed access bundle is cached on the device.
   if (page === "changelog") return;
   const administratorPages = new Set([
     ...(getAccessSnapshot().policy?.administratorPages || []),
     "deputy-admin",
-    // The centre is a full-admin-only compatibility route. Older signed
-    // policies do not name it yet, so the runtime gates it explicitly here.
     "security-center",
     // API costs are privileged financial data. Keep this route full-admin-only
     // even while older signed access bundles do not list it yet.

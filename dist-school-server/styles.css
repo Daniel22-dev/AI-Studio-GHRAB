@@ -2832,7 +2832,7 @@ min-height: 0;
 align-items: flex-start;
 }
 }
-/* v0.7.3 — mobile: verze aplikace se nesmí oříznout */
+/* v0.7.3 — mobile */
 .version-chip {
 white-space: nowrap;
 flex: 0 0 auto;
