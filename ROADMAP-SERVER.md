@@ -21,6 +21,7 @@
 - jednorázové handoff API,
 - bezpečné serverové uložení API klíčů,
 - anonymní agregované statistiky,
+- krátkodobá živá přítomnost pro správce (kdo je online + právě používaná aplikace, bez historie),
 - zálohy, obnova a auditní logy.
 
 ## Etapa C — plná platforma
@@ -74,3 +75,8 @@ Minimální bezpečnostní podmínky: školní session, kontrola členství v ko
 ## Zastupitelnost správce po přechodu na server
 
 Server má zachovat samostatnou provozní roli **Zástupce správce**. Ta smí kontrolovat stav ekosystému, diagnostiku, auditované provozní reporty a evidenci přístupů, ale nesmí měnit kořenové podpisové klíče, serverová tajemství ani udělovat plnou roli správce. Nouzové plné povýšení má být časově omezené, auditované, s automatickou expirací a jasným záznamem kdo, komu a do kdy práva předal.
+
+## Živá přítomnost uživatelů
+
+Klientská část je připravena od 0.21.52, ale bez serveru zůstává vypnutá. Po aktivaci školního serveru mohou všechny chráněné aplikace přes společný `platform-runtime` posílat pouze krátký heartbeat s `appId`; jméno se odvodí ze serverové session. Správce pak ve Správě vidí právě online uživatele a jejich naposledy aktivní aplikaci. Přítomnost má být ephemeral stav s doporučeným TTL 120 sekund, bez historie přechodů, bez promptů, materiálů a studentských dat. Přesný API kontrakt je v `docs/LIVE-PRESENCE-SERVER-CONTRACT.md`.
+

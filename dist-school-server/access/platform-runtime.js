@@ -1,5 +1,5 @@
-import { BAKED_DEPLOYMENT_CONFIG } from "../config/deployment-baked.js?v=0.21.50";
-import { endAccessSession } from "./access-control.js?v=0.21.50";
+import { BAKED_DEPLOYMENT_CONFIG } from "../config/deployment-baked.js?v=0.21.52";
+import { endAccessSession } from "./access-control.js?v=0.21.52";
 
 const PLATFORM_SCHEMA = "ghrab-platform-runtime-v1";
 const DATA_MANIFEST_SCHEMA = "ghrab-data-manifest-v1";
@@ -42,6 +42,22 @@ function deployment() {
 function isSchoolProfile() {
   const config = deployment();
   return config.profile === "school-server" || config.authMode === "server-session" || config.aiTransport === "school-gateway";
+}
+function livePresenceEnabled() {
+  const config = deployment();
+  return Boolean(
+    config?.features?.livePresenceReady === true &&
+      config?.features?.livePresence === true &&
+      config?.features?.schoolServerConnected === true &&
+      config?.authMode === "server-session" &&
+      config?.apiBaseUrl &&
+      config?.endpoints?.presence,
+  );
+}
+async function startConfiguredLivePresence(appId) {
+  if (!livePresenceEnabled()) return;
+  const { startLivePresenceHeartbeat } = await import("../modules/live-presence.js?v=0.21.52");
+  await startLivePresenceHeartbeat(Promise.resolve(deployment()), { appId });
 }
 function localProviderKeysAllowed() {
   const config = deployment();
@@ -538,6 +554,8 @@ export async function initialisePlatformRuntime({ appId, appVersion = "unknown",
   else if (mountControls) document.addEventListener("DOMContentLoaded", mountPrivacyControls, { once: true });
   if (document.body) mountConnectionStatus(accessSnapshot);
   else document.addEventListener("DOMContentLoaded", () => mountConnectionStatus(accessSnapshot), { once: true });
+  void startConfiguredLivePresence(appId)
+    .catch((error) => console.warn(`GHRAB live presence (${appId}) could not start.`, error));
   recordTelemetry("platform-runtime-ready", { status: "ok", connectionState: accessSnapshot?.connectionState || "unknown" });
   return runtimeState;
 }

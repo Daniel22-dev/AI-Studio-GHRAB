@@ -5,7 +5,7 @@
   "schema": "ghrab-platform-app-config-v1",
   "appId": "ai-studio",
   "appName": "AI Studio GHRAB",
-  "appVersion": "0.21.50",
+  "appVersion": "0.21.52",
   "requiredPlatformRange": ">=1.1.2 <2.0.0",
   "autoFooter": false,
   "bridgeWriteLegacy": true,
@@ -67,7 +67,7 @@
     "moduleContract": "ghrab-lazy-modules-v1",
     "requireBudget": true,
     "performanceBudget": {
-      "distBytes": 2250000,
+      "distBytes": 2310000,
       "entryHtmlBytes": 50000,
       "entryCriticalBytes": 500000,
       "largestInlineScriptBytes": 30000,

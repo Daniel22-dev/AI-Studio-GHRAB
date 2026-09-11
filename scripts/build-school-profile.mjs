@@ -58,6 +58,14 @@ const deployment = readJson(path.join(configDir, "deployment.json"));
 if (deployment.appId !== "ai-studio" || deployment.profile !== "school-server" || deployment.authMode !== "server-session") {
   throw new Error("Aktivní school-server deployment kontrakt Studia není úplný.");
 }
+if (deployment.features?.livePresence === true) {
+  if (deployment.features?.livePresenceReady !== true || deployment.features?.schoolServerConnected !== true) {
+    throw new Error("Live presence nesmí být aktivní bez připraveného a skutečně připojeného školního serveru.");
+  }
+  if (!deployment.apiBaseUrl || !deployment.endpoints?.presence) {
+    throw new Error("Live presence je aktivní, ale chybí API base URL nebo presence endpoint.");
+  }
+}
 fs.writeFileSync(
   path.join(configDir, "deployment-baked.js"),
   `// Generated at build time; do not edit in dist.\nexport const BAKED_DEPLOYMENT_CONFIG = Object.freeze(${JSON.stringify(deployment, null, 2)});\n`,
@@ -135,6 +143,11 @@ writeJson(path.join(targetDist, "server-ready-build-info.json"), {
   localProviderKeysAllowed: deployment.features?.allowLocalProviderKeys === true,
   serverSessionReady: deployment.features?.serverSessionReady === true,
   schoolGatewayReady: deployment.features?.schoolGatewayReady === true,
+  livePresenceReady: deployment.features?.livePresenceReady === true,
+  livePresenceEnabled:
+    deployment.features?.livePresence === true &&
+    deployment.features?.schoolServerConnected === true,
+  presenceEndpoint: deployment.endpoints?.presence || null,
   aiCoreVersion: "1.0.0",
   contractVersion: "1",
   localRegistryUrls: true,

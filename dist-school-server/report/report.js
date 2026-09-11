@@ -3,7 +3,7 @@ import {
   periodOfDate,
   safeEvent,
   safeStatistics,
-} from "../shared/safe-export.js?v=0.21.50";
+} from "../shared/safe-export.js?v=0.21.52";
 
 await window.GHRAB.accessReady;
 if (window.GHRAB.canAccessAdminPage?.("report") && !window.GHRAB.isColleaguePreview?.()) {
@@ -11,6 +11,25 @@ if (window.GHRAB.canAccessAdminPage?.("report") && !window.GHRAB.isColleaguePrev
   const $ = (selector) => document.querySelector(selector);
   const SETTINGS_KEY = "ghrab.report.settings.v2";
   const IMPORTS_KEY = "ghrab.report.imports.v1";
+  const WORK_LOG_KEY = "ghrab.ai-studio.report.worklog.v1";
+  const MANAGEMENT_KEY = "ghrab.ai-studio.report.management.v1";
+  const MAX_WORK_ENTRIES = 1500;
+  const MAX_MANAGEMENT_PERIODS = 48;
+  const WORK_CATEGORIES = Object.freeze({
+    operations: "Provoz a spr\u00e1va",
+    support: "Podpora u\u017eivatel\u016f",
+    training: "\u0160kolen\u00ed a metodika",
+    security: "Bezpe\u010dnost, GDPR a spolupr\u00e1ce s IT",
+    documentation: "Dokumentace a reporting",
+    development: "Rozvoj existuj\u00edc\u00ed aplikace",
+    new_project: "Nov\u00e1 aplikace / mimo\u0159\u00e1dn\u00fd projekt",
+    representation: "Prezentace a reprezentace \u0161koly",
+  });
+  const WORK_CATEGORY_ORDER = Object.freeze(Object.keys(WORK_CATEGORIES));
+  const WORK_TYPES = Object.freeze({
+    regular: "Pravideln\u00e1 agenda",
+    exceptional: "Mimo\u0159\u00e1dn\u00fd \u00fakol",
+  });
   const APP_ORDER = [
     "generator",
     "differentiator",
@@ -88,6 +107,120 @@ if (window.GHRAB.canAccessAdminPage?.("report") && !window.GHRAB.isColleaguePrev
   }
   function saveImports(value) {
     return G.safeSetJson(IMPORTS_KEY, value.slice(-240));
+  }
+  function cleanText(value, maxLength = 500) {
+    return String(value || "").trim().slice(0, maxLength);
+  }
+  function minutesDuration(minutes) {
+    return duration(Math.max(0, Number(minutes || 0)) * 60);
+  }
+  function formatCzk(value) {
+    if (value === null || value === undefined || value === "") return "Neuvedeno";
+    const amount = Math.max(0, Number(value || 0));
+    return `${Math.round(amount).toLocaleString("cs-CZ")} K\u010d`;
+  }
+  function managementPeriodKey(settings) {
+    const fromMonth = String(settings.from || "").slice(0, 7);
+    const toMonth = String(settings.to || "").slice(0, 7);
+    if (fromMonth && fromMonth === toMonth) return fromMonth;
+    return `${settings.from || "start"}|${settings.to || "end"}`;
+  }
+  function normaliseWorkEntry(raw) {
+    if (!raw || typeof raw !== "object") return null;
+    const date = String(raw.date || "");
+    const rawMinutes = Number(raw.minutes);
+    if (!/^\d{4}-\d{2}-\d{2}$/.test(date) || !Number.isFinite(rawMinutes) || rawMinutes <= 0) return null;
+    const minutes = Math.min(1440, Math.max(1, Math.round(rawMinutes)));
+    const category = Object.prototype.hasOwnProperty.call(WORK_CATEGORIES, raw.category)
+      ? raw.category
+      : "operations";
+    const workType = raw.workType === "exceptional" ? "exceptional" : "regular";
+    const activity = cleanText(raw.activity, 300);
+    if (!activity) return null;
+    return {
+      id: cleanText(raw.id, 100) || `work-${Date.now()}-${Math.random().toString(36).slice(2, 9)}`,
+      date,
+      minutes,
+      category,
+      area: cleanText(raw.area, 140) || "Obecn\u00e1 agenda AI",
+      workType,
+      activity,
+      result: cleanText(raw.result, 1800),
+      privateNote: cleanText(raw.privateNote, 1800),
+      createdAt: raw.createdAt || new Date().toISOString(),
+      updatedAt: raw.updatedAt || new Date().toISOString(),
+    };
+  }
+  function getWorkLog() {
+    const rows = parse(WORK_LOG_KEY, []);
+    if (!Array.isArray(rows)) return [];
+    return rows.map(normaliseWorkEntry).filter(Boolean).slice(0, MAX_WORK_ENTRIES);
+  }
+  function saveWorkLog(rows) {
+    const safeRows = (Array.isArray(rows) ? rows : [])
+      .map(normaliseWorkEntry)
+      .filter(Boolean)
+      .slice(0, MAX_WORK_ENTRIES);
+    return G.safeSetJson(WORK_LOG_KEY, safeRows);
+  }
+  function getManagementStore() {
+    const value = parse(MANAGEMENT_KEY, {});
+    return value && typeof value === "object" && !Array.isArray(value) ? value : {};
+  }
+  function normaliseManagement(raw = {}) {
+    return {
+      keyResults: cleanText(raw.keyResults, 420),
+      trainingSupport: cleanText(raw.trainingSupport, 420),
+      risks: cleanText(raw.risks, 420),
+      decisions: cleanText(raw.decisions, 420),
+      priorities: cleanText(raw.priorities, 420),
+      directCostsCzk: (() => {
+        const source = raw.directCostsCzk;
+        if (source === null || source === undefined || String(source).trim() === "") return null;
+        const value = Number(source);
+        return Number.isFinite(value) ? Math.min(10000000, Math.max(0, value)) : null;
+      })(),
+      costNote: cleanText(raw.costNote, 240),
+      updatedAt: raw.updatedAt || null,
+    };
+  }
+  function managementFor(settings) {
+    return normaliseManagement(getManagementStore()[managementPeriodKey(settings)] || {});
+  }
+  function saveManagementFor(settings, value) {
+    const store = getManagementStore();
+    const key = managementPeriodKey(settings);
+    store[key] = { ...normaliseManagement(value), updatedAt: new Date().toISOString() };
+    const trimmed = Object.fromEntries(
+      Object.entries(store)
+        .sort(([, a], [, b]) => String(b?.updatedAt || "").localeCompare(String(a?.updatedAt || "")))
+        .slice(0, MAX_MANAGEMENT_PERIODS),
+    );
+    return G.safeSetJson(MANAGEMENT_KEY, trimmed);
+  }
+  function workSummary(settings) {
+    const entries = getWorkLog()
+      .filter((entry) => dateInRange(`${entry.date}T12:00:00`, settings))
+      .sort((a, b) => String(b.date).localeCompare(String(a.date)) || String(b.updatedAt).localeCompare(String(a.updatedAt)));
+    const byCategory = Object.fromEntries(WORK_CATEGORY_ORDER.map((id) => [id, 0]));
+    let totalMinutes = 0;
+    let exceptionalMinutes = 0;
+    for (const entry of entries) {
+      totalMinutes += entry.minutes;
+      byCategory[entry.category] = (byCategory[entry.category] || 0) + entry.minutes;
+      if (entry.workType === "exceptional") exceptionalMinutes += entry.minutes;
+    }
+    const trainingSupportMinutes = (byCategory.training || 0) + (byCategory.support || 0);
+    const areas = new Set(entries.map((entry) => entry.area).filter(Boolean));
+    return {
+      entries,
+      totalMinutes,
+      exceptionalMinutes,
+      trainingSupportMinutes,
+      areaCount: areas.size,
+      byCategory,
+      categoryRows: WORK_CATEGORY_ORDER.map((id) => ({ id, label: WORK_CATEGORIES[id], minutes: byCategory[id] || 0 })),
+    };
   }
   function duration(seconds) {
     const total = Math.max(0, Math.round(Number(seconds || 0)));
@@ -294,12 +427,17 @@ if (window.GHRAB.canAccessAdminPage?.("report") && !window.GHRAB.isColleaguePrev
       G.getTestPilotEvents().filter((event) => dateInRange(event.at, settings)),
       [],
     );
+    const work = workSummary(settings);
+    const management = managementFor(settings);
     return {
       settings,
       local,
       imported,
       total,
       test,
+      work,
+      management,
+      managementKey: managementPeriodKey(settings),
       importCount: selectedImports.length,
       selectedImports,
       totalImports: getImports().length,
@@ -440,6 +578,123 @@ if (window.GHRAB.canAccessAdminPage?.("report") && !window.GHRAB.isColleaguePrev
         return card;
       }),
     );
+  }
+  function setFieldValue(selector, value) {
+    const element = $(selector);
+    if (element && document.activeElement !== element) element.value = value ?? "";
+  }
+  function populateWorkAreaSelect(selected = "") {
+    const select = $("#report-work-area");
+    if (!select) return;
+    const current = selected || select.value || "Obecn\u00e1 agenda AI";
+    const names = [
+      "Obecn\u00e1 agenda AI",
+      ...apps.map((app) => app?.name?.cs || APP_NAMES[app?.id] || app?.id).filter(Boolean),
+    ];
+    const unique = [...new Set(names)];
+    if (current && !unique.includes(current)) unique.push(current);
+    select.replaceChildren(
+      ...unique.map((name) => {
+        const option = document.createElement("option");
+        option.value = name;
+        option.textContent = name;
+        return option;
+      }),
+    );
+    select.value = unique.includes(current) ? current : unique[0];
+  }
+  function renderManagementControls(view) {
+    const value = view.management;
+    setFieldValue("#report-management-results", value.keyResults);
+    setFieldValue("#report-management-training", value.trainingSupport);
+    setFieldValue("#report-management-risks", value.risks);
+    setFieldValue("#report-management-decisions", value.decisions);
+    setFieldValue("#report-management-priorities", value.priorities);
+    setFieldValue("#report-management-cost", value.directCostsCzk === null ? "" : String(value.directCostsCzk));
+    setFieldValue("#report-management-cost-note", value.costNote);
+    const label = $("#report-management-period");
+    if (label) label.textContent = view.managementKey.includes("|")
+      ? `Souhrn pro zvolen\u00e9 obdob\u00ed ${formatDate(view.settings.from)} - ${formatDate(view.settings.to)}`
+      : `Souhrn pro ${new Date(`${view.managementKey}-01T12:00:00`).toLocaleDateString("cs-CZ", { month: "long", year: "numeric" })}`;
+  }
+  function renderWorkLog(view) {
+    populateWorkAreaSelect();
+    const summary = $("#report-work-summary");
+    if (summary) {
+      summary.textContent = `${view.work.entries.length} z\u00e1znam\u016f \u00b7 ${minutesDuration(view.work.totalMinutes)} \u00b7 \u0161kolen\u00ed a podpora ${minutesDuration(view.work.trainingSupportMinutes)} \u00b7 mimo\u0159\u00e1dn\u00e9 ${minutesDuration(view.work.exceptionalMinutes)}`;
+    }
+    const host = $("#report-work-list");
+    if (!host) return;
+    if (!view.work.entries.length) {
+      host.replaceChildren(textEl("div", "Ve zvolen\u00e9m obdob\u00ed zat\u00edm nejsou z\u00e1znamy pr\u00e1ce garanta.", "empty-state"));
+      return;
+    }
+    host.replaceChildren(
+      ...view.work.entries.map((entry) => {
+        const card = document.createElement("article");
+        card.className = "output-detail-card report-work-card";
+        const heading = document.createElement("div");
+        const title = document.createElement("strong");
+        title.textContent = entry.activity;
+        const meta = document.createElement("span");
+        meta.textContent = `${formatDate(entry.date)} \u00b7 ${minutesDuration(entry.minutes)}`;
+        heading.append(title, meta);
+        card.append(heading);
+        const tags = document.createElement("small");
+        tags.textContent = `${WORK_CATEGORIES[entry.category]} \u00b7 ${entry.area} \u00b7 ${WORK_TYPES[entry.workType]}`;
+        card.append(tags);
+        if (entry.result) {
+          const result = document.createElement("p");
+          result.append(textEl("span", "V\u00fdsledek"), textEl("b", entry.result));
+          card.append(result);
+        }
+        if (entry.privateNote) {
+          const privateLine = document.createElement("p");
+          privateLine.className = "report-private-note";
+          privateLine.append(textEl("span", "Soukrom\u00e1 pozn\u00e1mka"), textEl("b", entry.privateNote));
+          card.append(privateLine);
+        }
+        const actions = document.createElement("div");
+        actions.className = "report-work-actions";
+        const edit = document.createElement("button");
+        edit.type = "button";
+        edit.className = "button ghost compact";
+        edit.dataset.workEdit = entry.id;
+        edit.textContent = "Upravit";
+        const remove = document.createElement("button");
+        remove.type = "button";
+        remove.className = "button ghost compact";
+        remove.dataset.workDelete = entry.id;
+        remove.textContent = "Smazat";
+        actions.append(edit, remove);
+        card.append(actions);
+        return card;
+      }),
+    );
+  }
+  function resetWorkForm() {
+    const form = $("#report-work-form");
+    form?.reset();
+    setFieldValue("#report-work-id", "");
+    setFieldValue("#report-work-date", currentView?.settings?.to || new Date().toISOString().slice(0, 10));
+    setFieldValue("#report-work-minutes", "");
+    if ($("#report-work-category")) $("#report-work-category").value = "operations";
+    if ($("#report-work-type")) $("#report-work-type").value = "regular";
+    populateWorkAreaSelect("Obecn\u00e1 agenda AI");
+  }
+  function editWorkEntry(id) {
+    const entry = getWorkLog().find((row) => row.id === id);
+    if (!entry) return;
+    setFieldValue("#report-work-id", entry.id);
+    setFieldValue("#report-work-date", entry.date);
+    setFieldValue("#report-work-minutes", String(entry.minutes));
+    if ($("#report-work-category")) $("#report-work-category").value = entry.category;
+    populateWorkAreaSelect(entry.area);
+    if ($("#report-work-type")) $("#report-work-type").value = entry.workType;
+    setFieldValue("#report-work-activity", entry.activity);
+    setFieldValue("#report-work-result", entry.result);
+    setFieldValue("#report-work-private", entry.privateNote);
+    $("#report-work-activity")?.focus();
   }
   function findings(data) {
     const activeRows = data.rows.filter((row) => row.activeSeconds > 0);
@@ -625,13 +880,8 @@ if (window.GHRAB.canAccessAdminPage?.("report") && !window.GHRAB.isColleaguePrev
     ctx.fillText(value, x + w / 2, y + 160);
     ctx.textAlign = "left";
   }
-  async function renderReportCanvas(canvas, view, mode = "color") {
-    const token = ++renderToken;
-    const ctx = canvas.getContext("2d");
-    canvas.width = REPORT_W;
-    canvas.height = REPORT_H;
-    const mono = mode === "mono";
-    const palette = mono
+  function reportPalette(mode = "color") {
+    return mode === "mono"
       ? {
           bg: "#ffffff",
           ink: "#111111",
@@ -643,6 +893,10 @@ if (window.GHRAB.canAccessAdminPage?.("report") && !window.GHRAB.isColleaguePrev
           header: "#1f1f1f",
           headerText: "#ffffff",
           soft: "#eeeeee",
+          good: "#f4f4f4",
+          risk: "#f4f4f4",
+          decision: "#f4f4f4",
+          priority: "#f4f4f4",
         }
       : {
           bg: "#ffffff",
@@ -655,14 +909,30 @@ if (window.GHRAB.canAccessAdminPage?.("report") && !window.GHRAB.isColleaguePrev
           header: "#07458e",
           headerText: "#ffffff",
           soft: "#eaf3ff",
+          good: "#f2fbf5",
+          risk: "#fff5f5",
+          decision: "#fff9eb",
+          priority: "#f2f6ff",
         };
+  }
+  function reportPeriodLabel(view) {
+    return view.settings.from && view.settings.to
+      ? `${formatDate(view.settings.from)} - ${formatDate(view.settings.to)}`
+      : view.settings.title || "Zvolen\u00e9 obdob\u00ed";
+  }
+  async function renderReportCanvas(canvas, view, mode = "color", token = null) {
+    const ctx = canvas.getContext("2d");
+    canvas.width = REPORT_W;
+    canvas.height = REPORT_H;
+    const mono = mode === "mono";
+    const palette = reportPalette(mode);
     ctx.fillStyle = palette.bg;
     ctx.fillRect(0, 0, REPORT_W, REPORT_H);
     const [schoolLogo, gateway] = await Promise.all([
       loadImage("../assets/brand/school-logo.png"),
       loadImage("../assets/brand/portal-gateway.webp"),
     ]);
-    if (token !== renderToken) return;
+    if (token !== null && token !== renderToken) return;
     const m = 56;
     drawContain(ctx, schoolLogo, m, 38, 150, 150, { crop: true, mono });
     drawContain(ctx, gateway, REPORT_W - m - 156, 34, 156, 156, { mono });
@@ -684,10 +954,7 @@ if (window.GHRAB.canAccessAdminPage?.("report") && !window.GHRAB.isColleaguePrev
     ctx.fillText("AI Studio GHRAB - souhrn pilotního provozu", 220, 125);
     ctx.fillStyle = palette.muted;
     ctx.font = "400 20px Arial";
-    const periodLabel =
-      view.settings.from && view.settings.to
-        ? `${formatDate(view.settings.from)} - ${formatDate(view.settings.to)}`
-        : view.settings.title || "Zvolené období";
+    const periodLabel = reportPeriodLabel(view);
     ctx.fillText(`Období: ${periodLabel}`, 220, 163);
     ctx.strokeStyle = palette.blue;
     ctx.lineWidth = 2;
@@ -887,7 +1154,190 @@ if (window.GHRAB.canAccessAdminPage?.("report") && !window.GHRAB.isColleaguePrev
     ctx.font = "700 17px Arial";
     ctx.fillText("Daniel Baláž", m + 118, footY);
     ctx.textAlign = "right";
-    ctx.fillText("AI Studio GHRAB", REPORT_W - m, footY);
+    ctx.fillText("AI Studio GHRAB \u00b7 strana 1/2", REPORT_W - m, footY);
+    ctx.textAlign = "left";
+  }
+  function managementItems(text) {
+    return String(text || "")
+      .split(/\n+/)
+      .map((line) => line.trim().replace(/^[-\u2022]\s*/, ""))
+      .filter(Boolean)
+      .slice(0, 5);
+  }
+  function drawManagementCard(ctx, x, y, w, h, title, text, palette, tone = "card") {
+    ctx.fillStyle = palette[tone] || palette.card;
+    ctx.strokeStyle = palette.line;
+    ctx.lineWidth = 2;
+    roundRect(ctx, x, y, w, h, 18);
+    ctx.fill();
+    ctx.stroke();
+    ctx.fillStyle = palette.navy;
+    ctx.font = "800 23px Arial";
+    ctx.fillText(title, x + 24, y + 40);
+    ctx.strokeStyle = palette.blue;
+    ctx.lineWidth = 3;
+    ctx.beginPath();
+    ctx.moveTo(x + 24, y + 53);
+    ctx.lineTo(x + Math.min(w - 24, 225), y + 53);
+    ctx.stroke();
+    const items = managementItems(text);
+    if (!items.length) {
+      ctx.fillStyle = palette.muted;
+      ctx.font = "400 18px Arial";
+      ctx.fillText("Neuvedeno.", x + 24, y + 92);
+      return;
+    }
+    let cursorY = y + 92;
+    let usedLines = 0;
+    const maxLines = Math.max(2, Math.floor((h - 108) / 24));
+    for (const item of items) {
+      if (usedLines >= maxLines) break;
+      ctx.fillStyle = palette.blue;
+      ctx.beginPath();
+      ctx.arc(x + 31, cursorY - 6, 5, 0, Math.PI * 2);
+      ctx.fill();
+      ctx.fillStyle = palette.ink;
+      ctx.font = "400 17px Arial";
+      const remaining = maxLines - usedLines;
+      const lines = wrapLines(ctx, item, w - 76, Math.min(3, remaining));
+      lines.forEach((line, index) => ctx.fillText(line, x + 48, cursorY + index * 24));
+      usedLines += lines.length;
+      cursorY += lines.length * 24 + 13;
+    }
+  }
+  async function renderManagementCanvas(canvas, view, mode = "color", token = null) {
+    const ctx = canvas.getContext("2d");
+    canvas.width = REPORT_W;
+    canvas.height = REPORT_H;
+    const mono = mode === "mono";
+    const palette = reportPalette(mode);
+    ctx.fillStyle = palette.bg;
+    ctx.fillRect(0, 0, REPORT_W, REPORT_H);
+    const [schoolLogo, gateway] = await Promise.all([
+      loadImage("../assets/brand/school-logo.png"),
+      loadImage("../assets/brand/portal-gateway.webp"),
+    ]);
+    if (token !== null && token !== renderToken) return;
+    const m = 56;
+    drawContain(ctx, schoolLogo, m, 38, 150, 150, { crop: true, mono });
+    drawContain(ctx, gateway, REPORT_W - m - 156, 34, 156, 156, { mono });
+    ctx.fillStyle = palette.navy;
+    ctx.textAlign = "left";
+    const titleSize = fitFont(ctx, "Gymn\u00e1zium Ostrava-Hrab\u016fvka", REPORT_W - 420, 43, 31, 800, "Arial");
+    ctx.font = `800 ${titleSize}px Arial`;
+    ctx.fillText("Gymn\u00e1zium Ostrava-Hrab\u016fvka", 220, 82);
+    ctx.fillStyle = palette.blue;
+    ctx.font = "700 27px Arial";
+    ctx.fillText("AI Studio GHRAB - pr\u00e1ce garanta a m\u011bs\u00ed\u010dn\u00ed souhrn", 220, 125);
+    ctx.fillStyle = palette.muted;
+    ctx.font = "400 20px Arial";
+    ctx.fillText(`Obdob\u00ed: ${reportPeriodLabel(view)}`, 220, 163);
+    ctx.strokeStyle = palette.blue;
+    ctx.lineWidth = 2;
+    ctx.beginPath();
+    ctx.moveTo(m, 205);
+    ctx.lineTo(REPORT_W - m, 205);
+    ctx.stroke();
+
+    const gap = 16;
+    const kw = (REPORT_W - 2 * m - 3 * gap) / 4;
+    const kY = 238;
+    const kh = 190;
+    drawMetricCard(ctx, m, kY, kw, kh, "Evidovan\u00fd \u010das pr\u00e1ce", minutesDuration(view.work.totalMinutes), "PR", palette);
+    drawMetricCard(ctx, m + kw + gap, kY, kw, kh, "\u0160kolen\u00ed a podpora", minutesDuration(view.work.trainingSupportMinutes), "\u0160K", palette);
+    drawMetricCard(ctx, m + 2 * (kw + gap), kY, kw, kh, "Mimo\u0159\u00e1dn\u00e9 \u00fakoly", minutesDuration(view.work.exceptionalMinutes), "M", palette);
+    drawMetricCard(ctx, m + 3 * (kw + gap), kY, kw, kh, "P\u0159\u00edm\u00e9 AI n\u00e1klady", formatCzk(view.management.directCostsCzk), "K\u010d", palette);
+
+    ctx.fillStyle = palette.navy;
+    ctx.font = "800 29px Arial";
+    ctx.fillText("Rozlo\u017een\u00ed pr\u00e1ce", m, 478);
+    ctx.strokeStyle = palette.blue;
+    ctx.lineWidth = 3;
+    ctx.beginPath();
+    ctx.moveTo(m, 493);
+    ctx.lineTo(m + 220, 493);
+    ctx.stroke();
+
+    const distY = 520;
+    const distH = 286;
+    const noteGap = 20;
+    const noteW = 370;
+    const distW = REPORT_W - 2 * m - noteGap - noteW;
+    ctx.fillStyle = palette.card;
+    ctx.strokeStyle = palette.line;
+    ctx.lineWidth = 2;
+    roundRect(ctx, m, distY, distW, distH, 18);
+    ctx.fill();
+    ctx.stroke();
+    const activeCategories = view.work.categoryRows.filter((row) => row.minutes > 0);
+    if (!activeCategories.length) {
+      ctx.fillStyle = palette.muted;
+      ctx.font = "400 19px Arial";
+      ctx.fillText("Ve zvolen\u00e9m obdob\u00ed nen\u00ed evidov\u00e1na pr\u00e1ce garanta.", m + 26, distY + 52);
+    } else {
+      const maxMinutes = Math.max(...activeCategories.map((row) => row.minutes), 1);
+      activeCategories.slice(0, 8).forEach((row, index) => {
+        const y = distY + 36 + index * 30;
+        ctx.fillStyle = palette.ink;
+        ctx.font = "600 16px Arial";
+        ctx.fillText(row.label, m + 24, y);
+        const barX = m + 330;
+        const barW = distW - 470;
+        ctx.fillStyle = palette.soft;
+        roundRect(ctx, barX, y - 14, barW, 13, 6);
+        ctx.fill();
+        ctx.fillStyle = palette.blue;
+        roundRect(ctx, barX, y - 14, Math.max(6, barW * (row.minutes / maxMinutes)), 13, 6);
+        ctx.fill();
+        ctx.fillStyle = palette.navy;
+        ctx.textAlign = "right";
+        ctx.font = "700 16px Arial";
+        ctx.fillText(minutesDuration(row.minutes), m + distW - 22, y);
+        ctx.textAlign = "left";
+      });
+    }
+
+    const noteX = m + distW + noteGap;
+    ctx.fillStyle = palette.card;
+    ctx.strokeStyle = palette.line;
+    roundRect(ctx, noteX, distY, noteW, distH, 18);
+    ctx.fill();
+    ctx.stroke();
+    ctx.fillStyle = palette.navy;
+    ctx.font = "800 21px Arial";
+    ctx.fillText("N\u00e1kladov\u00e1 pozn\u00e1mka", noteX + 22, distY + 40);
+    ctx.fillStyle = palette.ink;
+    ctx.font = "400 17px Arial";
+    drawWrapped(ctx, view.management.costNote || "Neuvedeno.", noteX + 22, distY + 78, noteW - 44, 24, 6);
+    ctx.fillStyle = palette.muted;
+    ctx.font = "400 15px Arial";
+    drawWrapped(ctx, "Soukrom\u00e9 pozn\u00e1mky z evidence se do PDF nikdy nep\u0159en\u00e1\u0161ej\u00ed.", noteX + 22, distY + 226, noteW - 44, 21, 3);
+
+    const gridY = 842;
+    const cardGap = 20;
+    const cardW = (REPORT_W - 2 * m - cardGap) / 2;
+    const cardH = 218;
+    drawManagementCard(ctx, m, gridY, cardW, cardH, "Kl\u00ed\u010dov\u00e9 v\u00fdsledky", view.management.keyResults, palette, "good");
+    drawManagementCard(ctx, m + cardW + cardGap, gridY, cardW, cardH, "\u0160kolen\u00ed a podpora", view.management.trainingSupport, palette, "card");
+    drawManagementCard(ctx, m, gridY + cardH + cardGap, cardW, cardH, "Rizika / probl\u00e9my", view.management.risks, palette, "risk");
+    drawManagementCard(ctx, m + cardW + cardGap, gridY + cardH + cardGap, cardW, cardH, "Pot\u0159ebn\u00e1 rozhodnut\u00ed veden\u00ed", view.management.decisions, palette, "decision");
+    drawManagementCard(ctx, m, gridY + 2 * (cardH + cardGap), REPORT_W - 2 * m, 250, "Priority na dal\u0161\u00ed m\u011bs\u00edc", view.management.priorities, palette, "priority");
+
+    const footY = REPORT_H - 70;
+    ctx.strokeStyle = palette.blue;
+    ctx.lineWidth = 2;
+    ctx.beginPath();
+    ctx.moveTo(m, footY - 28);
+    ctx.lineTo(REPORT_W - m, footY - 28);
+    ctx.stroke();
+    ctx.fillStyle = palette.muted;
+    ctx.font = "400 17px Arial";
+    ctx.fillText("Autor reportu:", m, footY);
+    ctx.fillStyle = palette.navy;
+    ctx.font = "700 17px Arial";
+    ctx.fillText("Daniel Bal\u00e1\u017e", m + 118, footY);
+    ctx.textAlign = "right";
+    ctx.fillText("AI Studio GHRAB \u00b7 strana 2/2", REPORT_W - m, footY);
     ctx.textAlign = "left";
   }
   function bytesFromDataUrl(dataUrl) {
@@ -909,46 +1359,51 @@ if (window.GHRAB.canAccessAdminPage?.("report") && !window.GHRAB.isColleaguePrev
     }
     return out;
   }
-  function canvasPdf(canvas) {
-    const jpeg = bytesFromDataUrl(canvas.toDataURL("image/jpeg", 0.95));
+  function canvasesPdf(canvases) {
+    const pages = (Array.isArray(canvases) ? canvases : []).map((canvas) => ({
+      width: canvas.width,
+      height: canvas.height,
+      jpeg: bytesFromDataUrl(canvas.toDataURL("image/jpeg", 0.95)),
+    }));
+    if (!pages.length) throw new Error("PDF vy\u017eaduje alespo\u0148 jednu stranu.");
     const objects = [];
     objects[1] = encode("<< /Type /Catalog /Pages 2 0 R >>");
-    objects[2] = encode("<< /Type /Pages /Kids [3 0 R] /Count 1 >>");
-    objects[3] = encode(
-      "<< /Type /Page /Parent 2 0 R /MediaBox [0 0 595.276 841.89] /Resources << /XObject << /Im0 4 0 R >> >> /Contents 5 0 R >>",
-    );
-    objects[4] = concat(
-      encode(
-        `<< /Type /XObject /Subtype /Image /Width ${canvas.width} /Height ${canvas.height} /ColorSpace /DeviceRGB /BitsPerComponent 8 /Filter /DCTDecode /Length ${jpeg.length} >>\nstream\n`,
-      ),
-      jpeg,
-      encode("\nendstream"),
-    );
-    const content = encode("q\n595.276 0 0 841.89 0 0 cm\n/Im0 Do\nQ\n");
-    objects[5] = concat(
-      encode(`<< /Length ${content.length} >>\nstream\n`),
-      content,
-      encode("endstream"),
-    );
-    const header = encode("%PDF-1.4\n%\xE2\xE3\xCF\xD3\n");
+    const kids = pages.map((_, index) => `${3 + index * 3} 0 R`).join(" ");
+    objects[2] = encode(`<< /Type /Pages /Kids [${kids}] /Count ${pages.length} >>`);
+    pages.forEach((page, index) => {
+      const pageId = 3 + index * 3;
+      const imageId = pageId + 1;
+      const contentId = pageId + 2;
+      objects[pageId] = encode(
+        `<< /Type /Page /Parent 2 0 R /MediaBox [0 0 595.276 841.89] /Resources << /XObject << /Im0 ${imageId} 0 R >> >> /Contents ${contentId} 0 R >>`,
+      );
+      objects[imageId] = concat(
+        encode(`<< /Type /XObject /Subtype /Image /Width ${page.width} /Height ${page.height} /ColorSpace /DeviceRGB /BitsPerComponent 8 /Filter /DCTDecode /Length ${page.jpeg.length} >>\nstream\n`),
+        page.jpeg,
+        encode("\nendstream"),
+      );
+      const content = encode("q\n595.276 0 0 841.89 0 0 cm\n/Im0 Do\nQ\n");
+      objects[contentId] = concat(
+        encode(`<< /Length ${content.length} >>\nstream\n`),
+        content,
+        encode("endstream"),
+      );
+    });
+    const maxId = 2 + pages.length * 3;
+    const header = encode("%PDF-1.4\n%GHRAB\n");
     const parts = [header];
     const offsets = [0];
     let offset = header.length;
-    for (let i = 1; i <= 5; i++) {
+    for (let i = 1; i <= maxId; i++) {
       offsets[i] = offset;
-      const obj = concat(
-        encode(`${i} 0 obj\n`),
-        objects[i],
-        encode("\nendobj\n"),
-      );
+      const obj = concat(encode(`${i} 0 obj\n`), objects[i], encode("\nendobj\n"));
       parts.push(obj);
       offset += obj.length;
     }
     const xrefOffset = offset;
-    let xref = `xref\n0 6\n0000000000 65535 f \n`;
-    for (let i = 1; i <= 5; i++)
-      xref += `${String(offsets[i]).padStart(10, "0")} 00000 n \n`;
-    xref += `trailer\n<< /Size 6 /Root 1 0 R >>\nstartxref\n${xrefOffset}\n%%EOF\n`;
+    let xref = `xref\n0 ${maxId + 1}\n0000000000 65535 f \n`;
+    for (let i = 1; i <= maxId; i++) xref += `${String(offsets[i]).padStart(10, "0")} 00000 n \n`;
+    xref += `trailer\n<< /Size ${maxId + 1} /Root 1 0 R >>\nstartxref\n${xrefOffset}\n%%EOF\n`;
     parts.push(encode(xref));
     return new Blob([concat(...parts)], { type: "application/pdf" });
   }
@@ -963,20 +1418,27 @@ if (window.GHRAB.canAccessAdminPage?.("report") && !window.GHRAB.isColleaguePrev
     setTimeout(() => URL.revokeObjectURL(url), 1500);
   }
   async function downloadPdf(mode) {
-    const canvas = document.createElement("canvas");
-    await renderReportCanvas(canvas, currentView, mode);
+    const firstPage = document.createElement("canvas");
+    const secondPage = document.createElement("canvas");
+    await renderReportCanvas(firstPage, currentView, mode);
+    await renderManagementCanvas(secondPage, currentView, mode);
     downloadBlob(
-      canvasPdf(canvas),
+      canvasesPdf([firstPage, secondPage]),
       `AI-Studio-GHRAB-report-${mode === "mono" ? "cernobily" : "barevny"}-${new Date().toISOString().slice(0, 10)}.pdf`,
     );
   }
   async function render() {
+    const token = ++renderToken;
     const settings = saveSettings();
     currentView = buildView(settings);
     renderSources(currentView);
     renderImports(currentView);
     renderOutputDetails(currentView);
-    await renderReportCanvas($("#report-preview"), currentView, "color");
+    renderManagementControls(currentView);
+    renderWorkLog(currentView);
+    await renderReportCanvas($("#report-preview"), currentView, "color", token);
+    if (token !== renderToken) return;
+    await renderManagementCanvas($("#report-preview-management"), currentView, "color", token);
   }
   function setupDefaults() {
     const settings = getSettings();
@@ -1003,6 +1465,73 @@ if (window.GHRAB.canAccessAdminPage?.("report") && !window.GHRAB.isColleaguePrev
   ].forEach((selector) =>
     $(selector).addEventListener("input", () => render()),
   );
+  $("#report-management-form")?.addEventListener("submit", (event) => {
+    event.preventDefault();
+    const ok = saveManagementFor(currentView.settings, {
+      keyResults: $("#report-management-results")?.value,
+      trainingSupport: $("#report-management-training")?.value,
+      risks: $("#report-management-risks")?.value,
+      decisions: $("#report-management-decisions")?.value,
+      priorities: $("#report-management-priorities")?.value,
+      directCostsCzk: $("#report-management-cost")?.value,
+      costNote: $("#report-management-cost-note")?.value,
+    });
+    const status = $("#report-management-status");
+    if (status) {
+      status.textContent = ok ? "M\u011bs\u00ed\u010dn\u00ed souhrn byl ulo\u017een." : "M\u011bs\u00ed\u010dn\u00ed souhrn se nepoda\u0159ilo ulo\u017eit.";
+      status.className = `form-feedback ${ok ? "success" : "error"}`;
+    }
+    render();
+  });
+  $("#report-work-form")?.addEventListener("submit", (event) => {
+    event.preventDefault();
+    const id = cleanText($("#report-work-id")?.value, 100);
+    const rows = getWorkLog();
+    const existing = rows.find((row) => row.id === id);
+    const entry = normaliseWorkEntry({
+      id: id || undefined,
+      date: $("#report-work-date")?.value,
+      minutes: $("#report-work-minutes")?.value,
+      category: $("#report-work-category")?.value,
+      area: $("#report-work-area")?.value,
+      workType: $("#report-work-type")?.value,
+      activity: $("#report-work-activity")?.value,
+      result: $("#report-work-result")?.value,
+      privateNote: $("#report-work-private")?.value,
+      createdAt: existing?.createdAt,
+      updatedAt: new Date().toISOString(),
+    });
+    const status = $("#report-work-status");
+    if (!entry) {
+      if (status) {
+        status.textContent = "Dopl\u0148te datum, minuty a konkr\u00e9tn\u00ed \u010dinnost.";
+        status.className = "form-feedback error";
+      }
+      return;
+    }
+    const next = rows.filter((row) => row.id !== entry.id);
+    next.unshift(entry);
+    const ok = saveWorkLog(next);
+    if (status) {
+      status.textContent = ok ? "Z\u00e1znam pr\u00e1ce byl ulo\u017een." : "Z\u00e1znam pr\u00e1ce se nepoda\u0159ilo ulo\u017eit.";
+      status.className = `form-feedback ${ok ? "success" : "error"}`;
+    }
+    if (ok) resetWorkForm();
+    render();
+  });
+  $("#report-work-reset")?.addEventListener("click", () => resetWorkForm());
+  $("#report-work-list")?.addEventListener("click", (event) => {
+    const edit = event.target.closest("[data-work-edit]");
+    if (edit) {
+      editWorkEntry(edit.dataset.workEdit);
+      return;
+    }
+    const remove = event.target.closest("[data-work-delete]");
+    if (!remove) return;
+    if (!confirm("Smazat tento z\u00e1znam pr\u00e1ce garanta?")) return;
+    saveWorkLog(getWorkLog().filter((row) => row.id !== remove.dataset.workDelete));
+    render();
+  });
   $("#report-pdf-color").addEventListener("click", () => downloadPdf("color"));
   $("#report-pdf-mono").addEventListener("click", () => downloadPdf("mono"));
   $("#report-import-files").addEventListener("change", async (event) => {
@@ -1115,5 +1644,6 @@ if (window.GHRAB.canAccessAdminPage?.("report") && !window.GHRAB.isColleaguePrev
   document.addEventListener("ghrab:language", render);
   setupDefaults();
   apps = await G.loadApps();
+  resetWorkForm();
   await render();
 }

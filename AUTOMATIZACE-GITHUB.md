@@ -1,8 +1,8 @@
-# Automatizace aktualizací AI Studio GHRAB 0.21.50
+# Automatizace aktualizací AI Studio GHRAB 0.21.52
 
-> Aktuální verze: **0.21.50** · etapa P5
+> Aktuální verze: **0.21.52** · etapa P5
 
-> 0.21.50 zjednodušuje karty aplikací, přesouvá ovládací prvky do pravého horního rohu a připravuje centrální serverový provozní semafor; bezpečnostní logika GARP zůstává beze změny.
+> 0.21.52 navazuje na dvoustránkový reporting a připravuje serverovou živou přítomnost: plný správce po aktivaci backendu uvidí, kdo je online a kterou aplikaci právě používá; v GitHub Pages režimu se žádné presence požadavky neposílají.
 
 ## Pravidelná synchronizace
 

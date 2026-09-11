@@ -1,10 +1,10 @@
-# Přesný postup nahrání AI Studio GHRAB 0.21.50 na GitHub – až po schválení
+# Přesný postup nahrání AI Studio GHRAB 0.21.52 na GitHub – až po schválení
 
-> Aktuální verze: **0.21.50** · etapa P5
+> Aktuální verze: **0.21.52** · etapa P5
 
-> 0.21.50 zjednodušuje karty aplikací, přesouvá ovládací prvky do pravého horního rohu a připravuje centrální serverový provozní semafor; bezpečnostní logika GARP zůstává beze změny.
+> 0.21.52 navazuje na dvoustránkový reporting a připravuje serverovou živou přítomnost: plný správce po aktivaci backendu uvidí, kdo je online a kterou aplikaci právě používá; v GitHub Pages režimu se žádné presence požadavky neposílají.
 
-> **BLOKACE NASAZENÍ:** nový nezávislý GARP 2.3 cyklus byl výslovně zahájen. Verze 0.21.43 je kandidát po opravě D-01 / HIGH z první nezávislé kontroly tohoto nového cyklu a před nasazením musí projít jeho druhou Claude kontrolou a uzavřením release gate. Do té doby se tento postup NESMÍ použít k produkčnímu nasazení a reálná studentská data se nesmí použít.
+> **PŘED NASAZENÍM:** aktuální release musí projít standardní P5/access gate v GitHub Actions. Pro produkční použití musí být zelené i povinné browserové kontroly CI; do uzavření těchto gate se nemají používat reálná studentská data.
 
 ## Předpoklady
 
@@ -12,14 +12,14 @@ Nejprve musí být nasazeny KS 5.10.25, SORTIO 1.1.14, Lesson Hub 1.2.22, Difere
 
 ## Nahrání
 
-1. Stáhněte a rozbalte `AI-Studio-GHRAB-0.21.50-PWA-INSTALL-HOTFIX.zip`.
+1. Stáhněte a rozbalte `AI-Studio-GHRAB-0.21.52-SARKA-REPORTING-LIVE-PRESENCE.zip`.
 2. Do kořene repozitáře `AI-Studio-GHRAB` nahrajte přímo všechny soubory a složky z rozbaleného archivu.
-3. Commit pojmenujte například `AI Studio 0.21.50 – PWA install onboarding hotfix`.
+3. Commit pojmenujte například `AI Studio 0.21.52 – reporting pro vedení + serverová živá přítomnost`.
 4. Vyčkejte na dokončení GitHub Actions. Workflow instaluje závislosti, synchronizuje manifesty, spustí regresi reportéru, celý GHRAB QA release gate, sestaví `dist` a až poté nasadí GitHub Pages.
 
 ## Kontrola po nasazení
 
-- `dist/build-info.json`, PWA manifest a service worker musí uvádět 0.21.43.
+- `dist/build-info.json`, PWA manifest a service worker musí uvádět 0.21.52.
 - `dist/config/access-config-bundle.json` musí uvádět `access-p1-20260824175535Z-k_wtm7Zj`.
 - Staré učitelské oprávnění kolegyně musí být po online obnovení odmítnuto a v Evidenci přístupů označeno jako centrálně zneplatněné.
 - Nové oprávnění správce zástupce musí zůstat funkční; má jiné JTI a podpisový klíč oprávnění se v tomto vydání nemění.

@@ -1,3 +1,5 @@
+import { loadLivePresence } from "../modules/live-presence.js?v=0.21.52";
+
 await window.GHRAB.accessReady;
 
 if (window.GHRAB.canAccessAdminPage?.("automation") && !window.GHRAB.isColleaguePreview?.()) {
@@ -13,6 +15,51 @@ force:true}
 ));
 
   const liveModeButton=document.querySelector("#telemetry-live"),testModeButton=document.querySelector("#telemetry-test"),telemetryStatus=document.querySelector("#telemetry-mode-status"),clearTestButton=document.querySelector("#telemetry-test-clear");
+
+  const presencePanel=document.querySelector("#live-presence-panel"),presenceSummary=document.querySelector("#live-presence-summary"),presenceState=document.querySelector("#live-presence-state"),presenceTableBody=document.querySelector("#live-presence-table-body"),presenceRefresh=document.querySelector("#live-presence-refresh");
+  let presenceApps=[],presenceRefreshTimer=0;
+
+  function presenceAppLabel(appId){
+if(appId==="ai-studio")return "AI Studio";
+const app=presenceApps.find(item=>item.id===appId);
+return localised(app?.name)||appId||"—"}
+
+  function renderPresenceEmpty(message){
+if(!presenceTableBody)return;
+presenceTableBody.replaceChildren();
+const tr=document.createElement("tr"),td=document.createElement("td");
+td.colSpan=2;td.textContent=message;td.className="sync-neutral";tr.append(td);presenceTableBody.append(tr)}
+
+  async function renderLivePresence(apps=presenceApps){
+if(!presencePanel)return;
+const allowed=window.GHRAB.isAdmin?.()&&!window.GHRAB.isColleaguePreview?.();
+presencePanel.hidden=!allowed;
+if(!allowed)return;
+presenceApps=apps||[];
+const snapshot=await loadLivePresence(window.GHRAB.deploymentReady);
+if(presenceSummary)presenceSummary.replaceChildren(kpi(String(snapshot.users.length),"online právě teď","online now"));
+if(!snapshot.prepared){
+  if(presenceState){presenceState.className="notice sync-neutral";presenceState.textContent=t("Živá přítomnost není v tomto profilu připravena.","Live presence is not prepared in this profile.");}
+  renderPresenceEmpty(t("Dostupné po přípravě školního serveru.","Available after the school server is prepared."));return}
+if(!snapshot.enabled){
+  if(presenceState){presenceState.className="notice sync-neutral";presenceState.textContent=t("Připraveno. Aktivuje se až po připojení školního serveru a zapnutí endpointu přítomnosti.","Prepared. It activates only after the school server and presence endpoint are enabled.");}
+  renderPresenceEmpty(t("Bez serveru se žádná jména ani stav aplikace neposílají.","Without the server, no names or application state are sent."));return}
+if(!presenceRefreshTimer){
+  presenceRefreshTimer=window.setInterval(()=>{if(document.visibilityState!=="hidden")void renderLivePresence();},30000);
+  window.addEventListener("pagehide",()=>window.clearInterval(presenceRefreshTimer),{once:true})}
+if(!snapshot.connected){
+  if(presenceState){presenceState.className="notice sync-warn";presenceState.textContent=t("Endpoint přítomnosti nyní neodpovídá.","The live-presence endpoint is not responding.");}
+  renderPresenceEmpty(t("Živá data se nepodařilo načíst.","Live data could not be loaded."));return}
+if(presenceState){presenceState.className="notice sync-health-ok";presenceState.textContent=t(`Živý přehled je aktivní; po ${snapshot.staleAfterSeconds} s bez signálu uživatel zmizí.`,`Live view active; users disappear after ${snapshot.staleAfterSeconds} seconds without a signal.`)}
+if(!snapshot.users.length){renderPresenceEmpty(t("Nikdo není právě online.","Nobody is online right now."));return}
+presenceTableBody.replaceChildren();
+for(const user of snapshot.users){
+  const tr=document.createElement("tr");
+  [ `● ${user.displayName}`,presenceAppLabel(user.appId)].forEach((value,index)=>{const td=document.createElement("td");td.textContent=value;if(index===0)td.className="sync-ok";tr.append(td)});
+  presenceTableBody.append(tr)}
+}
+
+  presenceRefresh?.addEventListener("click",()=>void renderLivePresence());
 
   function renderTelemetryMode(){
 const mode=window.GHRAB.getTelemetryMode();
@@ -176,7 +223,8 @@ if(healthNote){
 renderTable(report||{
 sources:[]}
 ,apps);
-renderAiReadiness(apps,coreRegistry,readiness,runtime)}
+renderAiReadiness(apps,coreRegistry,readiness,runtime);
+void renderLivePresence(apps)}
 
   render().catch(()=>{
 if(appHost)appHost.textContent=t("Data automatizace se nepodařilo načíst.","Automation data could not be loaded.")}

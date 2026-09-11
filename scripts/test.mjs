@@ -1461,13 +1461,14 @@ if (
     "Report neumí nahradit opakovaný souhrn ze stejného zařízení a měsíce nebo filtrovat období.",
   );
 if (
-  !reportScriptText.includes("canvasPdf") ||
+  !reportScriptText.includes("canvasesPdf") ||
+  !reportScriptText.includes("renderManagementCanvas") ||
   !reportScriptText.includes("school-logo.png") ||
   !reportScriptText.includes("portal-gateway.webp") ||
   !/downloadPdf\(["\']mono["\']\)/.test(reportScriptText)
 )
   fail(
-    "Report nemá přímý barevný a černobílý jednostránkový A4 PDF export se školní identitou.",
+    "Report nemá přímý barevný a černobílý dvoustránkový A4 PDF export se školní identitou.",
   );
 if (
   new URL(

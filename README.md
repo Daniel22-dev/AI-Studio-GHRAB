@@ -1,8 +1,8 @@
 # AI Studio GHRAB
 
-**Aktuální verze:** 0.21.50
+**Aktuální verze:** 0.21.52
 
-**Aktualizace 0.21.50:** zjednodušuje karty aplikací, přesouvá jejich kompaktní ovládání do pravého horního rohu, zavádí jednotnou ikonu zamčeno/odemčeno a přepisuje technické popisy do běžného učitelského jazyka. Současně připravuje serverový kontrakt pro centrální provozní semafor aplikací a AI Studia; v dnešním GitHub Pages režimu zůstává tato funkce vypnutá.
+**Aktualizace 0.21.52:** připravuje pro školní server živý správcovský přehled **kdo je právě online a kterou aplikaci používá**. Centrální platform-runtime všech chráněných aplikací umí posílat krátký heartbeat jen z viditelné a zaměřené karty; klient neposílá jméno ani e-mail, identitu doplní server z ověřené školní session. V GitHub Pages režimu zůstává funkce vypnutá a neprovádí žádný presence request. Dvoustránkový reporting z 0.21.51 zůstává beze změny.
 **Platforma:** GHRAB Platform 1.1.2 · etapa P5
 
 **Stav:** AMBER – KANDIDÁT NOVÉHO VÝSLOVNĚ ZAHÁJENÉHO GARP 2.3 CYKLU, NE FINÁLNÍ RELEASE. Nezávislá kontrola Claude nad 0.21.38 potvrdila C-01/C-02/C-03, ale našla D-01 / HIGH na cestě „Smazat moje data“ → Browser Back. D-01 je v 0.21.43 opraven a kandidát čeká na druhé nezávislé ověření tohoto nového cyklu. **Reálná studentská data nepoužívat.**
@@ -10,15 +10,23 @@
 **Verze 0.21.43** sjednocuje destruktivní lifecycle ochranu: `deleteMyData()` i shared-device `endWork()` po smazání rotují neobsahovou generační tombstone. SIM-03 browser regrese testuje obě cesty, následné psaní i novou kartu a QA evidence se nepublikuje v `dist/`.
 AI Studio GHRAB je centrální brána školních digitálních a AI nástrojů. Jednotlivé aplikace zůstávají v samostatných repozitářích; Studio zajišťuje společnou navigaci, Top 4, synchronizaci verzí, bezpečnostní rámec, pilotní měření, správu podepsaných přístupů a kanonický základ technického reportéru. Materiály jsou viditelnou součástí portálu, ale v dnešním bezserverovém režimu se vlastní obsah ukládá pouze místně.
 
-## Hlavní novinky 0.21.50
+## Hlavní novinky 0.21.52
 
-- Z karet aplikací zmizely pilotní štítky, tagy a duplicitní přístupová metadata.
-- Přetažení, stav testování, oblíbenost, budoucí provozní semafor, verze a ikona přístupu jsou sjednocené v pravém horním bloku karty.
-- Uzamčená karta zobrazuje jednoduchou větu o nutnosti absolvovat příslušné školení; odemčená karta už nemá další zelené přístupové vysvětlivky.
-- Popisy devíti aplikací jsou zkrácené a zbavené výrazů jako `local-first`, `PWA`, `workflow` nebo interních technických názvů.
-- Karty jsou kompaktnější, ale zachovávají výrazné tlačítko **Spustit aplikaci**.
-- Je připraven serverový endpoint/kontrakt pro provozní stav `operational` / `maintenance` / `outage`. Ovládání se zobrazí pouze správci a pouze při skutečně aktivním školním serveru.
-- Provozní semafor se záměrně neukládá do localStorage; centrální server musí stav sdílet a také vynucovat na cílových trasách aplikací.
+- Ve Správě Studia je připraven panel pouze pro plného správce: **online uživatel + právě používaná aplikace**.
+- Heartbeat se aktivuje pouze v reálném `school-server` / `server-session` profilu s `schoolServerConnected=true` a `livePresence=true`; serverless provoz nic neodesílá.
+- Jméno uživatele se neposílá z klienta. Server jej odvodí z přihlášené školní identity a klient z výsledku použije jen `displayName`, `appId` a `lastSeenAt`.
+- Skrytá karta heartbeat neposílá; po focusu jiné aplikace se aktuální `appId` přepíše. Doporučený serverový TTL je 120 sekund.
+- Funkce nevytváří historii pohybu mezi aplikacemi a neslouží jako docházka nebo evidence práce. Backend kontrakt je v `docs/LIVE-PRESENCE-SERVER-CONTRACT.md`.
+
+## Zachováno z 0.21.51
+
+- Měsíční report pro vedení má pevně dvě A4: **1/2 Využití AI Studia** a **2/2 Práce garanta a souhrn pro vedení**.
+- Druhá strana čerpá z lokální evidence práce garanta a z měsíčního manažerského souhrnu. Evidence umí datum, minuty, kategorii, oblast/aplikaci, pravidelnou či mimořádnou práci, popis činnosti, výsledek a soukromou poznámku.
+- Do PDF se agreguje čas podle kategorií a zobrazí se školení/podpora, mimořádná práce, přímé AI náklady, klíčové výsledky, rizika, potřebná rozhodnutí vedení a priority.
+- **Soukromá poznámka se do PDF ani anonymního JSON/CSV exportu nikdy nepřenáší.** Anonymní provozní exporty zůstávají obsahově oddělené od osobní pracovní evidence garanta.
+- Nezadané přímé náklady se zobrazí jako **Neuvedeno**, ne jako falešná nula. Neplatný nebo nulový čas pracovního záznamu se odmítne.
+- V bezserverovém režimu se anonymní měsíční JSON souhrny kolegů nadále importují ručně. Po reálném připojení školního serveru je cílový workflow centralizovaný: provozní data se sesbírají automaticky a správce pouze vygeneruje stejné dvoustránkové PDF.
+- PDF generátor nově skládá skutečný vícestránkový dokument; statické regrese hlídají druhou A4 i privacy hranici soukromých poznámek.
 
 ### Bezpečnostní základ převzatý z 0.21.43
 

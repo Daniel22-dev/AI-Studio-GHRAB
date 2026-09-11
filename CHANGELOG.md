@@ -2,6 +2,20 @@
 
 > Tento soubor se generuje ze `src/config/changelog.json`. Neupravujte jej ručně.
 
+## 0.21.52 — 2026-09-11
+**Živá přítomnost**
+
+- Po aktivaci serveru plný správce uvidí, kdo je online a kterou aplikaci používá; heartbeat posílá jen appId, TTL je 120 s bez historie a GitHub Pages nic neposílá.
+
+## 0.21.51 — 2026-09-11
+**Dvoustránkový měsíční report pro vedení**
+
+- Souhrnný report má nově dvě pevné strany A4: první zachovává anonymní provozní statistiky aplikací, druhá shrnuje práci garanta, školení a podporu, přímé AI náklady, výsledky, rizika, rozhodnutí vedení a priority.
+- Správce může vést lokální evidenci práce garanta podle data, času, kategorie, oblasti a typu práce. Soukromá poznámka zůstává pouze v lokální evidenci a nikdy se nekreslí do PDF ani nepřidává do anonymního JSON/CSV exportu.
+- Manažerský souhrn je ukládán odděleně podle reportovaného období; nezadané přímé náklady se v PDF zobrazí jako Neuvedeno, nikoli jako 0 Kč.
+- V současném GitHub Pages režimu zůstává ruční import anonymních měsíčních souhrnů kolegů beze změny. Rozhraní výslovně popisuje budoucí serverový režim, ve kterém se provozní data centralizují automaticky a správce pouze vygeneruje stejný dvoustránkový PDF report.
+- Vlastní PDF generátor byl rozšířen z jedné na více stran a regresní testy nově hlídají druhou A4, oddělené úložiště, validaci času a zákaz přenosu soukromé poznámky do vykreslované druhé strany.
+
 ## 0.21.50 — 2026-09-11
 **Oprava PWA cache pro osobní Top 4 v Pohledu kolegy**
 

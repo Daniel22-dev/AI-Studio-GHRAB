@@ -1,8 +1,8 @@
-# Bezpečnostní hranice AI Studio GHRAB 0.21.50
+# Bezpečnostní hranice AI Studio GHRAB 0.21.52
 
-> Aktuální verze: **0.21.50** · etapa P5
+> Aktuální verze: **0.21.52** · etapa P5
 
-> 0.21.50 zjednodušuje karty aplikací, přesouvá ovládací prvky do pravého horního rohu a připravuje centrální serverový provozní semafor; bezpečnostní logika GARP zůstává beze změny.
+> 0.21.52 připravuje pro skutečný školní server krátkodobou živou přítomnost: plný správce může po aktivaci backendu vidět jméno přihlášeného uživatele a naposledy aktivní aplikaci. Klient neposílá jméno ani e-mail a v GitHub Pages profilu se žádný presence request neprovádí. Dvoustránkový reporting z 0.21.51 zůstává zachován.
 
 
 ## Rychlá kontrola dat v portálu
@@ -56,6 +56,12 @@ Po změně revokačního seznamu musí hlavní správce na svém zařízení zno
 ## Deployment profil
 
 Produkční build obsahuje zapečenou kopii deployment profilu. Lokální provider klíče jsou povoleny pouze při explicitním `allowLocalProviderKeys: true`; chybějící či neplatná konfigurace aplikaci ponechá v uzamčeném režimu. School-server build má zapečené `school-server`, `server-session` a `allowLocalProviderKeys: false`, takže výpadek samostatného JSON požadavku nemůže přepnout provoz na osobní Gemini klíč.
+
+## Živá přítomnost na školním serveru
+
+Živá přítomnost je připravená klientská schopnost, nikoli funkce současného GitHub Pages provozu. Aktivuje se jen při `server-session`, skutečném `schoolServerConnected=true` a explicitním `livePresence=true`. Viditelná a zaměřená karta pak posílá pouze `appId`. Jméno i rozhodný čas určí server z ověřené session; klient neposílá e-mail, IP adresu, zařízení, URL podstránky, prompty, materiály ani studentská data.
+
+Server má stav držet pouze krátkodobě s doporučeným TTL 120 sekund a bez historie přechodů mezi aplikacemi. GET přehledu musí být povolen pouze plnému správci a POST heartbeat musí používat stejnou session/CSRF ochranu jako ostatní zapisovací endpointy. Přesný kontrakt je v `docs/LIVE-PRESENCE-SERVER-CONTRACT.md`.
 
 ## Sdílené počítače
 

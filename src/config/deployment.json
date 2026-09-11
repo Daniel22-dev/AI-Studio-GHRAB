@@ -44,7 +44,8 @@
     "aiHealth": "ai/health",
     "materials": "materials",
     "commissions": "commissions",
-    "operationalStatus": "operations/status"
+    "operationalStatus": "operations/status",
+    "presence": "presence"
   },
   "features": {
     "schoolServerReady": true,
@@ -61,7 +62,9 @@
     "classroomValidationReady": true,
     "commissionReviewReady": true,
     "sharedMaterialLibrary": false,
-    "centralOperationalStatus": false
+    "centralOperationalStatus": false,
+    "livePresenceReady": true,
+    "livePresence": false
   },
   "appId": "ai-studio",
   "appBaseUrl": "/AI-Studio-GHRAB/",

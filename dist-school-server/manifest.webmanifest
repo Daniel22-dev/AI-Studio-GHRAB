@@ -56,14 +56,14 @@
       "purpose": "any maskable"
     }
   ],
-  "version": "0.21.50",
+  "version": "0.21.52",
   "ghrab_platform": {
     "contract": "ghrab-platform-v1",
     "platform_version": "1.1.2",
     "required_range": ">=1.1.2 <2.0.0",
     "brand_version": "1.0.0",
     "app_id": "ai-studio",
-    "cache_name": "ghrab-ai-studio-v0.21.50",
+    "cache_name": "ghrab-ai-studio-v0.21.52",
     "theme_contract": "ghrab-theme-v1",
     "storage_contract": "ghrab-storage-namespace-v1",
     "bridge_contract": "ghrab-studio-handoff-v2",
@@ -72,5 +72,5 @@
     "performance_contract": "ghrab-performance-v1",
     "module_contract": "ghrab-lazy-modules-v1"
   },
-  "cache_name": "ghrab-ai-studio-v0.21.50"
+  "cache_name": "ghrab-ai-studio-v0.21.52"
 }

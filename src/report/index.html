@@ -1,5 +1,5 @@
 <!doctype html>
-<html lang="cs" data-theme="dark" data-force-language="cs" data-ghrab-app-id="ai-studio" data-ghrab-app-version="0.21.50">
+<html lang="cs" data-theme="dark" data-force-language="cs" data-ghrab-app-id="ai-studio" data-ghrab-app-version="0.21.52">
   <head>
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width,initial-scale=1" />
@@ -13,6 +13,7 @@
     <link rel="icon" href="../assets/brand/icon-32.png" sizes="32x32" />
     <link rel="stylesheet" href="../styles.css" />
     <link rel="stylesheet" href="../polish.css" />
+    <link rel="stylesheet" href="./report.css" />
 </head>
   <body
     data-page="report"
@@ -37,9 +38,9 @@
         ><span
           ><strong>AI Studio <em>GHRAB</em></strong
           ><small
-            data-cs="Souhrnný pilotní report"
-            data-en="Aggregate pilot report"
-            >Souhrnný pilotní report</small
+            data-cs="Dvoustránkový měsíční report"
+            data-en="Two-page monthly report"
+            >Dvoustránkový měsíční report</small
           ></span
         ></a
       >
@@ -79,17 +80,18 @@
           PILOT · VEDENÍ · VÝROČNÍ ZPRÁVA
         </p>
         <h1
-          data-cs="Jedna přehledná strana. Jasná čísla. Žádný obsah uživatelů."
-          data-en="One clear page. Meaningful numbers. No user content."
+          data-cs="Dvě přehledné strany. Jasná čísla. Kontext pro vedení."
+          data-en="Two clear pages. Meaningful numbers. Context for leadership."
         >
-          Jedna přehledná strana. Jasná čísla. Žádný obsah uživatelů.
+          Dvě přehledné strany. Jasná čísla. Kontext pro vedení.
         </h1>
         <p
-          data-cs="Report odděluje vaše místní používání od anonymních souhrnů kolegů a umí vytvořit barevné i černobílé PDF A4."
-          data-en="The report separates your local use from colleagues' anonymous summaries and can create colour or monochrome A4 PDFs."
+          data-cs="První strana shrnuje anonymní provozní data o používání aplikací. Druhá přidává práci garanta, školení a podporu, náklady, výsledky, rizika, rozhodnutí a priority - bez promptů a obsahu kolegů nebo studentů."
+          data-en="The first page summarises anonymous operational app usage. The second adds guarantor work, training and support, costs, results, risks, decisions and priorities - without colleagues' or students' prompts or content."
         >
-          Report odděluje vaše místní používání od anonymních souhrnů kolegů a
-          umí vytvořit barevné i černobílé PDF A4.
+          První strana shrnuje anonymní provozní data o používání aplikací.
+          Druhá přidává práci garanta, školení a podporu, náklady, výsledky,
+          rizika, rozhodnutí a priority.
         </p>
       </section>
 
@@ -101,10 +103,10 @@
                 NÁHLED A4
               </p>
               <h2
-                data-cs="Souhrn pilotního provozu"
-                data-en="Pilot operation summary"
+                data-cs="Měsíční report pro vedení"
+                data-en="Monthly leadership report"
               >
-                Souhrn pilotního provozu
+                Měsíční report pro vedení
               </h2>
             </div>
             <div class="report-download-actions">
@@ -112,28 +114,44 @@
                 class="button primary"
                 id="report-pdf-color"
                 type="button"
-                data-cs="Stáhnout barevné PDF"
-                data-en="Download colour PDF"
+                data-cs="Stáhnout barevné PDF (2 strany)"
+                data-en="Download colour PDF (2 pages)"
               >
-                Stáhnout barevné PDF</button
+                Stáhnout barevné PDF (2 strany)</button
               ><button
                 class="button secondary"
                 id="report-pdf-mono"
                 type="button"
-                data-cs="Stáhnout černobílé PDF"
-                data-en="Download monochrome PDF"
+                data-cs="Stáhnout černobílé PDF (2 strany)"
+                data-en="Download monochrome PDF (2 pages)"
               >
-                Stáhnout černobílé PDF
+                Stáhnout černobílé PDF (2 strany)
               </button>
             </div>
           </div>
-          <div class="a4-preview-shell">
-            <canvas
-              id="report-preview"
-              width="1240"
-              height="1754"
-              aria-label="Náhled reportu A4"
-            ></canvas>
+          <div class="a4-preview-stack">
+            <div class="a4-preview-page">
+              <span class="a4-preview-label" data-cs="1 / 2 · Využití AI Studia" data-en="1 / 2 · AI Studio usage">1 / 2 · Využití AI Studia</span>
+              <div class="a4-preview-shell">
+                <canvas
+                  id="report-preview"
+                  width="1240"
+                  height="1754"
+                  aria-label="Náhled první strany reportu A4"
+                ></canvas>
+              </div>
+            </div>
+            <div class="a4-preview-page">
+              <span class="a4-preview-label" data-cs="2 / 2 · Práce garanta a souhrn pro vedení" data-en="2 / 2 · Guarantor work and leadership summary">2 / 2 · Práce garanta a souhrn pro vedení</span>
+              <div class="a4-preview-shell">
+                <canvas
+                  id="report-preview-management"
+                  width="1240"
+                  height="1754"
+                  aria-label="Náhled druhé strany reportu A4"
+                ></canvas>
+              </div>
+            </div>
           </div>
         </div>
 
@@ -184,6 +202,110 @@
           </section>
 
           <section class="panel">
+            <p class="eyebrow" data-cs="2. STRANA · SOUHRN PRO VEDENÍ" data-en="PAGE 2 · LEADERSHIP SUMMARY">
+              2. STRANA · SOUHRN PRO VEDENÍ
+            </p>
+            <p id="report-management-period" class="report-period-note"></p>
+            <form id="report-management-form" class="report-management-form">
+              <div class="form-grid two-col">
+                <div class="field">
+                  <label for="report-management-cost" data-cs="Přímé náklady AI (Kč)" data-en="Direct AI costs (CZK)">Přímé náklady AI (Kč)</label>
+                  <input id="report-management-cost" type="number" min="0" max="10000000" step="0.01" inputmode="decimal" />
+                </div>
+                <div class="field">
+                  <label for="report-management-cost-note" data-cs="Poznámka k nákladům" data-en="Cost note">Poznámka k nákladům</label>
+                  <input id="report-management-cost-note" type="text" maxlength="240" placeholder="např. OpenAI API + další služby" />
+                </div>
+                <div class="field full">
+                  <label for="report-management-results" data-cs="Klíčové výsledky" data-en="Key results">Klíčové výsledky</label>
+                  <textarea id="report-management-results" rows="3" maxlength="420" placeholder="Jeden bod na řádek."></textarea>
+                </div>
+                <div class="field full">
+                  <label for="report-management-training" data-cs="Školení a podpora" data-en="Training and support">Školení a podpora</label>
+                  <textarea id="report-management-training" rows="3" maxlength="420" placeholder="Školení, konzultace, podpora kolegů..."></textarea>
+                </div>
+                <div class="field full">
+                  <label for="report-management-risks" data-cs="Rizika / problémy" data-en="Risks / issues">Rizika / problémy</label>
+                  <textarea id="report-management-risks" rows="3" maxlength="420"></textarea>
+                </div>
+                <div class="field full">
+                  <label for="report-management-decisions" data-cs="Potřebná rozhodnutí vedení" data-en="Leadership decisions needed">Potřebná rozhodnutí vedení</label>
+                  <textarea id="report-management-decisions" rows="3" maxlength="420"></textarea>
+                </div>
+                <div class="field full">
+                  <label for="report-management-priorities" data-cs="Priority na další období" data-en="Priorities for the next period">Priority na další období</label>
+                  <textarea id="report-management-priorities" rows="3" maxlength="420"></textarea>
+                </div>
+              </div>
+              <button class="button primary wide" type="submit" data-cs="Uložit souhrn druhé strany" data-en="Save page-two summary">Uložit souhrn druhé strany</button>
+              <p id="report-management-status" class="form-feedback" role="status" aria-live="polite"></p>
+            </form>
+            <p class="notice" data-cs="Text je určen pouze pro manažerský souhrn. Nevkládejte osobní údaje studentů ani obsah jejich prací." data-en="This text is only for the management summary. Do not enter student personal data or the content of student work.">
+              Text je určen pouze pro manažerský souhrn. Nevkládejte osobní údaje studentů ani obsah jejich prací.
+            </p>
+          </section>
+
+          <section class="panel">
+            <p class="eyebrow" data-cs="EVIDENCE PRÁCE GARANTA" data-en="GUARANTOR WORK LOG">EVIDENCE PRÁCE GARANTA</p>
+            <p id="report-work-summary" class="report-work-summary"></p>
+            <form id="report-work-form" class="report-work-form">
+              <input id="report-work-id" type="hidden" />
+              <div class="form-grid two-col">
+                <div class="field">
+                  <label for="report-work-date" data-cs="Datum" data-en="Date">Datum</label>
+                  <input id="report-work-date" type="date" required />
+                </div>
+                <div class="field">
+                  <label for="report-work-minutes" data-cs="Čas (min)" data-en="Time (min)">Čas (min)</label>
+                  <input id="report-work-minutes" type="number" min="1" max="1440" step="1" required />
+                </div>
+                <div class="field">
+                  <label for="report-work-category" data-cs="Kategorie" data-en="Category">Kategorie</label>
+                  <select id="report-work-category" required>
+                    <option value="operations">Provoz a správa</option>
+                    <option value="support">Podpora uživatelů</option>
+                    <option value="training">Školení a metodika</option>
+                    <option value="security">Bezpečnost, GDPR a spolupráce s IT</option>
+                    <option value="documentation">Dokumentace a reporting</option>
+                    <option value="development">Rozvoj existující aplikace</option>
+                    <option value="new_project">Nová aplikace / mimořádný projekt</option>
+                    <option value="representation">Prezentace a reprezentace školy</option>
+                  </select>
+                </div>
+                <div class="field">
+                  <label for="report-work-area" data-cs="Aplikace / oblast" data-en="Application / area">Aplikace / oblast</label>
+                  <select id="report-work-area" required></select>
+                </div>
+                <div class="field full">
+                  <label for="report-work-type" data-cs="Typ práce" data-en="Work type">Typ práce</label>
+                  <select id="report-work-type" required>
+                    <option value="regular">Pravidelná agenda</option>
+                    <option value="exceptional">Mimořádný úkol</option>
+                  </select>
+                </div>
+                <div class="field full">
+                  <label for="report-work-activity" data-cs="Co jsem dělal" data-en="Work performed">Co jsem dělal</label>
+                  <input id="report-work-activity" type="text" maxlength="300" required />
+                </div>
+                <div class="field full">
+                  <label for="report-work-result" data-cs="Výsledek / přínos" data-en="Result / impact">Výsledek / přínos</label>
+                  <textarea id="report-work-result" rows="3" maxlength="1800"></textarea>
+                </div>
+                <div class="field full">
+                  <label for="report-work-private" data-cs="Soukromá poznámka" data-en="Private note">Soukromá poznámka</label>
+                  <textarea id="report-work-private" rows="2" maxlength="1800" placeholder="Jen pro vaši evidenci - nikdy se nepřenese do PDF."></textarea>
+                </div>
+              </div>
+              <div class="report-work-form-actions">
+                <button class="button primary" type="submit" data-cs="Uložit záznam" data-en="Save entry">Uložit záznam</button>
+                <button class="button ghost" id="report-work-reset" type="button" data-cs="Nový / zrušit úpravu" data-en="New / cancel edit">Nový / zrušit úpravu</button>
+              </div>
+              <p id="report-work-status" class="form-feedback" role="status" aria-live="polite"></p>
+            </form>
+            <div id="report-work-list" class="report-work-list"></div>
+          </section>
+
+          <section class="panel">
             <p
               class="eyebrow"
               data-cs="IMPORT OD KOLEGŮ"
@@ -221,6 +343,9 @@
               role="status"
               aria-live="polite"
             ></p>
+            <p class="notice server-reporting-note" data-cs="Po připojení školního serveru tento ruční krok odpadne: anonymní provozní data se budou centralizovat automaticky a správce pouze vygeneruje stejný dvoustránkový PDF report." data-en="Once the school server is connected, this manual step will disappear: anonymous operational data will be centralised automatically and the administrator will simply generate the same two-page PDF report.">
+              Po připojení školního serveru tento ruční krok odpadne: anonymní provozní data se budou centralizovat automaticky a správce pouze vygeneruje stejný dvoustránkový PDF report.
+            </p>
             <div id="report-import-list" class="import-list"></div>
             <button
               class="button ghost wide"
@@ -247,6 +372,9 @@
           <section class="panel">
             <p class="eyebrow" data-cs="BEZPEČNÝ EXPORT" data-en="SAFE EXPORT">
               BEZPEČNÝ EXPORT
+            </p>
+            <p class="notice" data-cs="Anonymní JSON a technické CSV obsahují pouze provozní data první strany. Evidence práce garanta, manažerský souhrn a soukromé poznámky se do nich nepřidávají." data-en="Anonymous JSON and technical CSV contain only page-one operational data. The guarantor work log, management summary and private notes are not added to them.">
+              Anonymní JSON a technické CSV obsahují pouze provozní data první strany. Evidence práce garanta, manažerský souhrn a soukromé poznámky se do nich nepřidávají.
             </p>
             <div class="report-actions">
               <button

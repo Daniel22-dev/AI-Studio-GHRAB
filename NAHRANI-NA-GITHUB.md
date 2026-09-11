@@ -1,12 +1,12 @@
-# Nahrání AI Studio GHRAB 0.21.50
+# Nahrání AI Studio GHRAB 0.21.52
 
-> Aktuální verze: **0.21.50** · etapa P5
+> Aktuální verze: **0.21.52** · etapa P5
 
-> 0.21.50 zjednodušuje karty aplikací, přesouvá ovládací prvky do pravého horního rohu a připravuje centrální serverový provozní semafor; bezpečnostní logika GARP zůstává beze změny.
+> 0.21.52 navazuje na dvoustránkový reporting a připravuje serverovou živou přítomnost: plný správce po aktivaci backendu uvidí, kdo je online a kterou aplikaci právě používá; v GitHub Pages režimu se žádné presence požadavky neposílají.
 
-> **BLOKACE NASAZENÍ:** nový nezávislý GARP 2.3 cyklus byl výslovně zahájen. Verze 0.21.43 je kandidát po opravě D-01 / HIGH z první nezávislé kontroly tohoto nového cyklu a před nasazením musí projít jeho druhou Claude kontrolou a uzavřením release gate. Do té doby se tento postup NESMÍ použít k produkčnímu nasazení a reálná studentská data se nesmí použít.
+> **PŘED NASAZENÍM:** aktuální release musí projít standardní P5/access gate v GitHub Actions. Pro produkční použití musí být zelené i povinné browserové kontroly CI; do uzavření těchto gate se nemají používat reálná studentská data.
 
-Tato verze je opravný bezpečnostní kandidát nového výslovně zahájeného cyklu GARP 2.3 po opravě D-01 a zatím není schválena k nasazení. Zpevňuje ukončení práce na sdíleném zařízení, server-session scope, datové mazání a platformní telemetrii. Podepisovací klíče, existující revokace a vydaná oprávnění zůstávají beze změny; nasazení musí projít stejnými P5 a access gates jako předchozí release.
+Verze 0.21.52 navazuje na stávající P5/GARP bezpečnostní baseline. Přidává dvoustránkový reporting z 0.21.51 a připravenou serverovou živou přítomnost; v GitHub Pages profilu je presence vypnutá. Podepisovací klíče, existující revokace a vydaná oprávnění se tímto releasem nemění.
 
 ## Povinné pořadí
 

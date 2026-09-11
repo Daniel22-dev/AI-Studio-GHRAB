@@ -43,6 +43,22 @@ function isSchoolProfile() {
   const config = deployment();
   return config.profile === "school-server" || config.authMode === "server-session" || config.aiTransport === "school-gateway";
 }
+function livePresenceEnabled() {
+  const config = deployment();
+  return Boolean(
+    config?.features?.livePresenceReady === true &&
+      config?.features?.livePresence === true &&
+      config?.features?.schoolServerConnected === true &&
+      config?.authMode === "server-session" &&
+      config?.apiBaseUrl &&
+      config?.endpoints?.presence,
+  );
+}
+async function startConfiguredLivePresence(appId) {
+  if (!livePresenceEnabled()) return;
+  const { startLivePresenceHeartbeat } = await import("../modules/live-presence.js");
+  await startLivePresenceHeartbeat(Promise.resolve(deployment()), { appId });
+}
 function localProviderKeysAllowed() {
   const config = deployment();
   return config.features?.allowLocalProviderKeys === true && config.authMode !== "server-session";
@@ -538,6 +554,8 @@ export async function initialisePlatformRuntime({ appId, appVersion = "unknown",
   else if (mountControls) document.addEventListener("DOMContentLoaded", mountPrivacyControls, { once: true });
   if (document.body) mountConnectionStatus(accessSnapshot);
   else document.addEventListener("DOMContentLoaded", () => mountConnectionStatus(accessSnapshot), { once: true });
+  void startConfiguredLivePresence(appId)
+    .catch((error) => console.warn(`GHRAB live presence (${appId}) could not start.`, error));
   recordTelemetry("platform-runtime-ready", { status: "ok", connectionState: accessSnapshot?.connectionState || "unknown" });
   return runtimeState;
 }

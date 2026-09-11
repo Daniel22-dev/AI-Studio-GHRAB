@@ -1,7 +1,51 @@
 {
   "schema": "ai-studio-changelog-v1",
-  "current": "0.21.50",
+  "current": "0.21.52",
   "items": [
+    {
+      "version": "0.21.52",
+      "date": "2026-09-11",
+      "title": {
+        "cs": "Živá přítomnost",
+        "en": "Live presence"
+      },
+      "changes": [
+        {
+          "cs": "Po aktivaci serveru plný správce uvidí, kdo je online a kterou aplikaci používá; heartbeat posílá jen appId, TTL je 120 s bez historie a GitHub Pages nic neposílá.",
+          "en": "Once enabled, the full administrator sees who is online and which app they use; heartbeats send only appId, TTL is 120 s with no history, and GitHub Pages sends nothing."
+        }
+      ]
+    },
+    {
+      "version": "0.21.51",
+      "date": "2026-09-11",
+      "title": {
+        "cs": "Dvoustránkový měsíční report pro vedení",
+        "en": "Two-page monthly leadership report"
+      },
+      "changes": [
+        {
+          "cs": "Souhrnný report má nově dvě pevné strany A4: první zachovává anonymní provozní statistiky aplikací, druhá shrnuje práci garanta, školení a podporu, přímé AI náklady, výsledky, rizika, rozhodnutí vedení a priority.",
+          "en": "The aggregate report now has two fixed A4 pages: page one preserves anonymous application usage statistics, while page two summarises guarantor work, training and support, direct AI costs, results, risks, leadership decisions and priorities."
+        },
+        {
+          "cs": "Správce může vést lokální evidenci práce garanta podle data, času, kategorie, oblasti a typu práce. Soukromá poznámka zůstává pouze v lokální evidenci a nikdy se nekreslí do PDF ani nepřidává do anonymního JSON/CSV exportu.",
+          "en": "The administrator can keep a local guarantor work log by date, time, category, area and work type. Private notes remain only in the local log and are never rendered into the PDF or added to anonymous JSON/CSV exports."
+        },
+        {
+          "cs": "Manažerský souhrn je ukládán odděleně podle reportovaného období; nezadané přímé náklady se v PDF zobrazí jako Neuvedeno, nikoli jako 0 Kč.",
+          "en": "The management summary is stored separately per reporting period; unspecified direct costs render as Not provided rather than CZK 0."
+        },
+        {
+          "cs": "V současném GitHub Pages režimu zůstává ruční import anonymních měsíčních souhrnů kolegů beze změny. Rozhraní výslovně popisuje budoucí serverový režim, ve kterém se provozní data centralizují automaticky a správce pouze vygeneruje stejný dvoustránkový PDF report.",
+          "en": "In the current GitHub Pages mode, manual import of colleagues' anonymous monthly summaries remains unchanged. The interface explicitly describes the future server mode in which operational data are centralised automatically and the administrator simply generates the same two-page PDF report."
+        },
+        {
+          "cs": "Vlastní PDF generátor byl rozšířen z jedné na více stran a regresní testy nově hlídají druhou A4, oddělené úložiště, validaci času a zákaz přenosu soukromé poznámky do vykreslované druhé strany.",
+          "en": "The built-in PDF generator was extended from one page to multiple pages, and regression tests now guard the second A4 page, separate storage, time validation and exclusion of private notes from the rendered second page."
+        }
+      ]
+    },
     {
       "version": "0.21.50",
       "date": "2026-09-11",

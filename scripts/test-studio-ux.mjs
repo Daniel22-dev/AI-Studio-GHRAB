@@ -142,7 +142,18 @@ check(!securityCenterJs.includes("localStorage.setItem") && !securityCenterJs.in
 check(securityCenterCore.includes('schema: "ghrab-access-config-update-pack-v1"') && securityCenterCore.includes("findPrivateMaterial(pack)"), "Centrum nevytvari verejny kontrolovatelny aktualizacni balicek.");
 
 const reportHtml = await text("src/report/index.html");
+const reportJs = await text("src/report/report.js");
 check(reportHtml.includes('tomto prohlížeči a profilu') && reportHtml.includes('Není třeba nahrávat vlastní soubor'), "Souhrnny report nevysvetluje automaticke pridani mistnich dat aktualniho prohlizece/profilu.");
+check(reportHtml.includes('id="report-preview-management"') && reportHtml.includes('2 / 2 · Práce garanta a souhrn pro vedení'), "Souhrnny report nema druhou A4 stranu pro praci garanta.");
+check(reportHtml.includes('id="report-management-form"') && reportHtml.includes('id="report-work-form"'), "Souhrnny report nema formular manazerskeho souhrnu nebo evidenci prace garanta.");
+check(reportHtml.includes('Po připojení školního serveru tento ruční krok odpadne'), "Souhrnny report nevysvetluje budouci centralizaci dat na skolnim serveru.");
+check(reportJs.includes('ghrab.ai-studio.report.worklog.v1') && reportJs.includes('ghrab.ai-studio.report.management.v1'), "Nova data reportingu nepouzivaji vlastnene AI Studio namespace.");
+check(reportJs.includes('canvasesPdf([firstPage, secondPage])'), "PDF export neni skutecne dvoustrankovy.");
+check(reportJs.includes('rawMinutes <= 0'), "Evidence prace neprerusuje prazdny nebo nulovy cas pred normalizaci.");
+const managementCanvasStart = reportJs.indexOf('async function renderManagementCanvas');
+const managementCanvasEnd = reportJs.indexOf('function bytesFromDataUrl', managementCanvasStart);
+const managementCanvasSource = reportJs.slice(managementCanvasStart, managementCanvasEnd);
+check(managementCanvasStart >= 0 && managementCanvasEnd > managementCanvasStart && !managementCanvasSource.includes('privateNote'), "Soukroma poznamka muze proniknout do druhe strany PDF.");
 check(!appJs.includes('function portalStatusLabel(app)') && !appJs.includes('identityText.append(el("span", "status"'), "Karty stale zobrazuji historicky pilotni status.");
 check(!appJs.includes('(app.tags || [])') && !appJs.includes('portal-card-meta",'), "Karty stale renderuji technicke tagy nebo metadata chipy.");
 check(appJs.includes('portal-access-lock') && appJs.includes('Daná aplikace se otevře až po absolvování příslušného školení.'), "Karty nemaji jednoduchou ikonu zamku a srozumitelnou vetu o skoleni.");

@@ -1,5 +1,5 @@
 <!doctype html>
-<html lang="cs" data-theme="dark" data-ghrab-app-id="ai-studio" data-ghrab-app-version="0.21.50">
+<html lang="cs" data-theme="dark" data-ghrab-app-id="ai-studio" data-ghrab-app-version="0.21.52">
   <head>
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width,initial-scale=1" />
@@ -253,6 +253,30 @@
               Vymazat testovací data
             </button>
           </div>
+        </section>
+        <section
+          id="live-presence-panel"
+          class="panel automation-report"
+          data-full-admin-only
+          hidden
+          aria-labelledby="live-presence-title"
+        >
+          <div class="section-heading split-heading">
+            <div>
+              <p class="eyebrow" data-cs="ŽIVÁ PŘÍTOMNOST" data-en="LIVE PRESENCE">ŽIVÁ PŘÍTOMNOST</p>
+              <h2 id="live-presence-title" data-cs="Kdo je právě online a kterou aplikaci používá" data-en="Who is online and which application they are using">Kdo je právě online a kterou aplikaci používá</h2>
+            </div>
+            <button id="live-presence-refresh" type="button" class="button compact ghost" data-cs="Obnovit" data-en="Refresh">Obnovit</button>
+          </div>
+          <div id="live-presence-summary" class="automation-summary" aria-live="polite"></div>
+          <p id="live-presence-state" class="notice sync-neutral" aria-live="polite">Připraveno pro školní server.</p>
+          <div class="table-scroll">
+            <table class="sync-table" aria-label="Aktuálně online uživatelé">
+              <thead><tr><th data-cs="Uživatel" data-en="User">Uživatel</th><th data-cs="Právě používá" data-en="Currently using">Právě používá</th></tr></thead>
+              <tbody id="live-presence-table-body"></tbody>
+            </table>
+          </div>
+          <p class="notice" data-cs="Aktivní karta posílá jen ID aplikace; jméno doplní server. Bez obsahu a historie, záznam po neaktivitě zanikne." data-en="The active tab sends only the app ID; the server resolves the name. No content or history; the record expires after inactivity.">Aktivní karta posílá jen ID aplikace; jméno doplní server. Bez obsahu a historie, záznam po neaktivitě zanikne.</p>
         </section>
         <div
           id="automation-summary"
