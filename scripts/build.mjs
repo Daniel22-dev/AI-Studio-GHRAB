@@ -326,6 +326,21 @@ for (const relative of [
   "ghrab-platform.consumer.json",
   "build-info.json",
   "platform-build-info.json",
+  // App-owned JSON schemas and material catalog are semantic JSON; formatting is
+  // irrelevant at runtime, so compact them in dist to keep the P5 payload budget
+  // resilient to small registry/changelog growth during CI synchronization.
+  "schemas/ai-studio-app-manifest-v1.schema.json",
+  "schemas/ghrab-app-registry-v2.schema.json",
+  "schemas/ghrab-material-v1.schema.json",
+  "schemas/ghrab-shared-material-record-v1.schema.json",
+  "schemas/ghrab-artifact-envelope-v1.schema.json",
+  "schemas/ghrab-handoff-v1.schema.json",
+  "schemas/ludus-content-v2.schema.json",
+  "library/catalog.json",
+  "library/materials/czech-syntax.ghrab.json",
+  "library/materials/school-email.ghrab.json",
+  "library/materials/spanish-travel.ghrab.json",
+  "library/materials/past-simple.ghrab.json",
 ]) {
   const file = path.join(dist, relative);
   try {
@@ -337,10 +352,26 @@ for (const relative of [
 }
 
 // P5 performance hygiene for the portal shell. Keep source CSS/HTML readable, but
-// remove indentation and blank lines from the two application-owned critical CSS
-// files and the root entry document in dist. Platform CSS is deliberately excluded
+// remove indentation and blank lines from application-owned CSS files and the root
+// entry document in dist. Platform CSS is deliberately excluded
 // because its byte identity is verified against the canonical vendor bundle.
-for (const relative of ["styles.css", "polish.css"]) {
+for (const relative of [
+  "styles.css",
+  "polish.css",
+  "access/error-reporter.css",
+  "manualy/manualy.css",
+  "manualy/viewer.css",
+  "manualy/error-report.css",
+  "manualy/pilot-report.css",
+  "tools/access-registry/registry.css",
+  "app/viewer.css",
+  "access/access-gate.css",
+  "tools/security-center/security-center.css",
+  "api-usage/api-usage.css",
+  "report/report.css",
+  "app/embed-overrides.css",
+  "app/external/launcher.css",
+]) {
   const file = path.join(dist, relative);
   const text = await readFile(file, "utf8");
   const compacted = `${text
