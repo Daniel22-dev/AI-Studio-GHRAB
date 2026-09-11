@@ -3,10 +3,10 @@
 > Tento soubor se generuje ze `src/config/changelog.json`. Neupravujte jej ručně.
 
 ## 0.21.49 — 2026-09-11
-**Správcovské ovládání karet a oprava Lesson Hub release-wave**
+**Osobní Top 4 pro každého učitele a oprava Lesson Hub release-wave**
 
-- Přesun Top 4 a hvězdička pro změnu Top 4 se nyní vykreslují pouze ve skutečném správcovském pohledu; běžný učitel ani Pohled kolegy je neuvidí.
-- Stav testování a klikací provozní semafor zůstávají pouze pro správce. Běžnému učiteli zůstává viditelná verze, zamčeno/odemčeno a případná provozní informace.
+- Každý učitel může libovolné aplikace označit hvězdičkou a sestavit si vlastní Top 4 kolem brány; své čtyři karty může také přeuspořádat.
+- Stav testování a klikací provozní semafor zůstávají pouze pro správce. Hvězdička a přesun osobního Top 4 jsou naopak běžné učitelské funkce a zobrazují se i v Pohledu kolegy.
 - Release-wave Platformy 1.1.2 byl srovnán s aktuálně ověřeným Lesson Hubem 1.2.22, takže synchronizace registru už nezpůsobí CI drift 1.2.22 proti 1.2.17.
 - Patch zvyšuje verzi AI Studia a PWA cache na 0.21.49.
 

@@ -1,13 +1,14 @@
 # AI Studio GHRAB 0.21.49
 
-## Správcovské ovládání karet
+## Osobní Top 4 pro každého učitele
 
-- Přesun Top 4 je dostupný pouze správci.
-- Hvězdička pro přidání/odebrání z Top 4 je dostupná pouze správci.
+- Každý učitel může libovolnou aplikaci označit hvězdičkou.
+- Označené aplikace tvoří jeho osobní Top 4 kolem brány.
+- Učitel může své čtyři karty kolem brány přeuspořádat přetažením nebo klávesnicí.
+- Hvězdička i přesun Top 4 jsou viditelné také v Pohledu kolegy, protože jde o běžné učitelské funkce.
 - Stav testování zůstává pouze správci.
 - Klikací provozní semafor je po aktivaci školního serveru pouze správci.
-- Běžný učitel vidí pouze verzi, ikonu zamčeno/odemčeno a případnou informaci o údržbě nebo výpadku.
-- Pohled kolegy správcovské ovládací prvky také nezobrazuje.
+- Běžný učitel provozní stav pouze vidí; nemůže jej měnit.
 
 ## CI hotfix Lesson Hub
 

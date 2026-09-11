@@ -1858,7 +1858,7 @@ function portalAppCard(app, index, permissions) {
   identity.append(icon);
 
   const headActions = el("div", "portal-card-actions");
-  if (isAdmin() && !isColleaguePreview() && index >= 0 && index < 4) {
+  if (index >= 0 && index < 4) {
     const dragHandle = el("button", "icon-button portal-drag-handle", "⠿");
     dragHandle.type = "button";
     dragHandle.draggable = true;
@@ -1936,27 +1936,25 @@ function portalAppCard(app, index, permissions) {
       appTestStatusModule.createAppTestStatusButton(app, article, state.language),
     );
   }
-  if (isAdmin() && !isColleaguePreview()) {
-    const pin = el(
-      "button",
-      `icon-button pin-button ${favorites.includes(app.id) ? "is-pinned" : ""}`,
-      "★",
-    );
-    pin.type = "button";
-    pin.setAttribute(
-      "aria-label",
-      favorites.includes(app.id)
-        ? t("Odebrat z Top 4", "Remove from Top 4")
-        : t("Přidat do Top 4", "Add to Top 4"),
-    );
-    pin.title = pin.getAttribute("aria-label");
-    pin.addEventListener("click", (event) => {
-      event.preventDefault();
-      event.stopPropagation();
-      toggleFavoriteApp(app.id);
-    });
-    headActions.append(pin);
-  }
+  const pin = el(
+    "button",
+    `icon-button pin-button ${favorites.includes(app.id) ? "is-pinned" : ""}`,
+    "★",
+  );
+  pin.type = "button";
+  pin.setAttribute(
+    "aria-label",
+    favorites.includes(app.id)
+      ? t("Odebrat z Top 4", "Remove from Top 4")
+      : t("Přidat do Top 4", "Add to Top 4"),
+  );
+  pin.title = pin.getAttribute("aria-label");
+  pin.addEventListener("click", (event) => {
+    event.preventDefault();
+    event.stopPropagation();
+    toggleFavoriteApp(app.id);
+  });
+  headActions.append(pin);
   const operationalButton = createOperationalStatusButton(app.id, localised(app.name));
   if (operationalButton) headActions.append(operationalButton);
   headActions.append(

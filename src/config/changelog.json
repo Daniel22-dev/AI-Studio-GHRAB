@@ -6,17 +6,17 @@
       "version": "0.21.49",
       "date": "2026-09-11",
       "title": {
-        "cs": "Správcovské ovládání karet a oprava Lesson Hub release-wave",
-        "en": "Administrator-only card controls and Lesson Hub release-wave fix"
+        "cs": "Osobní Top 4 pro každého učitele a oprava Lesson Hub release-wave",
+        "en": "Personal Top 4 for every teacher and Lesson Hub release-wave fix"
       },
       "changes": [
         {
-          "cs": "Přesun Top 4 a hvězdička pro změnu Top 4 se nyní vykreslují pouze ve skutečném správcovském pohledu; běžný učitel ani Pohled kolegy je neuvidí.",
-          "en": "Top 4 drag controls and the Top 4 star are now rendered only in the real administrator view; regular teachers and Colleague View do not see them."
+          "cs": "Každý učitel může libovolné aplikace označit hvězdičkou a sestavit si vlastní Top 4 kolem brány; své čtyři karty může také přeuspořádat.",
+          "en": "Every teacher can star any applications to build a personal Top 4 around the gateway and can reorder those four cards."
         },
         {
-          "cs": "Stav testování a klikací provozní semafor zůstávají pouze pro správce. Běžnému učiteli zůstává viditelná verze, zamčeno/odemčeno a případná provozní informace.",
-          "en": "Testing status and the interactive operational traffic light remain administrator-only. Regular teachers see only the version, locked/unlocked state and any operational notice."
+          "cs": "Stav testování a klikací provozní semafor zůstávají pouze pro správce. Hvězdička a přesun osobního Top 4 jsou naopak běžné učitelské funkce a zobrazují se i v Pohledu kolegy.",
+          "en": "Testing status and the interactive operational traffic light remain administrator-only. The star and personal Top 4 reordering are regular teacher features and are also shown in Colleague View."
         },
         {
           "cs": "Release-wave Platformy 1.1.2 byl srovnán s aktuálně ověřeným Lesson Hubem 1.2.22, takže synchronizace registru už nezpůsobí CI drift 1.2.22 proti 1.2.17.",
