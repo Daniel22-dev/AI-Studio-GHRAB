@@ -1,10 +1,10 @@
 # AI Studio GHRAB
 
-**Aktuální verze:** 0.21.60
+**Aktuální verze:** 0.21.61
 
-**Aktualizace 0.21.60:** opravuje jediný P5 R2 performance-gate limit po rozšíření reportu; nemediální `distBytes` budget je úzce posunut na 2 380 000 B bez změny kritické vstupní cesty, precache a lazy-media limitů.
+**Aktualizace 0.21.61:** zpřehledňuje celý Report: samostatné zadání vývoje je oddělené od čtyř kroků měsíčního reportu, běžná práce už není tlačítkem v kartě zadání a formuláře vysvětlují, co se do každého pole zapisuje. Po uzavření návrhu Studio výslovně navede ke stažení PDF a jeho přiložení k e-mailu oprávněné osobě za školu. Rychlý postup: [Zadání a report](ZADANI-A-REPORT.md).
 
-**Aktualizace 0.21.59:** přidává do Reportu karty samostatných zadání, souhlasy obou stran, vazbu na vykázanou práci, předání a rozhodnutí o nasazení. Rychlý postup: [Zadání a report](ZADANI-A-REPORT.md).
+**Performance budget 0.21.61:** rozšířená nápověda Reportu přidává pouze nemediální UI obsah; aktivní `distBytes` limit je proto úzce posunut z 2 380 000 na 2 400 000 B. Kritická vstupní cesta, precache, největší soubor i runtime limity zůstávají beze změny.
 **Platforma:** GHRAB Platform 1.1.2 · etapa P5
 
 **Stav:** AMBER – KANDIDÁT NOVÉHO VÝSLOVNĚ ZAHÁJENÉHO GARP 2.3 CYKLU, NE FINÁLNÍ RELEASE. Nezávislá kontrola Claude nad 0.21.38 potvrdila C-01/C-02/C-03, ale našla D-01 / HIGH na cestě „Smazat moje data“ → Browser Back. D-01 je v 0.21.43 opraven a kandidát čeká na druhé nezávislé ověření tohoto nového cyklu. **Reálná studentská data nepoužívat.**
@@ -12,11 +12,14 @@
 **Verze 0.21.43** sjednocuje destruktivní lifecycle ochranu: `deleteMyData()` i shared-device `endWork()` po smazání rotují neobsahovou generační tombstone. SIM-03 browser regrese testuje obě cesty, následné psaní i novou kartu a QA evidence se nepublikuje v `dist/`.
 AI Studio GHRAB je centrální brána školních digitálních a AI nástrojů. Jednotlivé aplikace zůstávají v samostatných repozitářích; Studio zajišťuje společnou navigaci, Top 4, synchronizaci verzí, bezpečnostní rámec, provozní měření, správu podepsaných přístupů a kanonický základ technického reportéru. Materiály jsou viditelnou součástí portálu, ale v dnešním bezserverovém režimu se vlastní obsah ukládá pouze místně.
 
-## Nově v 0.21.60
+## Nově v 0.21.61
 
-- Opraven jediný CI blokátor `budget.distBytes` po funkčním rozšíření reportu z 0.21.59.
-- Limit `distBytes` je 2 380 000 B; ostatní P5 performance rozpočty zůstávají beze změny.
-- Patch nemění workflow zadání, souhlasů, předání ani nasazení; pouze stabilizuje release gate a zvyšuje PWA cache verzi.
+- Horní rozcestník jasně odděluje **Zadání vývoje** jako samostatnou agendu od **Měsíčního reportu**, který má čtyři jednotně zobrazené kroky: Provozní podklady → Evidence práce → Souhrn pro vedení → Náhled a PDF.
+- Z karty zadání zmizelo matoucí tlačítko **Vykázat běžnou práci**. Běžná agenda patří přímo do Evidence práce; ke schválenému zadání lze stále připojit konkrétní pracovní záznam.
+- Formulář zadání má u každého pole vysvětlení a příklad. Vybraná karta navíc ukazuje stavový postup Návrh → K odsouhlasení → Schváleno → Předáno → Nasazeno.
+- Tlačítko pro uzavření nyní výslovně říká, že pouze zmrazí návrh k odsouhlasení. Následující obrazovka vysvětluje, že se PDF přikládá k e-mailu ředitelce nebo jiné oprávněné osobě a že uzavření samo není schválení, dokončení ani povolení provozu.
+- Evidence práce a manažerský souhrn mají stručné nápovědy a příklady pro konzistentní měsíční reportování.
+- P5 `distBytes` budget je kvůli rozšířené nápovědě Reportu úzce posunut na 2 400 000 B; ostatní performance limity se nezvyšují.
 
 ## Nově v 0.21.59
 

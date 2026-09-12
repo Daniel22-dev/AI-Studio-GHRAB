@@ -1,7 +1,37 @@
 {
   "schema": "ai-studio-changelog-v1",
-  "current": "0.21.60",
+  "current": "0.21.61",
   "items": [
+    {
+      "version": "0.21.61",
+      "date": "2026-09-12",
+      "title": {
+        "cs": "Přehlednější zadání a čtyřkrokový měsíční report",
+        "en": "Clearer assignments and a four-step monthly report workflow"
+      },
+      "changes": [
+        {
+          "cs": "Rozcestník Reportu nově jasně odděluje samostatné zadání vývoje od čtyř kroků měsíčního reportu; všechny kroky mají jednotný vizuální styl bez dvojího modrého zvýraznění.",
+          "en": "The Report hub now clearly separates development assignments from the four monthly-report steps, using one consistent visual treatment instead of competing highlighted buttons."
+        },
+        {
+          "cs": "Karta zadání už nenabízí tlačítko pro běžnou práci. Běžná agenda patří do Evidence práce, zatímco ke schválenému zadání lze dál přímo připojit související výkaz práce.",
+          "en": "Assignment cards no longer expose a generic regular-work button. Routine work belongs in the Work log, while approved assignments can still link related work entries directly."
+        },
+        {
+          "cs": "Každé pole zadání má kontextovou nápovědu a příklad. Stav karty je zobrazen v pěti krocích a po uzavření návrhu Studio výslovně říká, že se PDF přikládá k e-mailu oprávněné osobě za školu; uzavření samo neznamená schválení, dokončení ani nasazení.",
+          "en": "Each assignment field now has contextual guidance and an example. A five-stage status tracker clarifies progress, and after closing a draft Studio explicitly instructs the user to attach the PDF to the approval email; closing alone is not approval, completion or deployment."
+        },
+        {
+          "cs": "Evidence práce a manažerský souhrn dostaly stručné nápovědy a příklady, aby bylo zřejmé, co patří do měsíčního PDF a co zůstává jen v lokální evidenci.",
+          "en": "The work log and leadership summary now include concise guidance and examples, clarifying what belongs in the monthly PDF and what stays only in local records."
+        },
+        {
+          "cs": "Rozšířená nápověda Reportu zvyšuje nemediální dist build na přibližně 2,39 MB; pouze limit distBytes je proto úzce posunut z 2 380 000 na 2 400 000 B. Limity kritické vstupní cesty, precache, největšího souboru a runtime zůstávají beze změny.",
+          "en": "The expanded Report guidance raises the non-media dist build to about 2.39 MB, so only the distBytes limit is narrowly moved from 2,380,000 to 2,400,000 B. Critical-entry, precache, largest-file and runtime budgets remain unchanged."
+        }
+      ]
+    },
     {
       "version": "0.21.60",
       "date": "2026-09-12",

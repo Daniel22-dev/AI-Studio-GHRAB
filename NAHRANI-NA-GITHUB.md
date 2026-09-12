@@ -1,12 +1,12 @@
-# Nahrání AI Studio GHRAB 0.21.60
+# Nahrání AI Studio GHRAB 0.21.61
 
-> Aktuální verze: **0.21.60** · etapa P5
+> Aktuální verze: **0.21.61** · etapa P5
 
-> 0.21.60 je úzký P5 performance-budget hotfix po rozšíření Reportu v 0.21.59; funkční workflow i fail-closed release-wave pravidla zůstávají beze změny.
+> 0.21.61 zpřehledňuje workflow Reportu: odděluje zadání vývoje od čtyř kroků měsíčního reportu, doplňuje nápovědu polí a jednoznačný postup po uzavření návrhu.
 
 > **PŘED NASAZENÍM:** aktuální release musí projít standardní P5/access gate v GitHub Actions. Pro produkční použití musí být zelené i povinné browserové kontroly CI; do uzavření těchto gate se nemají používat reálná studentská data.
 
-Verze 0.21.60 navazuje přímo na 0.21.59. Nemění uživatelské workflow ani přístupový model; pouze zvyšuje aktivní nemediální `distBytes` budget z 2 350 000 na 2 380 000 B a posouvá verzi/PWA cache, aby nový Report prošel stejnou fail-closed P5 bránou.
+Performance gate zůstává fail-closed. Kvůli legitimnímu nárůstu nemediálního UI obsahu je pouze `distBytes` budget úzce posunut z 2 380 000 na 2 400 000 B; kritická vstupní cesta, precache, největší soubor a runtime limity se nezvyšují.
 
 ## Povinné pořadí
 

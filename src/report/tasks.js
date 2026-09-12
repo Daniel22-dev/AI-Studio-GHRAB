@@ -9,11 +9,18 @@ export const RIGHTS = 'Podle čl. 3 a 4 rámcové dohody verze 9.2 vykonává ma
  + 'ch osob zůstávají zachována. Odchylný režim vyžaduje výslovnou oboustrannou písemnou dohodu. Nová aplikace uvedená v této schválené kartě doplňuje přílohu A rámcové dohody pod uvedeným ID; konkrétní verzi určí předávací záznam. Karta se použije až po účinnosti rámcové dohody, dohody o roli a pracovn'
  + 'ího dodatku.';
 const FIELDS = [
- ['title','Název úkolu',160], ['kind','Typ úkolu',100], ['app','ID a název aplikace',180],
- ['goal','Co má být hotové a jak to převezmeme',2200], ['scope','Rozsah a co do úkolu nepatří',1800],
- ['capacity','Čas a termín',1200], ['support','Součinnost školy, IT, přebírající osoba a případná omezení dotace',1400],
- ['pay','Pracovní základ a odměňování',1400], ['budget','Nástroje a rozpočet školy',1000],
- ['safety','Data, kontrola a podmínky nasazení',1800], ['components','Předchozí vlastní části, cizí komponenty a jejich licence (nebo žádné)',1800], ['rights','Práva a licence',2400]
+ ['title','Název zadání',160,'Krátký název, podle kterého zadání později bezpečně poznáte.','např. AI Akademie – propojení se Studiem'],
+ ['kind','Typ zadání',100,'Uveďte, zda jde o novou aplikaci, větší změnu, integraci, migraci nebo jiný samostatný projekt.','např. Nová aplikace / větší změna / integrace / migrace'],
+ ['app','Aplikace / pracovní ID',180,'Název existující aplikace nebo pracovní název a ID nové aplikace.','např. AI Studio · Report / NEW · AI Akademie'],
+ ['goal','Požadovaný výsledek a způsob převzetí',2200,'Popište konkrétní stav po dokončení a podle čeho škola pozná, že je zadání splněno.','Co přesně bude hotové, jak bude výsledek vypadat a kdo ho převezme.'],
+ ['scope','Rozsah a co do zadání nepatří',1800,'Vymezte hranice práce. Pomáhá to zabránit tomu, aby se zadání během realizace nejasně rozšiřovalo.','Co je součástí zadání a které navazující věci už součástí nejsou.'],
+ ['capacity','Kapacita a termín',1200,'Uveďte realistický odhad času a cílový termín nebo období.','např. 8–12 hodin, dokončení do 30. 9. 2026'],
+ ['support','Součinnost školy / IT / přebírající osoba',1400,'Napište, kdo musí dodat podklady, provést zásah na serveru, rozhodnout nebo převzít výsledek; případně uveďte omezení dotace.','např. IT poskytne deployment parametry; výsledek převezme vedení školy.'],
+ ['pay','Pracovní režim a odměňování',1400,'Zapište pouze skutečně dohodnutý režim. Pokud zatím dohodnutý není, zadání průběžně uložte, ale ještě ho neuzavírejte k odsouhlasení.','např. v rámci pracovní náplně a dohodnuté kapacity / dle samostatné dohody'],
+ ['budget','Nástroje a rozpočet školy',1000,'Uveďte placené nástroje, licence, API nebo jiné přímé náklady. Pokud nejsou, napište to výslovně.','např. Bez dalších nákladů / OpenAI API z prostředků školy'],
+ ['safety','Data, bezpečnost a podmínky nasazení',1800,'Shrňte typ zpracovávaných dat, bezpečnostní kontroly, GARP a případné podmínky IT před nasazením.','Jaká data se používají, jaké kontroly musí proběhnout a co je podmínkou provozu.'],
+ ['components','Vlastní části, cizí komponenty a licence',1800,'Uveďte převzaté knihovny, předchozí vlastní části a jejich licence. Pokud nic takového není, napište „Žádné“.','např. Vlastní kód + knihovna X (MIT); žádné další cizí komponenty.'],
+ ['rights','Práva a licence',2400,'Předvyplněno podle rámcového režimu. Měňte jen tehdy, pokud má být pro toto zadání výslovně sjednána odchylka.','']
 ];
 const RECORDS = ['schoolName','schoolDate','schoolRef','authorName','authorDate','authorRef','version','archive','handoverDate','acceptedBy','acceptanceRef','launchDate','launchBy','assessmentRef','cancelReason'];
 const tidy = (v) => typeof v === 'string' ? v.trim() : '';
@@ -144,9 +151,10 @@ e.textContent=text;
 if(cls)e.className=cls;
 return e;
 }
- function field(form,key,label,value='',type='text',max=1200,required=true){
+ function field(form,key,label,value='',type='text',max=1200,required=true,help='',placeholder=''){
   const wrap=element('label',label);
 wrap.className='task-field';
+  if(help)wrap.append(element('small',help,'task-field-help'));
   const e=document.createElement(type==='textarea'?'textarea':'input');
 if(type!=='textarea')e.type=type;
 else e.rows=3;
@@ -155,9 +163,31 @@ e.name=key;
 e.value=value;
 e.maxLength=max;
 e.required=required;
+if(placeholder)e.placeholder=placeholder;
 wrap.append(e);
 form.append(wrap);
 return e;
+ }
+ function callout(title,text,extra=''){
+  const box=element('div','',`task-next-action${extra?` ${extra}`:''}`);
+  box.append(element('strong',title),element('p',text));
+  return box;
+ }
+ function progress(t){
+  const stages=[['draft','Návrh'],['sent','K odsouhlasení'],['approved','Schváleno'],['delivered','Předáno'],['launched','Nasazeno']];
+  const currentIndex=stages.findIndex(([state])=>state===t.state);
+  const wrap=element('div','','task-progress');
+  wrap.setAttribute('aria-label',`Stav zadání: ${STATES[t.state]}`);
+  for(const [state,label] of stages){
+   const index=stages.findIndex(([candidate])=>candidate===state);
+   const item=element('div','','task-progress-step');
+   if(t.state!=='cancelled'&&index<currentIndex)item.classList.add('done');
+   if(t.state!=='cancelled'&&index===currentIndex){item.classList.add('current');item.setAttribute('aria-current','step');}
+   item.append(element('span',index<currentIndex&&t.state!=='cancelled'?'✓':String(index+1),'task-progress-index'),element('span',label,'task-progress-label'));
+   wrap.append(item);
+  }
+  if(t.state==='cancelled')wrap.classList.add('is-cancelled');
+  return wrap;
  }
  function readFields(form,t,keys){
 const copy={
@@ -222,13 +252,16 @@ refreshLinks();
 return;
 }
 panel.hidden=false;
-  panel.append(element('h3',`${taskRef(t)} · ${STATES[t.state]}`));
-  const actions=element('div','','task-actions');
-  actions.append(btn('Stáhnout kartu PDF',async()=>{
+  panel.append(element('h3',`${taskRef(t)} · ${t.title||'Nové zadání'}`));
+  panel.append(progress(t));
+  if(t.state==='cancelled')panel.append(callout('Tato verze byla zrušena nebo nahrazena',t.cancelReason,'warning'));
+  const actions=element('div','','task-actions task-editor-actions');
+  actions.append(btn(t.state==='draft'?'Stáhnout náhled karty PDF':'Stáhnout aktuální kartu PDF',async()=>{
 unmodified();
 await exportPdf(t);
 }
-),btn('Vykázat práci k této kartě',()=>{
+));
+  if(['approved','delivered','launched'].includes(t.state))actions.append(btn('Zapsat práci k zadání',()=>{
 unmodified();
 onWork(t);
 $('#report-work-log')?.scrollIntoView({
@@ -240,16 +273,16 @@ behavior:'smooth'}
 unmodified();
 const rev=nextRevision(t,register.tasks);
 selected=taskRef(rev);
-persist([...register.tasks,rev]);feedback('Nová verze je rozepsaná. Vyžaduje nové souhlasy obou stran.');
+persist([...register.tasks,rev]);feedback('Nová verze je rozepsaná. Vyžaduje nové odsouhlasení obou stran.');
 }
 ));
   panel.append(actions);
   if(t.state==='draft'){
-   panel.append(element('p','1. Doplňte zadání. Částku nebo režim platu a kapacitu potvrďte se školou před schválením. Návrh lze průběžně uložit i neúplný.'));
+   panel.append(element('p','Vyplňte zadání tak, aby člověk, který u vývoje nebyl, přesně pochopil výsledek, hranice práce, čas, náklady a podmínky. Rozepsanou kartu lze kdykoli uložit i neúplnou.','task-section-intro'));
    const form=document.createElement('form');
 form.className='task-grid';
 form.noValidate=true;
-   for(const [key,label,max] of FIELDS) field(form,key,label,t[key],['title','kind','app'].includes(key)?'text':'textarea',max,false);
+   for(const [key,label,max,help,placeholder] of FIELDS) field(form,key,label,t[key],['title','kind','app'].includes(key)?'text':'textarea',max,false,help,placeholder);
    submitForm(form,f=>{
 const n=readFields(f,t,FIELDS.map(x=>x[0]));
 replace(n);
@@ -257,15 +290,17 @@ feedback('Rozepsané zadání uloženo.');
 }
 );
 panel.append(form);
-   panel.append(btn('Uzavřít zadání k odsouhlasení',()=>{
+   const closing=callout('Co znamená uzavřít návrh?','Obsah této verze se zmrazí pro odsouhlasení. Neznamená to schválení, dokončení práce ani povolení nasazení. Po uzavření stáhnete PDF a pošlete přesně tuto verzi oprávněné osobě za školu.','important');
+   closing.append(btn('Uzavřít návrh a připravit k odsouhlasení',()=>{
 unmodified();
-if(FIELDS.some(([k])=>!tidy(t[k])))throw Error('Před uzavřením doplňte všechna pole zadání včetně kapacity, platu, práv a podmínek nasazení.');
+if(FIELDS.some(([k])=>!tidy(t[k])))throw Error('Před uzavřením doplňte všechna pole zadání včetně kapacity, pracovního režimu, práv a podmínek nasazení. Neúplný návrh můžete dál pouze ukládat.');
 replace({
 ...t,state:'sent',updatedAt:now()}
 );
-feedback('Verze zadání je uzavřena. Stáhněte PDF, doplňte podpisy nebo doložitelné elektronické souhlasy obou stran.');
+feedback('Návrh je uzavřen k odsouhlasení. Další krok: stáhněte PDF a přiložte ho k e-mailu oprávněné osobě za školu.');
 }
 ,'primary'));
+   panel.append(closing);
   }
 else{
    const details=document.createElement('details');
@@ -275,10 +310,24 @@ details.append(element('h4',label),element('p',t[key],'task-prewrap'));
 }
 panel.append(details);
    if(t.state==='sent'){
-    panel.append(element('p','2. Pošlete stejné PDF ředitelce a uchovejte souhlas obou stran. Zde pouze zaznamenejte, kdo souhlasil, kdy a kde je uložen podepsaný dokument nebo elektronický souhlas. Studio nikoho neověřuje a nic neodesílá.'));
+    const next=callout('Další krok: pošlete kartu k odsouhlasení','Ano — stáhněte uzavřenou kartu PDF a přiložte ji k e-mailu ředitelce nebo jiné oprávněné osobě za školu. Měsíční report je jiný dokument a schválení zadání nenahrazuje. Po obdržení doložitelného souhlasu zapište údaje níže.','important');
+    next.append(btn('Stáhnout PDF k odeslání',async()=>{
+unmodified();
+await exportPdf(t);
+}
+,'primary'));
+    panel.append(next);
     const f=document.createElement('form');
 f.className='task-grid';
-    for(const [k,l,type] of [['schoolName','Za školu – jméno a funkce'],['schoolDate','Datum souhlasu školy','date'],['schoolRef','Doklad souhlasu školy (soubor / e-mail / spis)'],['authorName','Za autora / zaměstnance – jméno'],['authorDate','Datum souhlasu autora','date'],['authorRef','Doklad souhlasu autora (soubor / e-mail / spis)']])field(f,k,l,t[k],type||'text');
+    const approvalFields=[
+      ['schoolName','Za školu – jméno a funkce','text','Osoba, která je oprávněná tuto konkrétní verzi zadání odsouhlasit.','např. jméno a funkce'],
+      ['schoolDate','Datum souhlasu školy','date','Datum podpisu nebo doložitelného elektronického souhlasu.',''],
+      ['schoolRef','Doklad souhlasu školy','text','Odkaz na uložený důkaz souhlasu: soubor, e-mail, číslo spisu nebo jiné dohledatelné označení.','např. e-mail ze dne … / podepsaná karta …'],
+      ['authorName','Za autora / zaměstnance – jméno','text','Osoba, která zadání přijímá za autora nebo zaměstnance.','jméno autora / zaměstnance'],
+      ['authorDate','Datum souhlasu autora','date','Datum podpisu nebo doložitelného elektronického souhlasu autora.',''],
+      ['authorRef','Doklad souhlasu autora','text','Odkaz na uložený důkaz souhlasu autora.','např. podepsaná karta / e-mail ze dne …']
+    ];
+    for(const [k,l,type,help,placeholder] of approvalFields)field(f,k,l,t[k],type||'text',1200,true,help,placeholder);
     const check=element('label','Potvrzuji, že oba souhlasy se vztahují k této přesné verzi zadání a účinným smlouvám.');
 const cb=document.createElement('input');
 cb.type='checkbox';
@@ -289,42 +338,64 @@ f.append(check);
 replace({
 ...readFields(form,t,RECORDS.slice(0,6)),state:'approved'}
 );
-feedback('Souhlasy zaznamenány. Práci evidujte tlačítkem Vykázat práci k této kartě.');
+feedback('Souhlasy zaznamenány. Zadání je schválené; nyní můžete evidovat práci k této kartě a po dokončení zapsat předání.');
 }
 );
 panel.append(f);
    }
-   if(['approved','delivered','launched'].includes(t.state))panel.append(element('p',`Souhlasy: ${t.schoolName}, ${t.schoolDate} (${t.schoolRef}); ${t.authorName}, ${t.authorDate} (${t.authorRef}).`));
+   if(['approved','delivered','launched'].includes(t.state))panel.append(element('p',`Souhlasy: ${t.schoolName}, ${t.schoolDate} (${t.schoolRef}); ${t.authorName}, ${t.authorDate} (${t.authorRef}).`,'task-record-summary'));
    if(t.state==='approved'){
-    panel.append(element('p','3. Po dokončení předejte konkrétní verzi. Záznam vytvořte až po doložitelném převzetí školou. Samotné schválení vývoje nepovoluje nasazení.'));
+    const next=callout('Zadání je schválené','Práci na tomto zadání zapisujte přes „Zapsat práci k zadání“. Až bude výsledek skutečně předán škole, vyplňte níže přesnou předanou verzi a doklad převzetí. Schválení vývoje samo o sobě nepovoluje nasazení.');
+    next.append(btn('Zapsat práci k zadání',()=>{
+unmodified();
+onWork(t);
+$('#report-work-log')?.scrollIntoView({behavior:'smooth'});
+}
+,'primary'));
+    panel.append(next);
     const f=document.createElement('form');
 f.className='task-grid';
-    for(const [k,l,type] of [['version','Předávaná verze aplikace'],['archive','Neměnný archiv / commit a otisk zdrojů'],['handoverDate','Datum předání','date'],['acceptedBy','Kdo převzal za školu'],['acceptanceRef','Doklad převzetí a výhrady (případně žádné)']])field(f,k,l,'',type||'text');
+    const handoverFields=[
+      ['version','Předávaná verze aplikace','text','Přesná verze nebo release, který škola skutečně přebírá.','např. 1.4.2'],
+      ['archive','Neměnný archiv / commit a otisk zdrojů','text','Dohledatelná identifikace zdrojů, typicky Git commit/tag nebo archiv a případně SHA-256.','např. commit abc123 / release ZIP + SHA-256'],
+      ['handoverDate','Datum předání','date','Datum, kdy byl konkrétní výsledek předán škole.',''],
+      ['acceptedBy','Kdo převzal za školu','text','Jméno/funkce osoby, která výsledek převzala za školu.','jméno a funkce'],
+      ['acceptanceRef','Doklad převzetí a případné výhrady','text','Odkaz na e-mail, protokol nebo jiný doklad. Pokud nebyly výhrady, uveďte „bez výhrad“.','např. e-mail ze dne …, bez výhrad']
+    ];
+    for(const [k,l,type,help,placeholder] of handoverFields)field(f,k,l,t[k],type||'text',1200,true,help,placeholder);
     submitForm(f,form=>{
 replace({
 ...readFields(form,t,RECORDS.slice(6,11)),state:'delivered'}
 );
-feedback('Předání zaznamenáno. Doplněná karta slouží k evidenci předané verze.');
+feedback('Předání zaznamenáno. Karta nyní dokládá, která konkrétní verze byla škole předána; nasazení se eviduje zvlášť.');
 }
 );
 panel.append(f);
    }
-   if(['delivered','launched'].includes(t.state))panel.append(element('p',`Předáno: ${t.version}, ${t.handoverDate}; ${t.archive}. Převzal: ${t.acceptedBy}; ${t.acceptanceRef}.`));
+   if(['delivered','launched'].includes(t.state))panel.append(element('p',`Předáno: ${t.version}, ${t.handoverDate}; ${t.archive}. Převzal: ${t.acceptedBy}; ${t.acceptanceRef}.`,'task-record-summary'));
    if(t.state==='delivered'){
-    panel.append(element('p','4. Nasazení povoluje škola pro konkrétní verzi a způsob použití po posouzení IT a podmínek ochrany dat. Externí audit hradí škola; jeho odklad sám nasazení neblokuje. Nevyřešené podstatné riziko či relevantní kritický nebo vysoký nález blokuje dotčené použití.'));
+    panel.append(callout('Předání je hotové, nasazení je samostatné rozhodnutí','Pokud se předaná verze má používat v provozu, zaznamenejte až skutečné rozhodnutí školy po posouzení IT, dat a případných omezení. Samotné předání ani měsíční report provoz nepovolují.'));
     const f=document.createElement('form');
 f.className='task-grid';
-for(const [k,l,type] of [['launchDate','Datum povolení nasazení','date'],['launchBy','Kdo povolil za školu'],['assessmentRef','Doklad kontroly IT a rozhodnutí školy – verze, povolené scénáře, data a omezení']])field(f,k,l,'',type||'text');
+    const launchFields=[
+      ['launchDate','Datum povolení nasazení','date','Datum rozhodnutí o provozním nasazení této konkrétní verze.',''],
+      ['launchBy','Kdo povolil za školu','text','Osoba oprávněná rozhodnout o nasazení nebo jej potvrdit za školu.','jméno a funkce'],
+      ['assessmentRef','Doklad kontroly IT a rozhodnutí školy','text','Uveďte verzi, povolené scénáře, typy dat, omezení a odkaz na rozhodnutí nebo kontrolu IT.','např. IT-01; verze 1.4.2; povolené interní scénáře; omezení …']
+    ];
+    for(const [k,l,type,help,placeholder] of launchFields)field(f,k,l,t[k],type||'text',1200,true,help,placeholder);
     submitForm(f,form=>{
 replace({
 ...readFields(form,t,RECORDS.slice(11,14)),state:'launched'}
 );
-feedback('Rozhodnutí o nasazení zaznamenáno.');
+feedback('Rozhodnutí o nasazení zaznamenáno. Workflow této verze zadání je dokončené.');
 }
 );
 panel.append(f);
    }
-   if(t.state==='launched')panel.append(element('p',`Nasazení: ${t.launchDate}, ${t.launchBy}; ${t.assessmentRef}.`));
+   if(t.state==='launched'){
+    panel.append(element('p',`Nasazení: ${t.launchDate}, ${t.launchBy}; ${t.assessmentRef}.`,'task-record-summary'));
+    panel.append(callout('Workflow této verze je dokončené','Karta zůstává jako dohledatelná evidence zadání, souhlasů, předání a nasazení. Další významnou změnu řešte novou verzí zadání; běžnou následnou práci zapisujte do evidence práce.','success'));
+   }
   }
   if(t.state!=='cancelled')panel.append(btn('Zaznamenat zrušení / nahrazení',()=>{
 unmodified();

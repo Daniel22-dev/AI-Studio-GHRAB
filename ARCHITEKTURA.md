@@ -1,8 +1,8 @@
-# Architektura AI Studio GHRAB 0.21.60
+# Architektura AI Studio GHRAB 0.21.61
 
-> Aktuální verze: **0.21.60** · etapa P5
+> Aktuální verze: **0.21.61** · etapa P5
 
-> 0.21.60 zachovává architekturu 0.21.59 a pouze srovnává P5 nemediální distribuční budget s novým modulem zadání, souhlasů a předání v Reportu.
+> 0.21.61 zachovává datové a bezpečnostní kontrakty 0.21.60 a mění pouze prezentační a workflow vrstvu Reportu: odděluje zadání vývoje od měsíčního reportu, doplňuje stavový průvodce a kontextovou nápovědu. Celkový nemediální `distBytes` budget je úzce posunut na 2 400 000 B.
 
 ## Koherence aktualizace PWA
 

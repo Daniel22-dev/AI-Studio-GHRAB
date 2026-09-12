@@ -1,8 +1,8 @@
-# Release checklist AI Studio GHRAB 0.21.60
+# Release checklist AI Studio GHRAB 0.21.61
 
-> Aktuální verze: **0.21.60** · etapa P5
+> Aktuální verze: **0.21.61** · etapa P5
 
-> 0.21.60 upravuje pouze nemediální P5 `distBytes` budget po funkčním rozšíření Reportu v 0.21.59; ostatní limity a release politiky zůstávají beze změny.
+> 0.21.61 zpřehledňuje Report, odděluje zadání vývoje od měsíčního reportu a doplňuje vedený workflow schválení. Pouze celkový nemediální `distBytes` budget je kvůli novému UI úzce posunut na 2 400 000 B; ostatní limity a release politiky zůstávají beze změny.
 
 ## Stav bezpečnostního kandidáta GARP 2.3
 
@@ -18,7 +18,7 @@
 
 ## Veřejný balík
 
-- [x] Verze 0.21.60 je shodná v package, PWA manifestu, QA manifestu, buildu, dokumentaci a changelogu.
+- [x] Verze 0.21.61 je shodná v package, PWA manifestu, QA manifestu, buildu, dokumentaci a changelogu.
 - [x] Všechny aplikace jsou ve výchozím stavu uzamčené.
 - [x] Veřejný balík obsahuje pouze veřejný ověřovací klíč.
 - [x] Centrum zabezpečení je dostupné jen plnému správci; zástupce může v evidenci pouze připravit JTI.
@@ -38,7 +38,7 @@
 - [x] Pilotní metriky jsou přesně označeny jako místní.
 - [x] PWA cache se generuje automaticky z produkčního stromu a neobsahuje neplatné cesty.
 - [x] Každá změna runtime UI musí zvýšit verzi aplikace; stejná verze nesmí být znovu použita pro změněné JS/CSS, protože PWA cache je verzovaná číslem aplikace.
-- [x] Všechny lokální JS/CSS vstupy a relativní modulové importy mají ve výsledném buildu revizi `?v=0.21.60`.
+- [x] Všechny lokální JS/CSS vstupy a relativní modulové importy mají ve výsledném buildu revizi `?v=0.21.61`.
 - [x] Odkazy přístupové brány při vložení do iframe opustí rámec a otevřou AI Studio v hlavním okně.
 - [x] Viewer obsahuje pojistku proti vnořenému AI Studiu a styly brány odolávají obecnému CSS vložených aplikací.
 - [x] Serverový katalog se aktivuje pouze při `school-server` + `schoolServerConnected` + `sharedMaterialLibrary`; GitHub profil nemůže omylem publikovat materiál.

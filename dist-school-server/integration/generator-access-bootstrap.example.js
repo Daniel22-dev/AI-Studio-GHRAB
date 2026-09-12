@@ -46,7 +46,7 @@ try {
   const allowed = await protectApp(APP_ID, {
     studioUrl: STUDIO_URL,
   });
-  if (allowed) await import("./app.js?v=0.21.60");
+  if (allowed) await import("./app.js?v=0.21.61");
 } catch (error) {
   console.error("AI Studio access bootstrap failed", error);
   showBootstrapFailure();

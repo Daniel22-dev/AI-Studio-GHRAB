@@ -1,6 +1,6 @@
-# Automatizace aktualizací AI Studio GHRAB 0.21.60
+# Automatizace aktualizací AI Studio GHRAB 0.21.61
 
-> Aktuální verze: **0.21.60** · etapa P5
+> Aktuální verze: **0.21.61** · etapa P5
 
 > 0.21.59 zavádí řízené auto-patch promotion: GARP 2.5.1 zařazená aplikace může po ověření živého deploymentu přejít na vyšší patch bez ručního přepisu release-wave baseline.
 

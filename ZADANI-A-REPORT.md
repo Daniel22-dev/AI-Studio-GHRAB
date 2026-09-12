@@ -1,30 +1,51 @@
-# Zadání a měsíční report — rychlý postup
+# Zadání vývoje a měsíční report — rychlý postup
 
-Otevřete **Report → Zadání a nové aplikace**. Vše je na stejné stránce jako evidence práce a PDF pro vedení.
+V **Reportu** jsou nyní dvě oddělené agendy:
 
-1. **Nové zadání.** Zadejte výsledek, rozsah, termín a čas, součinnost školy, odměňování, náklady, data a práva. Rozpracovaný návrh můžete průběžně ukládat. Nová aplikace dostane vlastní označení a název; nemusí ještě být v katalogu.
-2. **Souhlas obou stran.** Uzavřete zadání a stáhněte kartu PDF. Tu pošlete ředitelce a uchovejte podepsanou listinu nebo průkazné elektronické souhlasy obou stran se stejným ID a verzí. Ve Studiu zapište data a odkazy na doklady. Samotné označení „schváleno“ není podpis ani důkaz oprávnění.
-3. **Práce a předání.** Tlačítko „Vykázat práci k této kartě“ předvyplní její ID a verzi v evidenci práce. Po dokončení zaznamenejte skutečnou verzi aplikace, neměnný archiv/commit a převzetí. Schválená karta nové aplikace podle dokumentů 9.2 doplňuje smluvní seznam aplikací.
-4. **Nasazení.** Zaznamenejte rozhodnutí školy po konkrétním posouzení IT a ochrany údajů. Zařazení a zpřístupnění aplikace v katalogu je další technický krok. Karta aplikaci sama nezapíná.
+- **Zadání vývoje** — samostatná karta pro novou aplikaci, větší změnu, migraci nebo integraci, která má být výslovně odsouhlasena a předána.
+- **Měsíční report** — čtyři kroky: Provozní podklady → Evidence práce → Souhrn pro vedení → Náhled a PDF.
 
-Běžné opravy, podpora a školení se vykazují přímo do evidence práce. Nová aplikace, migrace na školní server nebo centrální přihlášení mají samostatné zadání. Kategorie „Nová aplikace / mimořádný projekt“ v evidenci práce pouze popisuje vykázanou činnost; sama práci neschvaluje. Skutečně odvedenou přípravu lze evidovat i před schválením, její vykázání však nepovoluje další vývoj.
+Běžná podpora, drobné opravy, konzultace a školení **nepotřebují kartu zadání**. Zapisují se rovnou do Evidence práce.
+
+## Zadání vývoje
+
+1. **Návrh zadání.** Založte kartu a vyplňte výsledek, rozsah, kapacitu a termín, součinnost školy/IT, pracovní režim a odměňování, náklady, bezpečnostní podmínky, komponenty a práva. Každé pole má přímo ve Studiu nápovědu a příklad. Rozepsaný návrh lze ukládat neúplný.
+2. **K odsouhlasení.** Tlačítko **Uzavřít návrh a připravit k odsouhlasení** pouze zmrazí tuto verzi. Neznamená schválení, dokončení práce ani povolení nasazení. Po uzavření stáhněte PDF a **přiložte je k e-mailu ředitelce nebo jiné oprávněné osobě za školu**. Uchovejte doložitelný souhlas obou stran se stejným ID a verzí.
+3. **Schválení a práce.** Po obdržení souhlasů je zapište do karty včetně odkazu na uložený doklad. Teprve schválená karta nabízí přímé **Zapsat práci k zadání**, které propojí pracovní záznam s konkrétní verzí karty.
+4. **Předání.** Po dokončení zaznamenejte skutečně předanou verzi, neměnný commit/tag nebo archiv, datum, osobu přebírající za školu a doklad převzetí včetně případných výhrad.
+5. **Nasazení.** Provoz je samostatné rozhodnutí školy po posouzení IT, dat a omezení konkrétního scénáře. Karta ani měsíční report aplikaci samy nezapínají.
+
+Vybraná karta ve Studiu ukazuje stavový postup **Návrh → K odsouhlasení → Schváleno → Předáno → Nasazeno**, takže je vždy vidět, co je hotovo a co následuje.
 
 ## Co poslat ředitelce
 
-- Měsíční report: stále **dvě strany PDF**. Vyberte období, doplňte souhrn a stáhněte report. Obsahuje stručné vazby na karty vykázané práce a čekající zadání.
-- K rozhodnutí: **samostatnou kartu PDF** se stejným ID a verzí, na kterou odkazuje report. Lze ji poslat kdykoli během měsíce.
-- Podle potřeby: tlačítko **Přehled karet PDF** vytvoří samostatný úplný přehled registru.
+- **K odsouhlasení konkrétního zadání:** samostatnou kartu PDF s přesným ID a verzí jako přílohu e-mailu. Měsíční report tento souhlas nenahrazuje.
+- **Pravidelně za období:** dvoustránkový měsíční PDF report. První strana shrnuje anonymní provozní data; druhá práci garanta a manažerský souhrn.
+- **Podle potřeby:** **Stáhnout přehled zadání (PDF)** vytvoří samostatný seznam evidovaných karet.
 
-Změna uzavřeného rozsahu, kapacity či podmínek vyžaduje **novou verzi zadání a nové souhlasy**. Starší záznam zůstává dohledatelný. Zápis ukončení pouze eviduje skutečnou dohodu či jiný doložený důvod; nenahrazuje právní jednání.
+Změna uzavřeného rozsahu, kapacity nebo podmínek vyžaduje **novou verzi zadání a nové souhlasy**. Starší verze zůstává dohledatelná.
+
+## Evidence práce
+
+Evidence práce je místo pro skutečně odvedenou činnost. Záznam obsahuje datum, čas, kategorii, aplikaci/oblast, typ práce, stručný popis a výsledek. Pokud práce souvisí se schválenou kartou, vyberte ji; jinak ponechte **Bez karty – běžná agenda**.
+
+Soukromá poznámka zůstává pouze v lokální evidenci a nepřenáší se do PDF ani anonymního JSON/CSV exportu. Do pracovních záznamů a manažerského souhrnu nevkládejte citlivé údaje studentů; případné podklady anonymizujte.
+
+## Měsíční report
+
+1. **Provozní podklady** — zvolte období, zkontrolujte lokální/anonymní data, případně importy kolegů a automatickou API spotřebu.
+2. **Evidence práce** — zapište skutečně odvedenou práci za období.
+3. **Souhrn pro vedení** — krátce doplňte výsledky, školení/podporu, rizika, potřebná rozhodnutí, priority a případné další přímé náklady.
+4. **Náhled a PDF** — zkontrolujte obě strany a stáhněte barevnou nebo černobílou variantu.
 
 ## Záloha a soukromí
 
-Registr karet je v tomto vydání uložen **v tomto prohlížeči**, nesynchronizuje se mezi zařízeními. Pravidelně použijte **Záloha karet JSON** a soubor uložte do určeného neveřejného školního úložiště. Obnova po potvrzení nahradí celý místní registr. Samostatně uchovávejte původní souhlasy a předávací doklady; JSON jejich pravost neověřuje. Úplné smazání dat nebo ukončení práce na sdíleném zařízení odstraní i místní karty. Soukromé poznámky u práce se do reportu PDF nedávají.
+Registr karet je v tomto vydání uložen **v tomto prohlížeči** a nesynchronizuje se mezi zařízeními. Pravidelně použijte **Záloha karet JSON** a soubor uložte do určeného neveřejného školního úložiště. Samostatně uchovávejte původní souhlasy a předávací doklady; JSON jejich pravost neověřuje.
 
 ## Návaznost na dokumenty 9.2
 
 Novou výši osobního příplatku doplní škola před podpisem a začátkem role. Pole odměňování v kartě je záměrně bez předvyplněné částky. Může popsat odsouhlasený platový režim, nemusí zavádět samostatnou cenu za aplikaci. Sjednaná kapacita musí odpovídat plnému učitelskému úvazku. Dohoda počítá s rolí od doplněného začátku do 31. 8. 2027, průběžným zhodnocením do 15. 2. 2027 a souhrnným jednáním do 30. 6. 2027.
 
-## Ověření vydání 0.21.59
+## Ověření vydání 0.21.61
 
-Prošly projektové testy `npm test`, sestavení školního profilu a prohlížečová kontrola: návrh, PDF karty, souhlasy, práce nové aplikace, předání, nasazení, nová verze, dvoustránkové PDF, mobilní šířka, obnova registru a zachování formuláře při selhání úložiště. Integrační prohlížečová kontrola používá testovací oprávnění a data; nenahrazuje posouzení skutečného školního provozu ani nezávislé bezpečnostní ověření.
+Release kontroluje logiku životního cyklu karty, oddělení běžné práce od zadání, nápovědu polí, explicitní krok s PDF k odsouhlasení, vazbu na evidenci práce, předání, nasazení, novou verzi zadání a dvoustránkový report. Browserové a release QA se spouští nad výsledným buildem stejně jako u předchozích P5 vydání.

@@ -2,6 +2,15 @@
 
 > Tento soubor se generuje ze `src/config/changelog.json`. Neupravujte jej ručně.
 
+## 0.21.61 — 2026-09-12
+**Přehlednější zadání a čtyřkrokový měsíční report**
+
+- Rozcestník Reportu nově jasně odděluje samostatné zadání vývoje od čtyř kroků měsíčního reportu; všechny kroky mají jednotný vizuální styl bez dvojího modrého zvýraznění.
+- Karta zadání už nenabízí tlačítko pro běžnou práci. Běžná agenda patří do Evidence práce, zatímco ke schválenému zadání lze dál přímo připojit související výkaz práce.
+- Každé pole zadání má kontextovou nápovědu a příklad. Stav karty je zobrazen v pěti krocích a po uzavření návrhu Studio výslovně říká, že se PDF přikládá k e-mailu oprávněné osobě za školu; uzavření samo neznamená schválení, dokončení ani nasazení.
+- Evidence práce a manažerský souhrn dostaly stručné nápovědy a příklady, aby bylo zřejmé, co patří do měsíčního PDF a co zůstává jen v lokální evidenci.
+- Rozšířená nápověda Reportu zvyšuje nemediální dist build na přibližně 2,39 MB; pouze limit distBytes je proto úzce posunut z 2 380 000 na 2 400 000 B. Limity kritické vstupní cesty, precache, největšího souboru a runtime zůstávají beze změny.
+
 ## 0.21.60 — 2026-09-12
 **P5 performance budget hotfix po rozšíření reportu**
 
