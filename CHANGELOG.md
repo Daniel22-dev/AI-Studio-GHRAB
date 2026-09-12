@@ -2,6 +2,13 @@
 
 > Tento soubor se generuje ze `src/config/changelog.json`. Neupravujte jej ručně.
 
+## 0.21.59 — 2026-09-12
+**Zadání, souhlasy a předání přímo v reportu**
+
+- Report má přímý vstup do karet nových aplikací a významných úkolů, samostatný PDF export, evidenci souhlasů obou stran a propojené výkazy práce.
+- Uzavřené zadání se mění novou verzí. Předání eviduje konkrétní verzi a archiv, nasazení vyžaduje samostatný doklad rozhodnutí školy.
+- Místní karty mají zálohu a obnovu JSON. Evidence není elektronický podpis ani automatické odesílání; měsíční PDF zůstává dvoustránkové.
+
 ## 0.21.58 — 2026-09-11
 **Rozšíření GARP auto-patch enrollmentu**
 

@@ -1,8 +1,8 @@
 # AI Studio GHRAB
 
-**Aktuální verze:** 0.21.58
+**Aktuální verze:** 0.21.59
 
-**Aktualizace 0.21.58:** rozšiřuje řízené auto-patch promotion release wave. U GARP 2.5.1 zařazené aplikace může Studio po živém deployment ověření přijmout vyšší patch bez ručního přepisu wave baseline; významnější nebo neověřené změny zůstávají fail-closed.
+**Aktualizace 0.21.59:** přidává do Reportu karty samostatných zadání, souhlasy obou stran, vazbu na vykázanou práci, předání a rozhodnutí o nasazení. Rychlý postup: [Zadání a report](ZADANI-A-REPORT.md).
 **Platforma:** GHRAB Platform 1.1.2 · etapa P5
 
 **Stav:** AMBER – KANDIDÁT NOVÉHO VÝSLOVNĚ ZAHÁJENÉHO GARP 2.3 CYKLU, NE FINÁLNÍ RELEASE. Nezávislá kontrola Claude nad 0.21.38 potvrdila C-01/C-02/C-03, ale našla D-01 / HIGH na cestě „Smazat moje data“ → Browser Back. D-01 je v 0.21.43 opraven a kandidát čeká na druhé nezávislé ověření tohoto nového cyklu. **Reálná studentská data nepoužívat.**
@@ -10,7 +10,14 @@
 **Verze 0.21.43** sjednocuje destruktivní lifecycle ochranu: `deleteMyData()` i shared-device `endWork()` po smazání rotují neobsahovou generační tombstone. SIM-03 browser regrese testuje obě cesty, následné psaní i novou kartu a QA evidence se nepublikuje v `dist/`.
 AI Studio GHRAB je centrální brána školních digitálních a AI nástrojů. Jednotlivé aplikace zůstávají v samostatných repozitářích; Studio zajišťuje společnou navigaci, Top 4, synchronizaci verzí, bezpečnostní rámec, provozní měření, správu podepsaných přístupů a kanonický základ technického reportéru. Materiály jsou viditelnou součástí portálu, ale v dnešním bezserverovém režimu se vlastní obsah ukládá pouze místně.
 
-## Hlavní novinky 0.21.58
+## Nově v 0.21.59
+
+- Report → **Zadání a nové aplikace** vede od návrhu ke schválené verzi, práci, předání a nasazení.
+- Každá karta má vlastní ID, verzi a samostatné PDF; změna uzavřeného zadání vytváří novou verzi.
+- Dvoustránkový měsíční report uvádí vazby na karty. Nová aplikace může být evidována ještě před zařazením do katalogu.
+- Souhlasy se dokládají původními listinami či elektronickými dokumenty; místní stav není podpis. Registr lze zálohovat a obnovit z JSON.
+
+## Převzato z 0.21.58
 
 - Verified ecosystem gate nově umí **řízené auto-patch promotion**: u GARP 2.5.1 zařazené aplikace přijme vyšší patch z živého nasazení bez ručního přepisu `release-wave.json`.
 - `release-wave.json` se během QA skrytě nemění; zůstává schváleným baseline lockem pro danou major/minor řadu.

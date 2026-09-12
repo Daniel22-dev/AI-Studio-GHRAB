@@ -1,4 +1,4 @@
-import { BAKED_DEPLOYMENT_CONFIG } from "../config/deployment-baked.js?v=0.21.58";
+import { BAKED_DEPLOYMENT_CONFIG } from "../config/deployment-baked.js?v=0.21.59";
 
 const TOKEN_KEY = "ghrab.access.permit.v2";
 const TOKEN_PREFIX = "ghrab1";

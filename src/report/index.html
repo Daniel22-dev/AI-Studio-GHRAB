@@ -1,5 +1,5 @@
 <!doctype html>
-<html lang="cs" data-theme="dark" data-force-language="cs" data-ghrab-app-id="ai-studio" data-ghrab-app-version="0.21.58">
+<html lang="cs" data-theme="dark" data-force-language="cs" data-ghrab-app-id="ai-studio" data-ghrab-app-version="0.21.59">
   <head>
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width,initial-scale=1" />
@@ -103,11 +103,41 @@
             <p data-cs="Doplňte provozní podklady, evidenci vlastní práce a krátký souhrn pro vedení. Náhled i výsledné dvoustránkové PDF se průběžně skládají z těchto dat." data-en="Complete the operational inputs, your work log and a short leadership summary. The preview and final two-page PDF are continuously built from these data.">Doplňte provozní podklady, evidenci vlastní práce a krátký souhrn pro vedení. Náhled i výsledné dvoustránkové PDF se průběžně skládají z těchto dat.</p>
           </div>
           <nav class="report-input-map-actions" aria-label="Rychlá navigace reportu">
+            <a class="button primary" href="#report-tasks">Zadání a nové aplikace</a>
             <a class="button secondary" href="#report-sources" data-cs="1 · Provozní podklady" data-en="1 · Operational inputs">1 · Provozní podklady</a>
             <a class="button secondary" href="#report-work-log" data-cs="2 · Evidence práce" data-en="2 · Work log">2 · Evidence práce</a>
             <a class="button secondary" href="#report-management" data-cs="3 · Souhrn pro vedení" data-en="3 · Leadership summary">3 · Souhrn pro vedení</a>
             <a class="button primary" href="#report-preview-panel" data-cs="4 · Náhled a PDF" data-en="4 · Preview and PDF">4 · Náhled a PDF</a>
           </nav>
+        </div>
+      </section>
+
+
+      <section id="report-tasks" class="section shell-wide" aria-labelledby="task-heading">
+        <div class="panel task-panel">
+          <p class="eyebrow">ZADÁNÍ A NOVÉ APLIKACE</p>
+          <h2 id="task-heading">Od nápadu k předané aplikaci</h2>
+          <p>Nová aplikace, migrace nebo centrální přihlášení mají vlastní kartu. Běžnou podporu zapisujte rovnou do evidence práce.</p>
+          <ol class="task-steps">
+            <li><strong>Zadání</strong><span>Popište výsledek, čas a podmínky.</span></li>
+            <li><strong>Souhlas obou stran</strong><span>Pošlete kartu PDF a uchovejte souhlasy.</span></li>
+            <li><strong>Práce a předání</strong><span>Vykazujte čas a předejte konkrétní verzi.</span></li>
+            <li><strong>Nasazení</strong><span>Škola rozhodne po posouzení IT a dat.</span></li>
+          </ol>
+          <div class="task-actions">
+            <button type="button" class="button primary" id="task-new">+ Nové zadání</button>
+            <a class="button secondary" href="#report-work-log">Vykázat běžnou práci</a>
+            <button type="button" class="button secondary" id="task-overview">Přehled karet PDF</button>
+          </div>
+          <p id="task-status" class="form-feedback" role="status" aria-live="polite"></p>
+          <div id="task-list" class="task-list" aria-label="Evidovaná zadání"></div>
+          <div id="task-editor" hidden></div>
+          <details class="task-storage"><summary>Záloha a přenos karet</summary>
+            <p>Karty jsou uložené pouze v tomto prohlížeči. Průběžně je zálohujte; při úplném smazání dat nebo ukončení práce na sdíleném zařízení se smažou. Podepsané dokumenty uchovejte ve školní evidenci. Záloha obsahuje zadání a jména schvalujících osob; neobsahuje výkazy práce ani měsíční souhrny.</p>
+            <button type="button" class="button secondary" id="task-backup">Záloha karet JSON</button>
+            <label class="task-field">Obnovit karty ze zálohy<input type="file" id="task-import" accept=".json,application/json"></label>
+          </details>
+          <p class="muted">Měsíční report zůstává dvoustránkový. Karty jsou samostatné přílohy a lze je řešit kdykoli během měsíce. Zapsání času ani označení stavu ve Studiu samo neprokazuje schválení.</p>
         </div>
       </section>
 
@@ -289,7 +319,8 @@
             <p class="eyebrow" data-cs="EVIDENCE PRÁCE GARANTA" data-en="GUARANTOR WORK LOG">EVIDENCE PRÁCE GARANTA</p>
             <p id="report-work-summary" class="report-work-summary"></p>
             <form id="report-work-form" class="report-work-form">
-              <input id="report-work-id" type="hidden" />
+              <label class="task-field">Karta zadání (volitelné)<select id="report-work-task"><option value="">Bez karty – běžná agenda</option></select></label>
+                <input id="report-work-id" type="hidden" />
               <div class="form-grid two-col">
                 <div class="field">
                   <label for="report-work-date" data-cs="Datum" data-en="Date">Datum</label>

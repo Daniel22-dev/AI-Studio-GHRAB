@@ -1,10 +1,11 @@
+import { initTasks, taskRef } from "./tasks.js?v=0.21.59";
 import {
   buildImpactReport,
   periodOfDate,
   safeEvent,
   safeStatistics,
-} from "../shared/safe-export.js?v=0.21.58";
-import { loadApiUsage } from "../modules/api-usage.js?v=0.21.58";
+} from "../shared/safe-export.js?v=0.21.59";
+import { loadApiUsage } from "../modules/api-usage.js?v=0.21.59";
 
 await window.GHRAB.accessReady;
 if (window.GHRAB.canAccessAdminPage?.("report") && !window.GHRAB.isColleaguePreview?.()) {
@@ -80,6 +81,7 @@ if (window.GHRAB.canAccessAdminPage?.("report") && !window.GHRAB.isColleaguePrev
   let apps = [];
   let currentView = null;
   let renderToken = 0;
+  let taskWorkflow = null;
   const images = {};
 
   function parse(key, fallback) {
@@ -156,6 +158,7 @@ if (window.GHRAB.canAccessAdminPage?.("report") && !window.GHRAB.isColleaguePrev
       activity,
       result: cleanText(raw.result, 1800),
       privateNote: cleanText(raw.privateNote, 1800),
+      taskRef: cleanText(raw.taskRef, 100),
       createdAt: raw.createdAt || new Date().toISOString(),
       updatedAt: raw.updatedAt || new Date().toISOString(),
     };
@@ -686,7 +689,7 @@ if (window.GHRAB.canAccessAdminPage?.("report") && !window.GHRAB.isColleaguePrev
         heading.append(title, meta);
         card.append(heading);
         const tags = document.createElement("small");
-        tags.textContent = `${WORK_CATEGORIES[entry.category]} \u00b7 ${entry.area} \u00b7 ${WORK_TYPES[entry.workType]}`;
+        tags.textContent = `${entry.taskRef ? entry.taskRef + " · " : ""}${WORK_CATEGORIES[entry.category]} \u00b7 ${entry.area} \u00b7 ${WORK_TYPES[entry.workType]}`;
         card.append(tags);
         if (entry.result) {
           const result = document.createElement("p");
@@ -739,6 +742,11 @@ if (window.GHRAB.canAccessAdminPage?.("report") && !window.GHRAB.isColleaguePrev
     setFieldValue("#report-work-activity", entry.activity);
     setFieldValue("#report-work-result", entry.result);
     setFieldValue("#report-work-private", entry.privateNote);
+    if ($("#report-work-task")) {
+      const select = $("#report-work-task");
+      if (entry.taskRef && ![...select.options].some(o=>o.value===entry.taskRef)) select.add(new Option(entry.taskRef + " · karta není v tomto prohlížeči",entry.taskRef));
+      select.value=entry.taskRef||"";
+    }
     $("#report-work-activity")?.focus();
   }
   function findings(data) {
@@ -1185,6 +1193,9 @@ if (window.GHRAB.canAccessAdminPage?.("report") && !window.GHRAB.isColleaguePrev
       8,
     );
 
+    ctx.fillStyle = palette.muted;
+    ctx.font = "400 17px Arial";
+    drawWrapped(ctx, taskWorkflow?.summary(view.work.entries.map(entry => entry.taskRef)) || "Karty k odsouhlasení: 0.", m, 1605, REPORT_W - 2 * m, 22, 3);
     const footY = REPORT_H - 70;
     ctx.strokeStyle = palette.blue;
     ctx.lineWidth = 2;
@@ -1325,7 +1336,9 @@ if (window.GHRAB.canAccessAdminPage?.("report") && !window.GHRAB.isColleaguePrev
         const y = distY + 36 + index * 30;
         ctx.fillStyle = palette.ink;
         ctx.font = "600 16px Arial";
-        ctx.fillText(row.label, m + 24, y);
+        let categoryLabel = row.label;
+        while (ctx.measureText(categoryLabel).width > 280 && categoryLabel.length > 3) categoryLabel = categoryLabel.slice(0, -2).trimEnd() + "…";
+        ctx.fillText(categoryLabel, m + 24, y);
         const barX = m + 330;
         const barW = distW - 470;
         ctx.fillStyle = palette.soft;
@@ -1395,6 +1408,9 @@ if (window.GHRAB.canAccessAdminPage?.("report") && !window.GHRAB.isColleaguePrev
     drawManagementCard(ctx, m + cardW + cardGap, gridY + cardH + cardGap, cardW, cardH, "Pot\u0159ebn\u00e1 rozhodnut\u00ed veden\u00ed", view.management.decisions, palette, "decision");
     drawManagementCard(ctx, m, gridY + 2 * (cardH + cardGap), REPORT_W - 2 * m, 250, "Priority na dal\u0161\u00ed m\u011bs\u00edc", view.management.priorities, palette, "priority");
 
+    ctx.fillStyle = palette.muted;
+    ctx.font = "400 17px Arial";
+    drawWrapped(ctx, taskWorkflow?.summary(view.work.entries.map(entry => entry.taskRef)) || "Karty k odsouhlasení: 0.", m, 1605, REPORT_W - 2 * m, 22, 3);
     const footY = REPORT_H - 70;
     ctx.strokeStyle = palette.blue;
     ctx.lineWidth = 2;
@@ -1534,6 +1550,16 @@ if (window.GHRAB.canAccessAdminPage?.("report") && !window.GHRAB.isColleaguePrev
     downloadBlob(new Blob([text], { type }), name);
   }
 
+  taskWorkflow = initTasks({G, downloadBlob, canvasesPdf, onChange: () => { if (currentView) renderManagementCanvas($("#report-preview-management"), currentView, "color"); }, onWork: (task) => {
+    resetWorkForm();
+    $("#report-work-task").value=taskRef(task);
+    populateWorkAreaSelect(task.app || task.title);
+    $("#report-work-category").value="new_project";
+    $("#report-work-type").value="exceptional";
+    $("#report-work-activity").focus();
+    $("#report-work-status").textContent=["draft","sent"].includes(task.state) ? "Zadání zatím není schválené. Lze evidovat skutečnou přípravu návrhu; záznam sám nepovoluje vývoj ani přesčas." : "Práce se propojí s vybranou verzí zadání.";
+  }});
+
   [
     "#report-title",
     "#report-from",
@@ -1575,6 +1601,7 @@ if (window.GHRAB.canAccessAdminPage?.("report") && !window.GHRAB.isColleaguePrev
       activity: $("#report-work-activity")?.value,
       result: $("#report-work-result")?.value,
       privateNote: $("#report-work-private")?.value,
+      taskRef: $("#report-work-task")?.value,
       createdAt: existing?.createdAt,
       updatedAt: new Date().toISOString(),
     });

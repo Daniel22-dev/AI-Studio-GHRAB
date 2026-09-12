@@ -1,7 +1,29 @@
 {
   "schema": "ai-studio-changelog-v1",
-  "current": "0.21.58",
+  "current": "0.21.59",
   "items": [
+    {
+      "version": "0.21.59",
+      "date": "2026-09-12",
+      "title": {
+        "cs": "Zadání, souhlasy a předání přímo v reportu",
+        "en": "Task briefs, approval records and handover in Reports"
+      },
+      "changes": [
+        {
+          "cs": "Report má přímý vstup do karet nových aplikací a významných úkolů, samostatný PDF export, evidenci souhlasů obou stran a propojené výkazy práce.",
+          "en": "Reports now include task cards with PDF export, records of both parties’ approvals and linked work logs."
+        },
+        {
+          "cs": "Uzavřené zadání se mění novou verzí. Předání eviduje konkrétní verzi a archiv, nasazení vyžaduje samostatný doklad rozhodnutí školy.",
+          "en": "Closed briefs require a new revision for scope changes. Handover records a version and archive; launch requires a separate school decision record."
+        },
+        {
+          "cs": "Místní karty mají zálohu a obnovu JSON. Evidence není elektronický podpis ani automatické odesílání; měsíční PDF zůstává dvoustránkové.",
+          "en": "Local task records support JSON backup and restore. Records are not electronic signatures or automatic delivery; monthly PDFs remain two pages."
+        }
+      ]
+    },
     {
       "version": "0.21.58",
       "date": "2026-09-11",

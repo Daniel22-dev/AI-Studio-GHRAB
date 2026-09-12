@@ -1,4 +1,4 @@
-/* AI Studio GHRAB 0.21.58 - styles scoped to the leadership reporting page. */
+/* AI Studio GHRAB 0.21.59 - styles scoped to the leadership reporting page. */
 .a4-preview-stack {
 display: grid;
 gap: 26px;
@@ -126,4 +126,31 @@ font-variant-numeric: tabular-nums;
 }
 .report-api-cost-status {
 margin-bottom: 0;
+}
+/* Task workflow shares the report's accessible native controls. */
+.task-panel { padding: clamp(18px,3vw,34px); }
+.task-steps { display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:24px;padding-left:24px;margin:24px 0; }
+.task-steps span {display:block;font-size:.9rem;margin-top:6px;}
+.task-actions {display:flex;flex-wrap:wrap;gap:10px;margin:18px 0;}
+.task-list {display:grid;gap:8px;margin:18px 0;}
+.task-list button {text-align:left;white-space:normal;overflow-wrap:anywhere;justify-content:flex-start;}
+.task-list button[aria-pressed="true"] {outline:2px solid var(--accent,#77b7ff);outline-offset:2px;}
+.task-grid {display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:16px;margin:18px 0;}
+.task-field {display:flex;flex-direction:column;gap:7px;min-width:0;font-weight:600;}
+.task-field input,.task-field textarea,.task-field select {width:100%;min-width:0;font:inherit;}
+.task-field textarea {resize:vertical;min-height:96px;}
+.task-grid>button {justify-self:start;}
+.task-grid>label:has(input[type="checkbox"]) {grid-column:1/-1;}
+.task-prewrap {white-space:pre-wrap;overflow-wrap:anywhere;}
+.task-storage {margin:24px 0;}
+#task-editor {padding-top:12px;border-top:1px solid var(--border,#3e4f6a);}
+#task-editor p {overflow-wrap:anywhere;}
+#report-tasks,#report-work-log {scroll-margin-top:100px;}
+@media(max-width:760px){.task-steps,.task-grid{grid-template-columns:1fr}.task-steps{gap:12px}.task-actions .button{width:100%}}
+.task-field input,.task-field textarea,.task-field select {
+padding:12px 14px;border:1px solid var(--line, #36516b);border-radius:10px;
+background:var(--panel, #0b1b2a);color:var(--text, #eaf4ff);font-weight:400;
+}
+.task-field input:focus,.task-field textarea:focus,.task-field select:focus {
+outline:2px solid var(--accent, #33c9e6);outline-offset:2px;
 }
