@@ -1,6 +1,8 @@
 # AI Studio GHRAB
 
-**Aktuální verze:** 0.21.59
+**Aktuální verze:** 0.21.60
+
+**Aktualizace 0.21.60:** opravuje jediný P5 R2 performance-gate limit po rozšíření reportu; nemediální `distBytes` budget je úzce posunut na 2 380 000 B bez změny kritické vstupní cesty, precache a lazy-media limitů.
 
 **Aktualizace 0.21.59:** přidává do Reportu karty samostatných zadání, souhlasy obou stran, vazbu na vykázanou práci, předání a rozhodnutí o nasazení. Rychlý postup: [Zadání a report](ZADANI-A-REPORT.md).
 **Platforma:** GHRAB Platform 1.1.2 · etapa P5
@@ -9,6 +11,12 @@
 
 **Verze 0.21.43** sjednocuje destruktivní lifecycle ochranu: `deleteMyData()` i shared-device `endWork()` po smazání rotují neobsahovou generační tombstone. SIM-03 browser regrese testuje obě cesty, následné psaní i novou kartu a QA evidence se nepublikuje v `dist/`.
 AI Studio GHRAB je centrální brána školních digitálních a AI nástrojů. Jednotlivé aplikace zůstávají v samostatných repozitářích; Studio zajišťuje společnou navigaci, Top 4, synchronizaci verzí, bezpečnostní rámec, provozní měření, správu podepsaných přístupů a kanonický základ technického reportéru. Materiály jsou viditelnou součástí portálu, ale v dnešním bezserverovém režimu se vlastní obsah ukládá pouze místně.
+
+## Nově v 0.21.60
+
+- Opraven jediný CI blokátor `budget.distBytes` po funkčním rozšíření reportu z 0.21.59.
+- Limit `distBytes` je 2 380 000 B; ostatní P5 performance rozpočty zůstávají beze změny.
+- Patch nemění workflow zadání, souhlasů, předání ani nasazení; pouze stabilizuje release gate a zvyšuje PWA cache verzi.
 
 ## Nově v 0.21.59
 

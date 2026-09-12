@@ -1,8 +1,8 @@
-# Architektura AI Studio GHRAB 0.21.59
+# Architektura AI Studio GHRAB 0.21.60
 
-> Aktuální verze: **0.21.59** · etapa P5
+> Aktuální verze: **0.21.60** · etapa P5
 
-> 0.21.59 odděluje ručně schválený release-wave baseline od bezpečně odvozeného auto-patch promotion pro GARP 2.5.1 zařazené aplikace.
+> 0.21.60 zachovává architekturu 0.21.59 a pouze srovnává P5 nemediální distribuční budget s novým modulem zadání, souhlasů a předání v Reportu.
 
 ## Koherence aktualizace PWA
 

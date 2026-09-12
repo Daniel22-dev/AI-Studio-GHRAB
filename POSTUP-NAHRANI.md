@@ -1,8 +1,8 @@
-# Přesný postup nahrání AI Studio GHRAB 0.21.59 na GitHub – až po schválení
+# Přesný postup nahrání AI Studio GHRAB 0.21.60 na GitHub – až po schválení
 
-> Aktuální verze: **0.21.59** · etapa P5
+> Aktuální verze: **0.21.60** · etapa P5
 
-> 0.21.59 zavádí řízené auto-patch promotion release wave pro GARP 2.5.1 zařazené aplikace; ostatní aplikace zůstávají v manuálním režimu.
+> 0.21.60 opravuje jediný P5 R2 blokátor `budget.distBytes` po rozšíření Reportu v 0.21.59; ostatní performance limity a bezpečnostní pravidla se nemění.
 
 > **PŘED NASAZENÍM:** aktuální release musí projít standardní P5/access gate v GitHub Actions. Pro produkční použití musí být zelené i povinné browserové kontroly CI; do uzavření těchto gate se nemají používat reálná studentská data.
 
@@ -12,14 +12,14 @@ Nejprve musí být nasazeny KS 5.10.25, SORTIO 1.1.14, Lesson Hub 1.2.22, Difere
 
 ## Nahrání
 
-1. Stáhněte a rozbalte `AI-Studio-GHRAB-0.21.59-RELEASE-WAVE-AUTO-PATCH.zip`.
+1. Stáhněte a rozbalte `AI-Studio-GHRAB-0.21.60-P5-BUDGET-HOTFIX.zip`.
 2. Do kořene repozitáře `AI-Studio-GHRAB` nahrajte přímo všechny soubory a složky z rozbaleného archivu.
-3. Commit pojmenujte například `AI Studio 0.21.59 – řízené release-wave auto-patch promotion`.
+3. Commit pojmenujte například `AI Studio 0.21.60 – P5 performance budget hotfix`.
 4. Vyčkejte na dokončení GitHub Actions. Workflow instaluje závislosti, synchronizuje manifesty, spustí regresi reportéru, celý GHRAB QA release gate, sestaví `dist` a až poté nasadí GitHub Pages.
 
 ## Kontrola po nasazení
 
-- `dist/build-info.json`, PWA manifest a service worker musí uvádět 0.21.59.
+- `dist/build-info.json`, PWA manifest a service worker musí uvádět 0.21.60.
 - `dist/config/access-config-bundle.json` musí uvádět `access-p1-20260824175535Z-k_wtm7Zj`.
 - Staré učitelské oprávnění kolegyně musí být po online obnovení odmítnuto a v Evidenci přístupů označeno jako centrálně zneplatněné.
 - Nové oprávnění správce zástupce musí zůstat funkční; má jiné JTI a podpisový klíč oprávnění se v tomto vydání nemění.

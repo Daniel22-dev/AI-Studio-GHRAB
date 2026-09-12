@@ -1,7 +1,7 @@
 import {
   createSecurityUpdatePack,
   verifySignedBundle,
-} from "./security-center-core.js?v=0.21.59";
+} from "./security-center-core.js?v=0.21.60";
 
 await window.GHRAB.accessReady;
 

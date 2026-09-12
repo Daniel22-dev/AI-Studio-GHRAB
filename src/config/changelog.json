@@ -1,7 +1,29 @@
 {
   "schema": "ai-studio-changelog-v1",
-  "current": "0.21.59",
+  "current": "0.21.60",
   "items": [
+    {
+      "version": "0.21.60",
+      "date": "2026-09-12",
+      "title": {
+        "cs": "P5 performance budget hotfix po rozšíření reportu",
+        "en": "P5 performance budget hotfix after Reports expansion"
+      },
+      "changes": [
+        {
+          "cs": "Finální P5 R2 release gate po verzi 0.21.59 zastavil jediný limit distBytes: 2 372 480 B při rozpočtu 2 350 000 B; ostatních 193 kontrol prošlo.",
+          "en": "The final P5 R2 release gate after 0.21.59 stopped on the single distBytes limit: 2,372,480 B against a 2,350,000 B budget; the other 193 checks passed."
+        },
+        {
+          "cs": "Limit nemediálního distribučního balíku je úzce zvýšen na 2 380 000 B, aby pokryl nový modul zadání, souhlasů a předání; kritická vstupní cesta, precache i lazy-media limity zůstávají beze změny.",
+          "en": "The non-media distribution budget is narrowly raised to 2,380,000 B to cover the new task, approval and handover module; critical-entry, precache and lazy-media budgets remain unchanged."
+        },
+        {
+          "cs": "Uživatelská funkcionalita 0.21.59 se nemění; patch pouze srovnává release budget a zvyšuje verzi/PWA cache pro čisté nasazení.",
+          "en": "User-facing 0.21.59 functionality is unchanged; this patch only aligns the release budget and bumps the version/PWA cache for a clean deployment."
+        }
+      ]
+    },
     {
       "version": "0.21.59",
       "date": "2026-09-12",

@@ -2,6 +2,13 @@
 
 > Tento soubor se generuje ze `src/config/changelog.json`. Neupravujte jej ručně.
 
+## 0.21.60 — 2026-09-12
+**P5 performance budget hotfix po rozšíření reportu**
+
+- Finální P5 R2 release gate po verzi 0.21.59 zastavil jediný limit distBytes: 2 372 480 B při rozpočtu 2 350 000 B; ostatních 193 kontrol prošlo.
+- Limit nemediálního distribučního balíku je úzce zvýšen na 2 380 000 B, aby pokryl nový modul zadání, souhlasů a předání; kritická vstupní cesta, precache i lazy-media limity zůstávají beze změny.
+- Uživatelská funkcionalita 0.21.59 se nemění; patch pouze srovnává release budget a zvyšuje verzi/PWA cache pro čisté nasazení.
+
 ## 0.21.59 — 2026-09-12
 **Zadání, souhlasy a předání přímo v reportu**
 

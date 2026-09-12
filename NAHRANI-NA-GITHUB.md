@@ -1,12 +1,12 @@
-# Nahrání AI Studio GHRAB 0.21.59
+# Nahrání AI Studio GHRAB 0.21.60
 
-> Aktuální verze: **0.21.59** · etapa P5
+> Aktuální verze: **0.21.60** · etapa P5
 
-> 0.21.59 zavádí řízené auto-patch promotion release wave pro GARP 2.5.1 zařazené aplikace; neověřené, minor/major a rollback změny zůstávají blokující.
+> 0.21.60 je úzký P5 performance-budget hotfix po rozšíření Reportu v 0.21.59; funkční workflow i fail-closed release-wave pravidla zůstávají beze změny.
 
 > **PŘED NASAZENÍM:** aktuální release musí projít standardní P5/access gate v GitHub Actions. Pro produkční použití musí být zelené i povinné browserové kontroly CI; do uzavření těchto gate se nemají používat reálná studentská data.
 
-Verze 0.21.59 navazuje na 0.21.56 a mění pouze build/release orchestration: přidává fail-closed auto-patch promotion pro GARP 2.5.1 zařazené aplikace. Uživatelský přístupový model, podpisové klíče, revokace ani runtime AI funkcionalita se nemění.
+Verze 0.21.60 navazuje přímo na 0.21.59. Nemění uživatelské workflow ani přístupový model; pouze zvyšuje aktivní nemediální `distBytes` budget z 2 350 000 na 2 380 000 B a posouvá verzi/PWA cache, aby nový Report prošel stejnou fail-closed P5 bránou.
 
 ## Povinné pořadí
 
