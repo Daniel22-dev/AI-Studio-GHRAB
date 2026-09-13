@@ -33,8 +33,8 @@ const conceptScenes = [
     en: ["DIGITAL LITERACY", "AI should not replace thinking.", "It should expand the abilities of someone who can define a task, verify a result, protect data and recognise the tool’s limits."],
   },
   {
-    cs: ["JEDEN EKOSYSTÉM", "Ne osm izolovaných aplikací. Jeden školní standard.", "Aplikace řeší konkrétní pedagogickou práci, Studio propojuje přístup, bezpečnost, materiály, diagnostiku a rozvoj."],
-    en: ["ONE ECOSYSTEM", "Not eight isolated apps. One school standard.", "The apps solve specific teaching tasks; Studio connects access, safety, resources, diagnostics and development."],
+    cs: ["JEDEN EKOSYSTÉM", "Ne devět izolovaných aplikací. Jeden školní standard.", "Aplikace řeší konkrétní pedagogickou práci, Studio propojuje přístup, bezpečnost, materiály, diagnostiku a rozvoj."],
+    en: ["ONE ECOSYSTEM", "Not nine isolated apps. One school standard.", "The apps solve specific teaching tasks; Studio connects access, safety, resources, diagnostics and development."],
   },
   {
     cs: ["OD NÁPADU K VÝUCE", "Učitel nepotřebuje další obecný chatbot.", "Potřebuje nástroje navržené pro testy, diferenciaci, hry, materiály, hodnocení, komunikaci a reálné školní workflow."],

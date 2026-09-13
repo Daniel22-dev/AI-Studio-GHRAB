@@ -1,0 +1,9 @@
+AI Studio GHRAB - revize podkladů pro schůzku se Šárkou
+Datum: 2026-09-13
+Základní verze Studia zůstává 0.21.64.
+
+Změny:
+- Prezentační a PR texty sjednoceny na devět aplikací v ekosystému.
+- Showcase video a poster aktualizovány tak, aby úvod neuváděl osm aplikací.
+- Sekce Materiály doplněna o pravidlo: sdílený výstup není automatický přístup ke zdrojové aplikaci; otevření a úpravy zůstávají navázané na školení.
+- Podklady pro report doplněny o jasnou roli druhé strany měsíčního reportu: rozhodnutí, otevřená zadání, rizika, náklady a součinnost IT.
