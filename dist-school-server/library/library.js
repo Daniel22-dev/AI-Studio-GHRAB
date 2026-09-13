@@ -1,5 +1,5 @@
-import { validateMaterialFile } from "../shared/material-validator.js?v=0.21.64";
-import { createMaterialRepository } from "./material-service.js?v=0.21.64";
+import { validateMaterialFile } from "../shared/material-validator.js?v=0.21.66";
+import { createMaterialRepository } from "./material-service.js?v=0.21.66";
 
 const G = window.GHRAB;
 const repository = createMaterialRepository(G);

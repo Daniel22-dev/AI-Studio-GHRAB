@@ -1,16 +1,11 @@
 # AI Studio GHRAB
 
-**Aktuální verze:** 0.21.64
+**Aktuální verze:** 0.21.66
 
-**Aktualizace 0.21.64:** opravuje P5 performance gate po překročení 200 kB rostoucím katalogem změn. Runtime changelog se při buildu automaticky dělí do menších on-demand bloků; úplná historie zůstává zachována.
+**Aktualizace 0.21.66:** srovnává prezentační showcase na devět aplikací, zpřesňuje pravidla sdílení v sekci Materiály a opravuje úvodní orbitální scénu showcase videa tak, aby Maturita Desk rotovala společně s ostatními aplikacemi.
 
-**Performance budget 0.21.64:** limit 200 kB zůstává beze změny; changelog se místo navyšování rozpočtu automaticky dělí do bounded runtime bloků.
+**Performance budget:** beze změny; oprava z 0.21.64 s automatickým dělením rostoucího changelogu zůstává zachována.
 **Platforma:** GHRAB Platform 1.1.2 · etapa P5
-
-**Stav:** AMBER – KANDIDÁT NOVÉHO VÝSLOVNĚ ZAHÁJENÉHO GARP 2.3 CYKLU, NE FINÁLNÍ RELEASE. Nezávislá kontrola Claude nad 0.21.38 potvrdila C-01/C-02/C-03, ale našla D-01 / HIGH na cestě „Smazat moje data“ → Browser Back. D-01 je v 0.21.43 opraven a kandidát čeká na druhé nezávislé ověření tohoto nového cyklu. **Reálná studentská data nepoužívat.**
-
-**Verze 0.21.43** sjednocuje destruktivní lifecycle ochranu: `deleteMyData()` i shared-device `endWork()` po smazání rotují neobsahovou generační tombstone. SIM-03 browser regrese testuje obě cesty, následné psaní i novou kartu a QA evidence se nepublikuje v `dist/`.
-AI Studio GHRAB je centrální brána školních digitálních a AI nástrojů. Jednotlivé aplikace zůstávají v samostatných repozitářích; Studio zajišťuje společnou navigaci, Top 4, synchronizaci verzí, bezpečnostní rámec, provozní měření, správu podepsaných přístupů a kanonický základ technického reportéru. Materiály jsou viditelnou součástí portálu, ale v dnešním bezserverovém režimu se vlastní obsah ukládá pouze místně.
 
 ## Nově v 0.21.63
 

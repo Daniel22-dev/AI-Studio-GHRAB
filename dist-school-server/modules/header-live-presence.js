@@ -1,4 +1,4 @@
-import { loadLivePresence } from "./live-presence.js?v=0.21.64";
+import { loadLivePresence } from "./live-presence.js?v=0.21.66";
 
 function ensureStyles() {
   if (document.querySelector("link[data-live-presence-style]")) return;

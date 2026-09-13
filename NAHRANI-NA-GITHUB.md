@@ -1,12 +1,8 @@
-# Nahrání AI Studio GHRAB 0.21.64
+# Nahrání AI Studio GHRAB 0.21.66
 
-> Aktuální verze: **0.21.64** · etapa P5
+> Aktuální verze: **0.21.66** · etapa P5
 
-> 0.21.64 je P5 performance hotfix: changelog se při buildu automaticky dělí do menších on-demand bloků, takže růst historie už neblokuje release limit 200 kB.
-
-> **PŘED NASAZENÍM:** aktuální release musí projít standardní P5/access gate v GitHub Actions. Pro produkční použití musí být zelené i povinné browserové kontroly CI; do uzavření těchto gate se nemají používat reálná studentská data.
-
-Performance gate zůstává fail-closed. Kvůli legitimnímu nárůstu nemediálního UI obsahu je pouze `distBytes` budget úzce posunut z 2 380 000 na 2 400 000 B; kritická vstupní cesta, precache, největší soubor a runtime limity se nezvyšují.
+> 0.21.66 aktualizuje prezentační showcase na devět aplikací, pravidla sdílení v Materiálech a orbitální úvod showcase videa s Maturita Desk.
 
 ## Povinné pořadí
 

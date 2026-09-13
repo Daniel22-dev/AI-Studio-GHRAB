@@ -1,8 +1,8 @@
-# Automatizace aktualizací AI Studio GHRAB 0.21.64
+# Automatizace aktualizací AI Studio GHRAB 0.21.66
 
-> Aktuální verze: **0.21.64** · etapa P5
+> Aktuální verze: **0.21.66** · etapa P5
 
-> 0.21.64 zachovává dosavadní release-wave a auto-patch pravidla; build navíc automaticky rozdělí rostoucí runtime changelog do menších bloků pod P5 limitem.
+> 0.21.66 nemění release-wave ani auto-patch pravidla. Jde o prezentační a informační update Studia s opravou showcase videa; stávající automatizační a QA mechanismy zůstávají beze změny.
 
 ## Pravidelná synchronizace
 

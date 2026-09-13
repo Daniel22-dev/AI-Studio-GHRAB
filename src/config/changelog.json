@@ -1,7 +1,29 @@
 {
   "schema": "ai-studio-changelog-v1",
-  "current": "0.21.64",
+  "current": "0.21.66",
   "items": [
+    {
+      "version": "0.21.66",
+      "date": "2026-09-13",
+      "title": {
+        "cs": "Příprava prezentačních podkladů pro vedení a oprava showcase videa",
+        "en": "Leadership presentation preparation and showcase video fix"
+      },
+      "changes": [
+        {
+          "cs": "Prezentační showcase Studia nyní správně uvádí devět specializovaných aplikací místo osmi.",
+          "en": "The Studio presentation showcase now correctly states nine specialised applications instead of eight."
+        },
+        {
+          "cs": "Sekce Materiály vysvětluje, že sdílení hotového výstupu samo neuděluje přístup k uzamčené zdrojové aplikaci; otevření, úpravy a nové generování zůstávají vázané na příslušné školení.",
+          "en": "The Materials section now explains that sharing a finished output does not itself grant access to the locked source app; opening, editing and regenerating remain tied to the required training."
+        },
+        {
+          "cs": "V úvodní scéně showcase videa je Maturita Desk zařazena na stejnou orbitální dráhu kolem brány jako ostatní aplikace a rotuje s nimi; aktualizován je i poster videa.",
+          "en": "In the showcase video intro, Maturita Desk now joins the same orbital path around the gateway as the other apps and rotates with them; the video poster is updated as well."
+        }
+      ]
+    },
     {
       "version": "0.21.64",
       "date": "2026-09-13",

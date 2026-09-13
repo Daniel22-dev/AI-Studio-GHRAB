@@ -2,6 +2,13 @@
 
 > Tento soubor se generuje ze `src/config/changelog.json`. Neupravujte jej ručně.
 
+## 0.21.66 — 2026-09-13
+**Příprava prezentačních podkladů pro vedení a oprava showcase videa**
+
+- Prezentační showcase Studia nyní správně uvádí devět specializovaných aplikací místo osmi.
+- Sekce Materiály vysvětluje, že sdílení hotového výstupu samo neuděluje přístup k uzamčené zdrojové aplikaci; otevření, úpravy a nové generování zůstávají vázané na příslušné školení.
+- V úvodní scéně showcase videa je Maturita Desk zařazena na stejnou orbitální dráhu kolem brány jako ostatní aplikace a rotuje s nimi; aktualizován je i poster videa.
+
 ## 0.21.64 — 2026-09-13
 **Trvalá oprava růstu changelogu v P5 performance gate**
 

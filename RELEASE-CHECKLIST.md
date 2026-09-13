@@ -1,8 +1,8 @@
-# Release checklist AI Studio GHRAB 0.21.64
+# Release checklist AI Studio GHRAB 0.21.66
 
-> Aktuální verze: **0.21.64** · etapa P5
+> Aktuální verze: **0.21.66** · etapa P5
 
-> 0.21.64 je P5 performance hotfix: runtime changelog se automaticky chunkuje pod limit jednoho souboru 200 kB. Performance budget se nezvyšuje a úplná historie zůstává zachována.
+> 0.21.66 aktualizuje podklady pro prezentaci vedení, zpřesňuje chování sekce Materiály a opravuje orbitální úvod showcase videa. Bezpečnostní, výkonové a release-wave limity se nemění.
 
 ## Stav bezpečnostního kandidáta GARP 2.3
 

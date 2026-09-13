@@ -1,10 +1,8 @@
-# Přesný postup nahrání AI Studio GHRAB 0.21.64 na GitHub – až po schválení
+# Přesný postup nahrání AI Studio GHRAB 0.21.66 na GitHub – až po schválení
 
-> Aktuální verze: **0.21.64** · etapa P5
+> Aktuální verze: **0.21.66** · etapa P5
 
-> 0.21.64 opravuje P5 performance gate: rostoucí changelog se při buildu rozdělí do menších runtime bloků bez zvýšení limitu a bez ztráty historie.
-
-> **PŘED NASAZENÍM:** aktuální release musí projít standardní P5/access gate v GitHub Actions. Pro produkční použití musí být zelené i povinné browserové kontroly CI; do uzavření těchto gate se nemají používat reálná studentská data.
+> 0.21.66 je prezentační a informační update Studia: devět aplikací v showcase, zpřesnění pravidel Materiálů a opravená orbitální scéna Maturita Desk ve videu.
 
 ## Předpoklady
 

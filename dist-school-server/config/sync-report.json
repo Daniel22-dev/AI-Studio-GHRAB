@@ -1,7 +1,7 @@
 {
   "schema": "ai-studio-sync-report-v1",
   "generated": true,
-  "generatedAt": "2026-09-11T17:24:14.243Z",
+  "generatedAt": "2026-09-13T18:50:15.416Z",
   "mode": "fallback",
   "verificationMode": "snapshot",
   "counts": {
@@ -70,7 +70,7 @@
       "ok": false,
       "verification": "snapshot",
       "version": "1.16.23",
-      "sourceVersion": "1.16.23",
+      "sourceVersion": null,
       "error": "nasazení: fetch failed; repozitář: fetch failed",
       "lastSourceVerifiedAt": null,
       "lastLiveVerifiedAt": null
