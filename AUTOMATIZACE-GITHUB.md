@@ -1,8 +1,8 @@
-# Automatizace aktualizací AI Studio GHRAB 0.21.62
+# Automatizace aktualizací AI Studio GHRAB 0.21.63
 
-> Aktuální verze: **0.21.62** · etapa P5
+> Aktuální verze: **0.21.63** · etapa P5
 
-> 0.21.59 zavádí řízené auto-patch promotion: GARP 2.5.1 zařazená aplikace může po ověření živého deploymentu přejít na vyšší patch bez ručního přepisu release-wave baseline.
+> 0.21.63 rozšiřuje řízené auto-patch promotion o ACTIVU 0.5.27 a SORTIO 1.1.17; bezpečný vyšší patch lze přijmout pouze po ověření živého deploymentu.
 
 ## Pravidelná synchronizace
 
@@ -17,7 +17,7 @@ Od 0.21.59 se přesná verze v `release-wave.json` chápe jako schválený basel
 
 Automatické promotion je povoleno pouze v `qa:ecosystem:verified`, tedy po skutečné síťové synchronizaci. Candidate musí být vyšší stabilní patch ve stejné major/minor řadě a `sync-report.json` jej musí potvrdit jako `verification: deployment`. Repository fallback ani snapshot nestačí. Současně zůstávají aktivní všechny stávající kontroly repository identity, Platform 1.1.2, required range, Studio Bridge, artifact envelope, storage namespace, cache identity, readiness a AI operations manifestu.
 
-QA `release-wave.json` sama nepřepisuje. Tím je build deterministický a auditovatelný; aktuální rozhodnutí zapisuje do gitignorovaného `qa-results/release-promotion-report.json`. Minor/major změna, rollback nebo aplikace bez GARP enrollmentu stále vyžadují explicitní úpravu release wave/policy. V přechodném stavu je takto zařazen pouze `correspondence` od 5.10.25.
+QA `release-wave.json` sama nepřepisuje. Tím je build deterministický a auditovatelný; aktuální rozhodnutí zapisuje do gitignorovaného `qa-results/release-promotion-report.json`. Minor/major změna, rollback nebo aplikace bez GARP enrollmentu stále vyžadují explicitní úpravu release wave/policy. V přechodném stavu jsou takto zařazeny `correspondence` od 5.10.25, `essay-evaluator` od 1.5.25, `ludus` od 1.16.23, `activity-builder` od 0.5.27 a `sortio` od 1.1.17. Ostatní aplikace zůstávají `manual`.
 
 ## Okamžitá aktualizace
 

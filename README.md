@@ -1,16 +1,24 @@
 # AI Studio GHRAB
 
-**Aktuální verze:** 0.21.62
+**Aktuální verze:** 0.21.63
 
-**Aktualizace 0.21.62:** výkonový a UX hotfix zrychluje běžný start a přechody mezi záložkami, omezuje PWA precache špičky, odkládá drahé A4 vykreslování Reportu až na okamžik, kdy je potřeba, a doplňuje bezpečné smazání rozepsaného zadání. Rychlý postup: [Zadání a report](ZADANI-A-REPORT.md).
+**Aktualizace 0.21.63:** opravuje opakovaný pád denního ecosystem gate při nových patch verzích GARP aplikací. ACTIVA 0.5.27 a SORTIO 1.1.17 jsou nyní explicitně zařazeny do řízené auto-patch politiky; ostatní aplikace zůstávají ve svém dosavadním režimu.
 
-**Performance budget 0.21.62:** aktivní `distBytes` limit zůstává 2 400 000 B; hotfix nezvyšuje žádný performance limit a místo toho snižuje práci při startu a interakci.
+**Performance budget 0.21.63:** beze změny; jde o CI/release-policy hotfix bez rozšíření klientského UI.
 **Platforma:** GHRAB Platform 1.1.2 · etapa P5
 
 **Stav:** AMBER – KANDIDÁT NOVÉHO VÝSLOVNĚ ZAHÁJENÉHO GARP 2.3 CYKLU, NE FINÁLNÍ RELEASE. Nezávislá kontrola Claude nad 0.21.38 potvrdila C-01/C-02/C-03, ale našla D-01 / HIGH na cestě „Smazat moje data“ → Browser Back. D-01 je v 0.21.43 opraven a kandidát čeká na druhé nezávislé ověření tohoto nového cyklu. **Reálná studentská data nepoužívat.**
 
 **Verze 0.21.43** sjednocuje destruktivní lifecycle ochranu: `deleteMyData()` i shared-device `endWork()` po smazání rotují neobsahovou generační tombstone. SIM-03 browser regrese testuje obě cesty, následné psaní i novou kartu a QA evidence se nepublikuje v `dist/`.
 AI Studio GHRAB je centrální brána školních digitálních a AI nástrojů. Jednotlivé aplikace zůstávají v samostatných repozitářích; Studio zajišťuje společnou navigaci, Top 4, synchronizaci verzí, bezpečnostní rámec, provozní měření, správu podepsaných přístupů a kanonický základ technického reportéru. Materiály jsou viditelnou součástí portálu, ale v dnešním bezserverovém režimu se vlastní obsah ukládá pouze místně.
+
+## Nově v 0.21.63
+
+- ACTIVA 0.5.27 a SORTIO 1.1.17 jsou přidány do fail-closed GARP 2.5.1 auto-patch policy.
+- Jejich release-wave baseline je srovnán na aktuální schválené verze, takže denní synchronizace už nepadá na starém locku.
+- Auto-promotion nadále vyžaduje živý deployment a dovolí jen patch; minor/major, rollback, repository fallback a snapshot zůstávají blokované.
+- Regresní test politiky akceptuje aktuální verzi vyšší než enrollment minimum, takže po prvním bezpečně přijatém patchi nevznikne nový falešný fail.
+- Lesson Hub, Diferenciátor a Generátor zůstávají v režimu manual; změna není plošné povolení auto-update.
 
 ## Nově v 0.21.62
 
@@ -96,7 +104,7 @@ AI Studio GHRAB je centrální brána školních digitálních a AI nástrojů. 
 - Všechny aplikace používají jeden kanonický školní logotyp bez inline base64 kopií a jednotnou autorskou patičku.
 - Aplikační data mají namespace `ghrab.<appId>.*`; historické klíče se migrují vratně a před změnou vzniká úplná záloha.
 - Studio Bridge v2 zachovává kompatibilitu se starším handoffem v1 a strukturované exporty používají artifact envelope v1 se SHA-256.
-- Registr Studia je synchronizován s verzemi KS 5.10.25, SORTIO 1.1.14, Lesson Hub 1.2.22, Diferenciátor 1.3.46, ACTIVA 0.5.22, Hodnotitel 1.5.25, LUDUS 1.16.23 a Generátor 7.1.25.
+- Registr Studia je synchronizován s verzemi KS 5.10.25, SORTIO 1.1.17, Lesson Hub 1.2.22, Diferenciátor 1.3.46, ACTIVA 0.5.27, Hodnotitel 1.5.25, LUDUS 1.16.23 a Generátor 7.1.25.
 
 ## Serverová vrstva z P1
 

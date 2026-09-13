@@ -30,6 +30,24 @@
       "requiredVerification": "deployment",
       "note": "Enrolled from independently reviewed LUDUS 1.16.23 GARP 2.5.1 SHIELD-PREP baseline (Claude Role B round 3). Future minor/major waves remain manual.",
       "expectedStudioBridge": "v2"
+    },
+    {
+      "id": "activity-builder",
+      "mode": "auto-patch",
+      "minimumVersion": "0.5.27",
+      "assuranceBaseline": "GARP-2.5.1-SHIELD-PREP",
+      "requiredVerification": "deployment",
+      "note": "Enrolled from the reviewed ACTIVA 0.5.27 GARP 2.5.1 SHIELD-PREP baseline. Future minor/major waves remain manual.",
+      "expectedStudioBridge": "v2"
+    },
+    {
+      "id": "sortio",
+      "mode": "auto-patch",
+      "minimumVersion": "1.1.17",
+      "assuranceBaseline": "GARP-2.5.1-SHIELD-PREP",
+      "requiredVerification": "deployment",
+      "note": "Enrolled from the reviewed SORTIO 1.1.17 GARP 2.5.1 SHIELD-PREP baseline. Future minor/major waves remain manual.",
+      "expectedStudioBridge": "not-applicable"
     }
   ]
 }

@@ -5,6 +5,7 @@ import path from "node:path";
 import { fileURLToPath } from "node:url";
 import {
   classifyVersionChange,
+  compareVersions,
   evaluateAutoPromotion,
   validatePromotionPolicy,
   normalizeStudioBridge,
@@ -73,13 +74,17 @@ assert.equal(normalizeStudioBridge("not-applicable"), "not-applicable");
 assert.equal(normalizeStudioBridge("v1"), null);
 
 assert.deepEqual(validatePromotionPolicy(actualPolicy, ["generator", "differentiator", "essay-evaluator", "correspondence", "ludus", "activity-builder", "sortio", "lesson-hub", "maturita-desk"]), []);
-assert.deepEqual(actualPolicy.applications.map((entry) => entry.id), ["correspondence", "essay-evaluator", "ludus"]);
+assert.deepEqual(actualPolicy.applications.map((entry) => entry.id), ["correspondence", "essay-evaluator", "ludus", "activity-builder", "sortio"]);
 assert.equal(actualEntries.get("correspondence")?.minimumVersion, "5.10.25");
 assert.equal(actualEntries.get("correspondence")?.expectedStudioBridge, "v2");
 assert.equal(actualEntries.get("essay-evaluator")?.minimumVersion, "1.5.25");
 assert.equal(actualEntries.get("essay-evaluator")?.expectedStudioBridge, "not-applicable");
 assert.equal(actualEntries.get("ludus")?.minimumVersion, "1.16.23");
 assert.equal(actualEntries.get("ludus")?.expectedStudioBridge, "v2");
+assert.equal(actualEntries.get("activity-builder")?.minimumVersion, "0.5.27");
+assert.equal(actualEntries.get("activity-builder")?.expectedStudioBridge, "v2");
+assert.equal(actualEntries.get("sortio")?.minimumVersion, "1.1.17");
+assert.equal(actualEntries.get("sortio")?.expectedStudioBridge, "not-applicable");
 assert.equal(actualEntries.has("lesson-hub"), false);
 assert.equal(actualEntries.has("differentiator"), false);
 assert.equal(actualEntries.has("generator"), false);
@@ -89,7 +94,9 @@ for (const entry of actualPolicy.applications) {
   const sourceConfig = actualSources.find((item) => item.id === entry.id);
   assert.ok(current, `${entry.id}: current app registry entry missing`);
   assert.ok(sourceConfig, `${entry.id}: source registry entry missing`);
-  assert.equal(current.version, entry.minimumVersion, `${entry.id}: enrollment minimum must match reviewed current baseline`);
+  const currentVsMinimum = compareVersions(current.version, entry.minimumVersion);
+  assert.notEqual(currentVsMinimum, null, `${entry.id}: current/minimum version must be stable SemVer`);
+  assert.ok(currentVsMinimum >= 0, `${entry.id}: current registry version must not be below reviewed enrollment minimum`);
   const [major, minor, patch] = current.version.split(".").map(Number);
   const nextVersion = `${major}.${minor}.${patch + 1}`;
   const candidate = structuredClone(current);

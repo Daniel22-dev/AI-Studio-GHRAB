@@ -2,6 +2,13 @@
 
 > Tento soubor se generuje ze `src/config/changelog.json`. Neupravujte jej ručně.
 
+## 0.21.63 — 2026-09-13
+**GARP auto-patch baseline pro ACTIVU a SORTIO**
+
+- ACTIVA 0.5.27 a SORTIO 1.1.17 jsou po dokončeném GARP 2.5.1 SHIELD-PREP zařazeny do řízené auto-patch promotion policy. Ostatní nezařazené aplikace zůstávají beze změny v režimu manual.
+- Release-wave baseline je srovnán na ACTIVA 0.5.27 a SORTIO 1.1.17. Automaticky lze přijmout pouze vyšší patch ze skutečně ověřeného živého deploymentu; minor/major, rollback, repository fallback a snapshot zůstávají blokované.
+- Regresní test promotion policy už nevyžaduje, aby aktuální patch byl navždy totožný s původní enrollment baseline; kontroluje, že aktuální verze není pod schváleným minimem. Tím se bezpečný budoucí patch po úspěšné promotion znovu sám nezablokuje.
+
 ## 0.21.62 — 2026-09-12
 **Rychlejší start a navigace, bezpečné smazání rozepsaného zadání**
 

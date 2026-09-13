@@ -1,6 +1,6 @@
 {
   "schema": "ghrab-ai-readiness-report-v1",
-  "generatedAt": "2026-09-12T11:11:59.797Z",
+  "generatedAt": "2026-09-13T14:13:58.630Z",
   "activeCoreVersion": "1.0.0",
   "runtime": {
     "defaultMode": "direct-gemini",
@@ -97,7 +97,7 @@
     },
     {
       "appId": "activity-builder",
-      "appVersion": "0.5.22",
+      "appVersion": "0.5.27",
       "classification": "ai-consumer",
       "status": "ready",
       "coreVersion": "1.0.0",
@@ -110,7 +110,7 @@
     },
     {
       "appId": "sortio",
-      "appVersion": "1.1.14",
+      "appVersion": "1.1.17",
       "classification": "not-applicable",
       "status": "not-applicable",
       "coreVersion": null,

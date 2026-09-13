@@ -470,7 +470,7 @@
       "cs": "ACTIVA",
       "en": "ACTIVA"
     },
-    "version": "0.5.22",
+    "version": "0.5.27",
     "status": {
       "cs": "Připraveno k řízenému pilotu",
       "en": "Ready for controlled pilot"
@@ -591,7 +591,7 @@
       "studioBridge": 2,
       "artifactEnvelope": 1,
       "storagePrefix": "ghrab.activity-builder.",
-      "cacheName": "ghrab-activity-builder-v0.5.22"
+      "cacheName": "ghrab-activity-builder-v0.5.27"
     }
   },
   {
@@ -601,7 +601,7 @@
       "cs": "SORTIO – Výukový panel",
       "en": "SORTIO – Teaching Panel"
     },
-    "version": "1.1.14",
+    "version": "1.1.17",
     "status": {
       "cs": "Připraveno k řízenému pilotu",
       "en": "Ready for controlled pilot"
@@ -746,7 +746,7 @@
       "studioBridge": "not-applicable",
       "artifactEnvelope": 1,
       "storagePrefix": "ghrab.sortio.",
-      "cacheName": "ghrab-sortio-v1.1.14"
+      "cacheName": "ghrab-sortio-v1.1.17"
     }
   },
   {

@@ -1,7 +1,29 @@
 {
   "schema": "ai-studio-changelog-v1",
-  "current": "0.21.62",
+  "current": "0.21.63",
   "items": [
+    {
+      "version": "0.21.63",
+      "date": "2026-09-13",
+      "title": {
+        "cs": "GARP auto-patch baseline pro ACTIVU a SORTIO",
+        "en": "GARP auto-patch baseline for ACTIVA and SORTIO"
+      },
+      "changes": [
+        {
+          "cs": "ACTIVA 0.5.27 a SORTIO 1.1.17 jsou po dokončeném GARP 2.5.1 SHIELD-PREP zařazeny do řízené auto-patch promotion policy. Ostatní nezařazené aplikace zůstávají beze změny v režimu manual.",
+          "en": "ACTIVA 0.5.27 and SORTIO 1.1.17 are enrolled in the controlled auto-patch promotion policy after completed GARP 2.5.1 SHIELD-PREP review. Other non-enrolled applications remain manual."
+        },
+        {
+          "cs": "Release-wave baseline je srovnán na ACTIVA 0.5.27 a SORTIO 1.1.17. Automaticky lze přijmout pouze vyšší patch ze skutečně ověřeného živého deploymentu; minor/major, rollback, repository fallback a snapshot zůstávají blokované.",
+          "en": "The release-wave baseline is aligned to ACTIVA 0.5.27 and SORTIO 1.1.17. Only a higher patch from a verified live deployment can be auto-promoted; minor/major changes, rollbacks, repository fallbacks and snapshots remain blocked."
+        },
+        {
+          "cs": "Regresní test promotion policy už nevyžaduje, aby aktuální patch byl navždy totožný s původní enrollment baseline; kontroluje, že aktuální verze není pod schváleným minimem. Tím se bezpečný budoucí patch po úspěšné promotion znovu sám nezablokuje.",
+          "en": "The promotion-policy regression no longer requires the current patch to remain forever identical to the original enrollment baseline; it verifies that the current version is not below the approved minimum. This prevents a safely promoted future patch from blocking itself on the next run."
+        }
+      ]
+    },
     {
       "version": "0.21.62",
       "date": "2026-09-12",

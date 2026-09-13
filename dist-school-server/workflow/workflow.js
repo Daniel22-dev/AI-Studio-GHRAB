@@ -1,4 +1,4 @@
-import { validateMaterialFile } from "../shared/material-validator.js?v=0.21.62";
+import { validateMaterialFile } from "../shared/material-validator.js?v=0.21.63";
 const G = window.GHRAB;
 const $ = (selector) => document.querySelector(selector);
 const fields = {

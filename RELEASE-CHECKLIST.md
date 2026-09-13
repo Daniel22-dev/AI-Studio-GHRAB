@@ -1,8 +1,8 @@
-# Release checklist AI Studio GHRAB 0.21.62
+# Release checklist AI Studio GHRAB 0.21.63
 
-> Aktuální verze: **0.21.62** · etapa P5
+> Aktuální verze: **0.21.63** · etapa P5
 
-> 0.21.62 je výkonový a UX hotfix: persistentní startup-intro stav, omezená paralelizace PWA precache, cache-first navigace aktuální verze, lazy A4 preview Reportu a smazání pouze rozepsaných zadání. Bezpečnostní kontrakty a performance budget zůstávají beze změny.
+> 0.21.63 je CI/release-policy hotfix: přidává ověřené GARP 2.5.1 baseline ACTIVA 0.5.27 a SORTIO 1.1.17 do fail-closed auto-patch politiky a odstraňuje falešné opakované blokování po bezpečném patch promotion. Performance budget se nemění.
 
 ## Stav bezpečnostního kandidáta GARP 2.3
 
@@ -18,7 +18,7 @@
 
 ## Veřejný balík
 
-- [x] Verze 0.21.62 je shodná v package, PWA manifestu, QA manifestu, buildu, dokumentaci a changelogu.
+- [x] Verze 0.21.63 je shodná v package, PWA manifestu, QA manifestu, buildu, dokumentaci a changelogu.
 - [x] Všechny aplikace jsou ve výchozím stavu uzamčené.
 - [x] Veřejný balík obsahuje pouze veřejný ověřovací klíč.
 - [x] Centrum zabezpečení je dostupné jen plnému správci; zástupce může v evidenci pouze připravit JTI.

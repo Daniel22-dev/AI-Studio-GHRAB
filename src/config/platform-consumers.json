@@ -2,7 +2,7 @@
   {
     "id": "ai-studio",
     "name": "AI Studio GHRAB",
-    "version": "0.21.62",
+    "version": "0.21.63",
     "slug": "ai-studio-ghrab",
     "paths": {
       "app": "https://daniel22-dev.github.io/AI-Studio-GHRAB/",
@@ -31,7 +31,7 @@
       "performanceContract": "ghrab-performance-v1",
       "moduleContract": "ghrab-lazy-modules-v1"
     },
-    "cacheName": "ghrab-ai-studio-v0.21.62",
+    "cacheName": "ghrab-ai-studio-v0.21.63",
     "theme": {
       "supported": [
         "dark"
@@ -209,7 +209,7 @@
   {
     "id": "activity-builder",
     "name": "ACTIVA",
-    "version": "0.5.22",
+    "version": "0.5.27",
     "slug": "activa",
     "paths": {
       "app": "https://daniel22-dev.github.io/ACTIVA/",
@@ -238,7 +238,7 @@
       "performanceContract": "ghrab-performance-v1",
       "moduleContract": "ghrab-lazy-modules-v1"
     },
-    "cacheName": "ghrab-activity-builder-v0.5.22",
+    "cacheName": "ghrab-activity-builder-v0.5.27",
     "theme": {
       "supported": [
         "light"
@@ -335,7 +335,7 @@
   {
     "id": "sortio",
     "name": "SORTIO – Výukový panel",
-    "version": "1.1.14",
+    "version": "1.1.17",
     "slug": "sortio",
     "paths": {
       "app": "https://daniel22-dev.github.io/SORTIO/",
@@ -365,7 +365,7 @@
       "performanceContract": "ghrab-performance-v1",
       "moduleContract": "ghrab-lazy-modules-v1"
     },
-    "cacheName": "ghrab-sortio-v1.1.14",
+    "cacheName": "ghrab-sortio-v1.1.17",
     "theme": {
       "supported": [
         "light",
