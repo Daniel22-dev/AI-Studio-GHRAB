@@ -1,7 +1,7 @@
 import {
   deploymentUrls,
   loadDeploymentConfig,
-} from '../access/deployment-config.js?v=0.21.63';
+} from '../access/deployment-config.js?v=0.21.64';
 
 const deployment = await loadDeploymentConfig({ appId: 'ai-studio' });
 const urls = deploymentUrls(deployment);

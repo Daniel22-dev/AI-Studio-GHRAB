@@ -1,8 +1,8 @@
-# Architektura AI Studio GHRAB 0.21.63
+# Architektura AI Studio GHRAB 0.21.64
 
-> Aktuální verze: **0.21.63** · etapa P5
+> Aktuální verze: **0.21.64** · etapa P5
 
-> 0.21.63 zachovává runtime a datové kontrakty a opravuje release-policy vrstvu: ACTIVA 0.5.27 a SORTIO 1.1.17 dostávají explicitní GARP 2.5.1 enrollment baseline, zatímco nezařazené aplikace zůstávají fail-closed v režimu manual.
+> 0.21.64 zachovává runtime a datové kontrakty a mění pouze distribuci changelogu: jediný kanonický zdroj se při buildu rozdělí do bounded runtime bloků načítaných on-demand.
 
 ## Koherence aktualizace PWA
 

@@ -35,8 +35,21 @@ await window.GHRAB.accessReady;
     try {
       const data = await fetch("../config/changelog.json", {
         cache: "no-store",
-      }).then((r) => r.json());
-      list.replaceChildren(...(data.items || []).map(row));
+      }).then((r) => {
+        if (!r.ok) throw new Error(`Changelog HTTP ${r.status}`);
+        return r.json();
+      });
+      const archives = Array.isArray(data.archives) ? data.archives : [];
+      const archiveData = await Promise.all(
+        archives.map((name) =>
+          fetch(`../config/${name}`, { cache: "no-store" }).then((r) => {
+            if (!r.ok) throw new Error(`Changelog archive HTTP ${r.status}`);
+            return r.json();
+          }),
+        ),
+      );
+      const items = [data, ...archiveData].flatMap((part) => part.items || []);
+      list.replaceChildren(...items.map(row));
       list.setAttribute("aria-busy", "false");
     } catch {
       list.setAttribute("aria-busy", "false");

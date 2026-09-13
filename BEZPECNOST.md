@@ -1,8 +1,8 @@
-# Bezpečnostní hranice AI Studio GHRAB 0.21.63
+# Bezpečnostní hranice AI Studio GHRAB 0.21.64
 
-> Aktuální verze: **0.21.63** · etapa P5
+> Aktuální verze: **0.21.64** · etapa P5
 
-> 0.21.63 doplňuje do fail-closed auto-patch promotion policy GARP 2.5.1 baseline ACTIVA 0.5.27 a SORTIO 1.1.17. Automatické přijetí stále vyžaduje živé deployment ověření a nesmí obejít Platform, repository ani ecosystem kontrakty.
+> 0.21.64 nemění GARP, přístupová pravidla ani release-wave politiku. Opravuje pouze distribuci read-only changelogu tak, aby jeho dlouhodobý růst neporušoval P5 limit jednoho runtime souboru.
 
 
 ## Rychlá kontrola dat v portálu

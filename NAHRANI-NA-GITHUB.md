@@ -1,8 +1,8 @@
-# Nahrání AI Studio GHRAB 0.21.63
+# Nahrání AI Studio GHRAB 0.21.64
 
-> Aktuální verze: **0.21.63** · etapa P5
+> Aktuální verze: **0.21.64** · etapa P5
 
-> 0.21.63 je CI/release-policy hotfix pro GARP auto-patch: ACTIVA 0.5.27 a SORTIO 1.1.17 jsou zařazeny do ověřené politiky, ostatní aplikace zůstávají beze změny.
+> 0.21.64 je P5 performance hotfix: changelog se při buildu automaticky dělí do menších on-demand bloků, takže růst historie už neblokuje release limit 200 kB.
 
 > **PŘED NASAZENÍM:** aktuální release musí projít standardní P5/access gate v GitHub Actions. Pro produkční použití musí být zelené i povinné browserové kontroly CI; do uzavření těchto gate se nemají používat reálná studentská data.
 

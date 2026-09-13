@@ -1,8 +1,8 @@
-# Přesný postup nahrání AI Studio GHRAB 0.21.63 na GitHub – až po schválení
+# Přesný postup nahrání AI Studio GHRAB 0.21.64 na GitHub – až po schválení
 
-> Aktuální verze: **0.21.63** · etapa P5
+> Aktuální verze: **0.21.64** · etapa P5
 
-> 0.21.63 opravuje denní ecosystem gate: ACTIVU 0.5.27 a SORTIO 1.1.17 zařazuje do ověřené GARP 2.5.1 auto-patch politiky. Ostatní aplikace se automaticky nepovolují.
+> 0.21.64 opravuje P5 performance gate: rostoucí changelog se při buildu rozdělí do menších runtime bloků bez zvýšení limitu a bez ztráty historie.
 
 > **PŘED NASAZENÍM:** aktuální release musí projít standardní P5/access gate v GitHub Actions. Pro produkční použití musí být zelené i povinné browserové kontroly CI; do uzavření těchto gate se nemají používat reálná studentská data.
 

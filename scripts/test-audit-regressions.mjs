@@ -29,6 +29,19 @@ for (const rel of ['./access/app-guard.js', './access/access-control.js', './acc
 }
 check('Deployment profile is not precached as required', !/requiredCacheFiles[\s\S]*?\.\/config\/deployment\.json/.test(build));
 check('Changelog is excluded from install precache', build.includes('file !== \"./config/changelog.json\"'));
+check('Runtime changelog is split into bounded archive chunks', build.includes('maxChunkBytes = 120000') && build.includes('changelog.archive-'));
+check('Changelog UI loads runtime archives', fs.readFileSync(path.join(root, 'src/changelog/changelog.js'), 'utf8').includes('data.archives'));
+const sourceChangelog = json('src/config/changelog.json');
+const runtimeChangelog = json('dist/config/changelog.json');
+const runtimeArchiveNames = Array.isArray(runtimeChangelog.archives) ? runtimeChangelog.archives : [];
+const runtimeChangelogParts = [runtimeChangelog, ...runtimeArchiveNames.map((name) => json(`dist/config/${name}`))];
+const runtimeChangelogItems = runtimeChangelogParts.flatMap((part) => part.items || []);
+const expectedRuntimeChangelogItems = JSON.parse(JSON.stringify(sourceChangelog.items).replaceAll('__APP_VERSION__', json('package.json').version));
+check('Runtime changelog preserves every source item', JSON.stringify(runtimeChangelogItems) === JSON.stringify(expectedRuntimeChangelogItems));
+check('Runtime changelog chunks stay below 120 kB target', runtimeChangelogParts.every((_, index) => {
+  const rel = index === 0 ? 'dist/config/changelog.json' : `dist/config/${runtimeArchiveNames[index - 1]}`;
+  return fs.statSync(path.join(root, rel)).size <= 120000;
+}));
 check('Access bundle is excluded from install precache', build.includes('"./config/access-config-bundle.json"') && build.includes('"./config/access-config-bundle.sig.json"'));
 check('Build bakes deployment profile', build.includes('deployment-baked.js') && build.includes('deploymentProfile'));
 check('Build checks signed bundle freshness', build.includes('checkAccessBundleFreshness'));

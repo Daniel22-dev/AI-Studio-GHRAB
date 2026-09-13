@@ -2,6 +2,13 @@
 
 > Tento soubor se generuje ze `src/config/changelog.json`. Neupravujte jej ručně.
 
+## 0.21.64 — 2026-09-13
+**Trvalá oprava růstu changelogu v P5 performance gate**
+
+- Runtime changelog se při buildu automaticky dělí do menších bloků, takže dlouhodobý růst historie už nepřekročí limit jednoho souboru 200 kB.
+- Katalog změn načte hlavní blok i archivní bloky a zobrazí úplnou historii bez mazání starých záznamů.
+- Limit výkonu zůstává beze změny; oprava odstraňuje příčinu místo navyšování rozpočtu.
+
 ## 0.21.63 — 2026-09-13
 **GARP auto-patch baseline pro ACTIVU a SORTIO**
 

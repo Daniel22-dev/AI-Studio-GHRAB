@@ -1,10 +1,10 @@
 # AI Studio GHRAB
 
-**Aktuální verze:** 0.21.63
+**Aktuální verze:** 0.21.64
 
-**Aktualizace 0.21.63:** opravuje opakovaný pád denního ecosystem gate při nových patch verzích GARP aplikací. ACTIVA 0.5.27 a SORTIO 1.1.17 jsou nyní explicitně zařazeny do řízené auto-patch politiky; ostatní aplikace zůstávají ve svém dosavadním režimu.
+**Aktualizace 0.21.64:** opravuje P5 performance gate po překročení 200 kB rostoucím katalogem změn. Runtime changelog se při buildu automaticky dělí do menších on-demand bloků; úplná historie zůstává zachována.
 
-**Performance budget 0.21.63:** beze změny; jde o CI/release-policy hotfix bez rozšíření klientského UI.
+**Performance budget 0.21.64:** limit 200 kB zůstává beze změny; changelog se místo navyšování rozpočtu automaticky dělí do bounded runtime bloků.
 **Platforma:** GHRAB Platform 1.1.2 · etapa P5
 
 **Stav:** AMBER – KANDIDÁT NOVÉHO VÝSLOVNĚ ZAHÁJENÉHO GARP 2.3 CYKLU, NE FINÁLNÍ RELEASE. Nezávislá kontrola Claude nad 0.21.38 potvrdila C-01/C-02/C-03, ale našla D-01 / HIGH na cestě „Smazat moje data“ → Browser Back. D-01 je v 0.21.43 opraven a kandidát čeká na druhé nezávislé ověření tohoto nového cyklu. **Reálná studentská data nepoužívat.**

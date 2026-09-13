@@ -1,7 +1,29 @@
 {
   "schema": "ai-studio-changelog-v1",
-  "current": "0.21.63",
+  "current": "0.21.64",
   "items": [
+    {
+      "version": "0.21.64",
+      "date": "2026-09-13",
+      "title": {
+        "cs": "Trvalá oprava růstu changelogu v P5 performance gate",
+        "en": "Permanent changelog growth fix for the P5 performance gate"
+      },
+      "changes": [
+        {
+          "cs": "Runtime changelog se při buildu automaticky dělí do menších bloků, takže dlouhodobý růst historie už nepřekročí limit jednoho souboru 200 kB.",
+          "en": "The runtime changelog is now automatically split into smaller build-time chunks so long-term history growth no longer exceeds the 200 kB single-file limit."
+        },
+        {
+          "cs": "Katalog změn načte hlavní blok i archivní bloky a zobrazí úplnou historii bez mazání starých záznamů.",
+          "en": "The change catalogue loads the primary block and archive chunks and still renders the complete history without deleting old entries."
+        },
+        {
+          "cs": "Limit výkonu zůstává beze změny; oprava odstraňuje příčinu místo navyšování rozpočtu.",
+          "en": "The performance limit remains unchanged; the fix removes the cause instead of raising the budget."
+        }
+      ]
+    },
     {
       "version": "0.21.63",
       "date": "2026-09-13",

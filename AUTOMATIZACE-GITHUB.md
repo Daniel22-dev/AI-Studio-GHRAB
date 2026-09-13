@@ -1,8 +1,8 @@
-# Automatizace aktualizací AI Studio GHRAB 0.21.63
+# Automatizace aktualizací AI Studio GHRAB 0.21.64
 
-> Aktuální verze: **0.21.63** · etapa P5
+> Aktuální verze: **0.21.64** · etapa P5
 
-> 0.21.63 rozšiřuje řízené auto-patch promotion o ACTIVU 0.5.27 a SORTIO 1.1.17; bezpečný vyšší patch lze přijmout pouze po ověření živého deploymentu.
+> 0.21.64 zachovává dosavadní release-wave a auto-patch pravidla; build navíc automaticky rozdělí rostoucí runtime changelog do menších bloků pod P5 limitem.
 
 ## Pravidelná synchronizace
 

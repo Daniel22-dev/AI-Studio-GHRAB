@@ -304,6 +304,44 @@ for (const file of await walk(dist)) {
   if (revised !== content) await writeFile(file, revised, "utf8");
 }
 
+// P5 performance hygiene: keep the complete source changelog in one canonical
+// human-readable file, but split the runtime representation into bounded chunks.
+// The archive files are created only after the service-worker precache list has been
+// assembled above, so changelog history remains on-demand content. This prevents the
+// monotonically growing history from eventually breaking the generic single-file
+// performance budget while preserving every historical entry.
+{
+  const changelogPath = path.join(dist, "config", "changelog.json");
+  const changelog = JSON.parse(await readFile(changelogPath, "utf8"));
+  const maxChunkBytes = 120000;
+  const chunks = [];
+  let currentItems = [];
+  const compact = (items, archives = undefined) => {
+    const payload = { schema: changelog.schema, current: changelog.current, items };
+    if (archives?.length) payload.archives = archives;
+    return `${JSON.stringify(payload)}\n`;
+  };
+  for (const item of changelog.items || []) {
+    const candidate = [...currentItems, item];
+    if (currentItems.length && Buffer.byteLength(compact(candidate), "utf8") > maxChunkBytes) {
+      chunks.push(currentItems);
+      currentItems = [item];
+    } else {
+      currentItems = candidate;
+    }
+  }
+  if (currentItems.length || !chunks.length) chunks.push(currentItems);
+  const archiveNames = chunks.slice(1).map((_, index) => `changelog.archive-${index + 1}.json`);
+  await writeFile(changelogPath, compact(chunks[0] || [], archiveNames), "utf8");
+  for (let index = 1; index < chunks.length; index += 1) {
+    await writeFile(
+      path.join(dist, "config", archiveNames[index - 1]),
+      compact(chunks[index]),
+      "utf8",
+    );
+  }
+}
+
 // P5 performance hygiene: compact machine-readable JSON only in dist. Source files
 // remain human-readable. Service-worker URLs are content-agnostic, so this does not
 // alter cache semantics; it only reduces transfer/storage size.
