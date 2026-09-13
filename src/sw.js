@@ -19,8 +19,13 @@ self.addEventListener('install', (event) => {
     await cache.addAll(CORE_REQUIRED);
     const optionalAssets = CORE_OPTIONAL;
     if (optionalAssets.length) {
-      const results = await Promise.allSettled(optionalAssets.map((asset) => cache.add(asset)));
-      const failed = results.filter((item) => item.status === 'rejected').length;
+      let failed = 0;
+      const batchSize = 4;
+      for (let index = 0; index < optionalAssets.length; index += batchSize) {
+        const batch = optionalAssets.slice(index, index + batchSize);
+        const results = await Promise.allSettled(batch.map((asset) => cache.add(asset)));
+        failed += results.filter((item) => item.status === 'rejected').length;
+      }
       if (failed) console.warn(`[GHRAB SW] ${failed} volitelných assetů nebylo uloženo do offline cache.`);
     }
   })());
@@ -52,6 +57,13 @@ async function networkFirst(request, fallbackUrl = '') {
     }
     throw error;
   }
+}
+
+async function navigationCacheFirst(request, fallbackUrl = '') {
+  const cache = await caches.open(CACHE);
+  const cached = await cache.match(request, { ignoreSearch: true });
+  if (cached) return cached;
+  return networkFirst(request, fallbackUrl);
 }
 
 async function cacheFirst(request) {
@@ -103,7 +115,7 @@ self.addEventListener('fetch', (event) => {
   }
   if (request.mode === 'navigate') {
     const fallback = url.pathname.includes('/manualy/') ? './manualy/index.html' : './index.html';
-    event.respondWith(networkFirst(request, fallback));
+    event.respondWith(navigationCacheFirst(request, fallback));
     return;
   }
   // Static metadata intentionally requested with cache: 'no-store' still needs

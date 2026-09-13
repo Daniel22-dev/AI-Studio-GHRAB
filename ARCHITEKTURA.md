@@ -1,8 +1,8 @@
-# Architektura AI Studio GHRAB 0.21.61
+# Architektura AI Studio GHRAB 0.21.62
 
-> Aktuální verze: **0.21.61** · etapa P5
+> Aktuální verze: **0.21.62** · etapa P5
 
-> 0.21.61 zachovává datové a bezpečnostní kontrakty 0.21.60 a mění pouze prezentační a workflow vrstvu Reportu: odděluje zadání vývoje od měsíčního reportu, doplňuje stavový průvodce a kontextovou nápovědu. Celkový nemediální `distBytes` budget je úzce posunut na 2 400 000 B.
+> 0.21.62 zachovává datové a bezpečnostní kontrakty a optimalizuje klientský výkon: startup intro se po prvním zobrazení neopakuje, service worker omezuje souběžné volitelné precache požadavky a Report vykresluje A4 náhled až podle potřeby. Rozepsané zadání lze bezpečně odstranit; uzavřené karty zůstávají auditně dohledatelné.
 
 ## Koherence aktualizace PWA
 

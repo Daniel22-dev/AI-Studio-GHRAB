@@ -1,6 +1,6 @@
 (() => {
   const root = document.documentElement;
-  const version = root.dataset.appVersion || "0.21.61";
+  const INTRO_SEEN_KEY = "ghrab.startup-intro.seen.v1";
   const WATCHDOG_MS = 6000;
   let showIntro = true;
   let watchdog = 0;
@@ -41,8 +41,7 @@
       localStorage.getItem("ghrab.ai-studio.motion.v1") ||
       localStorage.getItem("ghrab.motion") ||
       "auto";
-    const alreadySeen =
-      sessionStorage.getItem(`ghrab.startup-intro.${version}`) === "seen";
+    const alreadySeen = localStorage.getItem(INTRO_SEEN_KEY) === "seen";
     showIntro = motion !== "off" && !alreadySeen;
   } catch {
   }

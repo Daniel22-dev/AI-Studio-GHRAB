@@ -1,12 +1,12 @@
-import { sanitizePilotEvent, sanitizePilotEventList } from "./privacy/pilot-event.js?v=0.21.61";
-import { validateMaterialPackage } from "./shared/material-validator.js?v=0.21.61";
-import { buildPilotSummary } from "./shared/safe-export.js?v=0.21.61";
+import { sanitizePilotEvent, sanitizePilotEventList } from "./privacy/pilot-event.js?v=0.21.62";
+import { validateMaterialPackage } from "./shared/material-validator.js?v=0.21.62";
+import { buildPilotSummary } from "./shared/safe-export.js?v=0.21.62";
 import {
   applyDeploymentToAppRegistry,
   loadDeploymentConfig,
-} from "./access/deployment-config.js?v=0.21.61";
-import { initialisePlatformRuntime } from "./access/platform-runtime.js?v=0.21.61";
-import { createRegistryClient } from "./modules/registry-client.js?v=0.21.61";
+} from "./access/deployment-config.js?v=0.21.62";
+import { initialisePlatformRuntime } from "./access/platform-runtime.js?v=0.21.62";
+import { createRegistryClient } from "./modules/registry-client.js?v=0.21.62";
 import {
   initialiseAccess,
   setPermitToken,
@@ -21,8 +21,8 @@ import {
   requiredTraining,
   formatReason,
   inspectPermitToken,
-} from "./access/access-control.js?v=0.21.61";
-const VERSION = "0.21.61";
+} from "./access/access-control.js?v=0.21.62";
+const VERSION = "0.21.62";
 const deploymentReady = loadDeploymentConfig({ appId: "ai-studio" });
 const root = document.documentElement;
 const page = document.body.dataset.page || "home";
@@ -716,7 +716,7 @@ async function setupHeaderLivePresence() {
   if (!actions) return;
   headerLivePresenceMounted = true;
   try {
-    const { mountHeaderLivePresence } = await import("./modules/header-live-presence.js?v=0.21.61");
+    const { mountHeaderLivePresence } = await import("./modules/header-live-presence.js?v=0.21.62");
     mountHeaderLivePresence({
       actions,
       deploymentReady,
@@ -1396,11 +1396,11 @@ function toggleFavoriteApp(appId) {
 }
 async function loadAppTestStatusModule() {
   if (!isAdmin() || isColleaguePreview()) return null;
-  appTestStatusModule ||= await import("./modules/app-test-status.js?v=0.21.61");
+  appTestStatusModule ||= await import("./modules/app-test-status.js?v=0.21.62");
   return appTestStatusModule;
 }
 async function loadOperationalStatusModule() {
-  operationalStatusModule ||= await import("./modules/operational-status.js?v=0.21.61");
+  operationalStatusModule ||= await import("./modules/operational-status.js?v=0.21.62");
   operationalStatusSnapshot = await operationalStatusModule.loadOperationalStatus(
     deploymentReady,
   );
@@ -2401,6 +2401,7 @@ async function refreshSharedAccessModuleCache() {
   }
 }
 
+const STARTUP_INTRO_SEEN_KEY = "ghrab.startup-intro.seen.v1";
 const PWA_INSTALL_ONBOARDING_KEY = "ghrab.ai-studio.pwa.install-onboarding.v1";
 let deferredInstallPrompt = null;
 let pwaInstallRetry = 0;
@@ -2582,10 +2583,10 @@ function setupStartupIntro() {
   }
   const intro = document.querySelector("#studio-startup-intro");
   const skip = document.querySelector("#studio-startup-skip");
-  const key = `ghrab.startup-intro.${VERSION}`;
+  const key = STARTUP_INTRO_SEEN_KEY;
   let alreadySeen = false;
   try {
-    alreadySeen = sessionStorage.getItem(key) === "seen";
+    alreadySeen = localStorage.getItem(key) === "seen";
   } catch {
   }
   const shouldSkip =
@@ -2614,7 +2615,7 @@ function setupStartupIntro() {
     closed = true;
     clearTimeout(timer);
     try {
-      sessionStorage.setItem(key, "seen");
+      localStorage.setItem(key, "seen");
     } catch {
     }
     root.classList.remove("startup-intro-pending");
@@ -2807,7 +2808,7 @@ applyTheme();
 applyLanguage();
 applyMotion();
 renderHome();
-void import('./modules/portal-effects.js?v=0.21.61')
+void import('./modules/portal-effects.js?v=0.21.62')
   .then(({ setupPortalEffects }) => setupPortalEffects({ root }))
   .catch((error) => console.warn('Volitelne portalove efekty nebyly nacteny.', error));
 void refreshSharedAccessModuleCache();
@@ -2818,7 +2819,7 @@ accessReady.then(() => {
   setupMonthlyReportReminder();
   void setupHeaderLivePresence();
 });
-void Promise.all([deploymentReady, import("./access/app-guard.js?v=0.21.61")])
+void Promise.all([deploymentReady, import("./access/app-guard.js?v=0.21.62")])
   .then(([deployment, { startErrorReporterBestEffort }]) =>
     startErrorReporterBestEffort("ai-studio", {
       appName: "AI Studio GHRAB",

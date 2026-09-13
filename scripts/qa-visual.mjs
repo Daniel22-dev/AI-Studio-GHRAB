@@ -408,7 +408,7 @@ async function runVisualCase(scenario, viewport) {
         await page.addInitScript(
           ({ version }) => {
             try {
-              sessionStorage.setItem(`ghrab.startup-intro.${version}`, "seen");
+              localStorage.setItem("ghrab.startup-intro.seen.v1", "seen");
             } catch {}
           },
           { version: manifest.version },

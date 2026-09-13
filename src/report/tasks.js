@@ -219,6 +219,16 @@ selected=taskRef(t);
 persist([...register.tasks,t]);feedback('Nové zadání založeno. Doplňte výsledek a podmínky.');
 $('#task-title')?.focus();
  }
+ function deleteDraftTask(t){
+  if(t.state!=='draft')throw Error('Smazat lze pouze rozepsané zadání. Uzavřenou kartu zrušte nebo nahraďte, aby zůstala zachována evidence.');
+  const label=t.title||'Nové zadání';
+  const unsaved=dirty?' Včetně právě rozepsaných neuložených změn.':'';
+  if(!confirm(`Opravdu smazat rozepsané zadání „${label}“ (${taskRef(t)})?${unsaved} Tuto akci nelze vrátit zpět.`))return;
+  dirty=false;
+  selected='';
+  persist(register.tasks.filter((item)=>taskRef(item)!==taskRef(t)));
+  feedback('Rozepsané zadání bylo smazáno.');
+ }
  function submitForm(form,handler){
 form.addEventListener('input',()=>{
 dirty=true;
@@ -276,6 +286,7 @@ selected=taskRef(rev);
 persist([...register.tasks,rev]);feedback('Nová verze je rozepsaná. Vyžaduje nové odsouhlasení obou stran.');
 }
 ));
+  if(t.state==='draft')actions.append(btn('Smazat rozepsané zadání',()=>deleteDraftTask(t),'danger'));
   panel.append(actions);
   if(t.state==='draft'){
    panel.append(element('p','Vyplňte zadání tak, aby člověk, který u vývoje nebyl, přesně pochopil výsledek, hranice práce, čas, náklady a podmínky. Rozepsanou kartu lze kdykoli uložit i neúplnou.','task-section-intro'));

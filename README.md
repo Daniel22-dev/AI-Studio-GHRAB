@@ -1,16 +1,25 @@
 # AI Studio GHRAB
 
-**Aktuální verze:** 0.21.61
+**Aktuální verze:** 0.21.62
 
-**Aktualizace 0.21.61:** zpřehledňuje celý Report: samostatné zadání vývoje je oddělené od čtyř kroků měsíčního reportu, běžná práce už není tlačítkem v kartě zadání a formuláře vysvětlují, co se do každého pole zapisuje. Po uzavření návrhu Studio výslovně navede ke stažení PDF a jeho přiložení k e-mailu oprávněné osobě za školu. Rychlý postup: [Zadání a report](ZADANI-A-REPORT.md).
+**Aktualizace 0.21.62:** výkonový a UX hotfix zrychluje běžný start a přechody mezi záložkami, omezuje PWA precache špičky, odkládá drahé A4 vykreslování Reportu až na okamžik, kdy je potřeba, a doplňuje bezpečné smazání rozepsaného zadání. Rychlý postup: [Zadání a report](ZADANI-A-REPORT.md).
 
-**Performance budget 0.21.61:** rozšířená nápověda Reportu přidává pouze nemediální UI obsah; aktivní `distBytes` limit je proto úzce posunut z 2 380 000 na 2 400 000 B. Kritická vstupní cesta, precache, největší soubor i runtime limity zůstávají beze změny.
+**Performance budget 0.21.62:** aktivní `distBytes` limit zůstává 2 400 000 B; hotfix nezvyšuje žádný performance limit a místo toho snižuje práci při startu a interakci.
 **Platforma:** GHRAB Platform 1.1.2 · etapa P5
 
 **Stav:** AMBER – KANDIDÁT NOVÉHO VÝSLOVNĚ ZAHÁJENÉHO GARP 2.3 CYKLU, NE FINÁLNÍ RELEASE. Nezávislá kontrola Claude nad 0.21.38 potvrdila C-01/C-02/C-03, ale našla D-01 / HIGH na cestě „Smazat moje data“ → Browser Back. D-01 je v 0.21.43 opraven a kandidát čeká na druhé nezávislé ověření tohoto nového cyklu. **Reálná studentská data nepoužívat.**
 
 **Verze 0.21.43** sjednocuje destruktivní lifecycle ochranu: `deleteMyData()` i shared-device `endWork()` po smazání rotují neobsahovou generační tombstone. SIM-03 browser regrese testuje obě cesty, následné psaní i novou kartu a QA evidence se nepublikuje v `dist/`.
 AI Studio GHRAB je centrální brána školních digitálních a AI nástrojů. Jednotlivé aplikace zůstávají v samostatných repozitářích; Studio zajišťuje společnou navigaci, Top 4, synchronizaci verzí, bezpečnostní rámec, provozní měření, správu podepsaných přístupů a kanonický základ technického reportéru. Materiály jsou viditelnou součástí portálu, ale v dnešním bezserverovém režimu se vlastní obsah ukládá pouze místně.
+
+## Nově v 0.21.62
+
+- Startup intro se po prvním zobrazení ukládá trvale a běžný návrat do Studia už neblokuje opakovaná několikasekundová animace po každé patch verzi nebo novém spuštění prohlížeče.
+- Service worker stahuje volitelné offline soubory po malých dávkách místo desítek souběžných požadavků. HTML stránky, které už patří do cache aktuální verze, se při navigaci otevřou bez čekání na síť.
+- Horní navigace i rozcestník Reportu dávají okamžitou vizuální odezvu po kliknutí.
+- A4 náhledy Reportu se vykreslují až tehdy, když se panel náhledu blíží do viditelné části stránky; změna titulku je debounce a API spotřeba se pro stejné období znovu nenačítá.
+- Rozepsaná karta má akci **Smazat rozepsané zadání** s potvrzením. Uzavřené nebo schválené karty se natvrdo nemažou a nadále používají zrušení/nahrazení kvůli auditní stopě.
+- Performance budgety se nezvyšují.
 
 ## Nově v 0.21.61
 

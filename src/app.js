@@ -2401,6 +2401,7 @@ async function refreshSharedAccessModuleCache() {
   }
 }
 
+const STARTUP_INTRO_SEEN_KEY = "ghrab.startup-intro.seen.v1";
 const PWA_INSTALL_ONBOARDING_KEY = "ghrab.ai-studio.pwa.install-onboarding.v1";
 let deferredInstallPrompt = null;
 let pwaInstallRetry = 0;
@@ -2582,10 +2583,10 @@ function setupStartupIntro() {
   }
   const intro = document.querySelector("#studio-startup-intro");
   const skip = document.querySelector("#studio-startup-skip");
-  const key = `ghrab.startup-intro.${VERSION}`;
+  const key = STARTUP_INTRO_SEEN_KEY;
   let alreadySeen = false;
   try {
-    alreadySeen = sessionStorage.getItem(key) === "seen";
+    alreadySeen = localStorage.getItem(key) === "seen";
   } catch {
   }
   const shouldSkip =
@@ -2614,7 +2615,7 @@ function setupStartupIntro() {
     closed = true;
     clearTimeout(timer);
     try {
-      sessionStorage.setItem(key, "seen");
+      localStorage.setItem(key, "seen");
     } catch {
     }
     root.classList.remove("startup-intro-pending");

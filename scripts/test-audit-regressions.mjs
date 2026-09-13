@@ -20,6 +20,8 @@ for (const rel of ['config/access-config-bundle.json', 'config/access-config-bun
 }
 check('SW has network-first fetch branch', /isRuntimeNetworkFirst\(url, scopePath\)[\s\S]*?networkFirst\(request\)/.test(sw));
 check('SW has no dead runtime-config contract', !sw.includes("relative === 'runtime-config.js'"));
+check('SW cached navigation is immediate', sw.includes('navigationCacheFirst') && /request\.mode === 'navigate'[\s\S]*?navigationCacheFirst\(request, fallback\)/.test(sw));
+check('SW optional precache concurrency is bounded', /const batchSize = 4/.test(sw) && /optionalAssets\.slice\(index, index \+ batchSize\)/.test(sw));
 
 const build = read('scripts/build.mjs');
 for (const rel of ['./access/app-guard.js', './access/access-control.js', './access/platform-runtime.js']) {
@@ -48,6 +50,7 @@ const prepaint = read('src/startup-prepaint.js');
 const canonical = prepaint.indexOf('ghrab.ai-studio.motion.v1');
 const legacy = prepaint.indexOf('ghrab.motion');
 check('Prepaint reads canonical motion key first', canonical >= 0 && legacy > canonical);
+check('Startup intro seen state is persistent and version-independent', prepaint.includes('ghrab.startup-intro.seen.v1') && prepaint.includes('localStorage.getItem(INTRO_SEEN_KEY)') && !prepaint.includes('sessionStorage.getItem(`ghrab.startup-intro.'));
 
 const app = read('src/app.js');
 check('Language sync listener is persistent', !/addEventListener\(\s*["']ghrab:language["']\s*,\s*update\s*,\s*\{\s*once\s*:\s*true/.test(app));

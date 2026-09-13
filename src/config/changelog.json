@@ -1,7 +1,33 @@
 {
   "schema": "ai-studio-changelog-v1",
-  "current": "0.21.61",
+  "current": "0.21.62",
   "items": [
+    {
+      "version": "0.21.62",
+      "date": "2026-09-12",
+      "title": {
+        "cs": "Rychlejší start a navigace, bezpečné smazání rozepsaného zadání",
+        "en": "Faster startup and navigation, safe deletion of draft assignments"
+      },
+      "changes": [
+        {
+          "cs": "Startup intro se po prvním zobrazení pamatuje trvale a běžné návraty do Studia už neblokuje opakovaná animace.",
+          "en": "The startup intro is remembered after its first display, so routine return visits are no longer blocked by repeated animation."
+        },
+        {
+          "cs": "Service worker stahuje volitelné offline soubory po dávkách a uložené HTML cíle aktuální verze otevírá z cache před síťovým fallbackem.",
+          "en": "The service worker batches optional offline downloads and opens cached current-version HTML before falling back to the network."
+        },
+        {
+          "cs": "Report odkládá A4 canvas náhled do okamžiku, kdy je potřeba; titulek je debounce a API spotřeba se pro stejné období znovu nenačítá.",
+          "en": "Reports defer A4 canvas rendering until needed, debounce title edits and reuse API usage for the same period."
+        },
+        {
+          "cs": "Rozcestník Reportu má okamžitou aktivní odezvu. Rozepsané zadání lze po potvrzení smazat; uzavřené karty se kvůli auditní stopě pouze ruší nebo nahrazují.",
+          "en": "The Report hub shows immediate active feedback. Draft assignments can be deleted after confirmation; closed cards remain cancel/replace only for auditability."
+        }
+      ]
+    },
     {
       "version": "0.21.61",
       "date": "2026-09-12",

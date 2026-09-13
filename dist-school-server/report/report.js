@@ -1,11 +1,11 @@
-import { initTasks, taskRef } from "./tasks.js?v=0.21.61";
+import { initTasks, taskRef } from "./tasks.js?v=0.21.62";
 import {
   buildImpactReport,
   periodOfDate,
   safeEvent,
   safeStatistics,
-} from "../shared/safe-export.js?v=0.21.61";
-import { loadApiUsage } from "../modules/api-usage.js?v=0.21.61";
+} from "../shared/safe-export.js?v=0.21.62";
+import { loadApiUsage } from "../modules/api-usage.js?v=0.21.62";
 
 await window.GHRAB.accessReady;
 if (window.GHRAB.canAccessAdminPage?.("report") && !window.GHRAB.isColleaguePreview?.()) {
@@ -82,6 +82,11 @@ if (window.GHRAB.canAccessAdminPage?.("report") && !window.GHRAB.isColleaguePrev
   let currentView = null;
   let renderToken = 0;
   let taskWorkflow = null;
+  let renderTimer = 0;
+  let previewDirty = true;
+  let previewRenderPromise = null;
+  let lastApiUsageKey = "";
+  let lastApiUsage = null;
   const images = {};
 
   function parse(key, fallback) {
@@ -1515,23 +1520,55 @@ if (window.GHRAB.canAccessAdminPage?.("report") && !window.GHRAB.isColleaguePrev
       `AI-Studio-GHRAB-report-${mode === "mono" ? "cernobily" : "barevny"}-${new Date().toISOString().slice(0, 10)}.pdf`,
     );
   }
+  function previewPanelVisible() {
+    const panel = $("#report-preview-panel");
+    if (!panel) return false;
+    const rect = panel.getBoundingClientRect();
+    return rect.top < innerHeight * 1.35 && rect.bottom > -160;
+  }
+  async function renderVisiblePreview(token = renderToken) {
+    if (!previewDirty || !currentView || !previewPanelVisible()) return;
+    if (previewRenderPromise) {
+      await previewRenderPromise;
+      if (previewDirty && currentView && previewPanelVisible()) return renderVisiblePreview(renderToken);
+      return;
+    }
+    const view = currentView;
+    previewRenderPromise = (async () => {
+      await renderReportCanvas($("#report-preview"), view, "color", token);
+      if (token !== renderToken || view !== currentView) return;
+      await renderManagementCanvas($("#report-preview-management"), view, "color", token);
+      if (token === renderToken && view === currentView) previewDirty = false;
+    })().finally(() => {
+      previewRenderPromise = null;
+    });
+    return previewRenderPromise;
+  }
+  function scheduleRender(delay = 140) {
+    clearTimeout(renderTimer);
+    renderTimer = setTimeout(() => void render(), delay);
+  }
   async function render() {
     const token = ++renderToken;
     const settings = saveSettings();
     const baseView = buildView(settings);
-    currentView = { ...baseView, apiUsage: null };
-    const apiUsage = await loadApiUsage(G.deploymentReady, { from: settings.from, to: settings.to });
-    if (token !== renderToken) return;
-    currentView = { ...baseView, apiUsage };
+    const apiKey = `${settings.from}|${settings.to}`;
+    currentView = { ...baseView, apiUsage: apiKey === lastApiUsageKey ? lastApiUsage : null };
+    if (apiKey !== lastApiUsageKey) {
+      const apiUsage = await loadApiUsage(G.deploymentReady, { from: settings.from, to: settings.to });
+      if (token !== renderToken) return;
+      lastApiUsageKey = apiKey;
+      lastApiUsage = apiUsage;
+      currentView = { ...baseView, apiUsage };
+    }
     renderSources(currentView);
     renderApiUsageSummary(currentView);
     renderImports(currentView);
     renderOutputDetails(currentView);
     renderManagementControls(currentView);
     renderWorkLog(currentView);
-    await renderReportCanvas($("#report-preview"), currentView, "color", token);
-    if (token !== renderToken) return;
-    await renderManagementCanvas($("#report-preview-management"), currentView, "color", token);
+    previewDirty = true;
+    await renderVisiblePreview(token);
   }
   function setupDefaults() {
     const settings = getSettings();
@@ -1550,7 +1587,7 @@ if (window.GHRAB.canAccessAdminPage?.("report") && !window.GHRAB.isColleaguePrev
     downloadBlob(new Blob([text], { type }), name);
   }
 
-  taskWorkflow = initTasks({G, downloadBlob, canvasesPdf, onChange: () => { if (currentView) renderManagementCanvas($("#report-preview-management"), currentView, "color"); }, onWork: (task) => {
+  taskWorkflow = initTasks({G, downloadBlob, canvasesPdf, onChange: () => { previewDirty = true; void renderVisiblePreview(); }, onWork: (task) => {
     resetWorkForm();
     $("#report-work-task").value=taskRef(task);
     populateWorkAreaSelect(task.app || task.title);
@@ -1560,14 +1597,36 @@ if (window.GHRAB.canAccessAdminPage?.("report") && !window.GHRAB.isColleaguePrev
     $("#report-work-status").textContent=["draft","sent"].includes(task.state) ? "Zadání zatím není schválené. Lze evidovat skutečnou přípravu návrhu; záznam sám nepovoluje vývoj ani přesčas." : "Práce se propojí s vybranou verzí zadání.";
   }});
 
-  [
-    "#report-title",
-    "#report-from",
-    "#report-to",
-    "#report-include-local",
-  ].forEach((selector) =>
-    $(selector).addEventListener("input", () => render()),
+  $("#report-title")?.addEventListener("input", () => scheduleRender(180));
+  ["#report-from", "#report-to", "#report-include-local"].forEach((selector) =>
+    $(selector)?.addEventListener("change", () => scheduleRender(0)),
   );
+  const routeLinks = [...document.querySelectorAll('.report-route-card[href^="#"], .report-step-link[href^="#"]')];
+  const setActiveRoute = (link) => {
+    for (const item of routeLinks) item.removeAttribute('aria-current');
+    link?.setAttribute('aria-current', 'true');
+  };
+  for (const link of routeLinks) {
+    link.addEventListener('click', (event) => {
+      const target = document.querySelector(link.getAttribute('href'));
+      if (!target) return;
+      event.preventDefault();
+      setActiveRoute(link);
+      target.scrollIntoView({ behavior: 'auto', block: 'start' });
+      history.replaceState(null, '', link.hash);
+      if (link.hash === '#report-preview-panel') {
+        previewDirty = true;
+        requestAnimationFrame(() => void renderVisiblePreview());
+      }
+    });
+  }
+  const previewObserver = 'IntersectionObserver' in window
+    ? new IntersectionObserver((entries) => {
+        if (entries.some((entry) => entry.isIntersecting)) void renderVisiblePreview();
+      }, { rootMargin: '240px 0px' })
+    : null;
+  if (previewObserver) previewObserver.observe($("#report-preview-panel"));
+  else addEventListener('scroll', () => void renderVisiblePreview(), { passive: true });
   $("#report-management-form")?.addEventListener("submit", (event) => {
     event.preventDefault();
     const ok = saveManagementFor(currentView.settings, {

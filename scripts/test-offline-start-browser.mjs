@@ -57,7 +57,7 @@ try {
   await page.addInitScript(() => {
     try {
       localStorage.setItem('ghrab.ai-studio.motion.v1', 'off');
-      sessionStorage.setItem(`ghrab.startup-intro.${document.documentElement?.dataset?.appVersion || ''}`, 'seen');
+      localStorage.setItem('ghrab.startup-intro.seen.v1', 'seen');
     } catch {}
   });
   await page.goto(baseUrl, { waitUntil: 'networkidle' });

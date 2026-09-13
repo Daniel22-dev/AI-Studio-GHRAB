@@ -1,8 +1,8 @@
-# Release checklist AI Studio GHRAB 0.21.61
+# Release checklist AI Studio GHRAB 0.21.62
 
-> Aktuální verze: **0.21.61** · etapa P5
+> Aktuální verze: **0.21.62** · etapa P5
 
-> 0.21.61 zpřehledňuje Report, odděluje zadání vývoje od měsíčního reportu a doplňuje vedený workflow schválení. Pouze celkový nemediální `distBytes` budget je kvůli novému UI úzce posunut na 2 400 000 B; ostatní limity a release politiky zůstávají beze změny.
+> 0.21.62 je výkonový a UX hotfix: persistentní startup-intro stav, omezená paralelizace PWA precache, cache-first navigace aktuální verze, lazy A4 preview Reportu a smazání pouze rozepsaných zadání. Bezpečnostní kontrakty a performance budget zůstávají beze změny.
 
 ## Stav bezpečnostního kandidáta GARP 2.3
 
@@ -18,7 +18,7 @@
 
 ## Veřejný balík
 
-- [x] Verze 0.21.61 je shodná v package, PWA manifestu, QA manifestu, buildu, dokumentaci a changelogu.
+- [x] Verze 0.21.62 je shodná v package, PWA manifestu, QA manifestu, buildu, dokumentaci a changelogu.
 - [x] Všechny aplikace jsou ve výchozím stavu uzamčené.
 - [x] Veřejný balík obsahuje pouze veřejný ověřovací klíč.
 - [x] Centrum zabezpečení je dostupné jen plnému správci; zástupce může v evidenci pouze připravit JTI.
@@ -38,7 +38,7 @@
 - [x] Pilotní metriky jsou přesně označeny jako místní.
 - [x] PWA cache se generuje automaticky z produkčního stromu a neobsahuje neplatné cesty.
 - [x] Každá změna runtime UI musí zvýšit verzi aplikace; stejná verze nesmí být znovu použita pro změněné JS/CSS, protože PWA cache je verzovaná číslem aplikace.
-- [x] Všechny lokální JS/CSS vstupy a relativní modulové importy mají ve výsledném buildu revizi `?v=0.21.61`.
+- [x] Všechny lokální JS/CSS vstupy a relativní modulové importy mají ve výsledném buildu revizi `?v=0.21.62`.
 - [x] Odkazy přístupové brány při vložení do iframe opustí rámec a otevřou AI Studio v hlavním okně.
 - [x] Viewer obsahuje pojistku proti vnořenému AI Studiu a styly brány odolávají obecnému CSS vložených aplikací.
 - [x] Serverový katalog se aktivuje pouze při `school-server` + `schoolServerConnected` + `sharedMaterialLibrary`; GitHub profil nemůže omylem publikovat materiál.
@@ -55,6 +55,9 @@
 - [x] AI Studio má samostatný manuál učitele a rozšířený manuál administrátora; admin verze má vlastní runtime kontrolu role.
 - [x] Domovský odkaz „Poprvé v AI Studiu?“ je pouze drobný role-aware text pod stavem Studia, nikoli další panel.
 - [x] Úvodní překryv má nezávislý fail-open watchdog a při selhání uvolní inertní stav rozhraní.
+- [x] Startup intro se po prvním zobrazení ukládá do stabilního persistentního klíče a není navázané na patch verzi, takže běžný návrat do Studia neblokuje opakovaná animace.
+- [x] Service worker omezuje volitelný precache na dávky po čtyřech a navigace používá cache aktuální verze před síťovým fallbackem.
+- [x] Report vykresluje A4 preview lazy a rozepsané zadání lze smazat pouze ve stavu `draft`; uzavřené karty zůstávají auditně dohledatelné.
 - [x] V mobilním Nastavení (do 650 px) je přepínač CZ/EN viditelný a kritický browser flow jej fyzicky přepne EN → CS.
 - [x] `npm test` prochází bez chyby.
 - [x] Statické `no-store` registry mají network-first cache fallback a runtime API/deployment zůstávají mimo service worker.

@@ -136,14 +136,14 @@ async function caseDeletionAndEndWork() {
     'ghrab.platform.handoff.v2',
     'ghrab.handoff.v1',
     'ghrab.access.permit.v2',
+    'ghrab.startup-intro.seen.v1',
   ];
   for (const key of keys) localStorage.setItem(key, JSON.stringify({ value: CANARY }));
   sessionStorage.setItem('ghrab.ai-studio.role-preview.v1', CANARY);
   sessionStorage.setItem('ghrab.platform.shared-device.v1', 'true');
-  sessionStorage.setItem(`ghrab.startup-intro.${APP_VERSION}`, 'seen');
   const ended = await globalThis.GHRABPlatform.endWork({ clearApplicationData: true, reload: false });
   const remaining = keys.filter((key) => localStorage.getItem(key) !== null);
-  const remainingSession = ['ghrab.ai-studio.role-preview.v1', 'ghrab.platform.shared-device.v1', `ghrab.startup-intro.${APP_VERSION}`]
+  const remainingSession = ['ghrab.ai-studio.role-preview.v1', 'ghrab.platform.shared-device.v1']
     .filter((key) => sessionStorage.getItem(key) !== null);
   const generation = localStorage.getItem('ghrab.access.session-generation.v1');
   const suiteGeneration = localStorage.getItem('ghrab.platform.suite-session-generation.v1');

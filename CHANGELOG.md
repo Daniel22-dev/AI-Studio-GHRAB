@@ -2,6 +2,14 @@
 
 > Tento soubor se generuje ze `src/config/changelog.json`. Neupravujte jej ručně.
 
+## 0.21.62 — 2026-09-12
+**Rychlejší start a navigace, bezpečné smazání rozepsaného zadání**
+
+- Startup intro se po prvním zobrazení pamatuje trvale a běžné návraty do Studia už neblokuje opakovaná animace.
+- Service worker stahuje volitelné offline soubory po dávkách a uložené HTML cíle aktuální verze otevírá z cache před síťovým fallbackem.
+- Report odkládá A4 canvas náhled do okamžiku, kdy je potřeba; titulek je debounce a API spotřeba se pro stejné období znovu nenačítá.
+- Rozcestník Reportu má okamžitou aktivní odezvu. Rozepsané zadání lze po potvrzení smazat; uzavřené karty se kvůli auditní stopě pouze ruší nebo nahrazují.
+
 ## 0.21.61 — 2026-09-12
 **Přehlednější zadání a čtyřkrokový měsíční report**
 

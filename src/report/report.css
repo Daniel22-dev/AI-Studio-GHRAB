@@ -1,4 +1,4 @@
-/* AI Studio GHRAB 0.21.61 - styles scoped to the leadership reporting page. */
+/* AI Studio GHRAB 0.21.62 - styles scoped to the leadership reporting page. */
 .a4-preview-stack {
   display: grid;
   gap: 26px;
@@ -165,9 +165,17 @@
   transition: border-color 0.18s ease, background 0.18s ease;
 }
 .report-step-link:hover,
-.report-step-link:focus-visible {
+.report-step-link:focus-visible,
+.report-step-link[aria-current="true"] {
   border-color: rgba(80, 232, 255, 0.72);
   background: rgba(34, 170, 205, 0.1);
+}
+.report-step-link:active,
+.report-route-card:active {
+  transform: translateY(1px);
+}
+.report-step-link[aria-current="true"] {
+  box-shadow: inset 0 0 0 1px rgba(80, 232, 255, 0.16);
 }
 .report-step-link > span {
   display: grid;

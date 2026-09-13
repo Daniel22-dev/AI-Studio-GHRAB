@@ -1,8 +1,8 @@
-# Nahrání AI Studio GHRAB 0.21.61
+# Nahrání AI Studio GHRAB 0.21.62
 
-> Aktuální verze: **0.21.61** · etapa P5
+> Aktuální verze: **0.21.62** · etapa P5
 
-> 0.21.61 zpřehledňuje workflow Reportu: odděluje zadání vývoje od čtyř kroků měsíčního reportu, doplňuje nápovědu polí a jednoznačný postup po uzavření návrhu.
+> 0.21.62 je výkonový a UX hotfix: zrychluje opakovaný start a navigaci, odlehčuje vykreslování Reportu a doplňuje smazání pouze pro rozepsaná zadání.
 
 > **PŘED NASAZENÍM:** aktuální release musí projít standardní P5/access gate v GitHub Actions. Pro produkční použití musí být zelené i povinné browserové kontroly CI; do uzavření těchto gate se nemají používat reálná studentská data.
 

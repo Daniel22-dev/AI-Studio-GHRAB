@@ -17,6 +17,8 @@ Běžná podpora, drobné opravy, konzultace a školení **nepotřebují kartu z
 
 Vybraná karta ve Studiu ukazuje stavový postup **Návrh → K odsouhlasení → Schváleno → Předáno → Nasazeno**, takže je vždy vidět, co je hotovo a co následuje.
 
+Pokud jste kartu založili omylem a je stále ve stavu **Návrh / Rozepsáno**, lze ji tlačítkem **Smazat rozepsané zadání** po potvrzení odstranit. Jakmile je návrh uzavřen k odsouhlasení, natvrdo se nemaže; případná změna se řeší zrušením/nahrazením nebo novou verzí, aby zůstala zachována auditní stopa.
+
 ## Co poslat ředitelce
 
 - **K odsouhlasení konkrétního zadání:** samostatnou kartu PDF s přesným ID a verzí jako přílohu e-mailu. Měsíční report tento souhlas nenahrazuje.
@@ -46,6 +48,6 @@ Registr karet je v tomto vydání uložen **v tomto prohlížeči** a nesynchron
 
 Novou výši osobního příplatku doplní škola před podpisem a začátkem role. Pole odměňování v kartě je záměrně bez předvyplněné částky. Může popsat odsouhlasený platový režim, nemusí zavádět samostatnou cenu za aplikaci. Sjednaná kapacita musí odpovídat plnému učitelskému úvazku. Dohoda počítá s rolí od doplněného začátku do 31. 8. 2027, průběžným zhodnocením do 15. 2. 2027 a souhrnným jednáním do 30. 6. 2027.
 
-## Ověření vydání 0.21.61
+## Ověření vydání 0.21.62
 
 Release kontroluje logiku životního cyklu karty, oddělení běžné práce od zadání, nápovědu polí, explicitní krok s PDF k odsouhlasení, vazbu na evidenci práce, předání, nasazení, novou verzi zadání a dvoustránkový report. Browserové a release QA se spouští nad výsledným buildem stejně jako u předchozích P5 vydání.

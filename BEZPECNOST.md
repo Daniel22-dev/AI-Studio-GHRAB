@@ -1,6 +1,6 @@
-# Bezpečnostní hranice AI Studio GHRAB 0.21.61
+# Bezpečnostní hranice AI Studio GHRAB 0.21.62
 
-> Aktuální verze: **0.21.61** · etapa P5
+> Aktuální verze: **0.21.62** · etapa P5
 
 > 0.21.59 přidává fail-closed auto-patch promotion pro jednou GARP 2.5.1 zařazené aplikace. Automatické přijetí vyžaduje živé deployment ověření a nesmí obejít Platform, repository ani ecosystem kontrakty.
 

@@ -118,6 +118,7 @@ check(reportHtml.includes("SAMOSTATNÁ AGENDA") && reportHtml.includes("MĚSÍČ
 check(!reportHtml.includes(">Vykázat běžnou práci</a>") && reportHtml.includes("Potřebujete zapsat běžnou činnost?"), "Karta zadani stale micha samostatne zadani s tlacitkem bezne prace.");
 check(reportTasksJs.includes("Další krok: pošlete kartu k odsouhlasení") && reportTasksJs.includes("přiložte ji k e-mailu ředitelce") && reportTasksJs.includes("Co znamená uzavřít návrh?"), "Workflow zadani nevysvetluje, co se stane po uzavreni a jak kartu predat vedeni.");
 check(reportTasksJs.includes("task-field-help") && reportTasksJs.includes("Požadovaný výsledek a způsob převzetí") && reportTasksJs.includes("Pracovní režim a odměňování"), "Pole zadani nemaji kontextovou napovedu k tomu, co se do nich vyplnuje.");
+check(reportTasksJs.includes("Smazat rozepsané zadání") && reportTasksJs.includes("Smazat lze pouze rozepsané zadání"), "Rozepsane zadani nema bezpecnou moznost smazani omezenou jen na draft.");
 check(teacherStudioGuide.includes("Co běžný učitel nemusí řešit") && !teacherStudioGuide.includes("Pilotní dashboard / Souhrnném reportu"), "Manual ucitele neni zjednoduseny pro bezny provoz.");
 check(adminStudioGuide.includes("Co vidím navíc oproti učiteli") && adminStudioGuide.includes("Statistiky používání") && adminStudioGuide.includes("horní záložku <strong>Report</strong>") && adminStudioGuide.includes('data-page="manual-admin"'), "Manual administratora nema aktualni reportingove workflow.");
 const adminStudioGuideGuard = await text("src/manualy/ai-studio-admin.js");

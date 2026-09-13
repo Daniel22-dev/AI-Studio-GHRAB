@@ -1,8 +1,8 @@
-# Přesný postup nahrání AI Studio GHRAB 0.21.61 na GitHub – až po schválení
+# Přesný postup nahrání AI Studio GHRAB 0.21.62 na GitHub – až po schválení
 
-> Aktuální verze: **0.21.61** · etapa P5
+> Aktuální verze: **0.21.62** · etapa P5
 
-> 0.21.61 zpřehledňuje zadání vývoje a měsíční report, doplňuje nápovědu polí a jasný postup schválení. Kvůli přidanému nemediálnímu UI obsahu je pouze `distBytes` budget úzce posunut na 2 400 000 B; ostatní performance a bezpečnostní limity se nemění.
+> 0.21.62 odstraňuje zbytečné blokování startu, omezuje souběžné PWA precache požadavky, používá rychlejší cache-first navigaci pro HTML aktuální verze, lazy vykreslování A4 náhledu Reportu a bezpečné smazání rozepsaného zadání. Performance budget se nezvyšuje.
 
 > **PŘED NASAZENÍM:** aktuální release musí projít standardní P5/access gate v GitHub Actions. Pro produkční použití musí být zelené i povinné browserové kontroly CI; do uzavření těchto gate se nemají používat reálná studentská data.
 
@@ -12,14 +12,14 @@ Nejprve musí být nasazeny KS 5.10.25, SORTIO 1.1.14, Lesson Hub 1.2.22, Difere
 
 ## Nahrání
 
-1. Stáhněte a rozbalte `AI-Studio-GHRAB-0.21.61-REPORT-WORKFLOW-UX.zip`.
+1. Stáhněte a rozbalte `AI-Studio-GHRAB-0.21.62-PERFORMANCE-NAV-DELETE-HOTFIX.zip`.
 2. Do kořene repozitáře `AI-Studio-GHRAB` nahrajte přímo všechny soubory a složky z rozbaleného archivu.
-3. Commit pojmenujte například `AI Studio 0.21.61 – Report workflow UX`.
+3. Commit pojmenujte například `AI Studio 0.21.62 – performance/nav/delete hotfix`.
 4. Vyčkejte na dokončení GitHub Actions. Workflow instaluje závislosti, synchronizuje manifesty, spustí regresi reportéru, celý GHRAB QA release gate, sestaví `dist` a až poté nasadí GitHub Pages.
 
 ## Kontrola po nasazení
 
-- `dist/build-info.json`, PWA manifest a service worker musí uvádět 0.21.61.
+- `dist/build-info.json`, PWA manifest a service worker musí uvádět 0.21.62.
 - `dist/config/access-config-bundle.json` musí uvádět `access-p1-20260824175535Z-k_wtm7Zj`.
 - Staré učitelské oprávnění kolegyně musí být po online obnovení odmítnuto a v Evidenci přístupů označeno jako centrálně zneplatněné.
 - Nové oprávnění správce zástupce musí zůstat funkční; má jiné JTI a podpisový klíč oprávnění se v tomto vydání nemění.
