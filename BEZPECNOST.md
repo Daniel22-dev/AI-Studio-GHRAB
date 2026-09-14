@@ -1,8 +1,8 @@
-# Bezpečnostní hranice AI Studio GHRAB 0.21.66
+# Bezpečnostní hranice AI Studio GHRAB 0.21.67
 
-> Aktuální verze: **0.21.66** · etapa P5
+> Aktuální verze: **0.21.67** · etapa P5
 
-> 0.21.66 nemění GARP, přístupová pravidla ani release-wave politiku. Sekce Materiály pouze výslovně objasňuje, že sdílení hotového výstupu neobchází školení ani oprávnění zdrojové aplikace.
+> 0.21.67 zjednodušuje právní workflow Reportu: běžné releasy se evidují jednou v práci a souhrnně v reportu, významné zadání má povinnou volbu režimu práv a provozní nasazení lze delegovat pověřené osobě.
 
 ## Rychlá kontrola dat v portálu
 

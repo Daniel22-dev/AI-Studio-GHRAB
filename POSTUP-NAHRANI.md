@@ -1,8 +1,8 @@
-# Přesný postup nahrání AI Studio GHRAB 0.21.66 na GitHub – až po schválení
+# Přesný postup nahrání AI Studio GHRAB 0.21.67 na GitHub – až po schválení
 
-> Aktuální verze: **0.21.66** · etapa P5
+> Aktuální verze: **0.21.67** · etapa P5
 
-> 0.21.66 je prezentační a informační update Studia: devět aplikací v showcase, zpřesnění pravidel Materiálů a opravená orbitální scéna Maturita Desk ve videu.
+> 0.21.67 zjednodušuje právní workflow Reportu: běžné releasy se evidují jednou v práci a souhrnně v reportu, významné zadání má povinnou volbu režimu práv a provozní nasazení lze delegovat pověřené osobě.
 
 ## Předpoklady
 

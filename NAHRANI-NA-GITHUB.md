@@ -1,8 +1,8 @@
-# Nahrání AI Studio GHRAB 0.21.66
+# Nahrání AI Studio GHRAB 0.21.67
 
-> Aktuální verze: **0.21.66** · etapa P5
+> Aktuální verze: **0.21.67** · etapa P5
 
-> 0.21.66 aktualizuje prezentační showcase na devět aplikací, pravidla sdílení v Materiálech a orbitální úvod showcase videa s Maturita Desk.
+> 0.21.67 zjednodušuje právní workflow Reportu: běžné releasy se evidují jednou v práci a souhrnně v reportu, významné zadání má povinnou volbu režimu práv a provozní nasazení lze delegovat pověřené osobě.
 
 ## Povinné pořadí
 

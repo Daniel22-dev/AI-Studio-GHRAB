@@ -1,8 +1,8 @@
 # AI Studio GHRAB
 
-**Aktuální verze:** 0.21.66
+**Aktuální verze:** 0.21.67
 
-**Aktualizace 0.21.66:** srovnává prezentační showcase na devět aplikací, zpřesňuje pravidla sdílení v sekci Materiály a opravuje úvodní orbitální scénu showcase videa tak, aby Maturita Desk rotovala společně s ostatními aplikacemi.
+0.21.67 zjednodušuje právní workflow Reportu: běžné releasy se evidují jednou v práci a souhrnně v reportu, významné zadání má povinnou volbu režimu práv a provozní nasazení lze delegovat pověřené osobě.
 
 **Performance budget:** beze změny; oprava z 0.21.64 s automatickým dělením rostoucího changelogu zůstává zachována.
 **Platforma:** GHRAB Platform 1.1.2 · etapa P5

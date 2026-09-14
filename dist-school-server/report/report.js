@@ -1,11 +1,11 @@
-import { initTasks, taskRef } from "./tasks.js?v=0.21.66";
+import { initTasks, taskRef } from "./tasks.js?v=0.21.67";
 import {
   buildImpactReport,
   periodOfDate,
   safeEvent,
   safeStatistics,
-} from "../shared/safe-export.js?v=0.21.66";
-import { loadApiUsage } from "../modules/api-usage.js?v=0.21.66";
+} from "../shared/safe-export.js?v=0.21.67";
+import { loadApiUsage } from "../modules/api-usage.js?v=0.21.67";
 
 await window.GHRAB.accessReady;
 if (window.GHRAB.canAccessAdminPage?.("report") && !window.GHRAB.isColleaguePreview?.()) {
@@ -159,6 +159,7 @@ if (window.GHRAB.canAccessAdminPage?.("report") && !window.GHRAB.isColleaguePrev
       minutes,
       category,
       area: cleanText(raw.area, 140) || "Obecn\u00e1 agenda AI",
+      release: cleanText(raw.release, 120),
       workType,
       activity,
       result: cleanText(raw.result, 1800),
@@ -229,8 +230,19 @@ if (window.GHRAB.canAccessAdminPage?.("report") && !window.GHRAB.isColleaguePrev
     }
     const trainingSupportMinutes = (byCategory.training || 0) + (byCategory.support || 0);
     const areas = new Set(entries.map((entry) => entry.area).filter(Boolean));
+    const releaseSeen = new Set();
+    const releases = [];
+    for (const entry of entries.slice().reverse()) {
+      if (!entry.release) continue;
+      const key = `${entry.area}::${entry.release}`;
+      if (releaseSeen.has(key)) continue;
+      releaseSeen.add(key);
+      releases.push({ area: entry.area, release: entry.release, date: entry.date });
+    }
+    releases.sort((a,b)=>String(b.date).localeCompare(String(a.date)));
     return {
       entries,
+      releases,
       totalMinutes,
       exceptionalMinutes,
       trainingSupportMinutes,
@@ -674,7 +686,7 @@ if (window.GHRAB.canAccessAdminPage?.("report") && !window.GHRAB.isColleaguePrev
     populateWorkAreaSelect();
     const summary = $("#report-work-summary");
     if (summary) {
-      summary.textContent = `${view.work.entries.length} z\u00e1znam\u016f \u00b7 ${minutesDuration(view.work.totalMinutes)} \u00b7 \u0161kolen\u00ed a podpora ${minutesDuration(view.work.trainingSupportMinutes)} \u00b7 mimo\u0159\u00e1dn\u00e9 ${minutesDuration(view.work.exceptionalMinutes)}`;
+      summary.textContent = `${view.work.entries.length} z\u00e1znam\u016f \u00b7 ${minutesDuration(view.work.totalMinutes)} \u00b7 \u0161kolen\u00ed a podpora ${minutesDuration(view.work.trainingSupportMinutes)} \u00b7 mimo\u0159\u00e1dn\u00e9 ${minutesDuration(view.work.exceptionalMinutes)} \u00b7 releasy ${view.work.releases.length}`;
     }
     const host = $("#report-work-list");
     if (!host) return;
@@ -694,7 +706,7 @@ if (window.GHRAB.canAccessAdminPage?.("report") && !window.GHRAB.isColleaguePrev
         heading.append(title, meta);
         card.append(heading);
         const tags = document.createElement("small");
-        tags.textContent = `${entry.taskRef ? entry.taskRef + " · " : ""}${WORK_CATEGORIES[entry.category]} \u00b7 ${entry.area} \u00b7 ${WORK_TYPES[entry.workType]}`;
+        tags.textContent = `${entry.taskRef ? entry.taskRef + " · " : ""}${WORK_CATEGORIES[entry.category]} \u00b7 ${entry.area}${entry.release ? ` \u00b7 release ${entry.release}` : ""} \u00b7 ${WORK_TYPES[entry.workType]}`;
         card.append(tags);
         if (entry.result) {
           const result = document.createElement("p");
@@ -734,6 +746,7 @@ if (window.GHRAB.canAccessAdminPage?.("report") && !window.GHRAB.isColleaguePrev
     if ($("#report-work-category")) $("#report-work-category").value = "operations";
     if ($("#report-work-type")) $("#report-work-type").value = "regular";
     populateWorkAreaSelect("Obecn\u00e1 agenda AI");
+    setFieldValue("#report-work-release", "");
   }
   function editWorkEntry(id) {
     const entry = getWorkLog().find((row) => row.id === id);
@@ -743,6 +756,7 @@ if (window.GHRAB.canAccessAdminPage?.("report") && !window.GHRAB.isColleaguePrev
     setFieldValue("#report-work-minutes", String(entry.minutes));
     if ($("#report-work-category")) $("#report-work-category").value = entry.category;
     populateWorkAreaSelect(entry.area);
+    setFieldValue("#report-work-release", entry.release);
     if ($("#report-work-type")) $("#report-work-type").value = entry.workType;
     setFieldValue("#report-work-activity", entry.activity);
     setFieldValue("#report-work-result", entry.result);
@@ -1415,7 +1429,11 @@ if (window.GHRAB.canAccessAdminPage?.("report") && !window.GHRAB.isColleaguePrev
 
     ctx.fillStyle = palette.muted;
     ctx.font = "400 17px Arial";
-    drawWrapped(ctx, taskWorkflow?.summary(view.work.entries.map(entry => entry.taskRef)) || "Karty k odsouhlasení: 0.", m, 1605, REPORT_W - 2 * m, 22, 3);
+    const releaseText = view.work.releases.length
+      ? `Běžné releasy: ${view.work.releases.length} · ${view.work.releases.slice(0,3).map(item=>`${item.area} ${item.release}`).join("; ")}${view.work.releases.length>3?"; další viz evidence práce":""}.`
+      : "Běžné releasy: 0.";
+    const taskText = taskWorkflow?.summary(view.work.entries.map(entry => entry.taskRef)) || "Karty k odsouhlasení: 0.";
+    drawWrapped(ctx, `${releaseText} ${taskText}`, m, 1580, REPORT_W - 2 * m, 22, 4);
     const footY = REPORT_H - 70;
     ctx.strokeStyle = palette.blue;
     ctx.lineWidth = 2;
@@ -1656,6 +1674,7 @@ if (window.GHRAB.canAccessAdminPage?.("report") && !window.GHRAB.isColleaguePrev
       minutes: $("#report-work-minutes")?.value,
       category: $("#report-work-category")?.value,
       area: $("#report-work-area")?.value,
+      release: $("#report-work-release")?.value,
       workType: $("#report-work-type")?.value,
       activity: $("#report-work-activity")?.value,
       result: $("#report-work-result")?.value,

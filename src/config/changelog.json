@@ -1,7 +1,29 @@
 {
   "schema": "ai-studio-changelog-v1",
-  "current": "0.21.66",
+  "current": "0.21.67",
   "items": [
+    {
+      "version": "0.21.67",
+      "date": "2026-09-14",
+      "title": {
+        "cs": "Efektivnější právní workflow reportu a smluvní režim 9.4",
+        "en": "Lean legal workflow for reporting and contract regime 9.4"
+      },
+      "changes": [
+        {
+          "cs": "Běžné opravy a patch releasy nevyžadují samostatnou kartu. Volitelná verze/release se zapíše jednou do evidence práce a měsíční souhrn ji automaticky zobrazí.",
+          "en": "Routine fixes and patch releases no longer require a separate task card. An optional version/release is entered once in the work log and automatically appears in the monthly summary."
+        },
+        {
+          "cs": "Karta nové aplikace nebo významného vývoje nově vyžaduje explicitní volbu režimu práv: autor + licence škole, zákonný režim zaměstnaneckého díla, nebo individuální režim.",
+          "en": "A new-app or significant-development card now requires an explicit IP regime choice: author plus school licence, statutory employee-work regime, or an individual arrangement."
+        },
+        {
+          "cs": "Provozní nasazení po schváleném zadání může podle pravidel školy potvrdit pověřený správce; ředitelka se nemusí znovu zapojovat do každého běžného technického kroku.",
+          "en": "Operational deployment after an approved task may be recorded by an authorised administrator under school rules, avoiding repeated director involvement in routine technical steps."
+        }
+      ]
+    },
     {
       "version": "0.21.66",
       "date": "2026-09-13",

@@ -2,6 +2,13 @@
 
 > Tento soubor se generuje ze `src/config/changelog.json`. Neupravujte jej ručně.
 
+## 0.21.67 — 2026-09-14
+**Efektivnější právní workflow reportu a smluvní režim 9.4**
+
+- Běžné opravy a patch releasy nevyžadují samostatnou kartu. Volitelná verze/release se zapíše jednou do evidence práce a měsíční souhrn ji automaticky zobrazí.
+- Karta nové aplikace nebo významného vývoje nově vyžaduje explicitní volbu režimu práv: autor + licence škole, zákonný režim zaměstnaneckého díla, nebo individuální režim.
+- Provozní nasazení po schváleném zadání může podle pravidel školy potvrdit pověřený správce; ředitelka se nemusí znovu zapojovat do každého běžného technického kroku.
+
 ## 0.21.66 — 2026-09-13
 **Příprava prezentačních podkladů pro vedení a oprava showcase videa**
 

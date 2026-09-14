@@ -1,8 +1,8 @@
-# Architektura AI Studio GHRAB 0.21.66
+# Architektura AI Studio GHRAB 0.21.67
 
-> Aktuální verze: **0.21.66** · etapa P5
+> Aktuální verze: **0.21.67** · etapa P5
 
-> 0.21.66 nemění architekturu ani runtime kontrakty. Aktualizuje prezentační showcase, pravidla zobrazená v Materiálech a prezentační video; bezpečnostní a serverové hranice zůstávají stejné.
+> 0.21.67 zjednodušuje právní workflow Reportu: běžné releasy se evidují jednou v práci a souhrnně v reportu, významné zadání má povinnou volbu režimu práv a provozní nasazení lze delegovat pověřené osobě.
 
 ## Koherence aktualizace PWA
 

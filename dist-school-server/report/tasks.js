@@ -5,9 +5,9 @@ export const TASK_SCHEMA = 'ghrab-task-register-v1';
 export const STATES = {
  draft: 'Rozepsáno', sent: 'K odsouhlasení', approved: 'Schváleno – evidence souhlasů', delivered: 'Předáno', launched: 'Nasazeno', cancelled: 'Zrušeno' }
 ;
-export const RIGHTS = 'Podle čl. 3 a 4 rámcové dohody verze 9.2 vykonává majetková práva k vlastním autorským částem autor i při zaměstnaneckém díle (§ 58 odst. 1 autorského zákona). Škola získá bezúplatnou nevýhradní licenci k internímu užívání, úpravám a údržbě předaných verzí, která trvá i po skončení role. Práva třetí'
- + 'ch osob zůstávají zachována. Odchylný režim vyžaduje výslovnou oboustrannou písemnou dohodu. Nová aplikace uvedená v této schválené kartě doplňuje přílohu A rámcové dohody pod uvedeným ID; konkrétní verzi určí předávací záznam. Karta se použije až po účinnosti rámcové dohody, dohody o roli a pracovn'
- + 'ího dodatku.';
+export const RIGHTS_AUTHOR = 'Varianta A – autor + licence škole: podle čl. 3 a 4 rámcové dohody verze 9.4 vykonává majetková práva k vlastním autorským tvůrčím příspěvkům Daniel Baláž a škola získává bezúplatnou nevýhradní licenci podle článku 4. Práva třetích osob zůstávají zachována.';
+export const RIGHTS_EMPLOYEE = 'Varianta B – zákonný režim zaměstnaneckého díla: použije se § 58 autorského zákona v rozsahu, v němž karta nebo jiná písemná dohoda nestanoví něco jiného. Práva třetích osob zůstávají zachována.';
+export const RIGHTS = RIGHTS_AUTHOR;
 const FIELDS = [
  ['title','Název zadání',160,'Krátký název, podle kterého zadání později bezpečně poznáte.','např. AI Akademie – propojení se Studiem'],
  ['kind','Typ zadání',100,'Uveďte, zda jde o novou aplikaci, větší změnu, integraci, migraci nebo jiný samostatný projekt.','např. Nová aplikace / větší změna / integrace / migrace'],
@@ -20,7 +20,7 @@ const FIELDS = [
  ['budget','Nástroje a rozpočet školy',1000,'Uveďte placené nástroje, licence, API nebo jiné přímé náklady. Pokud nejsou, napište to výslovně.','např. Bez dalších nákladů / OpenAI API z prostředků školy'],
  ['safety','Data, bezpečnost a podmínky nasazení',1800,'Shrňte typ zpracovávaných dat, bezpečnostní kontroly, GARP a případné podmínky IT před nasazením.','Jaká data se používají, jaké kontroly musí proběhnout a co je podmínkou provozu.'],
  ['components','Vlastní části, cizí komponenty a licence',1800,'Uveďte převzaté knihovny, předchozí vlastní části a jejich licence. Pokud nic takového není, napište „Žádné“.','např. Vlastní kód + knihovna X (MIT); žádné další cizí komponenty.'],
- ['rights','Práva a licence',2400,'Předvyplněno podle rámcového režimu. Měňte jen tehdy, pokud má být pro toto zadání výslovně sjednána odchylka.','']
+ ['rights','Práva a licence',2400,'Před zahájením významného vývoje zvolte variantu A, B nebo individuální režim C. Bez výslovné volby nelze návrh uzavřít k odsouhlasení.','']
 ];
 const RECORDS = ['schoolName','schoolDate','schoolRef','authorName','authorDate','authorRef','version','archive','handoverDate','acceptedBy','acceptanceRef','launchDate','launchBy','assessmentRef','cancelReason'];
 const tidy = (v) => typeof v === 'string' ? v.trim() : '';
@@ -212,7 +212,7 @@ const t={
 id:`AI-${crypto.randomUUID().slice(0,8).toUpperCase()}`,revision:1,state:'draft',...Object.fromEntries([...FIELDS.map(x=>x[0]),...RECORDS].map(k=>[k,''])),createdAt:now(),updatedAt:now()}
 ;
   t.kind='Nová aplikace';
-t.rights=RIGHTS;
+t.rights='';
   // Remuneration is intentionally not pre-approved or priced.
   t.pay='';
 selected=taskRef(t);
@@ -293,7 +293,33 @@ persist([...register.tasks,rev]);feedback('Nová verze je rozepsaná. Vyžaduje 
    const form=document.createElement('form');
 form.className='task-grid';
 form.noValidate=true;
-   for(const [key,label,max,help,placeholder] of FIELDS) field(form,key,label,t[key],['title','kind','app'].includes(key)?'text':'textarea',max,false,help,placeholder);
+   for(const [key,label,max,help,placeholder] of FIELDS) {
+    if(key!=='rights'){
+      field(form,key,label,t[key],['title','kind','app'].includes(key)?'text':'textarea',max,false,help,placeholder);
+      continue;
+    }
+    const presetWrap=element('label','Režim práv','task-field');
+    presetWrap.append(element('small','Povinná volba pro novou aplikaci nebo významný vývoj. Varianta C ponechá pole níže pro vlastní konkrétní ujednání.','task-field-help'));
+    const preset=document.createElement('select');
+    preset.id='task-rights-preset';
+    preset.append(new Option('Vyberte režim práv',''),new Option('A – autor + bezúplatná licence škole','author'),new Option('B – zákonný režim zaměstnaneckého díla','employee'),new Option('C – individuální režim','custom'));
+    const rightsField=field(form,key,label,t[key],'textarea',max,false,help,placeholder);
+    const current=tidy(t[key]);
+    preset.value=current===RIGHTS_AUTHOR?'author':current===RIGHTS_EMPLOYEE?'employee':current?'custom':'';
+    rightsField.readOnly=['author','employee'].includes(preset.value);
+    preset.addEventListener('change',()=>{
+      dirty=true;
+      if(preset.value==='author') rightsField.value=RIGHTS_AUTHOR;
+      else if(preset.value==='employee') rightsField.value=RIGHTS_EMPLOYEE;
+      else if(preset.value==='custom' && [RIGHTS_AUTHOR,RIGHTS_EMPLOYEE].includes(rightsField.value)) rightsField.value='';
+      else if(!preset.value) rightsField.value='';
+      rightsField.readOnly=['author','employee'].includes(preset.value);
+      rightsField.dispatchEvent(new Event('input',{bubbles:true}));
+      if(preset.value==='custom') rightsField.focus();
+    });
+    form.insertBefore(presetWrap,rightsField.closest('label'));
+    presetWrap.append(preset);
+   }
    submitForm(form,f=>{
 const n=readFields(f,t,FIELDS.map(x=>x[0]));
 replace(n);
@@ -385,12 +411,12 @@ panel.append(f);
    }
    if(['delivered','launched'].includes(t.state))panel.append(element('p',`Předáno: ${t.version}, ${t.handoverDate}; ${t.archive}. Převzal: ${t.acceptedBy}; ${t.acceptanceRef}.`,'task-record-summary'));
    if(t.state==='delivered'){
-    panel.append(callout('Předání je hotové, nasazení je samostatné rozhodnutí','Pokud se předaná verze má používat v provozu, zaznamenejte až skutečné rozhodnutí školy po posouzení IT, dat a případných omezení. Samotné předání ani měsíční report provoz nepovolují.'));
+    panel.append(callout('Předání je hotové, nasazení je provozní krok','Pokud se předaná verze má používat v provozu, zaznamenejte skutečné provozní povolení po potřebném posouzení IT, dat a případných omezení. Běžné nasazení může podle pravidel školy potvrdit pověřený správce nebo jiná určená osoba; vedení se zapojuje znovu jen tehdy, vyžaduje-li to riziko nebo schválená karta. Samotné předání provoz nepovoluje.'));
     const f=document.createElement('form');
 f.className='task-grid';
     const launchFields=[
       ['launchDate','Datum povolení nasazení','date','Datum rozhodnutí o provozním nasazení této konkrétní verze.',''],
-      ['launchBy','Kdo povolil za školu','text','Osoba oprávněná rozhodnout o nasazení nebo jej potvrdit za školu.','jméno a funkce'],
+      ['launchBy','Kdo potvrdil provozní nasazení','text','Pověřený správce nebo jiná osoba oprávněná podle pravidel školy. Nemusí jít znovu o ředitelku, pokud to karta nebo riziko nevyžaduje.','jméno a funkce'],
       ['assessmentRef','Doklad kontroly IT a rozhodnutí školy','text','Uveďte verzi, povolené scénáře, typy dat, omezení a odkaz na rozhodnutí nebo kontrolu IT.','např. IT-01; verze 1.4.2; povolené interní scénáře; omezení …']
     ];
     for(const [k,l,type,help,placeholder] of launchFields)field(f,k,l,t[k],type||'text',1200,true,help,placeholder);

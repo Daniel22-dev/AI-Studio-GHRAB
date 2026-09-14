@@ -1,5 +1,5 @@
 <!doctype html>
-<html lang="cs" data-theme="dark" data-force-language="cs" data-ghrab-app-id="ai-studio" data-ghrab-app-version="0.21.66">
+<html lang="cs" data-theme="dark" data-force-language="cs" data-ghrab-app-id="ai-studio" data-ghrab-app-version="0.21.67">
   <head>
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width,initial-scale=1" />
@@ -358,6 +358,11 @@
                   <label for="report-work-area" data-cs="Aplikace / oblast" data-en="Application / area">Aplikace / oblast</label>
                   <select id="report-work-area" required></select>
                 </div>
+                <div class="field">
+                  <label for="report-work-release" data-cs="Nová verze / release (volitelné)" data-en="New version / release (optional)">Nová verze / release (volitelné)</label>
+                  <small class="field-help">Vyplňte jen tehdy, když tento záznam práce končí vydáním běžné nové verze. Stačí jednou; měsíční report ji převezme automaticky.</small>
+                  <input id="report-work-release" type="text" maxlength="120" placeholder="např. 1.1.18 / commit abc123" />
+                </div>
                 <div class="field full">
                   <label for="report-work-type" data-cs="Typ práce" data-en="Work type">Typ práce</label>
                   <select id="report-work-type" required>
@@ -373,7 +378,7 @@
                 <div class="field full">
                   <label for="report-work-result" data-cs="Výsledek / přínos" data-en="Result / impact">Výsledek / přínos</label>
                   <small class="field-help">Co po práci konkrétně vzniklo, změnilo se nebo bylo vyřešeno. Tento text se může promítnout do reportu.</small>
-                  <textarea id="report-work-result" rows="3" maxlength="1800" placeholder="např. Verze 0.21.66 připravena k nasazení; CI kontroly prošly."></textarea>
+                  <textarea id="report-work-result" rows="3" maxlength="1800" placeholder="např. Verze 0.21.67 připravena k nasazení; CI kontroly prošly."></textarea>
                 </div>
                 <div class="field full">
                   <label for="report-work-private" data-cs="Soukromá poznámka" data-en="Private note">Soukromá poznámka</label>
