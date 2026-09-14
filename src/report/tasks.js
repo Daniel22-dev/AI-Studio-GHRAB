@@ -307,11 +307,20 @@ form.noValidate=true;
     guide.append(guideSummary);
     const guideBody=document.createElement('div');
     guideBody.className='task-rights-guide-body';
-    guideBody.innerHTML=`
-      <p><strong>A – standard AI Studia.</strong> Rozvoj existujícího ekosystému nebo nová aplikace, kterou má autor dál rozvíjet. Škola dostává bezplatnou licenci podle rámcové dohody. Typicky větší rozvoj AI Studia, SORTIO, LUDUS, ACTIVA nebo nová autorova aplikace.</p>
-      <p><strong>B – samostatný školní projekt.</strong> Použijte, když má jít o samostatný výsledek vytvořený jako projekt školy a má se použít zákonný režim zaměstnaneckého díla. U zásahu do existující aplikace jen tehdy, je-li nový modul oddělitelný nebo karta výslovně vyřeší vzájemná oprávnění k celku.</p>
-      <p><strong>C – zvláštní režim.</strong> Grant, externí partner, více škol, open-source, zvláštní komercializace nebo jiná situace, pro kterou A ani B přesně nesedí. Konkrétní podmínky napište do pole Práva a licence.</p>
-      <p class="rights-guide-emphasis"><strong>Nejste-li si jistí:</strong> standardním návrhem je A. Volbu je ale vždy potřeba před schválením karty výslovně potvrdit.</p>`;
+    const guideParagraph=(lead,text,className='')=>{
+      const p=document.createElement('p');
+      if(className)p.className=className;
+      const strong=document.createElement('strong');
+      strong.textContent=lead;
+      p.append(strong,document.createTextNode(` ${text}`));
+      return p;
+    };
+    guideBody.append(
+      guideParagraph('A – standard AI Studia.','Rozvoj existujícího ekosystému nebo nová aplikace, kterou má autor dál rozvíjet. Škola dostává bezplatnou licenci podle rámcové dohody. Typicky větší rozvoj AI Studia, SORTIO, LUDUS, ACTIVA nebo nová autorova aplikace.'),
+      guideParagraph('B – samostatný školní projekt.','Použijte, když má jít o samostatný výsledek vytvořený jako projekt školy a má se použít zákonný režim zaměstnaneckého díla. U zásahu do existující aplikace jen tehdy, je-li nový modul oddělitelný nebo karta výslovně vyřeší vzájemná oprávnění k celku.'),
+      guideParagraph('C – zvláštní režim.','Grant, externí partner, více škol, open-source, zvláštní komercializace nebo jiná situace, pro kterou A ani B přesně nesedí. Konkrétní podmínky napište do pole Práva a licence.'),
+      guideParagraph('Nejste-li si jistí:','standardním návrhem je A. Volbu je ale vždy potřeba před schválením karty výslovně potvrdit.','rights-guide-emphasis')
+    );
     guide.append(guideBody);
     presetWrap.append(guide);
     const preset=document.createElement('select');
