@@ -1,5 +1,10 @@
 import assert from 'node:assert/strict';
+import {readFileSync} from 'node:fs';
 import {validateRegister,nextRevision,TASK_SCHEMA,RIGHTS} from '../src/report/tasks.js';
+const taskSource=readFileSync(new URL('../src/report/tasks.js',import.meta.url),'utf8');
+assert.match(taskSource,/Jak zvolit A \/ B \/ C\?/);
+assert.match(taskSource,/standardním návrhem je A/);
+assert.match(RIGHTS,/verze 9\.6/);
 const stamp='2026-09-12T12:00:00.000Z';
 const t={id:'AI-ABC12345',revision:1,state:'draft',title:'Nová aplikace',kind:'Nová aplikace',app:'NEW · Nová aplikace',goal:'Testovatelný výsledek',scope:'Jen dohodnutá část',capacity:'4 hodiny v říjnu, do 30. 10.',support:'Škola zajistí IT; převezme ředitelka, dotace bez omezení.',pay:'V rámci platu a dohodnuté kapacity.',budget:'Bez dalších nákladů.',safety:'Smyšlená data, posouzení IT.',components:'Žádné cizí komponenty.',rights:RIGHTS,createdAt:stamp,updatedAt:stamp};
 for(const k of ['schoolName','schoolDate','schoolRef','authorName','authorDate','authorRef','version','archive','handoverDate','acceptedBy','acceptanceRef','launchDate','launchBy','assessmentRef','cancelReason'])t[k]='';

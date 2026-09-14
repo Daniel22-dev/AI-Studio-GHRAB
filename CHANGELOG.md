@@ -2,6 +2,13 @@
 
 > Tento soubor se generuje ze `src/config/changelog.json`. Neupravujte jej ručně.
 
+## 0.21.68 — 2026-09-14
+**Návod k režimu práv A/B/C přímo v kartě zadání**
+
+- Karta nové aplikace nebo významného vývoje má přímo u volby práv rozbalovací návod, který vysvětluje standardní použití variant A, B a C na praktických příkladech.
+- Varianta A je popsána jako standardní návrh pro rozvoj ekosystému a nové autorovy aplikace, B pro samostatný školní projekt nebo oddělitelný modul a C pro granty, externí partnery či jiný zvláštní režim.
+- Přednastavené texty práv jsou sladěny s právním balíkem 9.6; výslovná volba zůstává povinná a běžné opravy či patch releasy novou kartu nepotřebují.
+
 ## 0.21.67 — 2026-09-14
 **Efektivnější právní workflow reportu a smluvní režim 9.4**
 

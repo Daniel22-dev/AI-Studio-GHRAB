@@ -1,8 +1,8 @@
-# Nahrání AI Studio GHRAB 0.21.67
+# Nahrání AI Studio GHRAB 0.21.68
 
-> Aktuální verze: **0.21.67** · etapa P5
+> Aktuální verze: **0.21.68** · etapa P5
 
-> 0.21.67 zjednodušuje právní workflow Reportu: běžné releasy se evidují jednou v práci a souhrnně v reportu, významné zadání má povinnou volbu režimu práv a provozní nasazení lze delegovat pověřené osobě.
+> 0.21.68 zjednodušuje právní workflow Reportu: běžné releasy se evidují jednou v práci a souhrnně v reportu, významné zadání má povinnou volbu režimu práv a provozní nasazení lze delegovat pověřené osobě.
 
 ## Povinné pořadí
 

@@ -1,4 +1,4 @@
-/* AI Studio GHRAB 0.21.67 - styles scoped to the leadership reporting page. */
+/* AI Studio GHRAB 0.21.68 - styles scoped to the leadership reporting page. */
 .a4-preview-stack {
   display: grid;
   gap: 26px;
@@ -239,6 +239,36 @@
   font-size: 0.82rem;
 }
 .field-help,
+
+.task-rights-guide {
+  margin: 8px 0 10px;
+  padding: 10px 12px;
+  border: 1px solid rgba(80, 232, 255, 0.24);
+  border-radius: 10px;
+  background: rgba(21, 66, 90, 0.18);
+}
+.task-rights-guide summary {
+  cursor: pointer;
+  color: var(--cyan, #50e8ff);
+  font-size: 0.82rem;
+  font-weight: 750;
+}
+.task-rights-guide-body {
+  margin-top: 10px;
+  color: var(--muted);
+  font-size: 0.8rem;
+  line-height: 1.48;
+}
+.task-rights-guide-body p {
+  margin: 0 0 9px;
+}
+.task-rights-guide-body p:last-child {
+  margin-bottom: 0;
+}
+.rights-guide-emphasis {
+  color: #dff8ff;
+}
+
 .task-field-help {
   display: block;
   color: var(--muted);

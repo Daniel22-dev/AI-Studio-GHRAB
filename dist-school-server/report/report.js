@@ -1,11 +1,11 @@
-import { initTasks, taskRef } from "./tasks.js?v=0.21.67";
+import { initTasks, taskRef } from "./tasks.js?v=0.21.68";
 import {
   buildImpactReport,
   periodOfDate,
   safeEvent,
   safeStatistics,
-} from "../shared/safe-export.js?v=0.21.67";
-import { loadApiUsage } from "../modules/api-usage.js?v=0.21.67";
+} from "../shared/safe-export.js?v=0.21.68";
+import { loadApiUsage } from "../modules/api-usage.js?v=0.21.68";
 
 await window.GHRAB.accessReady;
 if (window.GHRAB.canAccessAdminPage?.("report") && !window.GHRAB.isColleaguePreview?.()) {

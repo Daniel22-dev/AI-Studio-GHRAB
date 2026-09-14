@@ -1,8 +1,8 @@
 # AI Studio GHRAB
 
-**Aktuální verze:** 0.21.67
+**Aktuální verze:** 0.21.68
 
-0.21.67 zjednodušuje právní workflow Reportu: běžné releasy se evidují jednou v práci a souhrnně v reportu, významné zadání má povinnou volbu režimu práv a provozní nasazení lze delegovat pověřené osobě.
+0.21.68 zjednodušuje právní workflow Reportu: běžné releasy se evidují jednou v práci a souhrnně v reportu, významné zadání má povinnou volbu režimu práv a provozní nasazení lze delegovat pověřené osobě.
 
 **Performance budget:** beze změny; oprava z 0.21.64 s automatickým dělením rostoucího changelogu zůstává zachována.
 **Platforma:** GHRAB Platform 1.1.2 · etapa P5

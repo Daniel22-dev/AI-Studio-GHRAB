@@ -1,7 +1,29 @@
 {
   "schema": "ai-studio-changelog-v1",
-  "current": "0.21.67",
+  "current": "0.21.68",
   "items": [
+    {
+      "version": "0.21.68",
+      "date": "2026-09-14",
+      "title": {
+        "cs": "Návod k režimu práv A/B/C přímo v kartě zadání",
+        "en": "In-card guide for IP regimes A/B/C"
+      },
+      "changes": [
+        {
+          "cs": "Karta nové aplikace nebo významného vývoje má přímo u volby práv rozbalovací návod, který vysvětluje standardní použití variant A, B a C na praktických příkladech.",
+          "en": "New-app and significant-development cards now include an in-place guide explaining practical use of IP regimes A, B and C."
+        },
+        {
+          "cs": "Varianta A je popsána jako standardní návrh pro rozvoj ekosystému a nové autorovy aplikace, B pro samostatný školní projekt nebo oddělitelný modul a C pro granty, externí partnery či jiný zvláštní režim.",
+          "en": "Regime A is the standard proposal for ecosystem development and author-led apps, B for a standalone school project or separable module, and C for grants, external partners or other special arrangements."
+        },
+        {
+          "cs": "Přednastavené texty práv jsou sladěny s právním balíkem 9.6; výslovná volba zůstává povinná a běžné opravy či patch releasy novou kartu nepotřebují.",
+          "en": "Preset rights wording is aligned with legal package 9.6; explicit choice remains required while routine fixes and patch releases still need no new card."
+        }
+      ]
+    },
     {
       "version": "0.21.67",
       "date": "2026-09-14",

@@ -5,8 +5,8 @@ export const TASK_SCHEMA = 'ghrab-task-register-v1';
 export const STATES = {
  draft: 'Rozepsáno', sent: 'K odsouhlasení', approved: 'Schváleno – evidence souhlasů', delivered: 'Předáno', launched: 'Nasazeno', cancelled: 'Zrušeno' }
 ;
-export const RIGHTS_AUTHOR = 'Varianta A – autor + licence škole: podle čl. 3 a 4 rámcové dohody verze 9.4 vykonává majetková práva k vlastním autorským tvůrčím příspěvkům Daniel Baláž a škola získává bezúplatnou nevýhradní licenci podle článku 4. Práva třetích osob zůstávají zachována.';
-export const RIGHTS_EMPLOYEE = 'Varianta B – zákonný režim zaměstnaneckého díla: použije se § 58 autorského zákona v rozsahu, v němž karta nebo jiná písemná dohoda nestanoví něco jiného. Práva třetích osob zůstávají zachována.';
+export const RIGHTS_AUTHOR = 'Varianta A – autor + licence škole: podle čl. 5.4 ve spojení s čl. 3 a 4 rámcové dohody verze 9.6 vykonává majetková práva k vlastním autorským tvůrčím příspěvkům Daniel Baláž a škola získává bezúplatnou nevýhradní licenci podle článku 4. Práva třetích osob zůstávají zachována.';
+export const RIGHTS_EMPLOYEE = 'Varianta B – zákonný režim zaměstnaneckého díla: použije se § 58 autorského zákona v rozsahu, v němž karta nebo jiná písemná dohoda nestanoví něco jiného. U významného vývoje existující položky musí karta současně vyřešit návazná oprávnění, není-li výsledek technicky a právně oddělitelný. Práva třetích osob zůstávají zachována.';
 export const RIGHTS = RIGHTS_AUTHOR;
 const FIELDS = [
  ['title','Název zadání',160,'Krátký název, podle kterého zadání později bezpečně poznáte.','např. AI Akademie – propojení se Studiem'],
@@ -300,6 +300,20 @@ form.noValidate=true;
     }
     const presetWrap=element('label','Režim práv','task-field');
     presetWrap.append(element('small','Povinná volba pro novou aplikaci nebo významný vývoj. Varianta C ponechá pole níže pro vlastní konkrétní ujednání.','task-field-help'));
+    const guide=document.createElement('details');
+    guide.className='task-rights-guide';
+    const guideSummary=document.createElement('summary');
+    guideSummary.textContent='Jak zvolit A / B / C?';
+    guide.append(guideSummary);
+    const guideBody=document.createElement('div');
+    guideBody.className='task-rights-guide-body';
+    guideBody.innerHTML=`
+      <p><strong>A – standard AI Studia.</strong> Rozvoj existujícího ekosystému nebo nová aplikace, kterou má autor dál rozvíjet. Škola dostává bezplatnou licenci podle rámcové dohody. Typicky větší rozvoj AI Studia, SORTIO, LUDUS, ACTIVA nebo nová autorova aplikace.</p>
+      <p><strong>B – samostatný školní projekt.</strong> Použijte, když má jít o samostatný výsledek vytvořený jako projekt školy a má se použít zákonný režim zaměstnaneckého díla. U zásahu do existující aplikace jen tehdy, je-li nový modul oddělitelný nebo karta výslovně vyřeší vzájemná oprávnění k celku.</p>
+      <p><strong>C – zvláštní režim.</strong> Grant, externí partner, více škol, open-source, zvláštní komercializace nebo jiná situace, pro kterou A ani B přesně nesedí. Konkrétní podmínky napište do pole Práva a licence.</p>
+      <p class="rights-guide-emphasis"><strong>Nejste-li si jistí:</strong> standardním návrhem je A. Volbu je ale vždy potřeba před schválením karty výslovně potvrdit.</p>`;
+    guide.append(guideBody);
+    presetWrap.append(guide);
     const preset=document.createElement('select');
     preset.id='task-rights-preset';
     preset.append(new Option('Vyberte režim práv',''),new Option('A – autor + bezúplatná licence škole','author'),new Option('B – zákonný režim zaměstnaneckého díla','employee'),new Option('C – individuální režim','custom'));
