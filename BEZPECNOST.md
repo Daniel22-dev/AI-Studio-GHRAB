@@ -1,8 +1,8 @@
-# Bezpečnostní hranice AI Studio GHRAB 0.21.75
+# Bezpečnostní hranice AI Studio GHRAB 0.21.76
 
-> Aktuální verze: **0.21.75** · etapa P5
+> Aktuální verze: **0.21.76** · etapa P5
 
-> 0.21.75 ručně srovnává release-wave Generátoru na 7.1.28 bez auto-patch enrollmentu; fail-closed promotion policy a Performance Pack A–D zůstávají beze změny.
+> 0.21.76 zachovává fail-closed release-wave: repository-only kandidát se nesmí stát runtime verzí bez deployment evidence nebo explicitního ručního přijetí; skutečně nasazený drift zůstává blockerem.
 
 ## Rychlá kontrola dat v portálu
 
@@ -24,6 +24,8 @@ Záložka **Bezpečnost** obsahuje jednoduchý semafor a volitelnou pomůcku **N
 ### Release-wave promotion
 
 Od 0.21.59 se běžný patch GARP 2.5.1 zařazené aplikace může přijmout automaticky pouze tehdy, když Studio ověří její skutečný živý deployment. Repository fallback a snapshot jsou pro auto-promotion nedostatečné. Výchozí režim všech nezařazených aplikací je manuální; rollback, prerelease, minor/major změna a drift repository/Platform/storage/cache kontraktů se blokují. `release-wave.json` se během QA nepřepisuje.
+
+Od 0.21.76 repository fallback při vyšší source verzi zachovává schválený wave baseline v runtime registry a pouze eviduje kandidáta čekajícího na release. Tím rozpracovaný commit v `main` nemůže sám sebe vydávat za nasazenou verzi ani zbytečně zastavit release Studia. Fail-closed hranice zůstává: novější **živě nasazená** MANUAL verze bez ručního reconciliation release zablokuje; stejně tak starší repository než wave nebo neověřený snapshot.
 
 
 - spolehlivé ověření totožnosti osoby,

@@ -4,6 +4,7 @@ import path from "node:path";
 import { fileURLToPath } from "node:url";
 import {
   evaluateAutoPromotion,
+  isPendingRepositoryCandidate,
   promotionEntryById,
   validatePromotionPolicy,
 } from "./release-promotion.mjs";
@@ -245,8 +246,19 @@ if (requireSourceVerification) {
     if (!item) continue;
     if (item.ok !== true || !["deployment", "repository"].includes(item.verification))
       fail(`${app.id}: zdroj neni overen z deploymentu/repozitare.`);
-    if (item.version !== app.version || item.sourceVersion !== app.version)
+    const pendingRepositoryCandidate = isPendingRepositoryCandidate(
+      item,
+      app.version,
+    );
+    if (
+      item.version !== app.version ||
+      (item.sourceVersion !== app.version && !pendingRepositoryCandidate)
+    )
       fail(`${app.id}: sync-report source version drift (${item.version || "?"}/${item.sourceVersion || "?"} != ${app.version}).`);
+    if (pendingRepositoryCandidate)
+      console.log(
+        `SOURCE-CANDIDATE ${app.id}: repository ${item.sourceVersion} ceka na release; registry zustava na wave ${app.version}.`,
+      );
   }
 }
 

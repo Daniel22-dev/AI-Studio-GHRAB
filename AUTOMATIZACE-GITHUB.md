@@ -1,12 +1,14 @@
-# Automatizace aktualizací AI Studio GHRAB 0.21.75
+# Automatizace aktualizací AI Studio GHRAB 0.21.76
 
-> Aktuální verze: **0.21.75** · etapa P5
+> Aktuální verze: **0.21.76** · etapa P5
 
-> 0.21.75 ručně srovnává release-wave Generátoru na 7.1.28 bez auto-patch enrollmentu; fail-closed promotion policy a Performance Pack A–D zůstávají beze změny.
+> 0.21.76 brání tomu, aby pouhý novější commit v repository `main` zablokoval Studio nebo se vydával za schválenou verzi. Repository kandidát bez deployment evidence zůstává pouze PENDING a runtime registry zůstává připnutá k release-wave baseline.
 
 ## Pravidelná synchronizace
 
 Workflow Studia se jako pojistka spouští jednou denně ve 3:17 UTC. Nejprve zkouší přímo nasazené `studio-manifest.json` z GitHub Pages. Pokud konkrétní Pages manifest není dosažitelný, ověří veřejný zdrojový repozitář (package + manifestovou šablonu), ale do runtime ponechá poslední známá metadata nasazení. Pouhý snapshot bez ověřeného zdroje je ve Správě označen zvlášť. Offline QA synchronizační report nepřepisuje.
+
+Od 0.21.76 platí explicitní pravidlo: **novější verze nalezená pouze v repository není release evidence**. Pokud repository hlásí verzi vyšší než schválený `release-wave`, synchronizace zachová baseline v `apps.generated.json` a novější verzi zapíše pouze jako `PENDING` source candidate. Teprve živý deployment nebo vědomé ruční reconciliation může změnit přijímanou verzi. Repository starší než wave se naopak nepovažuje za platné ověření baseline a verified gate jej odmítne.
 
 GitHub může plánované workflow v dlouhodobě neaktivním veřejném repozitáři vypnout. Po prázdninové pauze proto zkontrolujte kartu Actions a případně použijte `Run workflow`.
 

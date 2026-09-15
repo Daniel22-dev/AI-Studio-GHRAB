@@ -1,6 +1,7 @@
 import { readFile, writeFile } from "node:fs/promises";
 import path from "node:path";
 import { fileURLToPath } from "node:url";
+import { evaluateRepositoryFallback } from "./release-promotion.mjs";
 
 const here = path.dirname(fileURLToPath(import.meta.url));
 const root = path.resolve(here, "..");
@@ -21,14 +22,16 @@ const generatedAt = new Date().toISOString();
 const previousSources = new Map(
   (previousReport?.sources || []).map((source) => [source.id, source]),
 );
-const sources = JSON.parse(
-  await readFile(path.join(configDir, "sources.json"), "utf8"),
-);
-const fallback = JSON.parse(
-  await readFile(path.join(configDir, "apps.fallback.json"), "utf8"),
-);
+const [sources, fallback, releaseWave] = await Promise.all([
+  readFile(path.join(configDir, "sources.json"), "utf8").then(JSON.parse),
+  readFile(path.join(configDir, "apps.fallback.json"), "utf8").then(JSON.parse),
+  readFile(path.join(configDir, "release-wave.json"), "utf8").then(JSON.parse),
+]);
 const fallbackById = new Map(fallback.map((app) => [app.id, app]));
 const previousAppById = new Map(previousApps.map((app) => [app.id, app]));
+const waveById = new Map(
+  (releaseWave?.applications || []).map((app) => [app.id, app]),
+);
 const required = [
   "schema",
   "id",
@@ -290,7 +293,59 @@ const resolveSource = async (source) => {
     if (!offline) {
       try {
         const repository = await fetchRepositoryManifest(source, snapshotApp);
-        const app = applyStudioOverrides(repository.app, source, fallbackApp);
+        const candidate = applyStudioOverrides(repository.app, source, fallbackApp);
+        const waveVersion = waveById.get(source.id)?.version || null;
+        const repositoryPolicy = waveVersion
+          ? evaluateRepositoryFallback({
+              waveVersion,
+              candidateVersion: candidate.version,
+            })
+          : { status: "CURRENT" };
+
+        if (repositoryPolicy.status === "PIN_WAVE") {
+          const acceptedSnapshot = [snapshotApp, fallbackApp].find(
+            (item) => item?.version === waveVersion,
+          );
+          if (!acceptedSnapshot) {
+            throw new Error(
+              `release-wave ${waveVersion} nema lokalni prijaty snapshot pro repository fallback`,
+            );
+          }
+          const app = applyStudioOverrides(
+            acceptedSnapshot,
+            source,
+            fallbackApp,
+          );
+          return {
+            app,
+            report: {
+              id: source.id,
+              url: source.url,
+              repository: source.repository || app.repository,
+              ok: true,
+              verification: "repository",
+              verificationUrl: repository.verificationUrl,
+              version: app.version,
+              sourceVersion: candidate.version,
+              releaseWaveVersion: waveVersion,
+              registryPinned: true,
+              pendingReleaseCandidate: true,
+              candidateReasonCode: repositoryPolicy.reasonCode,
+              candidateReason: repositoryPolicy.reason,
+              aiOperations: null,
+              deploymentWarning: deploymentError.message,
+              lastSourceVerifiedAt: generatedAt,
+              lastLiveVerifiedAt: previousSource?.lastLiveVerifiedAt || null,
+            },
+          };
+        }
+        if (repositoryPolicy.status === "BLOCKED") {
+          throw new Error(
+            `${repositoryPolicy.reasonCode}: ${repositoryPolicy.reason}`,
+          );
+        }
+
+        const app = candidate;
         return {
           app,
           report: {

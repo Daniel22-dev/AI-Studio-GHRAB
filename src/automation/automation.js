@@ -71,7 +71,11 @@ return date.toLocaleString(document.documentElement.lang==="en"?"en-GB":"cs-CZ")
   function verificationLabel(source){
 if(source?.verification==="deployment")return t("Nasazený manifest ověřen živě","Deployed manifest verified live");
 if(source?.verification==="repository"){
-  const versionNote=source.sourceVersion&&source.sourceVersion!==source.version?` · ${t("zdroj","source")} v${source.sourceVersion}`:"";
+  const versionNote=source.sourceVersion&&source.sourceVersion!==source.version
+    ?source.pendingReleaseCandidate===true
+      ?` · ${t("kandidát čeká na release","candidate pending release")} v${source.sourceVersion}`
+      :` · ${t("zdroj","source")} v${source.sourceVersion}`
+    :"";
   return `${t("Zdrojový repozitář ověřen","Source repository verified")}${versionNote}`;
 }
 if(source?.verification==="unverified"||source?.ok==null)return t("Čeká na synchronizaci při buildu","Waiting for build synchronisation");

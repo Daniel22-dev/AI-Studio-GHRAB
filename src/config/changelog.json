@@ -1,7 +1,21 @@
 {
   "schema": "ai-studio-changelog-v1",
-  "current": "0.21.75",
+  "current": "0.21.76",
   "items": [
+    {
+      "version": "0.21.76",
+      "date": "2026-09-15",
+      "title": {
+        "cs": "Fail-closed gate pro zdrojové kandidáty",
+        "en": "Fail-closed source-candidate gate"
+      },
+      "changes": [
+        {
+          "cs": "Repository fallback už nepřepisuje schválený release-wave novějším, dosud nenasazeným kandidátem. Registry zůstává na přijatém baseline, novější source verze se eviduje jako PENDING; živě nasazený MANUAL drift, rollback/starší zdroj a neověřený snapshot dál release blokují.",
+          "en": "Repository fallback no longer replaces the accepted release wave with a newer, not-yet-deployed candidate. The registry stays pinned to the accepted baseline while the newer source version is recorded as PENDING; live MANUAL drift, rollback/older source and unverified snapshots still block release."
+        }
+      ]
+    },
     {
       "version": "0.21.75",
       "date": "2026-09-15",

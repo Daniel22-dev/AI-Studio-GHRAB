@@ -2,6 +2,11 @@
 
 > Tento soubor se generuje ze `src/config/changelog.json`. Neupravujte jej ručně.
 
+## 0.21.76 — 2026-09-15
+**Fail-closed gate pro zdrojové kandidáty**
+
+- Repository fallback už nepřepisuje schválený release-wave novějším, dosud nenasazeným kandidátem. Registry zůstává na přijatém baseline, novější source verze se eviduje jako PENDING; živě nasazený MANUAL drift, rollback/starší zdroj a neověřený snapshot dál release blokují.
+
 ## 0.21.75 — 2026-09-15
 **Visual QA hotfix pro lazy obrázky**
 

@@ -1,8 +1,8 @@
-# Architektura AI Studio GHRAB 0.21.75
+# Architektura AI Studio GHRAB 0.21.76
 
-> Aktuální verze: **0.21.75** · etapa P5
+> Aktuální verze: **0.21.76** · etapa P5
 
-> 0.21.75 ručně srovnává release-wave Generátoru na 7.1.28 bez auto-patch enrollmentu; fail-closed promotion policy a Performance Pack A–D zůstávají beze změny.
+> 0.21.76 odděluje schválený release-wave baseline od novějšího repository kandidáta: source-only kandidát se eviduje jako PENDING, ale do runtime registry se nepřijme bez deploymentu nebo explicitního ručního reconciliation.
 
 ## Koherence aktualizace PWA
 
@@ -28,6 +28,8 @@ samostatné aplikace ─ manifesty ─► AI Studio
 `release-wave.json` zůstává explicitní baseline lock. Nová policy vrstva `release-promotion-policy.json` dovoluje pouze vybraným GARP 2.5.1 aplikacím odvodit bezpečné patch promotion z živě ověřeného deploymentu. Nejde o mutaci wave během QA: verified gate pouze rozhodne `CURRENT / ELIGIBLE / BLOCKED` a výsledek uloží jako auditní evidence.
 
 Tím se odděluje **detekce verze** od **promotion politiky**. Synchronizace může znát novou verzi každé aplikace, ale automaticky je přijat pouze vyšší patch u předem zařazeného GARP pipeline. Minor/major změna nebo změna integračních invariantů zůstává člověkem řízenou změnou wave.
+
+Od 0.21.76 se navíc odlišuje **repository candidate** od **deployment verze**. Když živý manifest není dostupný a veřejný repozitář už obsahuje vyšší verzi než `release-wave`, repository fallback ověří zdroj, ale runtime registry zůstane na schváleném wave baseline. `sync-report.json` takový stav označí jako `pendingReleaseCandidate`; samotná novější source verze release Studia neblokuje ani se nepovažuje za promotion. Pokud však novější verzi potvrdí skutečný deployment, u MANUAL aplikace znovu vznikne fail-closed wave drift a je nutné explicitní ruční reconciliation.
 
 ## Server-ready katalog materiálů
 

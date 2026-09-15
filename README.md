@@ -1,17 +1,24 @@
 # AI Studio GHRAB
 
-**Aktuální verze:** 0.21.75
+**Aktuální verze:** 0.21.76
 
-0.21.75 provádí explicitní manual release-wave reconciliation Generátoru 7.1.25 → 7.1.28. Auto-patch policy se nemění a Performance Pack A–D zůstává funkčně beze změny.
+0.21.76 odděluje schválený release-wave baseline od novějšího repository-only kandidáta. Kandidát se eviduje, ale bez deployment evidence nebo explicitního ručního reconciliation nepřepisuje runtime registry.
 
-**Performance budget:** precache 1 250 000 B; critical entry nově 420 000 B; runtime limity jsou povinně měřené v P5 release gate.
+**Performance budget:** precache 1 250 000 B; critical entry 420 000 B; runtime limity jsou povinně měřené v P5 release gate.
 **Platforma:** GHRAB Platform 1.1.2 · etapa P5
+
+## Nově v 0.21.76
+
+- **Source candidate ≠ release**: novější verze nalezená pouze v GitHub repository je `PENDING`, nikoli automaticky přijatá verze.
+- **Runtime zůstává na wave baseline**: pokud deployment manifest není dostupný a repository je novější, `apps.generated` zůstane na explicitně přijaté release-wave verzi.
+- **Fail-closed zachován**: skutečně nasazená novější MANUAL verze dál blokuje až do ručního reconciliation; starší repository než wave a neověřený snapshot také blokují.
+- **Auto-patch policy beze změny**: Generátor, Diferenciátor, Lesson Hub a Maturita Desk nejsou tímto releasem zařazeny do auto-patche.
+- **0.21.75 zachován**: visual QA hotfix pro off-screen lazy obrázky zůstává součástí kandidáta.
 
 ## Nově v 0.21.75
 
-- **Manual release-wave reconciliation**: Generátor je vědomě přijat ve verzi 7.1.28 bez auto-patch enrollmentu.
-- **Fail-closed policy zachována**: Diferenciátor 1.3.46, Lesson Hub 1.2.22 a Maturita Desk 1.0.3 zůstávají v manual režimu; AI Akademie není do devítiaplikační wave tímto releasem přidávána.
-- **Performance A–D beze změny**: adaptivní motion, škálovací optimalizace, PWA/cache optimalizace i runtime performance gate zůstávají zachované.
+- **Visual QA + lazy loading**: off-screen `loading="lazy"` obrázek, který browser záměrně ještě nestáhl, se nepovažuje za rozbitý; skutečně rozbitý, eager nebo již viditelný lazy obrázek dál QA zachytí.
+- **Phase B optimalizace zůstává aktivní**: lazy ikony extra aplikací se kvůli QA hotfixu nevracejí na eager loading.
 
 ## Nově v 0.21.73
 

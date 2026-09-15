@@ -28,6 +28,44 @@ export function classifyVersionChange(fromVersion, toVersion) {
   return "patch";
 }
 
+export function evaluateRepositoryFallback({ waveVersion, candidateVersion }) {
+  const comparison = compareVersions(candidateVersion, waveVersion);
+  if (comparison === 0) {
+    return {
+      status: "CURRENT",
+      reasonCode: "SOURCE_MATCHES_WAVE",
+      reason: "Repository source matches the accepted release-wave baseline.",
+    };
+  }
+  if (comparison != null && comparison > 0) {
+    return {
+      status: "PIN_WAVE",
+      reasonCode: "SOURCE_CANDIDATE_PENDING_RELEASE",
+      reason:
+        "Repository contains a newer source candidate, but repository verification is not deployment evidence. Keep the accepted release-wave baseline until deployment or explicit manual reconciliation.",
+    };
+  }
+  return {
+    status: "BLOCKED",
+    reasonCode: comparison == null ? "INVALID_SOURCE_VERSION" : "SOURCE_BEHIND_WAVE",
+    reason:
+      comparison == null
+        ? "Repository fallback versions must be stable SemVer values."
+        : "Repository source is older than the accepted release-wave baseline and cannot verify that baseline.",
+  };
+}
+
+export function isPendingRepositoryCandidate(sourceReport, registryVersion) {
+  return Boolean(
+    sourceReport?.verification === "repository" &&
+      sourceReport?.registryPinned === true &&
+      sourceReport?.pendingReleaseCandidate === true &&
+      sourceReport?.releaseWaveVersion === registryVersion &&
+      sourceReport?.version === registryVersion &&
+      compareVersions(sourceReport?.sourceVersion, registryVersion) > 0,
+  );
+}
+
 export function normalizeStudioBridge(value) {
   if ([2, "2", "2.0", "ghrab-studio-handoff-v2"].includes(value)) return "v2";
   if (value === "not-applicable") return "not-applicable";
@@ -86,6 +124,7 @@ export function evaluateAutoPromotion({
     reason: "Neznama chyba promotion kontroly.",
     assuranceBaseline: policyEntry?.assuranceBaseline || null,
     verification: sourceReport?.verification || null,
+    detectedSourceVersion: sourceReport?.sourceVersion || null,
   };
 
   const blocked = (reasonCode, reason) => ({ ...base, reasonCode, reason });
@@ -96,6 +135,15 @@ export function evaluateAutoPromotion({
     reason: "Vyssi patch verze je zive nasazena, zdrojove a platformne konzistentni a aplikace je zarazena do GARP 2.5.1 auto-patch politiky.",
   });
 
+  if (base.change === "same" && isPendingRepositoryCandidate(sourceReport, toVersion)) {
+    return {
+      ...base,
+      status: "PENDING",
+      reasonCode: "SOURCE_CANDIDATE_PENDING_RELEASE",
+      reason:
+        "Repository contains a newer candidate, but the registry remains pinned to the accepted release-wave baseline until deployment or explicit manual reconciliation.",
+    };
+  }
   if (base.change === "same") {
     return { ...base, status: "CURRENT", reasonCode: "NO_DRIFT", reason: "Verze odpovida release-wave baseline." };
   }

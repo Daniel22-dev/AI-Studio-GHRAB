@@ -1,8 +1,8 @@
-# Release checklist AI Studio GHRAB 0.21.75
+# Release checklist AI Studio GHRAB 0.21.76
 
-> Aktuální verze: **0.21.75** · etapa P5
+> Aktuální verze: **0.21.76** · etapa P5
 
-> 0.21.75 ručně srovnává release-wave Generátoru na 7.1.28 bez auto-patch enrollmentu; fail-closed promotion policy a Performance Pack A–D zůstávají beze změny.
+> 0.21.76 drží runtime registry na schváleném release-wave baseline při novějším repository-only kandidátu; živý deployment drift a neověřené zdroje zůstávají fail-closed.
 
 ## Stav bezpečnostního kandidáta GARP 2.3
 
@@ -18,6 +18,9 @@
 
 ## Veřejný balík
 
+- [x] 0.21.76 rozlišuje repository-only kandidáta od deployment evidence a při vyšším source kandidátu zachová runtime registry na schváleném release-wave baseline.
+- [x] Vyšší repository kandidát je v sync/promotion reportu `PENDING`; skutečný deployment drift MANUAL aplikace, starší repository než wave a snapshot zůstávají blokující.
+- [x] `release-promotion-policy.json` zůstává beze změny; Generátor, Diferenciátor, Lesson Hub a Maturita Desk nejsou tímto hotfixem zařazeny do auto-patche.
 - [x] Verze 0.21.63 je shodná v package, PWA manifestu, QA manifestu, buildu, dokumentaci a changelogu.
 - [x] Všechny aplikace jsou ve výchozím stavu uzamčené.
 - [x] Veřejný balík obsahuje pouze veřejný ověřovací klíč.

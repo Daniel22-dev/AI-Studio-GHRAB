@@ -7,6 +7,8 @@ import {
   classifyVersionChange,
   compareVersions,
   evaluateAutoPromotion,
+  evaluateRepositoryFallback,
+  isPendingRepositoryCandidate,
   validatePromotionPolicy,
   normalizeStudioBridge,
 } from "./release-promotion.mjs";
@@ -74,6 +76,40 @@ assert.equal(normalizeStudioBridge(2), "v2");
 assert.equal(normalizeStudioBridge("2.0"), "v2");
 assert.equal(normalizeStudioBridge("not-applicable"), "not-applicable");
 assert.equal(normalizeStudioBridge("v1"), null);
+assert.equal(
+  evaluateRepositoryFallback({ waveVersion: "7.1.28", candidateVersion: "7.1.28" }).status,
+  "CURRENT",
+);
+assert.deepEqual(
+  evaluateRepositoryFallback({ waveVersion: "7.1.28", candidateVersion: "7.1.30" }),
+  {
+    status: "PIN_WAVE",
+    reasonCode: "SOURCE_CANDIDATE_PENDING_RELEASE",
+    reason:
+      "Repository contains a newer source candidate, but repository verification is not deployment evidence. Keep the accepted release-wave baseline until deployment or explicit manual reconciliation.",
+  },
+);
+assert.equal(
+  evaluateRepositoryFallback({ waveVersion: "7.1.28", candidateVersion: "7.1.27" }).reasonCode,
+  "SOURCE_BEHIND_WAVE",
+);
+assert.equal(
+  evaluateRepositoryFallback({ waveVersion: "7.1.28", candidateVersion: "7.1.30-beta.1" }).reasonCode,
+  "INVALID_SOURCE_VERSION",
+);
+const pendingRepositorySource = {
+  verification: "repository",
+  registryPinned: true,
+  pendingReleaseCandidate: true,
+  releaseWaveVersion: "7.1.28",
+  version: "7.1.28",
+  sourceVersion: "7.1.30",
+};
+assert.equal(isPendingRepositoryCandidate(pendingRepositorySource, "7.1.28"), true);
+assert.equal(isPendingRepositoryCandidate({ ...pendingRepositorySource, verification: "deployment" }, "7.1.28"), false);
+assert.equal(isPendingRepositoryCandidate({ ...pendingRepositorySource, registryPinned: false }, "7.1.28"), false);
+assert.equal(isPendingRepositoryCandidate({ ...pendingRepositorySource, sourceVersion: "7.1.28" }, "7.1.28"), false);
+assert.equal(isPendingRepositoryCandidate({ ...pendingRepositorySource, sourceVersion: "7.1.27" }, "7.1.28"), false);
 
 assert.deepEqual(validatePromotionPolicy(actualPolicy, ["generator", "differentiator", "essay-evaluator", "correspondence", "ludus", "activity-builder", "sortio", "lesson-hub", "maturita-desk"]), []);
 assert.deepEqual(actualPolicy.applications.map((entry) => entry.id), ["correspondence", "essay-evaluator", "ludus", "activity-builder", "sortio"]);
@@ -148,6 +184,22 @@ assert.equal(decide().status, "ELIGIBLE");
 assert.equal(decide({ enabled: false }).reasonCode, "AUTO_PROMOTION_DISABLED");
 assert.equal(decide({ policyEntry: null }).reasonCode, "NOT_ENROLLED");
 assert.equal(decide({ waveApp: { id: "correspondence", version: "5.10.26" }, app: { ...baseApp, version: "5.10.26" } }).status, "CURRENT");
+assert.equal(
+  decide({
+    waveApp: { id: "correspondence", version: "5.10.26" },
+    app: { ...baseApp, version: "5.10.26" },
+    sourceReport: {
+      ...baseReport,
+      verification: "repository",
+      version: "5.10.26",
+      sourceVersion: "5.10.27",
+      registryPinned: true,
+      pendingReleaseCandidate: true,
+      releaseWaveVersion: "5.10.26",
+    },
+  }).reasonCode,
+  "SOURCE_CANDIDATE_PENDING_RELEASE",
+);
 assert.equal(decide({ app: { ...baseApp, version: "5.11.0", platform: { ...baseApp.platform, cacheName: "ghrab-correspondence-v5.11.0" } }, sourceReport: { ...baseReport, version: "5.11.0", sourceVersion: "5.11.0" } }).reasonCode, "NON_PATCH_CHANGE");
 assert.equal(decide({ app: { ...baseApp, version: "6.0.0", platform: { ...baseApp.platform, cacheName: "ghrab-correspondence-v6.0.0" } }, sourceReport: { ...baseReport, version: "6.0.0", sourceVersion: "6.0.0" } }).reasonCode, "NON_PATCH_CHANGE");
 assert.equal(decide({ app: { ...baseApp, version: "5.10.24", platform: { ...baseApp.platform, cacheName: "ghrab-correspondence-v5.10.24" } }, sourceReport: { ...baseReport, version: "5.10.24", sourceVersion: "5.10.24" } }).reasonCode, "ROLLBACK");

@@ -140,6 +140,8 @@ const syncScript = await text("scripts/sync-registry.mjs");
 check(adminHtml.includes('id="sync-health-note"') && adminHtml.includes('Naposledy ověřeno'), "Sprava nema srozumitelne vysvetleni a datum overeni zdroju.");
 check(automationJs.includes('Zdrojový repozitář ověřen') && automationJs.includes('Záložní snapshot · zdroj neověřen') && automationJs.includes('lastFullSourceVerifiedAt') && automationJs.includes('lastFullLiveVerifiedAt'), "Sprava nerozlisuje nasazeny manifest, GitHub zdroj a zalozni snapshot.");
 check(syncScript.includes('verification: "repository"') && syncScript.includes('raw.githubusercontent.com') && syncScript.includes('lastFullSourceVerifiedAt') && syncScript.includes('lastFullLiveVerifiedAt'), "Synchronizace nema dvoustupnove overeni nasazeni/GitHub zdroje.");
+check(syncScript.includes('evaluateRepositoryFallback') && syncScript.includes('registryPinned: true') && syncScript.includes('pendingReleaseCandidate: true'), "Repository fallback neumi u novejsiho source kandidata zachovat prijaty release-wave baseline.");
+check(automationJs.includes('kandidát čeká na release') && automationJs.includes('pendingReleaseCandidate'), "Sprava nezobrazuje novy repository kandidát jako cekajici na release.");
 check(syncScript.includes('Promise.all(sources.map(resolveSource))'), "Synchronizace zdroju nebezi soubezne a muze zbytecne blokovat release.");
 check(syncScript.includes('if (!offline || writeOfflineOutputs)') && syncScript.includes('se nepřepisují'), "Offline QA muze prepsat publikovany stav Kontroly zdroju.");
 
