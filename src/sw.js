@@ -5,6 +5,8 @@ const CACHE = "ghrab-ai-studio-v__APP_VERSION__";
 const CACHE_PREFIXES = ["ghrab-ai-studio-v", "ai-studio-ghrab-v"];
 const CORE_REQUIRED = [/*__CORE_REQUIRED__*/
 ];
+// Best-effort install cache: only assets needed for a polished first offline restart.
+// All other same-origin static surfaces are cached lazily on first real use.
 const CORE_OPTIONAL = [/*__CORE_OPTIONAL__*/
 
 ];

@@ -9,6 +9,9 @@ import { setTimeout as sleep } from 'node:timers/promises';
 const root = path.resolve('.');
 const dist = path.join(root, 'dist');
 const consumer = JSON.parse(await fsp.readFile(path.join(root, 'ghrab-platform.consumer.json'), 'utf8'));
+const runtimeBudget = consumer?.quality?.runtimeBudget || {};
+const referenceProfile = consumer?.quality?.referenceProfile || {};
+const requireRuntimeBudget = consumer?.quality?.requireRuntimeBudget === true;
 const widths = [1280, 390, 320];
 const maxPages = Number(process.env.GHRAB_RUNTIME_MAX_PAGES || 50);
 const configuredPages = Array.isArray(consumer?.quality?.runtimeAudit?.pages) ? consumer.quality.runtimeAudit.pages : [];
@@ -138,6 +141,104 @@ fs.rmSync(profile,{recursive:true,force:true});
 const chrome=spawn(chromiumPath(),['--headless=new','--no-sandbox','--disable-gpu','--disable-dev-shm-usage','--disable-background-networking','--disable-extensions','--no-first-run','--mute-audio','--remote-allow-origins=*',`--remote-debugging-port=${debugPort}`,`--user-data-dir=${profile}`,'about:blank'],{stdio:'ignore',detached:true});
 let client;
 const pageReports=[];
+let performanceBenchmark = null;
+
+function referenceViewport() {
+  const raw = String(referenceProfile.viewport || '1366x768');
+  const match = raw.match(/^(\d+)x(\d+)$/i);
+  return {
+    width: match ? Number(match[1]) : 1366,
+    height: match ? Number(match[2]) : 768,
+  };
+}
+function metricMap(result) {
+  return Object.fromEntries((result?.metrics || []).map((item) => [item.name, Number(item.value)]));
+}
+function runtimeCheck(metric, value, limit) {
+  const numericLimit = Number(limit);
+  const numericValue = Number(value);
+  const measurable = Number.isFinite(numericValue);
+  const bounded = Number.isFinite(numericLimit) && numericLimit > 0;
+  return {
+    metric,
+    value: measurable ? numericValue : null,
+    limit: bounded ? numericLimit : null,
+    ok: bounded ? measurable && numericValue <= numericLimit : !requireRuntimeBudget || measurable,
+  };
+}
+async function runPerformanceBenchmark(client, url) {
+  const viewport = referenceViewport();
+  const cpuSlowdown = Math.max(1, Number(referenceProfile.cpuSlowdown || 1));
+  const timeoutMs = Math.max(8000, Number(runtimeBudget.maxRenderReadyMs || 3000) * 3);
+  await client.call('Performance.enable');
+  await client.call('Network.enable');
+  await client.call('Network.clearBrowserCache');
+  await client.call('Emulation.setDeviceMetricsOverride', {
+    width: viewport.width,
+    height: viewport.height,
+    deviceScaleFactor: 1,
+    mobile: false,
+    screenWidth: viewport.width,
+    screenHeight: viewport.height,
+  });
+  await client.call('Emulation.setCPUThrottlingRate', { rate: cpuSlowdown });
+  const before = metricMap(await client.call('Performance.getMetrics'));
+  let timing = null;
+  let after = {};
+  try {
+    await client.call('Page.navigate', { url });
+    const startedAt = Date.now();
+    let ready = false;
+    while (Date.now() - startedAt < timeoutMs) {
+      ready = Boolean(await client.eval("document.readyState==='complete'&&document.documentElement.dataset.studioRenderReady==='true'"));
+      if (ready) break;
+      await sleep(50);
+    }
+    timing = await client.eval(`(()=>{
+      const measure = performance.getEntriesByName('ghrab-studio-render-ready-ms').at(-1);
+      const start = performance.getEntriesByName('ghrab-studio-start').at(-1);
+      const end = performance.getEntriesByName('ghrab-studio-render-ready').at(-1);
+      const renderReadyMs = Number(measure?.duration ?? ((start && end) ? end.startTime - start.startTime : NaN));
+      return {
+        ready: document.documentElement.dataset.studioRenderReady === 'true',
+        renderReadyMs: Number.isFinite(renderReadyMs) ? renderReadyMs : null,
+        domNodes: document.getElementsByTagName('*').length,
+      };
+    })()`);
+    after = metricMap(await client.call('Performance.getMetrics'));
+  } finally {
+    await client.call('Emulation.setCPUThrottlingRate', { rate: 1 }).catch(() => {});
+  }
+  const deltaMs = (name) => {
+    const current = Number(after[name] || 0);
+    const baseline = Number(before[name] || 0);
+    return Math.max(0, (current >= baseline ? current - baseline : current) * 1000);
+  };
+  const measurements = {
+    domNodes: timing?.domNodes ?? null,
+    renderReadyMs: timing?.renderReadyMs ?? null,
+    jsHeapUsedBytes: Number.isFinite(after.JSHeapUsedSize) ? after.JSHeapUsedSize : null,
+    layoutDurationMs: deltaMs('LayoutDuration'),
+    taskDurationMs: deltaMs('TaskDuration'),
+  };
+  const checks = [
+    runtimeCheck('maxDomNodes', measurements.domNodes, runtimeBudget.maxDomNodes),
+    runtimeCheck('maxRenderReadyMs', measurements.renderReadyMs, runtimeBudget.maxRenderReadyMs),
+    runtimeCheck('maxJsHeapUsedBytes', measurements.jsHeapUsedBytes, runtimeBudget.maxJsHeapUsedBytes),
+    runtimeCheck('maxLayoutDurationMs', measurements.layoutDurationMs, runtimeBudget.maxLayoutDurationMs),
+    runtimeCheck('maxTaskDurationMs', measurements.taskDurationMs, runtimeBudget.maxTaskDurationMs),
+  ];
+  if (!timing?.ready) checks.push({ metric: 'renderReadySignal', value: false, limit: true, ok: false });
+  return {
+    schema: 'ghrab-runtime-performance-benchmark-v1',
+    profile: { cpuSlowdown, viewport: `${viewport.width}x${viewport.height}`, memoryClassGb: Number(referenceProfile.memoryClassGb || 0) || null },
+    measurements,
+    budget: runtimeBudget,
+    checks,
+    status: checks.every((item) => item.ok) ? 'passed' : 'failed',
+  };
+}
+
 const auditExpr = `(()=>{
  const issues=[]; const add=(severity,id,el,detail)=>issues.push({severity,id,selector:sel(el),detail});
  const sel=el=>{if(!el)return'document';if(el.id)return'#'+CSS.escape(el.id);const p=[];let n=el;while(n&&n.nodeType===1&&p.length<4){let s=n.tagName.toLowerCase();if(n.classList?.length)s+='.'+[...n.classList].slice(0,2).map(CSS.escape).join('.');p.unshift(s);n=n.parentElement}return p.join(' > ')};
@@ -164,6 +265,22 @@ try {
   const targets=await waitJson(`http://127.0.0.1:${debugPort}/json`);
   client=new Cdp(targets.find(t=>t.type==='page').webSocketDebuggerUrl);
   await client.call('Runtime.enable'); await client.call('Page.enable'); await client.call('Log.enable');
+  try {
+    performanceBenchmark = await runPerformanceBenchmark(
+      client,
+      `http://127.0.0.1:${listenPort}/index.html?qa=1&runtimeAudit=1&performanceAudit=1`,
+    );
+  } catch (error) {
+    performanceBenchmark = {
+      schema: 'ghrab-runtime-performance-benchmark-v1',
+      profile: { cpuSlowdown: Number(referenceProfile.cpuSlowdown || 1), viewport: String(referenceProfile.viewport || '1366x768') },
+      measurements: {},
+      budget: runtimeBudget,
+      checks: [{ metric: 'benchmarkExecution', value: null, limit: null, ok: false }],
+      status: 'failed',
+      error: String(error?.stack || error),
+    };
+  }
   for (const file of htmlFiles) {
     const rel=path.relative(dist,file).split(path.sep).join('/');
     const widthsReport=[];
@@ -209,8 +326,9 @@ const qaErrorRows=pageReports.flatMap(p=>p.widths.flatMap(w=>(w.audit.qaErrors||
 const overflowRows=pageReports.flatMap(p=>p.widths.filter(w=>w.layout.overflow>1||w.dialogs.some(d=>d.overflow>1)).map(w=>({page:p.page,width:w.width,baseline:w.layout.overflow,dialogs:w.dialogs.filter(d=>d.overflow>1)})));
 const initFailures=pageReports.flatMap(p=>p.widths.filter(w=>w.audit.scriptCount<1||w.audit.mainTextLength<1||w.audit.access==='denied'||w.layout.bodyVisibility==='hidden'||Number(w.layout.bodyOpacity)===0||w.audit.bootError).map(w=>({page:p.page,width:w.width,audit:w.audit,layout:w.layout})));
 const severity={critical:0,serious:0,moderate:0,minor:0};for(const i of issueRows)severity[i.severity]=(severity[i.severity]||0)+1;
-const blockers=severity.critical+severity.serious+overflowRows.length+initFailures.length+exceptionRows.length;
-const report={schema:'ghrab-p5-runtime-audit-v2',appId:consumer.appId,appVersion:consumer.appVersion,chromium:chromiumPath(),scriptsExecuted:true,transport:'local-http',protectedScriptsUnlocked:true,viewportWidths:widths,pagesScanned:pageReports.length,statesScanned:pageReports.length*widths.length+pageReports.reduce((n,p)=>n+p.widths.reduce((m,w)=>m+w.dialogs.length,0),0),summary:{...severity,overflows:overflowRows.length,initFailures:initFailures.length,browserExceptions:exceptionRows.length,qaErrors:qaErrorRows.length,blockers},status:blockers?'failed':'passed',issues:issueRows,overflows:overflowRows,initFailures,browserExceptions:exceptionRows,qaErrors:qaErrorRows,pages:pageReports};
+const performanceFailures=(performanceBenchmark?.checks||[]).filter((item)=>!item.ok);
+const blockers=severity.critical+severity.serious+overflowRows.length+initFailures.length+exceptionRows.length+performanceFailures.length;
+const report={schema:'ghrab-p5-runtime-audit-v3',appId:consumer.appId,appVersion:consumer.appVersion,chromium:chromiumPath(),scriptsExecuted:true,transport:'local-http',protectedScriptsUnlocked:true,viewportWidths:widths,pagesScanned:pageReports.length,statesScanned:pageReports.length*widths.length+pageReports.reduce((n,p)=>n+p.widths.reduce((m,w)=>m+w.dialogs.length,0),0),runtimePerformance:performanceBenchmark,summary:{...severity,overflows:overflowRows.length,initFailures:initFailures.length,browserExceptions:exceptionRows.length,qaErrors:qaErrorRows.length,performanceFailures:performanceFailures.length,blockers},status:blockers?'failed':'passed',issues:issueRows,overflows:overflowRows,initFailures,browserExceptions:exceptionRows,qaErrors:qaErrorRows,pages:pageReports};
 await fsp.writeFile(outPath,JSON.stringify(report,null,2)+'\n');
 console.log(JSON.stringify({schema:report.schema,appId:report.appId,appVersion:report.appVersion,status:report.status,pagesScanned:report.pagesScanned,statesScanned:report.statesScanned,summary:report.summary},null,2));
 if(blockers)process.exitCode=1;

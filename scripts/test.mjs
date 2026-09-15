@@ -756,7 +756,7 @@ if (!(await exists(path.join(src, "manualy/ecosystem-guide.html"))))
   fail("Chybí společná provozní příručka ekosystému.");
 if (!manualsHtml.includes("všech devět aplikací"))
   fail("Centrum manuálů neuvádí devět aplikací.");
-if (!(await exists(path.join(src, "assets/apps/lesson-hub.png"))))
+if (!(await exists(path.join(src, "assets/apps/lesson-hub.webp"))))
   fail("Chybí lokální ikona Lesson Hubu.");
 
 if (manifest?.version !== pkg.version)
@@ -1657,7 +1657,7 @@ const required = [
   "integration/README.md",
   "integration/generator-access-bootstrap.example.js",
   "integration/essay-evaluator-access-bootstrap.example.js",
-  "assets/apps/essay-evaluator-v2.png",
+  "assets/apps/essay-evaluator-v2.webp",
   "assets/brand/school-logo.png",
   "assets/brand/portal-gateway.webp",
   "assets/brand/portal-ring-outer.svg",

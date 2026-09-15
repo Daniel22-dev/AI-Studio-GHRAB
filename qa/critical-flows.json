@@ -172,7 +172,7 @@
           "message": "Pilotní report nezná Lesson Hub."
         },
         {
-          "file": "src/assets/apps/lesson-hub.png",
+          "file": "src/assets/apps/lesson-hub.webp",
           "regex": ".",
           "flags": "s",
           "message": "Chybí ikona Lesson Hubu."

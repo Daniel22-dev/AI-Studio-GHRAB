@@ -1568,6 +1568,8 @@ textarea {
 }
 .extra-app-card {
   min-height: 230px;
+  content-visibility: auto;
+  contain-intrinsic-size: auto 238px;
 }
 .automation-report {
   margin-top: 22px;
@@ -1634,6 +1636,11 @@ html[data-motion="full"] .automation-core img,
 html[data-motion="full"] .energy-halo,
 html[data-motion="full"] .portal-state i {
   will-change: transform;
+}
+html[data-portal-active="false"] .portal-stage *,
+html[data-portal-active="false"] .portal-stage *::before,
+html[data-portal-active="false"] .portal-stage *::after {
+  animation-play-state: paused !important;
 }
 html[data-motion="lite"] .starfield {
   display: none;

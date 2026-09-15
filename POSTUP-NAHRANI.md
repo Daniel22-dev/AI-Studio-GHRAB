@@ -1,23 +1,27 @@
-# Přesný postup nahrání AI Studio GHRAB 0.21.69 na GitHub – až po schválení
+# Přesný postup nahrání AI Studio GHRAB 0.21.73 na GitHub – až po schválení
 
-> Aktuální verze: **0.21.69** · etapa P5
+> Aktuální verze: **0.21.73** · etapa P5
 
-> 0.21.69 přestavuje Report na kartový rozcestník, zpřesňuje Pohled kolegy (Adéla Stillerová / konkrétní kolega) a aktualizuje interaktivní manuály; bezpečnostní hranice P5 zůstávají zachované.
+> 0.21.73 přidává Performance Pack fáze D: runtime budgety jsou release-blocking na referenčním profilu CPU ×4, gateway obraz se odkládá za první použitelný render a critical-entry budget je zpřísněn na 420 kB.
 
 ## Předpoklady
 
 Nejprve musí být nasazeny KS 5.10.25, SORTIO 1.1.17, Lesson Hub 1.2.22, Diferenciátor 1.3.46, ACTIVA 0.5.27, Hodnotitel 1.5.25, LUDUS 1.16.23 a Generátor 7.1.25. Jejich lokální reportér vypíná centrální instanci přes `errorReporter: false`.
 
+## Jednorázová migrace `dist-school-server/`
+
+> Důležité pro 0.21.73: `dist-school-server/` je nově reprodukovatelný generovaný artefakt a ve zdrojovém balíku už není. Pokud jej ale stávající GitHub repozitář už trackuje, obyčejný webový upload nových souborů ho **nesmaže**. Při tomto release musí být adresář jednorázově odstraněn v samostatném/stejném commitu (např. `git rm -r dist-school-server`); `.gitignore` zabrání jeho opětovnému přidání. Potřebný školní balík se kdykoli znovu vytvoří přes `npm run build:school-server`.
+
 ## Nahrání
 
-1. Stáhněte a rozbalte `AI-Studio-GHRAB-0.21.63-GARP-AUTOPATCH-HOTFIX.zip`.
+1. Stáhněte a rozbalte `AI-Studio-GHRAB-0.21.73-PERFORMANCE-PHASE-D.zip`.
 2. Do kořene repozitáře `AI-Studio-GHRAB` nahrajte přímo všechny soubory a složky z rozbaleného archivu.
-3. Commit pojmenujte například `AI Studio 0.21.63 – GARP auto-patch hotfix`.
+3. Commit pojmenujte například `AI Studio 0.21.73 – Performance Phase D`.
 4. Vyčkejte na dokončení GitHub Actions. Workflow instaluje závislosti, synchronizuje manifesty, spustí regresi reportéru, celý GHRAB QA release gate, sestaví `dist` a až poté nasadí GitHub Pages.
 
 ## Kontrola po nasazení
 
-- `dist/build-info.json`, PWA manifest a service worker musí uvádět 0.21.63.
+- `dist/build-info.json`, PWA manifest a service worker musí uvádět 0.21.73.
 - `dist/config/access-config-bundle.json` musí uvádět `access-p1-20260824175535Z-k_wtm7Zj`.
 - Staré učitelské oprávnění kolegyně musí být po online obnovení odmítnuto a v Evidenci přístupů označeno jako centrálně zneplatněné.
 - Nové oprávnění správce zástupce musí zůstat funkční; má jiné JTI a podpisový klíč oprávnění se v tomto vydání nemění.

@@ -24,11 +24,16 @@ check('SW cached navigation is immediate', sw.includes('navigationCacheFirst') &
 check('SW optional precache concurrency is bounded', /const batchSize = 4/.test(sw) && /optionalAssets\.slice\(index, index \+ batchSize\)/.test(sw));
 
 const build = read('scripts/build.mjs');
+const builtSw = read('dist/sw.js');
+const installPrecache = [
+  ...(builtSw.match(/const CORE_REQUIRED = \[([\s\S]*?)\];/)?.[1]?.matchAll(/["'](\.\/[^"']+)["']/g) || []),
+  ...(builtSw.match(/const CORE_OPTIONAL = \[([\s\S]*?)\];/)?.[1]?.matchAll(/["'](\.\/[^"']+)["']/g) || []),
+].map((match) => match[1]);
 for (const rel of ['./access/app-guard.js', './access/access-control.js', './access/platform-runtime.js']) {
-  check(`Precache keeps offline fallback ${rel}`, build.includes(JSON.stringify(rel)));
+  check(`Precache keeps offline fallback ${rel}`, installPrecache.includes(rel));
 }
-check('Deployment profile is not precached as required', !/requiredCacheFiles[\s\S]*?\.\/config\/deployment\.json/.test(build));
-check('Changelog is excluded from install precache', build.includes('file !== \"./config/changelog.json\"'));
+check('Deployment profile is not precached as required', !installPrecache.includes('./config/deployment.json'));
+check('Changelog is excluded from install precache', !installPrecache.includes('./config/changelog.json'));
 check('Runtime changelog is split into bounded archive chunks', build.includes('maxChunkBytes = 120000') && build.includes('changelog.archive-'));
 check('Changelog UI loads runtime archives', fs.readFileSync(path.join(root, 'src/changelog/changelog.js'), 'utf8').includes('data.archives'));
 const sourceChangelog = json('src/config/changelog.json');
@@ -42,7 +47,7 @@ check('Runtime changelog chunks stay below 120 kB target', runtimeChangelogParts
   const rel = index === 0 ? 'dist/config/changelog.json' : `dist/config/${runtimeArchiveNames[index - 1]}`;
   return fs.statSync(path.join(root, rel)).size <= 120000;
 }));
-check('Access bundle is excluded from install precache', build.includes('"./config/access-config-bundle.json"') && build.includes('"./config/access-config-bundle.sig.json"'));
+check('Access bundle is excluded from install precache', !installPrecache.includes('./config/access-config-bundle.json') && !installPrecache.includes('./config/access-config-bundle.sig.json'));
 check('Build bakes deployment profile', build.includes('deployment-baked.js') && build.includes('deploymentProfile'));
 check('Build checks signed bundle freshness', build.includes('checkAccessBundleFreshness'));
 

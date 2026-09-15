@@ -1,8 +1,8 @@
-# Release checklist AI Studio GHRAB 0.21.69
+# Release checklist AI Studio GHRAB 0.21.73
 
-> Aktuální verze: **0.21.69** · etapa P5
+> Aktuální verze: **0.21.73** · etapa P5
 
-> 0.21.69 přestavuje Report na kartový rozcestník, zpřesňuje Pohled kolegy (Adéla Stillerová / konkrétní kolega) a aktualizuje interaktivní manuály; bezpečnostní hranice P5 zůstávají zachované.
+> 0.21.73 přidává Performance Pack fáze D: runtime budgety jsou release-blocking na referenčním profilu CPU ×4, gateway obraz se odkládá za první použitelný render a critical-entry budget je zpřísněn na 420 kB.
 
 ## Stav bezpečnostního kandidáta GARP 2.3
 

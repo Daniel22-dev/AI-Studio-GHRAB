@@ -2,6 +2,26 @@
 
 > Tento soubor se generuje ze `src/config/changelog.json`. Neupravujte jej ručně.
 
+## 0.21.73 — 2026-09-15
+**Performance D**
+
+- Runtime budgety jsou nově skutečně vynucovány na referenčním profilu CPU ×4; gateway obraz se načítá až po prvním použitelném renderu a kritická vstupní cesta má novou rezervu pod zpřísněným limitem.
+
+## 0.21.72 — 2026-09-15
+**Performance C**
+
+- Instalační PWA cache je zúžena na kritické jádro a offline-essential assety; ostatní obsah se cacheuje až při použití. Ikony aplikací jsou bezeztrátově menší a precache budget je zpřísněn.
+
+## 0.21.71 — 2026-09-15
+**Performance B**
+
+- Bez změny stavu se karty nepřekreslují; extra aplikace se renderují off-screen/lazy.
+
+## 0.21.70 — 2026-09-15
+**Adaptivní výkon – fáze A**
+
+- AUTO adaptivně volí FULL/LITE/OFF podle zařízení a frame samplu; dekorativní efekty brány se mimo viewport a v neaktivním tabu pozastaví.
+
 ## 0.21.69 — 2026-09-14
 **Kartový Report, přesný pohled kolegy a sjednocený návrat z Akademie**
 

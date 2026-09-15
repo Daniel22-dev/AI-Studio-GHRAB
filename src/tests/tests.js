@@ -245,7 +245,7 @@ if (T.canAccessAdminPage?.("tests")) {
         "../access/access-gate.css",
         "../integration/README.md",
         "../integration/essay-evaluator-access-bootstrap.example.js",
-        "../assets/apps/essay-evaluator-v2.png",
+        "../assets/apps/essay-evaluator-v2.webp",
       ].map(fetchOk),
     );
     results.push({

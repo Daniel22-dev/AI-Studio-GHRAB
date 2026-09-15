@@ -1,8 +1,12 @@
-# Nahrání AI Studio GHRAB 0.21.69
+# Nahrání AI Studio GHRAB 0.21.73
 
-> Aktuální verze: **0.21.69** · etapa P5
+> Aktuální verze: **0.21.73** · etapa P5
 
-> 0.21.69 přestavuje Report na kartový rozcestník, zpřesňuje Pohled kolegy (Adéla Stillerová / konkrétní kolega) a aktualizuje interaktivní manuály; bezpečnostní hranice P5 zůstávají zachované.
+> 0.21.73 přidává Performance Pack fáze D: runtime budgety jsou release-blocking na referenčním profilu CPU ×4, gateway obraz se odkládá za první použitelný render a critical-entry budget je zpřísněn na 420 kB.
+
+## Jednorázová migrace `dist-school-server/`
+
+> Důležité pro 0.21.73: `dist-school-server/` je nově reprodukovatelný generovaný artefakt a ve zdrojovém balíku už není. Pokud jej ale stávající GitHub repozitář už trackuje, obyčejný webový upload nových souborů ho **nesmaže**. Při tomto release musí být adresář jednorázově odstraněn v samostatném/stejném commitu (např. `git rm -r dist-school-server`); `.gitignore` zabrání jeho opětovnému přidání. Potřebný školní balík se kdykoli znovu vytvoří přes `npm run build:school-server`.
 
 ## Povinné pořadí
 

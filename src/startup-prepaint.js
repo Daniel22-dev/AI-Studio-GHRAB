@@ -1,4 +1,5 @@
 (() => {
+  try { performance.mark("ghrab-studio-start"); } catch {}
   const root = document.documentElement;
   const INTRO_SEEN_KEY = "ghrab.startup-intro.seen.v1";
   const WATCHDOG_MS = 6000;
@@ -46,9 +47,14 @@
   } catch {
   }
 
+  const hardwareConcurrency = Number(navigator.hardwareConcurrency) || 0;
+  const deviceMemory = Number(navigator.deviceMemory) || 0;
   if (
     matchMedia("(max-width: 899px)").matches ||
-    matchMedia("(prefers-reduced-motion: reduce)").matches
+    matchMedia("(prefers-reduced-motion: reduce)").matches ||
+    navigator.connection?.saveData ||
+    (hardwareConcurrency > 0 && hardwareConcurrency <= 4) ||
+    (deviceMemory > 0 && deviceMemory <= 4)
   ) {
     showIntro = false;
   }

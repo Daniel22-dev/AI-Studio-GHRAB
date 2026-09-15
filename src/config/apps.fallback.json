@@ -18,7 +18,7 @@
     "launchUrl": "https://daniel22-dev.github.io/generator-testu/",
     "manualUrl": "https://daniel22-dev.github.io/generator-testu/manual/",
     "repository": "daniel22-dev/generator-testu",
-    "icon": "assets/apps/generator.png",
+    "icon": "assets/apps/generator.webp",
     "accent": "#50e8ff",
     "tags": [
       {
@@ -112,7 +112,7 @@
     "launchUrl": "https://daniel22-dev.github.io/diferenciator/",
     "manualUrl": "https://daniel22-dev.github.io/diferenciator/manual/",
     "repository": "daniel22-dev/diferenciator",
-    "icon": "assets/apps/differentiator.png",
+    "icon": "assets/apps/differentiator.webp",
     "accent": "#59e0a5",
     "tags": [
       {
@@ -201,7 +201,7 @@
     "launchUrl": "https://daniel22-dev.github.io/Hodnotitel-maturitnich-slohu/",
     "manualUrl": "https://daniel22-dev.github.io/Hodnotitel-maturitnich-slohu/manual/",
     "repository": "daniel22-dev/Hodnotitel-maturitnich-slohu",
-    "icon": "assets/apps/essay-evaluator-v2.png",
+    "icon": "assets/apps/essay-evaluator-v2.webp",
     "accent": "#d7a04b",
     "tags": [
       {
@@ -328,7 +328,7 @@
     "launchUrl": "https://daniel22-dev.github.io/korespondencni-asistent/",
     "manualUrl": "https://daniel22-dev.github.io/korespondencni-asistent/manual/",
     "repository": "daniel22-dev/korespondencni-asistent",
-    "icon": "assets/apps/correspondence.png",
+    "icon": "assets/apps/correspondence.webp",
     "accent": "#f0aa4b",
     "tags": [
       {
@@ -417,7 +417,7 @@
     "launchUrl": "https://daniel22-dev.github.io/Ludus/",
     "manualUrl": "https://daniel22-dev.github.io/Ludus/manual/",
     "repository": "daniel22-dev/Ludus",
-    "icon": "assets/apps/ludus.png",
+    "icon": "assets/apps/ludus.webp",
     "accent": "#a877ff",
     "tags": [
       {
@@ -510,7 +510,7 @@
     "launchUrl": "https://daniel22-dev.github.io/ACTIVA/",
     "manualUrl": "https://daniel22-dev.github.io/ACTIVA/manual/",
     "repository": "daniel22-dev/ACTIVA",
-    "icon": "assets/apps/activity-builder.png",
+    "icon": "assets/apps/activity-builder.webp",
     "accent": "#3157FF",
     "tags": [
       {
@@ -793,7 +793,7 @@
     "launchUrl": "https://daniel22-dev.github.io/lesson-hub/",
     "manualUrl": "https://daniel22-dev.github.io/lesson-hub/manual/",
     "repository": "daniel22-dev/lesson-hub",
-    "icon": "assets/apps/lesson-hub.png",
+    "icon": "assets/apps/lesson-hub.webp",
     "accent": "#167F79",
     "tags": [
       {
@@ -912,7 +912,7 @@
     "launchUrl": "https://daniel22-dev.github.io/maturita-desk/",
     "manualUrl": "https://daniel22-dev.github.io/maturita-desk/",
     "repository": "Daniel22-dev/maturita-desk",
-    "icon": "assets/apps/maturita-desk.png",
+    "icon": "assets/apps/maturita-desk.webp",
     "accent": "#4b263d",
     "tags": [
       {

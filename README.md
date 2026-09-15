@@ -1,11 +1,26 @@
 # AI Studio GHRAB
 
-**Aktuální verze:** 0.21.69
+**Aktuální verze:** 0.21.73
 
-0.21.69 přestavuje Report na kartový rozcestník, rozšiřuje bezpečný Pohled kolegy o Adélu Stillerovou a konkrétní vydaná oprávnění a aktualizuje interaktivní manuály.
+0.21.73 přidává Performance Pack fáze D: runtime budgety jsou release-blocking na referenčním profilu CPU ×4, gateway obraz se odkládá za první použitelný render a critical-entry budget je zpřísněn na 420 kB.
 
-**Performance budget:** beze změny; oprava z 0.21.64 s automatickým dělením rostoucího changelogu zůstává zachována.
+**Performance budget:** precache 1 250 000 B; critical entry nově 420 000 B; runtime limity jsou povinně měřené v P5 release gate.
 **Platforma:** GHRAB Platform 1.1.2 · etapa P5
+
+## Nově v 0.21.73
+
+- **Release-blocking runtime performance**: `qa:p5:ci` nyní pod referenčním profilem 1366×768 / CPU ×4 skutečně měří a vynucuje render-ready čas, DOM, JS heap, layout a task duration.
+- **Skutečný render-ready signál**: startup a první použitelný render mají explicitní Performance API značky; release acceptance vyžaduje nulový počet runtime performance failures.
+- **Odlehčená kritická cesta**: 760×760 gateway obraz už není parserem/eager-loadem součástí prvního kritického načtení; po použitelném renderu se načte asynchronně s nízkou prioritou a zachovanými rozměry.
+- **Nová kapacitní rezerva**: critical entry klesla přibližně z 499 kB na 360 kB a budget byl současně zpřísněn z 500 kB na 420 kB.
+- **Phase D regression**: samostatný test hlídá runtime gate, deferred gateway a critical-entry rezervu proti budoucí regresi.
+
+## Nově v 0.21.71
+
+- **Polling bez zbytečného renderu**: 30sekundová kontrola provozního stavu překreslí portál jen při skutečné změně stavu, nikoli při změně časového razítka.
+- **Škálování katalogu**: aplikace mimo Top 4 lazy-loadují ikony a jejich karty používají off-screen rendering přes `content-visibility`.
+- **20/30/50 aplikací**: nový `test:performance-phase-b` ověřuje Top 4, úplnost registru, stabilní pořadí a renderovací invarianty.
+- **Fáze A zachována**: adaptivní AUTO, FULL/LITE/OFF a lifecycle pause zůstávají beze změny.
 
 ## Nově v 0.21.69
 

@@ -296,8 +296,8 @@ if (presentationConfig.videos[0]?.src) {
   const mediaStat = await stat(mediaPath).catch(() => null);
   check(Boolean(mediaStat?.isFile() && mediaStat.size > 1_000_000), "Hlavni showcase video chybi nebo je podezrele male.");
 }
-const buildScript = await text("scripts/build.mjs");
-check(buildScript.includes('"./assets/presentation/"'), "Velke PR video neni vylouceno z offline precache PWA.");
+const builtServiceWorker = await text("dist/sw.js");
+check(!builtServiceWorker.includes('"./assets/presentation/'), "Velke PR video neni vylouceno z offline precache PWA.");
 check(!demoHtml.includes("Jeden materiál. Tři výukové nástroje"), "Prezentace stale obsahuje stary technicky petikrokovy koncept.");
 
 const workflowJs = await text("src/workflow/workflow.js");

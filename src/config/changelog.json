@@ -1,7 +1,63 @@
 {
   "schema": "ai-studio-changelog-v1",
-  "current": "0.21.69",
+  "current": "0.21.73",
   "items": [
+    {
+      "version": "0.21.73",
+      "date": "2026-09-15",
+      "title": {
+        "cs": "Performance D",
+        "en": "Performance D"
+      },
+      "changes": [
+        {
+          "cs": "Runtime budgety jsou nově skutečně vynucovány na referenčním profilu CPU ×4; gateway obraz se načítá až po prvním použitelném renderu a kritická vstupní cesta má novou rezervu pod zpřísněným limitem.",
+          "en": "Runtime budgets are now actually enforced on the 4× CPU reference profile; the gateway image loads after the first usable render and the critical entry path gains real headroom under a tightened limit."
+        }
+      ]
+    },
+    {
+      "version": "0.21.72",
+      "date": "2026-09-15",
+      "title": {
+        "cs": "Performance C",
+        "en": "Performance C"
+      },
+      "changes": [
+        {
+          "cs": "Instalační PWA cache je zúžena na kritické jádro a offline-essential assety; ostatní obsah se cacheuje až při použití. Ikony aplikací jsou bezeztrátově menší a precache budget je zpřísněn.",
+          "en": "Install-time PWA caching is narrowed to the critical shell and offline-essential assets; other content is cached on demand. App icons are losslessly smaller and the precache budget is tightened."
+        }
+      ]
+    },
+    {
+      "version": "0.21.71",
+      "date": "2026-09-15",
+      "title": {
+        "cs": "Performance B",
+        "en": "Performance B"
+      },
+      "changes": [
+        {
+          "cs": "Bez změny stavu se karty nepřekreslují; extra aplikace se renderují off-screen/lazy.",
+          "en": "Unchanged status no longer rerenders cards; extra apps render off-screen/lazy."
+        }
+      ]
+    },
+    {
+      "version": "0.21.70",
+      "date": "2026-09-15",
+      "title": {
+        "cs": "Adaptivní výkon – fáze A",
+        "en": "Adaptive performance – Phase A"
+      },
+      "changes": [
+        {
+          "cs": "AUTO adaptivně volí FULL/LITE/OFF podle zařízení a frame samplu; dekorativní efekty brány se mimo viewport a v neaktivním tabu pozastaví.",
+          "en": "AUTO adaptively selects FULL/LITE/OFF from device signals and a frame sample; decorative gateway effects pause off-screen and in inactive tabs."
+        }
+      ]
+    },
     {
       "version": "0.21.69",
       "date": "2026-09-14",

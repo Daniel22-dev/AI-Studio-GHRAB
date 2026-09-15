@@ -8,6 +8,15 @@ import {
 import { initialisePlatformRuntime } from "./access/platform-runtime.js";
 import { createRegistryClient } from "./modules/registry-client.js";
 import {
+  MOTION_MODES,
+  collectMotionSignals,
+  readMotionPreference,
+  readRuntimeAutoProfile,
+  resolveMotionPreference,
+  writeMotionPreference,
+  writeRuntimeAutoProfile,
+} from "./modules/motion-policy.js";
+import {
   initialiseAccess,
   setPermitToken,
   clearPermit,
@@ -35,9 +44,9 @@ const forcedLanguage = ["cs", "en"].includes(root.dataset.forceLanguage)
 const state = {
   language: forcedLanguage || safeGetItem("ghrab.language") || "cs",
   theme: "dark",
-  motion: safeGetItem("ghrab.motion") || "auto",
+  motion: readMotionPreference(),
 };
-const MOTION_MODES = ["auto", "full", "lite", "off"];
+let autoRuntimeProfile = readRuntimeAutoProfile();
 
 const WORKSPACE_KEY = "ghrab.workspace.v1";
 const HANDOFF_KEY = "ghrab.platform.handoff.v2";
@@ -105,16 +114,16 @@ function applyTheme() {
   if (meta) meta.content = "#030915";
 }
 
+function motionDecision() {
+  return resolveMotionPreference({
+    preference: state.motion,
+    signals: collectMotionSignals(),
+    runtimeProfile: autoRuntimeProfile,
+  });
+}
+
 function detectedMotionMode() {
-  if (state.motion !== "auto") return state.motion;
-  const reduced = matchMedia("(prefers-reduced-motion: reduce)").matches;
-  const compact =
-    matchMedia("(max-width: 700px)").matches ||
-    matchMedia("(pointer: coarse)").matches;
-  const saveData = Boolean(navigator.connection?.saveData);
-  if (reduced) return "off";
-  if (compact || saveData) return "lite";
-  return "full";
+  return motionDecision().mode;
 }
 
 function motionLabel() {
@@ -126,9 +135,43 @@ function motionLabel() {
     lite: t("úsporné", "economy"),
     off: t("vypnuté", "off"),
   };
-  return selected === "auto"
-    ? `${t("Animace", "Motion")}: ${names.auto} (${names[resolved]})`
-    : `${t("Animace", "Motion")}: ${names[selected]}`;
+  if (selected === "auto")
+    return `${t("Animace", "Motion")}: ${names.auto} (${names[resolved]})`;
+  if (resolved !== selected)
+    return `${t("Animace", "Motion")}: ${names[selected]} (${t("omezeno systémem", "limited by system")}: ${names[resolved]})`;
+  return `${t("Animace", "Motion")}: ${names[selected]}`;
+}
+
+let studioRenderReadyMarked = false;
+function loadDeferredPortalAsset() {
+  const image = document.querySelector(".portal-core-image[data-portal-asset]");
+  const source = image?.dataset.portalAsset;
+  if (!image || !source || image.getAttribute("src")) return;
+  const load = () => {
+    if (!image.isConnected || image.getAttribute("src")) return;
+    const url = new URL(source, location.href);
+    url.searchParams.set("v", VERSION);
+    image.src = url.href;
+    image.removeAttribute("data-portal-asset");
+  };
+  requestAnimationFrame(() => {
+    if (typeof requestIdleCallback === "function") requestIdleCallback(load, { timeout: 250 });
+    else setTimeout(load, 0);
+  });
+}
+function markStudioRenderReady() {
+  if (studioRenderReadyMarked) return;
+  studioRenderReadyMarked = true;
+  root.dataset.studioRenderReady = "true";
+  try {
+    performance.mark("ghrab-studio-render-ready");
+    performance.measure(
+      "ghrab-studio-render-ready-ms",
+      "ghrab-studio-start",
+      "ghrab-studio-render-ready",
+    );
+  } catch {}
+  loadDeferredPortalAsset();
 }
 
 function updateMotionButton() {
@@ -146,12 +189,20 @@ function updateMotionButton() {
 }
 
 function applyMotion() {
-  root.dataset.motion = detectedMotionMode();
+  const decision = motionDecision();
+  root.dataset.motion = decision.mode;
   root.dataset.motionPreference = state.motion;
+  root.dataset.motionReason = decision.reason;
+  root.dataset.motionCalibration = decision.calibrate ? "eligible" : "not-needed";
   updateMotionButton();
   document.dispatchEvent(
     new CustomEvent("ghrab:motion", {
-      detail: { selected: state.motion, resolved: root.dataset.motion },
+      detail: {
+        selected: state.motion,
+        resolved: decision.mode,
+        reason: decision.reason,
+        calibrate: decision.calibrate,
+      },
     }),
   );
 }
@@ -579,13 +630,30 @@ function setupMotionControl(button) {
   button.addEventListener("click", () => {
     const index = MOTION_MODES.indexOf(state.motion);
     state.motion = MOTION_MODES[(index + 1) % MOTION_MODES.length];
-    safeSetItem("ghrab.motion", state.motion);
+    writeMotionPreference(state.motion);
     applyMotion();
     showToast(motionLabel());
   });
-  const media = matchMedia("(prefers-reduced-motion: reduce)");
-  media.addEventListener?.("change", () => {
-    if (state.motion === "auto") applyMotion();
+
+  const refreshAutomaticMotion = () => {
+    if (state.motion === "auto" || collectMotionSignals().reducedMotion)
+      applyMotion();
+  };
+  for (const query of [
+    "(prefers-reduced-motion: reduce)",
+    "(max-width: 700px)",
+    "(pointer: coarse)",
+  ]) {
+    matchMedia(query).addEventListener?.("change", refreshAutomaticMotion);
+  }
+  navigator.connection?.addEventListener?.("change", refreshAutomaticMotion);
+
+  document.addEventListener("ghrab:motion-calibration", (event) => {
+    if (state.motion !== "auto" || event.detail?.recommendedMode !== "lite")
+      return;
+    autoRuntimeProfile = { mode: "lite", reason: "runtime-calibration" };
+    writeRuntimeAutoProfile(autoRuntimeProfile);
+    applyMotion();
   });
 }
 
@@ -1660,6 +1728,15 @@ function operationalStatusEnabled() {
     operationalStatusSnapshot?.enabled && operationalStatusSnapshot?.connected,
   );
 }
+function operationalStatusFingerprint(snapshot) {
+  return JSON.stringify([
+    snapshot?.connected,
+    snapshot?.studio?.status,
+    Object.entries(snapshot?.apps || {})
+      .map(([id, record]) => [id, record.status])
+      .sort(),
+  ]);
+}
 async function updateOperationalStatus(targetId, status) {
   if (!operationalStatusModule || !operationalStatusEnabled()) return false;
   try {
@@ -1686,15 +1763,22 @@ function startOperationalStatusRefresh() {
   clearInterval(operationalStatusRefreshTimer);
   operationalStatusRefreshTimer = 0;
   if (!operationalStatusSnapshot?.enabled || !operationalStatusModule) return;
+  let refreshing = false;
   operationalStatusRefreshTimer = setInterval(async () => {
+    if (refreshing) return;
+    refreshing = true;
     try {
+      const previous = operationalStatusFingerprint(operationalStatusSnapshot);
       operationalStatusSnapshot = await operationalStatusModule.loadOperationalStatus(
         deploymentReady,
       );
+      if (operationalStatusFingerprint(operationalStatusSnapshot) === previous) return;
       renderHomeCards();
       renderStudioOperationalControl();
       enforceStudioOperationalStatus();
     } catch {
+    } finally {
+      refreshing = false;
     }
   }, 30000);
 }
@@ -2183,6 +2267,7 @@ function portalAppCard(app, index, permissions) {
   const head = el("div", "portal-card-head");
   const identity = el("div", "portal-app-identity");
   const icon = el("img", "portal-app-icon");
+  if (index >= 4) icon.loading = "lazy";
   icon.src = app.icon?.startsWith("http") ? app.icon : `${base}${app.icon}`;
   icon.alt = "";
   identity.append(icon);
@@ -2558,6 +2643,7 @@ async function renderHome() {
       ),
     );
   }
+  markStudioRenderReady();
   const report = await loadSyncReport();
   const status = document.querySelector("#studio-status");
   const title = status?.querySelector("[data-status-title]");
@@ -3103,7 +3189,6 @@ void Promise.all([deploymentReady, import("./access/app-guard.js")])
   );
 document.addEventListener("ghrab:language", () => {
   renderHomeCards();
-  renderHomeAccessSummary();
   renderStudioOperationalControl();
   mountColleaguePreviewBanner();
 });

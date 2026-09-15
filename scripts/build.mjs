@@ -63,6 +63,36 @@ async function walk(dir) {
   return files;
 }
 
+function compactCssWhitespace(content) {
+  let output = "";
+  let quote = "";
+  let pendingSpace = false;
+  for (let index = 0; index < content.length; index += 1) {
+    const char = content[index];
+    if (quote) {
+      output += char;
+      if (char === "\\" && index + 1 < content.length) output += content[++index];
+      else if (char === quote) quote = "";
+      continue;
+    }
+    if (char === '"' || char === "'") {
+      if (pendingSpace && output && !/\s$/.test(output)) output += " ";
+      pendingSpace = false;
+      quote = char;
+      output += char;
+      continue;
+    }
+    if (/\s/.test(char)) {
+      pendingSpace = true;
+      continue;
+    }
+    if (pendingSpace && output && !/\s$/.test(output)) output += " ";
+    pendingSpace = false;
+    output += char;
+  }
+  return `${output.trim()}\n`;
+}
+
 await rm(dist, { recursive: true, force: true });
 await mkdir(dist, { recursive: true });
 await cp(src, dist, { recursive: true });
@@ -180,6 +210,16 @@ for (const sourceOnlyDoc of [
   await rm(path.join(dist, sourceOnlyDoc), { force: true });
 }
 
+// Production CSS keeps source readability in git while removing indentation/newline
+// transfer overhead. The compactor is deliberately conservative: it preserves every
+// token and comment and only collapses CSS whitespace outside quoted strings.
+for (const file of await walk(dist)) {
+  if (!file.endsWith(".css")) continue;
+  const content = await readFile(file, "utf8");
+  const compacted = compactCssWhitespace(content);
+  if (compacted.length < content.length) await writeFile(file, compacted, "utf8");
+}
+
 const allCacheFiles = (await walk(dist))
   .filter((file) => file !== path.join(dist, "sw.js"))
   .map((file) => `./${path.relative(dist, file).split(path.sep).join("/")}`)
@@ -190,6 +230,7 @@ const requiredCacheFiles = [
   "./app.js",
   "./styles.css",
   "./polish.css",
+  "./portal-card-hotfix.css",
   "./startup-prepaint.js",
   "./manifest.webmanifest",
   "./app/index.html",
@@ -204,8 +245,12 @@ const requiredCacheFiles = [
   "./config/deployment-baked.js",
   "./shared/material-validator.js",
   "./shared/safe-export.js",
+  "./privacy/pilot-event.js",
+  "./modules/registry-client.js",
+  "./modules/motion-policy.js",
   "./config/apps.generated.json",
   "./config/apps.fallback.json",
+  "./config/platform-consumers.json",
   "./config/access-policy.json",
   "./config/revoked-access.json",
   "./config/access-public-key.json",
@@ -230,41 +275,34 @@ if (missingRequired.length)
   throw new Error(
     `Missing required precache assets: ${missingRequired.join(", ")}`,
   );
-const excludedOptionalPrefixes = [
-  "./tools/",
-  "./api-usage/",
-  "./tests/",
-  "./integration/",
-  "./schemas/",
-  "./ai-core/",
-  // Build-time and developer-only sources are not needed for first offline boot.
-  "./docs/",
-  // The protected external launcher is a network transition to another HTTPS origin.
-  // Maturita Desk owns its independent offline PWA cache, so duplicating this bridge
-  // in the Studio precache would waste the core offline budget without adding content availability.
-  "./app/external/",
-  // P2 platform assets are added only after the canonical postprocessor runs.
-  // Excluding src/platform prevents stale compatibility copies from entering SW precache.
-  "./platform/",
-  // Large presentation media stays network-loaded and must not inflate the offline PWA cache.
-  "./assets/presentation/",
-  // The aggregate pilot report is an administrator-only online diagnostic surface.
-  // It is not required for the teacher portal's first offline boot.
-  "./report/",
-];
+// CORE_OPTIONAL is now intentionally small: it means "offline essential", not
+// "cache the rest of Studio during install". Every other same-origin static asset
+// remains available through the service worker's cache-first runtime path and is
+// stored only after the user actually opens that surface.
+const offlineEssentialAssets = new Set([
+  "./config/permissions.json",
+  "./modules/app-test-status.js",
+  "./modules/operational-status.js",
+  "./modules/portal-effects.js",
+  "./access/error-reporter.js",
+  "./access/error-reporter.css",
+  "./assets/brand/portal-ring-inner.svg",
+  "./assets/brand/portal-ring-middle.svg",
+  "./assets/brand/portal-ring-outer.svg",
+]);
+for (const app of runtimeApps) {
+  const icon = String(app?.icon || "").replace(/^\.\//, "");
+  if (icon && !/^(?:[a-z]+:|\/\/)/i.test(icon)) offlineEssentialAssets.add(`./${icon}`);
+}
 const optionalCacheFiles = allCacheFiles.filter(
-  (file) =>
-    !requiredCacheFiles.includes(file) &&
-    file !== "./config/changelog.json" &&
-    file !== "./config/apps.local.json" &&
-    file !== "./library/SERVER-MATERIALS-CONTRACT.md" &&
-    ![
-      "./config/access-config-bundle.json",
-      "./config/access-config-bundle.sig.json",
-    ].includes(file) &&
-    !file.startsWith("./config/deployment") &&
-    !excludedOptionalPrefixes.some((prefix) => file.startsWith(prefix)),
+  (file) => !requiredCacheFiles.includes(file) && offlineEssentialAssets.has(file),
 );
+const missingOfflineEssential = [...offlineEssentialAssets].filter(
+  (file) => !allCacheFiles.includes(file),
+);
+if (missingOfflineEssential.length) {
+  throw new Error(`Missing offline-essential assets: ${missingOfflineEssential.join(", ")}`);
+}
 const swPath = path.join(dist, "sw.js");
 const sw = await readFile(swPath, "utf8");
 const serialise = (files) =>
