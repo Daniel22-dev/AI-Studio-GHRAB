@@ -2,6 +2,13 @@
 
 > Tento soubor se generuje ze `src/config/changelog.json`. Neupravujte jej ručně.
 
+## 0.21.69 — 2026-09-14
+**Kartový Report, přesný pohled kolegy a sjednocený návrat z Akademie**
+
+- Report se po otevření zobrazí jako pět velkých pracovních karet. Dvě A4 se vykreslí až v Náhledu a PDF; Vývoj, Provozní podklady, Evidence práce a Souhrn pro vedení mají vlastní pracovní prostor bez dlouhého pravého sloupce.
+- Pohled kolegy nabízí samostatně Adélu Stillerovou jako zástupce správce a konkrétního kolegu z místní evidence platných oprávnění. Náhled respektuje rozsah aplikací a školení, nemění skutečný permit správce a v náhledu nelze aplikace spouštět.
+- Interaktivní manuály Studia byly obsahově zkontrolovány proti aktuálnímu rozhraní devíti aplikací, rolím, Reportu a AI Akademii. Akademie 1.4.6 přesouvá návrat do Studia do jednotného levého horního tlačítka.
+
 ## 0.21.68 — 2026-09-14
 **Návod k režimu práv A/B/C přímo v kartě zadání**
 

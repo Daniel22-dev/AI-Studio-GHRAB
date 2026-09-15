@@ -1,11 +1,18 @@
 # AI Studio GHRAB
 
-**Aktuální verze:** 0.21.68
+**Aktuální verze:** 0.21.69
 
-0.21.68 zjednodušuje právní workflow Reportu: běžné releasy se evidují jednou v práci a souhrnně v reportu, významné zadání má povinnou volbu režimu práv a provozní nasazení lze delegovat pověřené osobě.
+0.21.69 přestavuje Report na kartový rozcestník, rozšiřuje bezpečný Pohled kolegy o Adélu Stillerovou a konkrétní vydaná oprávnění a aktualizuje interaktivní manuály.
 
 **Performance budget:** beze změny; oprava z 0.21.64 s automatickým dělením rostoucího changelogu zůstává zachována.
 **Platforma:** GHRAB Platform 1.1.2 · etapa P5
+
+## Nově v 0.21.69
+
+- **Report** se po otevření chová jako rozcestník pěti velkých karet. Teprve po výběru se otevře konkrétní agenda; dvoustránkový A4 náhled už nezabírá většinu obrazovky při běžné práci.
+- **Pohled kolegy** nabízí Adélu Stillerovou jako zástupce správce a konkrétního kolegu z místní evidence platných oprávnění. Náhled respektuje rozsah aplikací a školení a neumožňuje aplikace spouštět pod skutečným admin oprávněním.
+- **Interaktivní manuály** jsou sjednocené s devíti aplikacemi, novým Reportem, rolí zástupce a propojením na AI Akademii.
+- **AI Akademie 1.4.6** používá návrat do Studia vlevo nahoře stejně jako ostatní aplikace; PWA-safe návrat a full-admin ověření zůstávají zachované.
 
 ## Nově v 0.21.63
 

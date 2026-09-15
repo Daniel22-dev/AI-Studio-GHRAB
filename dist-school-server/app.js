@@ -1,12 +1,12 @@
-import { sanitizePilotEvent, sanitizePilotEventList } from "./privacy/pilot-event.js?v=0.21.68";
-import { validateMaterialPackage } from "./shared/material-validator.js?v=0.21.68";
-import { buildPilotSummary } from "./shared/safe-export.js?v=0.21.68";
+import { sanitizePilotEvent, sanitizePilotEventList } from "./privacy/pilot-event.js?v=0.21.69";
+import { validateMaterialPackage } from "./shared/material-validator.js?v=0.21.69";
+import { buildPilotSummary } from "./shared/safe-export.js?v=0.21.69";
 import {
   applyDeploymentToAppRegistry,
   loadDeploymentConfig,
-} from "./access/deployment-config.js?v=0.21.68";
-import { initialisePlatformRuntime } from "./access/platform-runtime.js?v=0.21.68";
-import { createRegistryClient } from "./modules/registry-client.js?v=0.21.68";
+} from "./access/deployment-config.js?v=0.21.69";
+import { initialisePlatformRuntime } from "./access/platform-runtime.js?v=0.21.69";
+import { createRegistryClient } from "./modules/registry-client.js?v=0.21.69";
 import {
   initialiseAccess,
   setPermitToken,
@@ -14,15 +14,15 @@ import {
   readPermitFile,
   getAccessSnapshot,
   getPermitToken,
-  isAdmin,
-  isOperator,
-  canAccessAdminPage,
-  hasAppAccess,
+  isAdmin as accessIsAdmin,
+  isOperator as accessIsOperator,
+  canAccessAdminPage as accessCanAccessAdminPage,
+  hasAppAccess as accessHasAppAccess,
   requiredTraining,
   formatReason,
   inspectPermitToken,
-} from "./access/access-control.js?v=0.21.68";
-const VERSION = "0.21.68";
+} from "./access/access-control.js?v=0.21.69";
+const VERSION = "0.21.69";
 const deploymentReady = loadDeploymentConfig({ appId: "ai-studio" });
 const root = document.documentElement;
 const page = document.body.dataset.page || "home";
@@ -716,7 +716,7 @@ async function setupHeaderLivePresence() {
   if (!actions) return;
   headerLivePresenceMounted = true;
   try {
-    const { mountHeaderLivePresence } = await import("./modules/header-live-presence.js?v=0.21.68");
+    const { mountHeaderLivePresence } = await import("./modules/header-live-presence.js?v=0.21.69");
     mountHeaderLivePresence({
       actions,
       deploymentReady,
@@ -736,6 +736,13 @@ async function setupHeaderLivePresence() {
 function setupNavigation() {
   ensureReportNavigation();
   ensureAcademyNavigation();
+  document.querySelectorAll("[data-colleague-preview-link]").forEach((link) => {
+    link.addEventListener("click", (event) => {
+      if (!canPreviewColleague()) return;
+      event.preventDefault();
+      openColleaguePreviewChooser();
+    });
+  });
   const navToggle = document.querySelector(".nav-toggle");
   const nav = document.querySelector(".main-nav");
   if (navToggle && nav) {
@@ -769,7 +776,10 @@ function previewStorageGet() {
 }
 function previewStorageSet(value) {
   try {
-    sessionStorage.setItem(COLLEAGUE_PREVIEW_KEY, value);
+    sessionStorage.setItem(
+      COLLEAGUE_PREVIEW_KEY,
+      typeof value === "string" ? value : JSON.stringify(value),
+    );
   } catch {
   }
 }
@@ -779,11 +789,142 @@ function previewStorageClear() {
   } catch {
   }
 }
+function normalisePreviewName(value = "") {
+  return String(value)
+    .normalize("NFD")
+    .replace(/[\u0300-\u036f]/gu, "")
+    .toLocaleLowerCase("cs-CZ")
+    .replace(/\s+/gu, " ")
+    .trim();
+}
+function modelTeacherPreview() {
+  return {
+    schema: "ghrab-role-preview-v2",
+    kind: "teacher-model",
+    role: "teacher",
+    displayName: t("Modelový proškolený učitel", "Model trained teacher"),
+    apps: ["*"],
+    training: {},
+    trainingAll: true,
+    exact: false,
+  };
+}
+function previewProfileFromRecord(record, kind = "colleague") {
+  if (!record) return null;
+  return {
+    schema: "ghrab-role-preview-v2",
+    kind,
+    role: record.role === "operator" ? "operator" : "teacher",
+    displayName: record.displayName || record.subject || t("Kolega", "Colleague"),
+    subject: record.subject || "",
+    apps: Array.isArray(record.apps) ? [...record.apps] : [],
+    training: record.training && typeof record.training === "object" ? structuredClone(record.training) : {},
+    trainingAll: false,
+    exact: true,
+    jti: record.jti || "",
+    exp: Number.isFinite(Number(record.exp)) ? Number(record.exp) : null,
+  };
+}
+function activeIssuedPreviewRecords() {
+  const now = Math.floor(Date.now() / 1000);
+  const seen = new Set();
+  return getIssuedAccessRecords().filter((record) => {
+    if (!record || record.role === "admin" || record.pendingRevocation || record.supersededBy) return false;
+    if (Number.isFinite(record.nbf) && record.nbf > now) return false;
+    if (Number.isFinite(record.exp) && record.exp <= now) return false;
+    const key = String(record.subject || normalisePreviewName(record.displayName));
+    if (!key || seen.has(key)) return false;
+    seen.add(key);
+    return true;
+  });
+}
+function adelaPreviewProfile() {
+  const target = normalisePreviewName("Adéla Stillerová");
+  const record = activeIssuedPreviewRecords().find(
+    (item) => normalisePreviewName(item.displayName) === target,
+  );
+  if (record) {
+    const profile = previewProfileFromRecord(record, "deputy");
+    profile.role = "operator";
+    profile.displayName = "Adéla Stillerová";
+    return profile;
+  }
+  return {
+    schema: "ghrab-role-preview-v2",
+    kind: "deputy",
+    role: "operator",
+    displayName: "Adéla Stillerová",
+    apps: ["*"],
+    training: {},
+    trainingAll: true,
+    exact: false,
+  };
+}
+function getPreviewProfile() {
+  const raw = previewStorageGet();
+  if (!raw) return null;
+  if (raw === "teacher") return modelTeacherPreview();
+  if (raw === "operator" || raw === "deputy") return adelaPreviewProfile();
+  try {
+    const parsed = JSON.parse(raw);
+    if (parsed?.schema !== "ghrab-role-preview-v2") return null;
+    if (!["teacher", "operator"].includes(parsed.role)) return null;
+    return parsed;
+  } catch {
+    return null;
+  }
+}
 function canPreviewColleague() {
-  return Boolean(isAdmin() || isOperator());
+  return Boolean(accessIsAdmin() || accessIsOperator());
 }
 function isColleaguePreview() {
-  return Boolean(canPreviewColleague() && previewStorageGet() === "teacher");
+  return Boolean(canPreviewColleague() && getPreviewProfile());
+}
+function isDeputyPreview() {
+  return Boolean(isColleaguePreview() && getPreviewProfile()?.role === "operator");
+}
+function isTeacherPreview() {
+  return Boolean(isColleaguePreview() && !isDeputyPreview());
+}
+function isAdmin() {
+  return Boolean(!isColleaguePreview() && accessIsAdmin());
+}
+function isOperator() {
+  if (isDeputyPreview()) return true;
+  return Boolean(!isColleaguePreview() && accessIsOperator());
+}
+function canAccessAdminPage(pageId) {
+  if (!isColleaguePreview()) return accessCanAccessAdminPage(pageId);
+  if (!isDeputyPreview()) return false;
+  const pages = getAccessSnapshot().policy?.operatorPages || [
+    "automation",
+    "pilot",
+    "report",
+    "tests",
+    "access-registry",
+    "deputy-admin",
+  ];
+  return Array.isArray(pages) && pages.includes(String(pageId || ""));
+}
+function previewTrainingFailure(profile, appId) {
+  if (profile?.trainingAll) return null;
+  const required = requiredTraining(appId);
+  if (!required?.trainingRequired) return null;
+  const held = profile?.training?.[appId];
+  if (!held) return "training-missing";
+  if (held.code !== required.trainingCode || held.version !== required.trainingVersion) return "training-outdated";
+  return null;
+}
+function hasAppAccess(appId) {
+  const profile = getPreviewProfile();
+  if (!isColleaguePreview() || !profile) return accessHasAppAccess(appId);
+  const apps = Array.isArray(profile.apps) ? profile.apps : [];
+  if (!apps.includes("*") && !apps.includes(appId)) {
+    return { enabled: false, reason: "app-not-permitted", permit: profile };
+  }
+  const trainingReason = previewTrainingFailure(profile, appId);
+  if (trainingReason) return { enabled: false, reason: trainingReason, permit: profile };
+  return { enabled: true, reason: "preview-permitted", permit: profile };
 }
 function syncColleaguePreviewRequest() {
   const params = new URLSearchParams(location.search);
@@ -792,9 +933,10 @@ function syncColleaguePreviewRequest() {
     previewStorageClear();
     return false;
   }
-  if (requested === "teacher") previewStorageSet("teacher");
+  if (requested === "teacher") previewStorageSet(modelTeacherPreview());
+  if (requested === "deputy") previewStorageSet(adelaPreviewProfile());
   if (requested === "admin") previewStorageClear();
-  if (requested === "teacher" || requested === "admin") {
+  if (["teacher", "deputy", "admin"].includes(requested)) {
     params.delete("view");
     const query = params.toString();
     history.replaceState(
@@ -809,46 +951,150 @@ function exitColleaguePreview() {
   previewStorageClear();
   location.assign(new URL(base, location.href).href);
 }
-function mountColleaguePreviewBanner() {
-  document.querySelector(".colleague-preview-banner")?.remove();
-  if (!isColleaguePreview()) return;
-  const banner = el("aside", "colleague-preview-banner");
-  banner.setAttribute("role", "status");
-  const copy = el("div", "colleague-preview-copy");
+function startColleaguePreview(profile) {
+  previewStorageSet(profile);
+  location.assign(new URL(base, location.href).href);
+}
+function openColleaguePreviewChooser() {
+  if (!canPreviewColleague()) return;
+  document.querySelector(".colleague-preview-picker-backdrop")?.remove();
+  const backdrop = el("div", "colleague-preview-picker-backdrop");
+  const dialog = el("section", "colleague-preview-picker panel");
+  dialog.setAttribute("role", "dialog");
+  dialog.setAttribute("aria-modal", "true");
+  dialog.setAttribute("aria-labelledby", "colleague-preview-picker-title");
+  dialog.tabIndex = -1;
+  const head = el("div", "colleague-preview-picker-head");
+  const copy = el("div");
   copy.append(
-    el("strong", "", t("Pohled kolegy", "Colleague view")),
+    el("p", "eyebrow", t("NÁHLED OPRÁVNĚNÍ", "ACCESS PREVIEW")),
+    el("h2", "", t("Čí pohled chcete zobrazit?", "Whose view do you want to display?")),
     el(
-      "span",
+      "p",
       "",
       t(
-        "Studio právě zobrazujete jako modelový proškolený učitel se všemi aktuálně dostupnými aplikacemi. Vaše skutečné správcovské oprávnění se nemění.",
-        "You are viewing the Studio as a model trained teacher with all currently available applications. Your real administrator permit is unchanged.",
+        "Náhled nemění vaše skutečné oprávnění a v tomto režimu nespouští aplikace.",
+        "The preview does not change your real permit and applications cannot be launched from preview mode.",
       ),
     ),
   );
-  const exit = el(
-    "button",
-    "button compact secondary colleague-preview-exit",
-    t("Ukončit náhled", "Exit preview"),
+  copy.querySelector("h2").id = "colleague-preview-picker-title";
+  const close = el("button", "icon-button colleague-preview-picker-close", "×");
+  close.type = "button";
+  close.setAttribute("aria-label", t("Zavřít", "Close"));
+  head.append(copy, close);
+
+  const choices = el("div", "colleague-preview-choice-grid");
+  const deputy = el("button", "colleague-preview-choice deputy-choice");
+  deputy.type = "button";
+  deputy.append(
+    el("span", "colleague-preview-choice-icon", "◆"),
+    el("strong", "", "Adéla Stillerová"),
+    el("small", "", t("Zástupce správce · provozní zastupitelnost", "Deputy administrator · operational continuity")),
   );
+  deputy.addEventListener("click", () => startColleaguePreview(adelaPreviewProfile()));
+
+  const colleague = el("div", "colleague-preview-choice colleague-choice");
+  colleague.append(
+    el("span", "colleague-preview-choice-icon", "◎"),
+    el("strong", "", t("Jiný kolega", "Another colleague")),
+    el("small", "", t("Vyberte konkrétní platné oprávnění z místní evidence.", "Choose a specific active permit from the local registry.")),
+  );
+  const select = document.createElement("select");
+  select.className = "colleague-preview-select";
+  select.setAttribute("aria-label", t("Vyberte kolegu", "Choose a colleague"));
+  const adelaKey = normalisePreviewName("Adéla Stillerová");
+  const records = activeIssuedPreviewRecords().filter(
+    (record) => normalisePreviewName(record.displayName) !== adelaKey,
+  );
+  const modelOption = document.createElement("option");
+  modelOption.value = "__model__";
+  modelOption.textContent = t("Modelový proškolený učitel", "Model trained teacher");
+  select.append(modelOption);
+  records.forEach((record, index) => {
+    const option = document.createElement("option");
+    option.value = String(index);
+    option.textContent = `${record.displayName}${record.role === "operator" ? ` · ${t("zástupce", "deputy")}` : ""}`;
+    select.append(option);
+  });
+  const open = el("button", "button secondary", t("Zobrazit pohled", "Open view"));
+  open.type = "button";
+  open.addEventListener("click", () => {
+    if (select.value === "__model__") startColleaguePreview(modelTeacherPreview());
+    else {
+      const record = records[Number(select.value)];
+      if (record) startColleaguePreview(previewProfileFromRecord(record));
+    }
+  });
+  colleague.append(select, open);
+  choices.append(deputy, colleague);
+
+  let releaseIsolation = () => {};
+  const dismiss = () => {
+    releaseIsolation();
+    backdrop.remove();
+  };
+  close.addEventListener("click", dismiss);
+  backdrop.addEventListener("click", (event) => {
+    if (event.target === backdrop) dismiss();
+  });
+  dialog.append(head, choices);
+  backdrop.append(dialog);
+  document.body.append(backdrop);
+  releaseIsolation = activateModalIsolation(backdrop, { onEscape: dismiss });
+  requestAnimationFrame(() => deputy.focus());
+}
+function mountColleaguePreviewBanner() {
+  document.querySelector(".colleague-preview-banner")?.remove();
+  const profile = getPreviewProfile();
+  if (!isColleaguePreview() || !profile) return;
+  const banner = el("aside", "colleague-preview-banner");
+  banner.setAttribute("role", "status");
+  const copy = el("div", "colleague-preview-copy");
+  const label = profile.role === "operator"
+    ? t(`Pohled zástupce · ${profile.displayName}`, `Deputy view · ${profile.displayName}`)
+    : t(`Pohled kolegy · ${profile.displayName}`, `Colleague view · ${profile.displayName}`);
+  const sourceText = profile.exact
+    ? t(
+        "Rozhraní a aplikace odpovídají poslednímu platnému oprávnění v místní evidenci.",
+        "The interface and applications match the latest active permit in the local registry.",
+      )
+    : t(
+        "Jde o model role; konkrétní platné oprávnění této osoby nebylo v místní evidenci nalezeno.",
+        "This is a role model; no specific active permit for this person was found in the local registry.",
+      );
+  copy.append(
+    el("strong", "", label),
+    el("span", "", `${sourceText} ${t("Skutečné správcovské oprávnění se nemění a spouštění aplikací je v náhledu vypnuté.", "Your real administrator permit is unchanged and app launching is disabled in preview mode.")}`),
+  );
+  const actions = el("div", "colleague-preview-banner-actions");
+  const change = el("button", "button compact ghost", t("Změnit pohled", "Change view"));
+  change.type = "button";
+  change.addEventListener("click", openColleaguePreviewChooser);
+  const exit = el("button", "button compact secondary colleague-preview-exit", t("Ukončit náhled", "Exit preview"));
   exit.type = "button";
   exit.addEventListener("click", exitColleaguePreview);
-  banner.append(copy, exit);
+  actions.append(change, exit);
+  banner.append(copy, actions);
   document.querySelector(".site-header")?.after(banner);
 }
 function updateAdminVisibility() {
   const snapshot = getAccessSnapshot();
   const preview = isColleaguePreview();
-  const admin = isAdmin() && !preview;
-  const operator = isOperator() && !preview;
+  const profile = getPreviewProfile();
+  const admin = isAdmin();
+  const operator = isOperator();
   const operations = admin || operator;
   const teacher = Boolean(
-    (snapshot.valid && snapshot.permit?.role === "teacher") || preview,
+    (snapshot.valid && snapshot.permit?.role === "teacher" && !preview) ||
+      (preview && profile?.role === "teacher"),
   );
   root.classList.toggle("access-admin", admin);
   root.classList.toggle("access-operator", operator);
   root.classList.toggle("access-operations", operations);
   root.classList.toggle("colleague-preview-active", preview);
+  root.classList.toggle("deputy-preview-active", isDeputyPreview());
+  root.classList.toggle("teacher-preview-active", isTeacherPreview());
   document
     .querySelectorAll("[data-admin-nav],[data-admin-link],[data-admin-only],[data-full-admin-only]")
     .forEach((node) => {
@@ -1359,8 +1605,8 @@ function accessExplanation(access, appId) {
   if (access.enabled)
     return isColleaguePreview()
       ? t(
-          "Modelový proškolený kolega má tuto aplikaci odemčenou.",
-          "The model trained colleague has this application unlocked.",
+          `${getPreviewProfile()?.displayName || t("Kolega", "Colleague")} má v tomto náhledu aplikaci odemčenou.`,
+          `${getPreviewProfile()?.displayName || t("Colleague", "Colleague")} has this application unlocked in the preview.`,
         )
       : access.reason === "administrator"
         ? t("Správcovský přístup je aktivní.", "Administrator access is active.")
@@ -1396,11 +1642,11 @@ function toggleFavoriteApp(appId) {
 }
 async function loadAppTestStatusModule() {
   if (!isAdmin() || isColleaguePreview()) return null;
-  appTestStatusModule ||= await import("./modules/app-test-status.js?v=0.21.68");
+  appTestStatusModule ||= await import("./modules/app-test-status.js?v=0.21.69");
   return appTestStatusModule;
 }
 async function loadOperationalStatusModule() {
-  operationalStatusModule ||= await import("./modules/operational-status.js?v=0.21.68");
+  operationalStatusModule ||= await import("./modules/operational-status.js?v=0.21.69");
   operationalStatusSnapshot = await operationalStatusModule.loadOperationalStatus(
     deploymentReady,
   );
@@ -1658,6 +1904,10 @@ function focusPortalGateway(zone) {
   });
 }
 function launchApp(app, article) {
+  if (isColleaguePreview()) {
+    showToast(t("V náhledu kolegy se aplikace nespouští. Náhled slouží jen ke kontrole oprávnění a rozhraní.", "Applications cannot be launched from colleague preview. The preview is only for checking permissions and the interface."));
+    return false;
+  }
   const access = hasAppAccess(app.id);
   if (!access.enabled) {
     showToast(accessExplanation(access, app.id));
@@ -2070,46 +2320,57 @@ function portalAppCard(app, index, permissions) {
 
   const actions = el("div", "portal-card-bottom");
   if (access.enabled) {
+    const previewMode = isColleaguePreview();
     const launch = el(
       "button",
       "portal-launch-button",
-      t("Spustit aplikaci", "Launch application"),
+      previewMode
+        ? t("Odemčeno v náhledu", "Unlocked in preview")
+        : t("Spustit aplikaci", "Launch application"),
     );
     launch.type = "button";
-    launch.addEventListener("click", (event) => {
-      event.preventDefault();
-      event.stopPropagation();
-      if (!canLaunchForOperationalStatus(operationalStatus)) {
-        showOperationalNotice(app, operationalStatus);
-        return;
-      }
-      launchApp(app, article);
-    });
+    launch.disabled = previewMode;
+    if (previewMode) {
+      launch.title = t(
+        "V náhledu kolegy se aplikace nespouští.",
+        "Applications cannot be launched from colleague preview.",
+      );
+    } else {
+      launch.addEventListener("click", (event) => {
+        event.preventDefault();
+        event.stopPropagation();
+        if (!canLaunchForOperationalStatus(operationalStatus)) {
+          showOperationalNotice(app, operationalStatus);
+          return;
+        }
+        launchApp(app, article);
+      });
+      article.tabIndex = 0;
+      article.setAttribute("role", "link");
+      article.setAttribute(
+        "aria-label",
+        `${t("Spustit", "Launch")} ${localised(app.name)}`,
+      );
+      article.addEventListener("click", (event) => {
+        if (event.target.closest("button,a,input,select,textarea,label")) return;
+        if (!canLaunchForOperationalStatus(operationalStatus)) {
+          showOperationalNotice(app, operationalStatus);
+          return;
+        }
+        launchApp(app, article);
+      });
+      article.addEventListener("keydown", (event) => {
+        if (event.target.closest("button,a,input,select,textarea,label")) return;
+        if (!["Enter", " "].includes(event.key)) return;
+        event.preventDefault();
+        if (!canLaunchForOperationalStatus(operationalStatus)) {
+          showOperationalNotice(app, operationalStatus);
+          return;
+        }
+        launchApp(app, article);
+      });
+    }
     actions.append(launch);
-    article.tabIndex = 0;
-    article.setAttribute("role", "link");
-    article.setAttribute(
-      "aria-label",
-      `${t("Spustit", "Launch")} ${localised(app.name)}`,
-    );
-    article.addEventListener("click", (event) => {
-      if (event.target.closest("button,a,input,select,textarea,label")) return;
-      if (!canLaunchForOperationalStatus(operationalStatus)) {
-        showOperationalNotice(app, operationalStatus);
-        return;
-      }
-      launchApp(app, article);
-    });
-    article.addEventListener("keydown", (event) => {
-      if (event.target.closest("button,a,input,select,textarea,label")) return;
-      if (!["Enter", " "].includes(event.key)) return;
-      event.preventDefault();
-      if (!canLaunchForOperationalStatus(operationalStatus)) {
-        showOperationalNotice(app, operationalStatus);
-        return;
-      }
-      launchApp(app, article);
-    });
   } else {
     const details = el(
       "a",
@@ -2183,7 +2444,9 @@ function renderHomeAccessSummary() {
       "",
       valid
         ? isColleaguePreview()
-          ? t("Pohled proškoleného kolegy", "Trained colleague view")
+          ? isDeputyPreview()
+            ? t(`Pohled zástupce: ${getPreviewProfile()?.displayName || "Adéla Stillerová"}`, `Deputy view: ${getPreviewProfile()?.displayName || "Adéla Stillerová"}`)
+            : t(`Pohled kolegy: ${getPreviewProfile()?.displayName || "modelový učitel"}`, `Colleague view: ${getPreviewProfile()?.displayName || "model teacher"}`)
           : isAdmin()
             ? t("Správcovský přístup aktivní", "Administrator access active")
             : t("Přístup aktivní", "Access active")
@@ -2199,10 +2462,9 @@ function renderHomeAccessSummary() {
       "",
       valid
         ? isColleaguePreview()
-          ? t(
-              "Modelový proškolený učitel · všechny aktuálně dostupné aplikace",
-              "Model trained teacher · all currently available applications",
-            )
+          ? getPreviewProfile()?.exact
+            ? t("Podle posledního platného oprávnění v místní evidenci · spouštění aplikací vypnuto", "Based on the latest active permit in the local registry · app launching disabled")
+            : t("Model role · spouštění aplikací vypnuto", "Role model · app launching disabled")
           : isAdmin()
             ? `${snapshot.permit.displayName || snapshot.permit.sub} · ${t("bezpečnostní oprávnění do", "security permit until")} ${new Date(snapshot.permit.exp * 1000).toLocaleDateString(state.language === "cs" ? "cs-CZ" : "en-GB")}`
             : `${snapshot.permit.displayName || snapshot.permit.sub} · ${t("platnost do", "valid until")} ${new Date(snapshot.permit.exp * 1000).toLocaleDateString(state.language === "cs" ? "cs-CZ" : "en-GB")}`
@@ -2667,7 +2929,7 @@ function renderPageAccessGate() {
     // even while older signed access bundles do not list it yet.
     "api-usage",
   ]);
-  if (!administratorPages.has(page) || (canAccessAdminPage(page) && !isColleaguePreview())) return;
+  if (!administratorPages.has(page) || (canAccessAdminPage(page) && !isTeacherPreview())) return;
   const main = document.querySelector("main");
   if (!main) return;
   main.replaceChildren();
@@ -2787,6 +3049,10 @@ window.GHRAB = {
   isOperator,
   canAccessAdminPage,
   isColleaguePreview,
+  isTeacherPreview,
+  isDeputyPreview,
+  getPreviewProfile,
+  openColleaguePreviewChooser,
   exitColleaguePreview,
   hasAppAccess,
   requiredTraining,
@@ -2808,7 +3074,7 @@ applyTheme();
 applyLanguage();
 applyMotion();
 renderHome();
-void import('./modules/portal-effects.js?v=0.21.68')
+void import('./modules/portal-effects.js?v=0.21.69')
   .then(({ setupPortalEffects }) => setupPortalEffects({ root }))
   .catch((error) => console.warn('Volitelne portalove efekty nebyly nacteny.', error));
 void refreshSharedAccessModuleCache();
@@ -2819,7 +3085,7 @@ accessReady.then(() => {
   setupMonthlyReportReminder();
   void setupHeaderLivePresence();
 });
-void Promise.all([deploymentReady, import("./access/app-guard.js?v=0.21.68")])
+void Promise.all([deploymentReady, import("./access/app-guard.js?v=0.21.69")])
   .then(([deployment, { startErrorReporterBestEffort }]) =>
     startErrorReporterBestEffort("ai-studio", {
       appName: "AI Studio GHRAB",

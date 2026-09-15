@@ -132,8 +132,8 @@ for (const [label, list] of [
   ["generated registry", apps],
   ["fallback registry", fallback],
 ]) {
-  if (!Array.isArray(list) || list.length < 8) {
-    fail(`${label} musí obsahovat alespoň osm aplikací.`);
+  if (!Array.isArray(list) || list.length < 9) {
+    fail(`${label} musí obsahovat alespoň devět aplikací.`);
     continue;
   }
   const ids = new Set();
@@ -754,8 +754,8 @@ if (
   );
 if (!(await exists(path.join(src, "manualy/ecosystem-guide.html"))))
   fail("Chybí společná provozní příručka ekosystému.");
-if (!manualsHtml.includes("všech osm aplikací"))
-  fail("Centrum manuálů neuvádí osm aplikací.");
+if (!manualsHtml.includes("všech devět aplikací"))
+  fail("Centrum manuálů neuvádí devět aplikací.");
 if (!(await exists(path.join(src, "assets/apps/lesson-hub.png"))))
   fail("Chybí lokální ikona Lesson Hubu.");
 

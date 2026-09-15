@@ -1,8 +1,8 @@
-# Architektura AI Studio GHRAB 0.21.68
+# Architektura AI Studio GHRAB 0.21.69
 
-> Aktuální verze: **0.21.68** · etapa P5
+> Aktuální verze: **0.21.69** · etapa P5
 
-> 0.21.68 zjednodušuje právní workflow Reportu: běžné releasy se evidují jednou v práci a souhrnně v reportu, významné zadání má povinnou volbu režimu práv a provozní nasazení lze delegovat pověřené osobě.
+> 0.21.69 přestavuje Report na kartový rozcestník, zpřesňuje Pohled kolegy (Adéla Stillerová / konkrétní kolega) a aktualizuje interaktivní manuály; bezpečnostní hranice P5 zůstávají zachované.
 
 ## Koherence aktualizace PWA
 

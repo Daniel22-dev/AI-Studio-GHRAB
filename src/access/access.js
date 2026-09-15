@@ -36,16 +36,23 @@ function renderCurrent() {
   const preview = Boolean(G.isColleaguePreview?.());
   current.replaceChildren();
   if (preview) {
+    const profile = G.getPreviewProfile?.();
+    const deputy = G.isDeputyPreview?.();
     const badge = document.createElement("span");
     badge.className = "access-state-badge ok";
-    badge.textContent = G.t("Pohled kolegy", "Colleague view");
+    badge.textContent = deputy ? G.t("Pohled zástupce", "Deputy view") : G.t("Pohled kolegy", "Colleague view");
     const title = document.createElement("h2");
-    title.textContent = G.t("Modelový proškolený učitel", "Model trained teacher");
+    title.textContent = profile?.displayName || G.t("Modelový proškolený učitel", "Model trained teacher");
     const description = document.createElement("p");
-    description.textContent = G.t(
-      "Simulace zobrazuje běžné učitelské rozhraní se všemi aktuálně dostupnými aplikacemi. Skutečné správcovské oprávnění zůstává beze změny.",
-      "The simulation shows the standard teacher interface with all currently available applications. The real administrator permit remains unchanged.",
-    );
+    description.textContent = profile?.exact
+      ? G.t(
+          "Simulace odpovídá poslednímu platnému oprávnění této osoby v místní evidenci. Skutečné správcovské oprávnění zůstává beze změny a aplikace se v náhledu nespouštějí.",
+          "The simulation matches this person's latest active permit in the local registry. The real administrator permit remains unchanged and apps cannot be launched in preview mode.",
+        )
+      : G.t(
+          "Jde o model role, protože konkrétní platné oprávnění této osoby není v místní evidenci. Skutečné správcovské oprávnění zůstává beze změny a aplikace se v náhledu nespouštějí.",
+          "This is a role model because no specific active permit for this person is present in the local registry. The real administrator permit remains unchanged and apps cannot be launched in preview mode.",
+        );
     current.append(badge, title, description);
     return;
   }
@@ -86,7 +93,7 @@ async function renderApps() {
   const preview = Boolean(G.isColleaguePreview?.());
   appsHost.replaceChildren(
     ...apps.map((app) => {
-      const access = preview ? { enabled: true } : hasAppAccess(app.id);
+      const access = G.hasAppAccess(app.id);
       const card = document.createElement("article");
       card.className = `access-app-card ${access.enabled ? "enabled" : "locked"}`;
       const icon = document.createElement("img");

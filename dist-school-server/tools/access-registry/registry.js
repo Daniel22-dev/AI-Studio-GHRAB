@@ -1,6 +1,6 @@
 await window.GHRAB.accessReady;
 
-if (window.GHRAB.canAccessAdminPage?.("access-registry") && !window.GHRAB.isColleaguePreview?.()) {
+if (window.GHRAB.canAccessAdminPage?.("access-registry") && !window.GHRAB.isTeacherPreview?.()) {
   const G = window.GHRAB;
   const body = document.querySelector("#registry-body");
   const empty = document.querySelector("#registry-empty");

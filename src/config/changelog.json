@@ -1,7 +1,29 @@
 {
   "schema": "ai-studio-changelog-v1",
-  "current": "0.21.68",
+  "current": "0.21.69",
   "items": [
+    {
+      "version": "0.21.69",
+      "date": "2026-09-14",
+      "title": {
+        "cs": "Kartový Report, přesný pohled kolegy a sjednocený návrat z Akademie",
+        "en": "Card-based Report, precise colleague preview and unified Academy return"
+      },
+      "changes": [
+        {
+          "cs": "Report se po otevření zobrazí jako pět velkých pracovních karet. Dvě A4 se vykreslí až v Náhledu a PDF; Vývoj, Provozní podklady, Evidence práce a Souhrn pro vedení mají vlastní pracovní prostor bez dlouhého pravého sloupce.",
+          "en": "Report now opens as five large workflow cards. The two A4 pages are rendered only in Preview and PDF; Development, Operational inputs, Work log and Leadership summary each have their own workspace without a long right sidebar."
+        },
+        {
+          "cs": "Pohled kolegy nabízí samostatně Adélu Stillerovou jako zástupce správce a konkrétního kolegu z místní evidence platných oprávnění. Náhled respektuje rozsah aplikací a školení, nemění skutečný permit správce a v náhledu nelze aplikace spouštět.",
+          "en": "Colleague preview now offers Adéla Stillerová as deputy administrator and a specific colleague from the local active-permit registry. The preview respects app and training scope, never changes the administrator permit and cannot launch applications."
+        },
+        {
+          "cs": "Interaktivní manuály Studia byly obsahově zkontrolovány proti aktuálnímu rozhraní devíti aplikací, rolím, Reportu a AI Akademii. Akademie 1.4.6 přesouvá návrat do Studia do jednotného levého horního tlačítka.",
+          "en": "Studio interactive manuals were reviewed against the current nine-app interface, roles, Report and AI Academy. Academy 1.4.6 moves the Studio return action to the unified top-left button."
+        }
+      ]
+    },
     {
       "version": "0.21.68",
       "date": "2026-09-14",

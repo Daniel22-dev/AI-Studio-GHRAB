@@ -35,6 +35,11 @@ const MANUAL_TOPICS = {
     "Plánování, záznam výuky, materiály a povinnosti",
     "Zálohy, komunikace, zastupování a serverová připravenost",
   ],
+  "maturita-desk": [
+    "Příprava a vedení ústní maturity z angličtiny",
+    "Práce s ukázkovými daty v aktuálním demo režimu",
+    "Bezpečné oddělení dema od ostrých maturitních dat",
+  ],
 };
 
 
@@ -173,11 +178,19 @@ function renderSummary() {
       ),
     );
   } else if (snapshot.valid) {
+    const previewProfile = G.getPreviewProfile?.();
+    const roleTitle = G.isDeputyPreview?.()
+      ? G.t(`Náhled zástupce: ${previewProfile?.displayName || "Adéla Stillerová"}`, `Deputy preview: ${previewProfile?.displayName || "Adéla Stillerová"}`)
+      : G.isColleaguePreview?.()
+        ? G.t(`Náhled kolegy: ${previewProfile?.displayName || "modelový učitel"}`, `Colleague preview: ${previewProfile?.displayName || "model teacher"}`)
+        : G.isOperator?.()
+          ? G.t("Přístup zástupce správce je aktivní", "Deputy administrator access is active")
+          : G.t("Přístup učitele je aktivní", "Teacher access is active");
     copy.append(
       make(
         "strong",
         "",
-        G.t("Přístup učitele je aktivní", "Teacher access is active"),
+        roleTitle,
       ),
       make(
         "small",

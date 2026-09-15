@@ -1,5 +1,5 @@
-import { BAKED_DEPLOYMENT_CONFIG } from "../config/deployment-baked.js?v=0.21.68";
-import { endAccessSession } from "./access-control.js?v=0.21.68";
+import { BAKED_DEPLOYMENT_CONFIG } from "../config/deployment-baked.js?v=0.21.69";
+import { endAccessSession } from "./access-control.js?v=0.21.69";
 
 const PLATFORM_SCHEMA = "ghrab-platform-runtime-v1";
 const DATA_MANIFEST_SCHEMA = "ghrab-data-manifest-v1";
@@ -56,7 +56,7 @@ function livePresenceEnabled() {
 }
 async function startConfiguredLivePresence(appId) {
   if (!livePresenceEnabled()) return;
-  const { startLivePresenceHeartbeat } = await import("../modules/live-presence.js?v=0.21.68");
+  const { startLivePresenceHeartbeat } = await import("../modules/live-presence.js?v=0.21.69");
   await startLivePresenceHeartbeat(Promise.resolve(deployment()), { appId });
 }
 function localProviderKeysAllowed() {

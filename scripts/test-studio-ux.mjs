@@ -82,7 +82,7 @@ const deploymentSchoolConfig = JSON.parse(await text("src/config/deployment.scho
 check(deploymentConfig.appBaseUrls?.["ai-academy"] === "/AI-Akademie-GHRAB/", "GitHub deployment nema adresu AI Akademie.");
 check(deploymentSchoolConfig.appBaseUrls?.["ai-academy"] === "/apps/ai-akademie/", "Skolni deployment nema adresu AI Akademie.");
 check(/import\(\s*[\"']\.\/modules\/header-live-presence\.js[\"']\s*\)/.test(appJs) && appJs.includes('setupHeaderLivePresence()'), "Online prehled neni primo v horni liste Studia.");
-check(appJs.includes('const operator = isOperator() && !preview') && appJs.includes('const operations = admin || operator') && appJs.includes('snapshot.permit?.role === "teacher"'), "Role admin/operator/teacher se v UI nerozdeluji bezpecne.");
+check(appJs.includes('const operator = isOperator();') && appJs.includes('const operations = admin || operator') && appJs.includes('snapshot.valid && snapshot.permit?.role === "teacher" && !preview') && appJs.includes('function isDeputyPreview()'), "Role admin/operator/teacher a bezpecny nahled zastupce se v UI nerozdeluji bezpecne.");
 check(appJs.includes('function swapCoreAppPositions') && appJs.includes('portal-drag-handle') && appJs.includes('dataTransfer'), "Top 4 nema drag-and-drop prehazovani pozic.");
 check(appJs.includes('if (index >= 0 && index < 4)') && !appJs.includes('if (isAdmin() && !isColleaguePreview() && index >= 0 && index < 4)'), "Presun Top 4 neni dostupny beznemu uciteli v jeho osobnim Top 4.");
 check(appJs.includes('pin-button') && appJs.includes('toggleFavoriteApp(app.id)') && !/if \(isAdmin\(\) && !isColleaguePreview\(\)\) \{\s*const pin = el/.test(appJs), "Hvezdicka Top 4 neni dostupna beznemu uciteli.");
@@ -114,13 +114,13 @@ check(!automationHtml.includes('id="live-presence-panel"'), "Online prehled zust
 check(pilotHtml.includes("Statistiky používání AI Studia") && !pilotHtml.includes("Volné fáze školního pilotu") && !pilotHtml.includes('id="pilot-phase"'), "Stranka statistik stale obsahuje zastaraly pilotni fazovy rozpis.");
 check(reportHtml.includes('class="section shell-wide report-input-map"') && reportHtml.includes('id="report-sources"') && reportHtml.includes('id="report-work-log"') && reportHtml.includes('id="report-management"') && reportHtml.includes('id="report-preview-panel"'), "Report nema rychly rozcestnik na podklady, evidenci, souhrn a PDF.");
 const reportTasksJs = await text("src/report/tasks.js");
-check(reportHtml.includes("SAMOSTATNÁ AGENDA") && reportHtml.includes("MĚSÍČNÍ REPORT · 4 KROKY") && reportHtml.includes('class="report-step-link"'), "Report nerozlisuje samostatne zadani od ctyrkrokoveho mesicniho reportu.");
+check(reportHtml.includes("ROZCESTNÍK REPORTU") && ["development", "operations", "work", "management", "preview"].every((key) => reportHtml.includes(`data-report-workspace-open="${key}"`)) && reportHtml.includes('id="report-workspace-toolbar"'), "Report nema novy kartovy rozcestnik peti samostatnych pracovnich oblasti.");
 check(!reportHtml.includes(">Vykázat běžnou práci</a>") && reportHtml.includes("Potřebujete zapsat běžnou činnost?"), "Karta zadani stale micha samostatne zadani s tlacitkem bezne prace.");
 check(reportTasksJs.includes("Další krok: pošlete kartu k odsouhlasení") && reportTasksJs.includes("přiložte ji k e-mailu ředitelce") && reportTasksJs.includes("Co znamená uzavřít návrh?"), "Workflow zadani nevysvetluje, co se stane po uzavreni a jak kartu predat vedeni.");
 check(reportTasksJs.includes("task-field-help") && reportTasksJs.includes("Požadovaný výsledek a způsob převzetí") && reportTasksJs.includes("Pracovní režim a odměňování"), "Pole zadani nemaji kontextovou napovedu k tomu, co se do nich vyplnuje.");
 check(reportTasksJs.includes("Smazat rozepsané zadání") && reportTasksJs.includes("Smazat lze pouze rozepsané zadání"), "Rozepsane zadani nema bezpecnou moznost smazani omezenou jen na draft.");
 check(teacherStudioGuide.includes("Co běžný učitel nemusí řešit") && !teacherStudioGuide.includes("Pilotní dashboard / Souhrnném reportu"), "Manual ucitele neni zjednoduseny pro bezny provoz.");
-check(adminStudioGuide.includes("Co vidím navíc oproti učiteli") && adminStudioGuide.includes("Statistiky používání") && adminStudioGuide.includes("horní záložku <strong>Report</strong>") && adminStudioGuide.includes('data-page="manual-admin"'), "Manual administratora nema aktualni reportingove workflow.");
+check(adminStudioGuide.includes("Co vidím navíc oproti učiteli") && adminStudioGuide.includes("Statistiky používání") && adminStudioGuide.includes("kartový rozcestník") && adminStudioGuide.includes("Adély Stillerové") && adminStudioGuide.includes('data-page="manual-admin"'), "Manual administratora nema aktualni kartovy Report nebo Pohled kolegy.");
 const adminStudioGuideGuard = await text("src/manualy/ai-studio-admin.js");
 check(adminStudioGuideGuard.includes("G.isAdmin()") && adminStudioGuideGuard.includes("ai-studio-teacher.html"), "Administratorsky manual nema runtime roli guard pro aktualni permit.");
 
@@ -274,7 +274,7 @@ try {
   globalThis.fetch = originalFetch;
 }
 const guideHtml = await text("src/manualy/ecosystem-guide.html");
-check(guideHtml.includes("OSM APLIKAC"), "Spolecny manual stale neuvadi osm aplikaci.");
+check(guideHtml.includes("DEV&#282;T APLIKAC") && guideHtml.includes("Maturita Desk"), "Spolecny manual neuvadi vsech devet aplikaci.");
 check(guideHtml.includes("Soukrom") && guideHtml.includes("ukon"), "Spolecny manual nepopisuje ukonceni prace na sdilenem zarizeni.");
 check(guideHtml.includes("server"), "Spolecny manual nerozlisuje planovany serverovy profil.");
 

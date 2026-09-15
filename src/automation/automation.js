@@ -1,6 +1,6 @@
 await window.GHRAB.accessReady;
 
-if (window.GHRAB.canAccessAdminPage?.("automation") && !window.GHRAB.isColleaguePreview?.()) {
+if (window.GHRAB.canAccessAdminPage?.("automation") && !window.GHRAB.isTeacherPreview?.()) {
 
   const {
 loadApps,loadSyncReport,loadAiCoreRegistry,loadAiReadiness,loadAiRuntime,localised,t,base}

@@ -1,14 +1,14 @@
-import { initTasks, taskRef } from "./tasks.js?v=0.21.68";
+import { initTasks, taskRef } from "./tasks.js?v=0.21.69";
 import {
   buildImpactReport,
   periodOfDate,
   safeEvent,
   safeStatistics,
-} from "../shared/safe-export.js?v=0.21.68";
-import { loadApiUsage } from "../modules/api-usage.js?v=0.21.68";
+} from "../shared/safe-export.js?v=0.21.69";
+import { loadApiUsage } from "../modules/api-usage.js?v=0.21.69";
 
 await window.GHRAB.accessReady;
-if (window.GHRAB.canAccessAdminPage?.("report") && !window.GHRAB.isColleaguePreview?.()) {
+if (window.GHRAB.canAccessAdminPage?.("report") && !window.GHRAB.isTeacherPreview?.()) {
   const G = window.GHRAB;
   const $ = (selector) => document.querySelector(selector);
   const SETTINGS_KEY = "ghrab.report.settings.v2";
@@ -88,6 +88,95 @@ if (window.GHRAB.canAccessAdminPage?.("report") && !window.GHRAB.isColleaguePrev
   let lastApiUsageKey = "";
   let lastApiUsage = null;
   const images = {};
+  const REPORT_WORKSPACES = {
+    development: {
+      kicker: ["SAMOSTATNÁ AGENDA", "SEPARATE WORKFLOW"],
+      title: ["Vývoj a zadání", "Development and assignments"],
+      description: ["Karty nové aplikace nebo významného vývoje, jejich schválení, předání a evidence.", "Cards for new apps or significant development, approval, hand-off and records."],
+    },
+    operations: {
+      kicker: ["MĚSÍČNÍ REPORT · PODKLADY", "MONTHLY REPORT · INPUTS"],
+      title: ["Provozní podklady", "Operational inputs"],
+      description: ["Období reportu, anonymní provozní data, API spotřeba a souhrny od kolegů.", "Report period, anonymous operational data, API usage and colleague summaries."],
+    },
+    work: {
+      kicker: ["MĚSÍČNÍ REPORT · PRÁCE", "MONTHLY REPORT · WORK"],
+      title: ["Evidence práce", "Work log"],
+      description: ["Skutečně odpracovaný čas, činnost, výsledek a vazba na zadání nebo release.", "Actual time worked, activity, result and link to an assignment or release."],
+    },
+    management: {
+      kicker: ["MĚSÍČNÍ REPORT · VEDENÍ", "MONTHLY REPORT · LEADERSHIP"],
+      title: ["Souhrn pro vedení", "Leadership summary"],
+      description: ["Manažerská druhá strana: výsledky, školení, rizika, rozhodnutí, priority a další náklady.", "Management page two: results, training, risks, decisions, priorities and other costs."],
+    },
+    preview: {
+      kicker: ["FINÁLNÍ VÝSTUP", "FINAL OUTPUT"],
+      title: ["Náhled a PDF", "Preview and PDF"],
+      description: ["Kontrola obou stran A4 a finální bezpečné exporty.", "Review both A4 pages and final safe exports."],
+    },
+  };
+
+  function workspaceText(pair) {
+    return G.state.language === "en" ? pair[1] : pair[0];
+  }
+  function activateReportWorkspace(key = "hub", { scroll = true } = {}) {
+    const validKey = key === "hub" || REPORT_WORKSPACES[key] ? key : "hub";
+    const hub = $("#report-hub");
+    const toolbar = $("#report-workspace-toolbar");
+    const workbench = $("#report-workbench");
+    const taskPanel = $("#report-tasks");
+    document.body.dataset.reportWorkspace = validKey;
+    if (hub) hub.hidden = validKey !== "hub";
+    if (toolbar) toolbar.hidden = validKey === "hub";
+    if (taskPanel) taskPanel.hidden = validKey !== "development";
+    if (workbench) workbench.hidden = validKey === "hub" || validKey === "development";
+    document.querySelectorAll("[data-report-panel]").forEach((panel) => {
+      if (panel === taskPanel) return;
+      panel.hidden = panel.dataset.reportPanel !== validKey;
+    });
+    if (validKey !== "hub") {
+      const meta = REPORT_WORKSPACES[validKey];
+      $("#report-workspace-kicker").textContent = workspaceText(meta.kicker);
+      $("#report-workspace-title").textContent = workspaceText(meta.title);
+      $("#report-workspace-description").textContent = workspaceText(meta.description);
+      if (validKey === "preview") {
+        previewDirty = true;
+        requestAnimationFrame(() => void renderVisiblePreview());
+      }
+    }
+    if (scroll) {
+      const target = validKey === "hub" ? hub : toolbar;
+      target?.scrollIntoView({ behavior: "auto", block: "start" });
+    }
+  }
+
+  function setupReportWorkspaceHub() {
+    document.querySelectorAll("[data-report-workspace-open]").forEach((button) => {
+      button.addEventListener("click", () => activateReportWorkspace(button.dataset.reportWorkspaceOpen));
+    });
+    $("[data-report-workspace-home]")?.addEventListener("click", () => activateReportWorkspace("hub"));
+    const hashWorkspace = new Map([
+      ["#report-tasks", "development"],
+      ["#report-scope", "operations"],
+      ["#report-sources", "operations"],
+      ["#report-api-costs", "operations"],
+      ["#report-imports", "operations"],
+      ["#report-work-log", "work"],
+      ["#report-management", "management"],
+      ["#report-preview-panel", "preview"],
+    ]);
+    document.addEventListener("click", (event) => {
+      const link = event.target.closest('a[href^="#"]');
+      if (!link) return;
+      const key = hashWorkspace.get(link.getAttribute("href"));
+      if (!key) return;
+      event.preventDefault();
+      activateReportWorkspace(key);
+      const target = document.querySelector(link.getAttribute("href"));
+      requestAnimationFrame(() => target?.scrollIntoView({ behavior: "auto", block: "start" }));
+    });
+    activateReportWorkspace("hub", { scroll: false });
+  }
 
   function parse(key, fallback) {
     try {
@@ -1606,6 +1695,7 @@ if (window.GHRAB.canAccessAdminPage?.("report") && !window.GHRAB.isColleaguePrev
   }
 
   taskWorkflow = initTasks({G, downloadBlob, canvasesPdf, onChange: () => { previewDirty = true; void renderVisiblePreview(); }, onWork: (task) => {
+    activateReportWorkspace("work");
     resetWorkForm();
     $("#report-work-task").value=taskRef(task);
     populateWorkAreaSelect(task.app || task.title);
@@ -1619,25 +1709,7 @@ if (window.GHRAB.canAccessAdminPage?.("report") && !window.GHRAB.isColleaguePrev
   ["#report-from", "#report-to", "#report-include-local"].forEach((selector) =>
     $(selector)?.addEventListener("change", () => scheduleRender(0)),
   );
-  const routeLinks = [...document.querySelectorAll('.report-route-card[href^="#"], .report-step-link[href^="#"]')];
-  const setActiveRoute = (link) => {
-    for (const item of routeLinks) item.removeAttribute('aria-current');
-    link?.setAttribute('aria-current', 'true');
-  };
-  for (const link of routeLinks) {
-    link.addEventListener('click', (event) => {
-      const target = document.querySelector(link.getAttribute('href'));
-      if (!target) return;
-      event.preventDefault();
-      setActiveRoute(link);
-      target.scrollIntoView({ behavior: 'auto', block: 'start' });
-      history.replaceState(null, '', link.hash);
-      if (link.hash === '#report-preview-panel') {
-        previewDirty = true;
-        requestAnimationFrame(() => void renderVisiblePreview());
-      }
-    });
-  }
+  setupReportWorkspaceHub();
   const previewObserver = 'IntersectionObserver' in window
     ? new IntersectionObserver((entries) => {
         if (entries.some((entry) => entry.isIntersecting)) void renderVisiblePreview();
@@ -1823,7 +1895,11 @@ if (window.GHRAB.canAccessAdminPage?.("report") && !window.GHRAB.isColleaguePrev
       "text/csv;charset=utf-8",
     );
   });
-  document.addEventListener("ghrab:language", render);
+  document.addEventListener("ghrab:language", () => {
+    const activeWorkspace = document.body.dataset.reportWorkspace || "hub";
+    activateReportWorkspace(activeWorkspace, { scroll: false });
+    render();
+  });
   setupDefaults();
   apps = await G.loadApps();
   resetWorkForm();
