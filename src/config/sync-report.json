@@ -21,9 +21,9 @@
       "repository": "daniel22-dev/generator-testu",
       "ok": false,
       "verification": "snapshot",
-      "version": "7.1.25",
+      "version": "7.1.28",
       "sourceVersion": null,
-      "error": "nasazení: fetch failed; repozitář: fetch failed",
+      "error": "manual release-wave reconciliation to 7.1.28; GitHub sync must re-verify deployment/repository source",
       "lastSourceVerifiedAt": null,
       "lastLiveVerifiedAt": null
     },

@@ -2,6 +2,11 @@
 
 > Tento soubor se generuje ze `src/config/changelog.json`. Neupravujte jej ručně.
 
+## 0.21.74 — 2026-09-15
+**Ruční srovnání release-wave Generátoru**
+
+- Generátor je explicitně ručně přijat do Platform 1.1.2 release-wave ve verzi 7.1.28. Auto-patch enrollment se nemění; Diferenciátor 1.3.46, Lesson Hub 1.2.22 a Maturita Desk 1.0.3 zůstávají beze změny v manual režimu.
+
 ## 0.21.73 — 2026-09-15
 **Performance D**
 

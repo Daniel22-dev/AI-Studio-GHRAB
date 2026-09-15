@@ -13,7 +13,9 @@ import {
 
 const root = path.resolve(path.dirname(fileURLToPath(import.meta.url)), "..");
 const actualPolicy = JSON.parse(readFileSync(path.join(root, "src", "config", "release-promotion-policy.json"), "utf8"));
+const actualWave = JSON.parse(readFileSync(path.join(root, "src", "config", "release-wave.json"), "utf8"));
 const actualEntries = new Map((actualPolicy.applications || []).map((entry) => [entry.id, entry]));
+const actualWaveEntries = new Map((actualWave.applications || []).map((entry) => [entry.id, entry]));
 const actualApps = JSON.parse(readFileSync(path.join(root, "src", "config", "apps.generated.json"), "utf8"));
 const actualSources = JSON.parse(readFileSync(path.join(root, "src", "config", "sources.json"), "utf8"));
 
@@ -88,6 +90,17 @@ assert.equal(actualEntries.get("sortio")?.expectedStudioBridge, "not-applicable"
 assert.equal(actualEntries.has("lesson-hub"), false);
 assert.equal(actualEntries.has("differentiator"), false);
 assert.equal(actualEntries.has("generator"), false);
+assert.equal(actualEntries.has("maturita-desk"), false);
+
+for (const [appId, version] of [
+  ["generator", "7.1.28"],
+  ["differentiator", "1.3.46"],
+  ["lesson-hub", "1.2.22"],
+  ["maturita-desk", "1.0.3"],
+]) {
+  assert.equal(actualWaveEntries.get(appId)?.version, version, `${appId}: manual release-wave baseline must match the explicitly accepted version`);
+  assert.equal(actualApps.find((app) => app.id === appId)?.version, version, `${appId}: registry must match the manual release-wave baseline`);
+}
 
 for (const entry of actualPolicy.applications) {
   const current = actualApps.find((app) => app.id === entry.id);

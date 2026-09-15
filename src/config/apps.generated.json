@@ -6,7 +6,7 @@
       "cs": "Generátor interaktivních testů",
       "en": "Interactive Test Generator"
     },
-    "version": "7.1.25",
+    "version": "7.1.28",
     "status": {
       "cs": "Připraveno k řízenému pilotu",
       "en": "Ready for controlled pilot"
@@ -84,7 +84,7 @@
       "studioBridge": 2,
       "artifactEnvelope": 1,
       "storagePrefix": "ghrab.generator.",
-      "cacheName": "ghrab-generator-v7.1.25"
+      "cacheName": "ghrab-generator-v7.1.28"
     }
   },
   {

@@ -6,7 +6,7 @@
       "cs": "Generátor interaktivních testů",
       "en": "Interactive Test Generator"
     },
-    "version": "7.1.25",
+    "version": "7.1.28",
     "status": {
       "cs": "Připraveno k řízenému pilotu",
       "en": "Ready for controlled pilot"
@@ -53,7 +53,7 @@
       "materialSchema": "ghrab-material-v1",
       "studioBridge": "2.0",
       "platformContract": "ghrab-platform-v1",
-      "platformRange": ">=1.1.0 <2.0.0"
+      "platformRange": ">=1.1.2 <2.0.0"
     },
     "publishedAt": "2026-08-04T16:40:00.000Z",
     "aiCore": {
@@ -74,20 +74,20 @@
     "paths": {
       "app": "https://daniel22-dev.github.io/generator-testu/",
       "manual": "https://daniel22-dev.github.io/generator-testu/manual/",
-      "manifest": ""
+      "manifest": "https://daniel22-dev.github.io/generator-testu/studio-manifest.json"
     },
     "platform": {
       "schema": "ghrab-platform-app-integration-v1",
       "contract": "ghrab-platform-v1",
-      "requiredPlatformRange": ">=1.1.0 <2.0.0",
-      "platformVersion": "1.1.0",
+      "requiredPlatformRange": ">=1.1.2 <2.0.0",
+      "platformVersion": "1.1.2",
       "brandVersion": "1.0.0",
-      "themeContract": "ghrab-theme-v1",
+      "themeContract": 1,
       "swContract": 1,
-      "studioBridge": "ghrab-studio-handoff-v2",
-      "artifactEnvelope": "ghrab-artifact-envelope-v1",
+      "studioBridge": 2,
+      "artifactEnvelope": 1,
       "storagePrefix": "ghrab.generator.",
-      "cacheName": "ghrab-generator-v7.1.25",
+      "cacheName": "ghrab-generator-v7.1.28",
       "accessibilityContract": "ghrab-a11y-v1",
       "performanceContract": "ghrab-performance-v1",
       "moduleContract": "ghrab-lazy-modules-v1"

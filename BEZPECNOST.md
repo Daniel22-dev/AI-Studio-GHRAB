@@ -1,8 +1,8 @@
-# Bezpečnostní hranice AI Studio GHRAB 0.21.73
+# Bezpečnostní hranice AI Studio GHRAB 0.21.74
 
-> Aktuální verze: **0.21.73** · etapa P5
+> Aktuální verze: **0.21.74** · etapa P5
 
-> 0.21.73 přidává Performance Pack fáze D: runtime budgety jsou release-blocking na referenčním profilu CPU ×4, gateway obraz se odkládá za první použitelný render a critical-entry budget je zpřísněn na 420 kB.
+> 0.21.74 ručně srovnává release-wave Generátoru na 7.1.28 bez auto-patch enrollmentu; fail-closed promotion policy a Performance Pack A–D zůstávají beze změny.
 
 ## Rychlá kontrola dat v portálu
 
@@ -35,7 +35,7 @@ Od 0.21.59 se běžný patch GARP 2.5.1 zařazené aplikace může přijmout aut
 
 ## Stav ochrany přímých adres
 
-Ochranný bootstrap je integrován v Generátoru 7.1.25, Diferenciátoru 1.3.46, Hodnotiteli maturitních slohů 1.5.25, LUDUSu 1.16.23, Korespondenčním asistentovi 5.10.25, ACTIVA 0.5.27, SORTIO 1.1.17 a Lesson Hubu 1.2.22. Běžný vstupní bod těchto aplikací nejprve načte centrální modul a ověří podpis, platnost, revokaci, roli, ID aplikace a aktuální verzi školení. Jde o praktickou ochranu proti běžnému sdílení přímé adresy, nikoli o serverovou ochranu zdrojového kódu: technicky zkušený uživatel může veřejný statický kód stáhnout nebo spustit mimo standardní bootstrap. Při nedostupnosti centrální konfigurace robustní bootstrap zobrazí srozumitelnou chybovou obrazovku a aplikaci nespustí.
+Ochranný bootstrap je integrován v Generátoru 7.1.28, Diferenciátoru 1.3.46, Hodnotiteli maturitních slohů 1.5.25, LUDUSu 1.16.23, Korespondenčním asistentovi 5.10.25, ACTIVA 0.5.27, SORTIO 1.1.17 a Lesson Hubu 1.2.22. Běžný vstupní bod těchto aplikací nejprve načte centrální modul a ověří podpis, platnost, revokaci, roli, ID aplikace a aktuální verzi školení. Jde o praktickou ochranu proti běžnému sdílení přímé adresy, nikoli o serverovou ochranu zdrojového kódu: technicky zkušený uživatel může veřejný statický kód stáhnout nebo spustit mimo standardní bootstrap. Při nedostupnosti centrální konfigurace robustní bootstrap zobrazí srozumitelnou chybovou obrazovku a aplikaci nespustí.
 
 ## Klíče
 
