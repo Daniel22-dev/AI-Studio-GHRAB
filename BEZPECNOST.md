@@ -1,8 +1,8 @@
-# Bezpečnostní hranice AI Studio GHRAB 0.21.74
+# Bezpečnostní hranice AI Studio GHRAB 0.21.75
 
-> Aktuální verze: **0.21.74** · etapa P5
+> Aktuální verze: **0.21.75** · etapa P5
 
-> 0.21.74 ručně srovnává release-wave Generátoru na 7.1.28 bez auto-patch enrollmentu; fail-closed promotion policy a Performance Pack A–D zůstávají beze změny.
+> 0.21.75 ručně srovnává release-wave Generátoru na 7.1.28 bez auto-patch enrollmentu; fail-closed promotion policy a Performance Pack A–D zůstávají beze změny.
 
 ## Rychlá kontrola dat v portálu
 

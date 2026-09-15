@@ -1,7 +1,21 @@
 {
   "schema": "ai-studio-changelog-v1",
-  "current": "0.21.74",
+  "current": "0.21.75",
   "items": [
+    {
+      "version": "0.21.75",
+      "date": "2026-09-15",
+      "title": {
+        "cs": "Visual QA hotfix pro lazy obrázky",
+        "en": "Visual QA hotfix for lazy images"
+      },
+      "changes": [
+        {
+          "cs": "Vizuální QA rozlišuje skutečně rozbitý obrázek od záměrně odloženého loading=\"lazy\" obrázku mimo aktuální viewport. Phase B lazy loading zůstává zachován; existenci ikon všech aplikací dál kontroluje statická regresní sada.",
+          "en": "Visual QA now distinguishes a genuinely broken image from an intentionally deferred loading=\"lazy\" image outside the current viewport. Phase B lazy loading remains enabled; static regressions continue to verify every app icon exists."
+        }
+      ]
+    },
     {
       "version": "0.21.74",
       "date": "2026-09-15",

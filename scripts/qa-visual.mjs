@@ -143,9 +143,22 @@ async function closeWithLimit(target, ms = 8000, forceChildren = false) {
 
 async function waitForImages(page) {
   await page.evaluate(async () => {
+    const isRelevantNow = (img) => {
+      if (img.loading !== "lazy") return true;
+      if (img.complete) return true;
+      const rect = img.getBoundingClientRect();
+      return (
+        rect.bottom > 0 &&
+        rect.right > 0 &&
+        rect.top < innerHeight &&
+        rect.left < innerWidth
+      );
+    };
     await Promise.all(
       [...document.images]
-        .filter((img) => String(img.getAttribute("src") || "").trim())
+        .filter((img) =>
+          String(img.getAttribute("src") || "").trim() && isRelevantNow(img),
+        )
         .map((img) =>
           img.complete
             ? Promise.resolve()
@@ -220,10 +233,16 @@ async function inspectPage(page, scenario) {
       const broken = [...document.images]
         .filter((img) => {
           const src = String(img.getAttribute("src") || "").trim();
-          return (
-            src &&
-            ((!img.complete && src) || (img.complete && img.naturalWidth === 0))
-          );
+          if (!src) return false;
+          if (img.complete) return img.naturalWidth === 0;
+          if (img.loading !== "lazy") return true;
+          const rect = img.getBoundingClientRect();
+          const relevantNow =
+            rect.bottom > 0 &&
+            rect.right > 0 &&
+            rect.top < vh &&
+            rect.left < vw;
+          return relevantNow;
         })
         .map((img) => img.getAttribute("src"));
       const interactiveOutside = [

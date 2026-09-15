@@ -1,13 +1,13 @@
 # AI Studio GHRAB
 
-**Aktuální verze:** 0.21.74
+**Aktuální verze:** 0.21.75
 
-0.21.74 provádí explicitní manual release-wave reconciliation Generátoru 7.1.25 → 7.1.28. Auto-patch policy se nemění a Performance Pack A–D zůstává funkčně beze změny.
+0.21.75 provádí explicitní manual release-wave reconciliation Generátoru 7.1.25 → 7.1.28. Auto-patch policy se nemění a Performance Pack A–D zůstává funkčně beze změny.
 
 **Performance budget:** precache 1 250 000 B; critical entry nově 420 000 B; runtime limity jsou povinně měřené v P5 release gate.
 **Platforma:** GHRAB Platform 1.1.2 · etapa P5
 
-## Nově v 0.21.74
+## Nově v 0.21.75
 
 - **Manual release-wave reconciliation**: Generátor je vědomě přijat ve verzi 7.1.28 bez auto-patch enrollmentu.
 - **Fail-closed policy zachována**: Diferenciátor 1.3.46, Lesson Hub 1.2.22 a Maturita Desk 1.0.3 zůstávají v manual režimu; AI Akademie není do devítiaplikační wave tímto releasem přidávána.

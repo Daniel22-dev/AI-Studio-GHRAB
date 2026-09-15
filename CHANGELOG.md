@@ -2,6 +2,11 @@
 
 > Tento soubor se generuje ze `src/config/changelog.json`. Neupravujte jej ručně.
 
+## 0.21.75 — 2026-09-15
+**Visual QA hotfix pro lazy obrázky**
+
+- Vizuální QA rozlišuje skutečně rozbitý obrázek od záměrně odloženého loading="lazy" obrázku mimo aktuální viewport. Phase B lazy loading zůstává zachován; existenci ikon všech aplikací dál kontroluje statická regresní sada.
+
 ## 0.21.74 — 2026-09-15
 **Ruční srovnání release-wave Generátoru**
 

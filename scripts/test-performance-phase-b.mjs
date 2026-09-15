@@ -7,6 +7,10 @@ import { fileURLToPath } from "node:url";
 const root = path.resolve(path.dirname(fileURLToPath(import.meta.url)), "..");
 const app = await readFile(path.join(root, "src/app.js"), "utf8");
 const styles = await readFile(path.join(root, "src/styles.css"), "utf8");
+const visualQa = await readFile(
+  path.join(root, "scripts/qa-visual.mjs"),
+  "utf8",
+);
 
 function block(from, to) {
   const start = app.indexOf(from);
@@ -65,6 +69,16 @@ assert.match(
   styles,
   /\.extra-app-card\s*\{[^}]*content-visibility:\s*auto;[^}]*contain-intrinsic-size:\s*auto\s+238px;/s,
 );
+const lazyVisualGuards =
+  visualQa.match(/if \(img\.loading !== "lazy"\) return true;/g) || [];
+assert.equal(
+  lazyVisualGuards.length,
+  2,
+  "visual QA must distinguish off-screen lazy images in wait and broken-image checks",
+);
+assert.ok(visualQa.includes('if (img.complete) return img.naturalWidth === 0;'));
+assert.ok(visualQa.includes("rect.top < innerHeight"));
+assert.ok(visualQa.includes("rect.top < vh"));
 
 const selectorSource = block(
   "function selectCoreApps(apps) {",
