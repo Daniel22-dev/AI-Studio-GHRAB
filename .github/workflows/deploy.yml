@@ -46,6 +46,9 @@ jobs:
       - name: Verify Platform 1.1.2 release-wave sources
         if: github.event_name != 'pull_request'
         run: npm run qa:ecosystem:verified
+      - name: Apply verified patch auto-promotions to release wave
+        if: github.event_name != 'pull_request'
+        run: node scripts/apply-auto-promotions.mjs qa-results/release-promotion-report.json src/config/release-wave.json
       - name: Verify immutable Core before formatting
         run: npm run verify:ai-core
       - name: Normalize source formatting
