@@ -24,6 +24,14 @@ jobs:
         run: |
           node -e "const p=require('./node_modules/axe-core/package.json'); if(p.version!=='4.12.1') process.exit(1)"
           node -e "const p=require('./node_modules/playwright/package.json'); if(p.version!=='1.61.1') process.exit(1)"
+      - name: Synchronise application manifests
+        run: npm run sync
+      - name: Format generated registry files
+        run: npm run format:generated-json
+      - name: Verify live release-wave sources and auto-promotion eligibility
+        run: npm run qa:ecosystem:verified
+      - name: Apply verified patch auto-promotions to release wave
+        run: node scripts/apply-auto-promotions.mjs qa-results/release-promotion-report.json src/config/release-wave.json
       - name: Install pinned Playwright Chromium
         shell: bash
         run: |

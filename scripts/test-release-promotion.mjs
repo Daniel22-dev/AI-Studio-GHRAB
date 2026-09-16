@@ -77,11 +77,11 @@ assert.equal(normalizeStudioBridge("2.0"), "v2");
 assert.equal(normalizeStudioBridge("not-applicable"), "not-applicable");
 assert.equal(normalizeStudioBridge("v1"), null);
 assert.equal(
-  evaluateRepositoryFallback({ waveVersion: "7.1.28", candidateVersion: "7.1.28" }).status,
+  evaluateRepositoryFallback({ waveVersion: "7.1.40", candidateVersion: "7.1.40" }).status,
   "CURRENT",
 );
 assert.deepEqual(
-  evaluateRepositoryFallback({ waveVersion: "7.1.28", candidateVersion: "7.1.30" }),
+  evaluateRepositoryFallback({ waveVersion: "7.1.40", candidateVersion: "7.1.41" }),
   {
     status: "PIN_WAVE",
     reasonCode: "SOURCE_CANDIDATE_PENDING_RELEASE",
@@ -90,29 +90,32 @@ assert.deepEqual(
   },
 );
 assert.equal(
-  evaluateRepositoryFallback({ waveVersion: "7.1.28", candidateVersion: "7.1.27" }).reasonCode,
+  evaluateRepositoryFallback({ waveVersion: "7.1.40", candidateVersion: "7.1.39" }).reasonCode,
   "SOURCE_BEHIND_WAVE",
 );
 assert.equal(
-  evaluateRepositoryFallback({ waveVersion: "7.1.28", candidateVersion: "7.1.30-beta.1" }).reasonCode,
+  evaluateRepositoryFallback({ waveVersion: "7.1.40", candidateVersion: "7.1.41-beta.1" }).reasonCode,
   "INVALID_SOURCE_VERSION",
 );
 const pendingRepositorySource = {
   verification: "repository",
   registryPinned: true,
   pendingReleaseCandidate: true,
-  releaseWaveVersion: "7.1.28",
-  version: "7.1.28",
-  sourceVersion: "7.1.30",
+  releaseWaveVersion: "7.1.40",
+  version: "7.1.40",
+  sourceVersion: "7.1.41",
 };
-assert.equal(isPendingRepositoryCandidate(pendingRepositorySource, "7.1.28"), true);
-assert.equal(isPendingRepositoryCandidate({ ...pendingRepositorySource, verification: "deployment" }, "7.1.28"), false);
-assert.equal(isPendingRepositoryCandidate({ ...pendingRepositorySource, registryPinned: false }, "7.1.28"), false);
-assert.equal(isPendingRepositoryCandidate({ ...pendingRepositorySource, sourceVersion: "7.1.28" }, "7.1.28"), false);
-assert.equal(isPendingRepositoryCandidate({ ...pendingRepositorySource, sourceVersion: "7.1.27" }, "7.1.28"), false);
+assert.equal(isPendingRepositoryCandidate(pendingRepositorySource, "7.1.40"), true);
+assert.equal(isPendingRepositoryCandidate({ ...pendingRepositorySource, verification: "deployment" }, "7.1.40"), false);
+assert.equal(isPendingRepositoryCandidate({ ...pendingRepositorySource, registryPinned: false }, "7.1.40"), false);
+assert.equal(isPendingRepositoryCandidate({ ...pendingRepositorySource, sourceVersion: "7.1.40" }, "7.1.40"), false);
+assert.equal(isPendingRepositoryCandidate({ ...pendingRepositorySource, sourceVersion: "7.1.39" }, "7.1.40"), false);
 
 assert.deepEqual(validatePromotionPolicy(actualPolicy, ["generator", "differentiator", "essay-evaluator", "correspondence", "ludus", "activity-builder", "sortio", "lesson-hub", "maturita-desk"]), []);
-assert.deepEqual(actualPolicy.applications.map((entry) => entry.id), ["correspondence", "essay-evaluator", "ludus", "activity-builder", "sortio"]);
+assert.deepEqual(actualPolicy.applications.map((entry) => entry.id), ["generator", "correspondence", "essay-evaluator", "ludus", "activity-builder", "sortio"]);
+assert.equal(actualEntries.get("generator")?.minimumVersion, "7.1.40");
+assert.equal(actualEntries.get("generator")?.expectedStudioBridge, "v2");
+assert.equal(actualWaveEntries.get("generator")?.version, "7.1.40");
 assert.equal(actualEntries.get("correspondence")?.minimumVersion, "5.10.25");
 assert.equal(actualEntries.get("correspondence")?.expectedStudioBridge, "v2");
 assert.equal(actualEntries.get("essay-evaluator")?.minimumVersion, "1.5.25");
@@ -125,11 +128,9 @@ assert.equal(actualEntries.get("sortio")?.minimumVersion, "1.1.17");
 assert.equal(actualEntries.get("sortio")?.expectedStudioBridge, "not-applicable");
 assert.equal(actualEntries.has("lesson-hub"), false);
 assert.equal(actualEntries.has("differentiator"), false);
-assert.equal(actualEntries.has("generator"), false);
 assert.equal(actualEntries.has("maturita-desk"), false);
 
 for (const [appId, version] of [
-  ["generator", "7.1.28"],
   ["differentiator", "1.3.46"],
   ["lesson-hub", "1.2.22"],
   ["maturita-desk", "1.0.3"],
@@ -139,13 +140,18 @@ for (const [appId, version] of [
 }
 
 for (const entry of actualPolicy.applications) {
-  const current = actualApps.find((app) => app.id === entry.id);
+  const registryApp = actualApps.find((app) => app.id === entry.id);
   const sourceConfig = actualSources.find((item) => item.id === entry.id);
-  assert.ok(current, `${entry.id}: current app registry entry missing`);
+  const acceptedVersion = actualWaveEntries.get(entry.id)?.version;
+  assert.ok(registryApp, `${entry.id}: current app registry entry missing`);
   assert.ok(sourceConfig, `${entry.id}: source registry entry missing`);
+  assert.ok(acceptedVersion, `${entry.id}: accepted release-wave baseline missing`);
+  const current = structuredClone(registryApp);
+  current.version = acceptedVersion;
+  current.platform = { ...current.platform, cacheName: `ghrab-${entry.id}-v${acceptedVersion}` };
   const currentVsMinimum = compareVersions(current.version, entry.minimumVersion);
   assert.notEqual(currentVsMinimum, null, `${entry.id}: current/minimum version must be stable SemVer`);
-  assert.ok(currentVsMinimum >= 0, `${entry.id}: current registry version must not be below reviewed enrollment minimum`);
+  assert.ok(currentVsMinimum >= 0, `${entry.id}: accepted baseline must not be below reviewed enrollment minimum`);
   const [major, minor, patch] = current.version.split(".").map(Number);
   const nextVersion = `${major}.${minor}.${patch + 1}`;
   const candidate = structuredClone(current);
@@ -170,6 +176,54 @@ for (const entry of actualPolicy.applications) {
     enabled: true,
   });
   assert.equal(decision.status, "ELIGIBLE", `${entry.id}: reviewed baseline must allow a contract-identical next patch`);
+}
+
+const generatorRegistry = actualApps.find((app) => app.id === "generator");
+const generatorSource = actualSources.find((item) => item.id === "generator");
+const generatorPolicy = actualEntries.get("generator");
+assert.ok(generatorRegistry && generatorSource && generatorPolicy, "generator: policy/source/registry fixture missing");
+const generatorCandidate = structuredClone(generatorRegistry);
+generatorCandidate.version = "7.1.41";
+generatorCandidate.platform = { ...generatorCandidate.platform, cacheName: "ghrab-generator-v7.1.41" };
+const generatorReport = {
+  id: "generator",
+  ok: true,
+  verification: "deployment",
+  repository: generatorSource.repository,
+  version: "7.1.41",
+  sourceVersion: "7.1.41",
+  operationsWarning: null,
+};
+const generatorDecide = (app = generatorCandidate, report = generatorReport) => evaluateAutoPromotion({
+  app,
+  waveApp: { id: "generator", version: "7.1.40" },
+  source: generatorSource,
+  sourceReport: report,
+  policyEntry: generatorPolicy,
+  wave,
+  enabled: true,
+});
+assert.equal(generatorDecide().status, "ELIGIBLE");
+for (const blockedVersion of ["7.2.0", "8.0.0"]) {
+  const app = structuredClone(generatorCandidate);
+  app.version = blockedVersion;
+  app.platform.cacheName = `ghrab-generator-v${blockedVersion}`;
+  const report = { ...generatorReport, version: blockedVersion, sourceVersion: blockedVersion };
+  assert.equal(generatorDecide(app, report).reasonCode, "NON_PATCH_CHANGE");
+}
+{
+  const app = structuredClone(generatorCandidate);
+  app.version = "7.1.39";
+  app.platform.cacheName = "ghrab-generator-v7.1.39";
+  const report = { ...generatorReport, version: "7.1.39", sourceVersion: "7.1.39" };
+  assert.equal(generatorDecide(app, report).reasonCode, "ROLLBACK");
+}
+assert.equal(generatorDecide(generatorCandidate, { ...generatorReport, repository: "attacker/repo" }).reasonCode, "REPOSITORY_IDENTITY");
+{
+  const app = structuredClone(generatorCandidate);
+  app.platform.studioBridge = "not-applicable";
+  app.compatibility = { ...app.compatibility, studioBridge: "not-applicable" };
+  assert.equal(generatorDecide(app).reasonCode, "STUDIO_BRIDGE");
 }
 
 assert.deepEqual(validatePromotionPolicy({
@@ -214,4 +268,4 @@ assert.equal(decide({ app: { ...baseApp, compatibility: { ...baseApp.compatibili
 assert.equal(decide({ sourceReport: { ...baseReport, operationsWarning: "operations mismatch" } }).reasonCode, "AI_OPERATIONS_UNVERIFIED");
 assert.equal(decide({ waveApp: { id: "correspondence", version: "5.10.24" } }).reasonCode, "PRE_GARP_BASELINE");
 
-console.log("Release promotion policy tests: PASS (stable patch only, live deployment only, GARP-enrolled, fail-closed). ");
+console.log("Release promotion policy tests: PASS (Generator 7.1.40 enrolled; stable patch only, live deployment only, fail-closed). ");
