@@ -37,7 +37,8 @@
       "minimumVersion": "1.16.23",
       "assuranceBaseline": "GARP-2.5.1-SHIELD-PREP",
       "requiredVerification": "deployment",
-      "note": "Enrolled from independently reviewed LUDUS 1.16.23 GARP 2.5.1 SHIELD-PREP baseline (Claude Role B round 3). Future minor/major waves remain manual.",
+      "requiredEvidenceContract": "ghrab-patch-assurance-v1",
+      "note": "Enrolled from independently reviewed LUDUS 1.16.23 GARP 2.5.1 SHIELD-PREP baseline (Claude Role B round 3). Auto-patch now additionally requires live SHA-256-bound GARP/SBOM/provenance evidence. Future minor/major waves remain manual.",
       "expectedStudioBridge": "v2"
     },
     {
