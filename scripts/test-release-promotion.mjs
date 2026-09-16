@@ -113,9 +113,17 @@ assert.equal(isPendingRepositoryCandidate({ ...pendingRepositorySource, sourceVe
 
 assert.deepEqual(validatePromotionPolicy(actualPolicy, ["generator", "differentiator", "essay-evaluator", "correspondence", "ludus", "activity-builder", "sortio", "lesson-hub", "maturita-desk"]), []);
 assert.deepEqual(actualPolicy.applications.map((entry) => entry.id), ["generator", "correspondence", "essay-evaluator", "ludus", "activity-builder", "sortio"]);
-assert.equal(actualEntries.get("generator")?.minimumVersion, "7.1.40");
+const generatorMinimumVersion = actualEntries.get("generator")?.minimumVersion;
+const generatorWaveVersion = actualWaveEntries.get("generator")?.version;
+assert.equal(generatorMinimumVersion, "7.1.40");
 assert.equal(actualEntries.get("generator")?.expectedStudioBridge, "v2");
-assert.equal(actualWaveEntries.get("generator")?.version, "7.1.40");
+const generatorBaselineComparison = compareVersions(generatorWaveVersion, generatorMinimumVersion);
+assert.notEqual(generatorBaselineComparison, null, "generator: release-wave/minimum must be stable SemVer");
+assert.ok(generatorBaselineComparison >= 0, `generator: release-wave ${generatorWaveVersion} must not precede reviewed minimum ${generatorMinimumVersion}`);
+assert.ok(
+  ["same", "patch"].includes(classifyVersionChange(generatorMinimumVersion, generatorWaveVersion)),
+  `generator: release-wave ${generatorWaveVersion} must stay on the reviewed 7.1.x patch line`,
+);
 assert.equal(actualEntries.get("correspondence")?.minimumVersion, "5.10.25");
 assert.equal(actualEntries.get("correspondence")?.expectedStudioBridge, "v2");
 assert.equal(actualEntries.get("essay-evaluator")?.minimumVersion, "1.5.25");
