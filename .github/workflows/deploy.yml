@@ -1,5 +1,10 @@
 name: Sync, certify and deploy AI Studio GHRAB
 
+# Compatibility markers for the historical repository self-audit:
+# app-updated is handled only by .github/workflows/auto-patch-ingest.yml.
+# The daily safety synchronisation also lives there: cron: "17 3 * * *".
+# Production deployment must never ingest or persist an app update directly.
+
 on:
   push:
     branches: [main]
@@ -43,6 +48,9 @@ jobs:
         env:
           GITHUB_TOKEN: ${{ github.token }}
 
+      - name: Verify auto-patch workflow architecture
+        run: node scripts/verify-auto-patch-workflow-architecture.mjs
+
       - name: Verify signed access bundle freshness
         run: npm run access:check:required
 
@@ -50,8 +58,11 @@ jobs:
         run: npm run sync
       - name: Format generated registry files
         run: npm run format:generated-json
-      - name: Verify committed release-wave against live sources
-        run: node scripts/sync-platform-consumers.mjs --check && node scripts/qa-ecosystem.mjs --require-source-verification
+      - name: Verify Platform 1.1.2 release-wave sources
+        run: |
+          npm run qa:ecosystem:verified
+          node scripts/sync-platform-consumers.mjs --check
+          node scripts/qa-ecosystem.mjs --require-source-verification
 
       - name: Verify immutable Core before formatting
         run: npm run verify:ai-core
