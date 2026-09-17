@@ -30,8 +30,13 @@ for (const item of report.sources || []) {
   try {
     const identity = await verifyDeploymentReleaseIdentity({ app, source });
     item.releaseIdentity = identity;
-    if (identity.status === 'VERIFIED') verified += 1;
-    else absent += 1;
+    if (identity.status === 'VERIFIED') {
+      verified += 1;
+      console.log(`Release identity ${item.id}: VERIFIED ${identity.version} commit=${identity.sourceCommit} artifact=${identity.artifactDigest}`);
+    } else {
+      absent += 1;
+      console.log(`Release identity ${item.id}: ABSENT (live deployment has no declared exact-release contract yet).`);
+    }
   } catch (error) {
     failed += 1;
     item.releaseIdentity = {
@@ -41,6 +46,7 @@ for (const item of report.sources || []) {
     };
     item.ok = false;
     item.identityError = error.message;
+    console.error(`Release identity ${item.id}: FAILED — ${error.message}`);
   }
 }
 
