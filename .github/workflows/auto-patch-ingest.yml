@@ -65,6 +65,9 @@ jobs:
       - name: Format generated registry files
         run: npm run format:generated-json
 
+      - name: Verify declared deployment release identities
+        run: node scripts/verify-deployment-release-identities.mjs
+
       - name: Verify live sources and determine eligible patch promotions
         run: npm run qa:ecosystem:verified
 

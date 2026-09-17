@@ -31,6 +31,8 @@ jobs:
         run: npm run sync
       - name: Format generated registry files
         run: npm run format:generated-json
+      - name: Verify declared deployment release identities
+        run: node scripts/verify-deployment-release-identities.mjs
       - name: Verify committed release-wave against live sources
         run: node scripts/sync-platform-consumers.mjs --check && node scripts/qa-ecosystem.mjs --require-source-verification
       - name: Install pinned Playwright Chromium

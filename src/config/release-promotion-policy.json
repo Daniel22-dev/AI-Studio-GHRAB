@@ -28,7 +28,8 @@
       "minimumVersion": "1.5.25",
       "assuranceBaseline": "GARP-2.5.1-SHIELD-PREP",
       "requiredVerification": "deployment",
-      "note": "Enrolled from independently reviewed Hodnotitel 1.5.25 GARP 2.5.1 SHIELD-PREP baseline (Claude Role B round 3). Future minor/major waves remain manual.",
+      "requiredEvidenceContract": "ghrab-release-integrity-v2",
+      "note": "Hodnotitel auto-patch requires a live GARP release-integrity v2 binding across appId, version, source commit, exact artifact digest, SBOM, build provenance and evidence manifest. The current signing state is explicitly TRANSITIONAL until a production signing key is available; future minor/major waves remain manual.",
       "expectedStudioBridge": "not-applicable"
     },
     {

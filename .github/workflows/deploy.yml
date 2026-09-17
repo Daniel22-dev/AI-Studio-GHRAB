@@ -58,6 +58,8 @@ jobs:
         run: npm run sync
       - name: Format generated registry files
         run: npm run format:generated-json
+      - name: Verify declared deployment release identities
+        run: node scripts/verify-deployment-release-identities.mjs
       - name: Verify Platform 1.1.2 release-wave sources
         run: |
           npm run qa:ecosystem:verified

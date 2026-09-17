@@ -1,4 +1,10 @@
 const STRICT_SEMVER = /^(\d+)\.(\d+)\.(\d+)$/;
+const SHA40 = /^[0-9a-f]{40}$/i;
+const SHA256 = /^[0-9a-f]{64}$/i;
+const SUPPORTED_EVIDENCE_CONTRACTS = new Set([
+  "ghrab-patch-assurance-v1",
+  "ghrab-release-integrity-v2",
+]);
 
 export function parseStrictSemver(value) {
   const match = String(value || "").match(STRICT_SEMVER);
@@ -94,6 +100,7 @@ export function validatePromotionPolicy(policy, knownAppIds = []) {
     if (!parseStrictSemver(entry.minimumVersion)) errors.push(`${entry.id}: minimumVersion neni stabilni SemVer.`);
     if (entry.assuranceBaseline !== "GARP-2.5.1-SHIELD-PREP") errors.push(`${entry.id}: chybi schvaleny GARP 2.5.1 SHIELD-PREP baseline.`);
     if (entry.requiredVerification !== "deployment") errors.push(`${entry.id}: auto-patch musi vyzadovat zive deployment overeni.`);
+    if (entry.requiredEvidenceContract != null && !SUPPORTED_EVIDENCE_CONTRACTS.has(entry.requiredEvidenceContract)) errors.push(`${entry.id}: neznamy requiredEvidenceContract ${entry.requiredEvidenceContract}.`);
     if (!["v2", "not-applicable"].includes(entry.expectedStudioBridge)) errors.push(`${entry.id}: chybi explicitni expectedStudioBridge baseline.`);
   }
   return errors;
@@ -101,6 +108,31 @@ export function validatePromotionPolicy(policy, knownAppIds = []) {
 
 export function promotionEntryById(policy) {
   return new Map((policy?.applications || []).map((entry) => [entry.id, entry]));
+}
+
+function verifiedReleaseIdentity(sourceReport, app, policyEntry) {
+  if (policyEntry?.requiredEvidenceContract !== "ghrab-release-integrity-v2") return { ok: true };
+  const identity = sourceReport?.releaseIdentity;
+  if (
+    identity?.status !== "VERIFIED" ||
+    identity?.contract !== "ghrab-release-integrity-v2" ||
+    identity?.appId !== app?.id ||
+    identity?.version !== app?.version ||
+    identity?.assuranceMode !== "TRANSITIONAL" ||
+    !SHA40.test(String(identity?.sourceCommit || "")) ||
+    !SHA256.test(String(identity?.artifactDigest || "")) ||
+    !SHA256.test(String(identity?.manifestSha256 || "")) ||
+    !SHA256.test(String(identity?.sbomSha256 || "")) ||
+    !SHA256.test(String(identity?.buildProvenanceSha256 || "")) ||
+    !SHA256.test(String(identity?.evidenceManifestSha256 || ""))
+  ) {
+    return {
+      ok: false,
+      reasonCode: "RELEASE_IDENTITY_UNVERIFIED",
+      reason: "Auto-patch vyzaduje strojove overenou GARP release identity: appId, verzi, source commit, exact artifact digest, manifest, SBOM, build provenance a evidence manifest.",
+    };
+  }
+  return { ok: true, identity };
 }
 
 export function evaluateAutoPromotion({
@@ -123,8 +155,17 @@ export function evaluateAutoPromotion({
     reasonCode: "UNKNOWN",
     reason: "Neznama chyba promotion kontroly.",
     assuranceBaseline: policyEntry?.assuranceBaseline || null,
+    requiredEvidenceContract: policyEntry?.requiredEvidenceContract || null,
     verification: sourceReport?.verification || null,
     detectedSourceVersion: sourceReport?.sourceVersion || null,
+    releaseIdentity: sourceReport?.releaseIdentity?.status === "VERIFIED" ? {
+      status: sourceReport.releaseIdentity.status,
+      contract: sourceReport.releaseIdentity.contract,
+      assuranceMode: sourceReport.releaseIdentity.assuranceMode,
+      sourceCommit: sourceReport.releaseIdentity.sourceCommit,
+      artifactDigest: sourceReport.releaseIdentity.artifactDigest,
+      signatureStatus: sourceReport.releaseIdentity.signatureStatus || null,
+    } : null,
   };
 
   const blocked = (reasonCode, reason) => ({ ...base, reasonCode, reason });
@@ -132,7 +173,7 @@ export function evaluateAutoPromotion({
     ...base,
     status: "ELIGIBLE",
     reasonCode: "SAFE_PATCH_DEPLOYMENT",
-    reason: "Vyssi patch verze je zive nasazena, zdrojove a platformne konzistentni a aplikace je zarazena do GARP 2.5.1 auto-patch politiky.",
+    reason: "Vyssi patch verze je zive nasazena, zdrojove, platformne a release-identitne konzistentni a aplikace je zarazena do GARP 2.5.1 auto-patch politiky.",
   });
 
   if (base.change === "same" && isPendingRepositoryCandidate(sourceReport, toVersion)) {
@@ -163,6 +204,9 @@ export function evaluateAutoPromotion({
   if (sourceReport?.ok !== true || sourceReport?.verification !== "deployment") return blocked("SOURCE_NOT_LIVE_DEPLOYMENT", "Auto-patch vyzaduje uspesne overeni skutecne nasazeneho manifestu; repository fallback ani snapshot nestaci.");
   if (sourceReport.version !== toVersion || sourceReport.sourceVersion !== toVersion) return blocked("SOURCE_VERSION_DRIFT", "Sync report nepotvrzuje stejnou verzi nasazeni a zdroje jako candidate.");
   if (app?.aiCore?.serverReady && sourceReport.operationsWarning) return blocked("AI_OPERATIONS_UNVERIFIED", `AI operations manifest neni overen: ${sourceReport.operationsWarning}`);
+
+  const identity = verifiedReleaseIdentity(sourceReport, app, policyEntry);
+  if (!identity.ok) return blocked(identity.reasonCode, identity.reason);
 
   const repository = String(app?.repository || "").toLowerCase();
   const expectedRepository = String(source?.repository || "").toLowerCase();
