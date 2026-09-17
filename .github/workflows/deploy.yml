@@ -4,10 +4,6 @@ on:
   push:
     branches: [main]
   workflow_dispatch:
-  repository_dispatch:
-    types: [app-updated, app_manifest_updated, school-apps-updated]
-  schedule:
-    - cron: "17 3 * * *"
 
 permissions:
   contents: read
@@ -20,18 +16,11 @@ concurrency:
 
 jobs:
   qa-build:
-    permissions:
-      contents: write
-      pages: write
-      id-token: write
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683 # v4.2.2
         with:
-          # repository_dispatch captures github.sha when the event is created. A queued
-          # dispatch may therefore point at a baseline that an earlier serialized run
-          # has already advanced. Non-push runs must always certify the current main.
-          ref: ${{ github.event_name == 'push' && github.sha || 'main' }}
+          ref: ${{ github.sha }}
           fetch-depth: 0
       - uses: actions/setup-node@49933ea5288caeca8642d1e84afbd3f7d6820020 # v4.4.0
         with:
@@ -44,21 +33,26 @@ jobs:
         env:
           NPM_CONFIG_REGISTRY: https://registry.npmjs.org
 
+      - name: Verify deploy originates from Safe Promotion
+        run: node scripts/verify-safe-promotion-origin.mjs
+        env:
+          GITHUB_TOKEN: ${{ github.token }}
+
+      - name: Verify protected deployment branch
+        run: node scripts/verify-github-deployment-governance.mjs
+        env:
+          GITHUB_TOKEN: ${{ github.token }}
+
       - name: Verify signed access bundle freshness
         run: npm run access:check:required
 
       - name: Synchronise application manifests
-        if: github.event_name != 'pull_request'
         run: npm run sync
       - name: Format generated registry files
-        if: github.event_name != 'pull_request'
         run: npm run format:generated-json
-      - name: Verify Platform 1.1.2 release-wave sources
-        if: github.event_name != 'pull_request'
-        run: npm run qa:ecosystem:verified
-      - name: Apply verified patch auto-promotions to release wave
-        if: github.event_name != 'pull_request'
-        run: node scripts/apply-auto-promotions.mjs qa-results/release-promotion-report.json src/config/release-wave.json
+      - name: Verify committed release-wave against live sources
+        run: node scripts/sync-platform-consumers.mjs --check && node scripts/qa-ecosystem.mjs --require-source-verification
+
       - name: Verify immutable Core before formatting
         run: npm run verify:ai-core
       - name: Normalize source formatting
@@ -88,41 +82,11 @@ jobs:
           path: qa-results
       - name: Verify GHRAB Platform P3 conformance
         run: npm run qa:platform
-
       - name: Enforce P5 R2 release gate
         run: npm run qa:p5:ci
 
-      - name: Persist verified patch auto-promotions
-        if: github.ref == 'refs/heads/main' && github.event_name != 'pull_request'
-        shell: bash
-        run: |
-          if git diff --quiet -- src/config/release-wave.json; then
-            echo "Release-wave baseline unchanged; verified duplicate/no-op."
-            exit 0
-          fi
-
-          # Do not persist a promotion if main changed after this run checked it out.
-          # The workflow is globally serialized, so normal duplicate dispatches reach
-          # this point on fresh main and become the no-op above. Any remaining drift
-          # is an external race and must fail closed rather than overwrite newer work.
-          checkout_sha="$(git rev-parse HEAD)"
-          git fetch --no-tags origin main
-          remote_sha="$(git rev-parse origin/main)"
-          if [ "$checkout_sha" != "$remote_sha" ]; then
-            echo "::error::main advanced during certification ($checkout_sha -> $remote_sha); refusing stale auto-promotion persistence."
-            exit 1
-          fi
-
-          git config user.name "github-actions[bot]"
-          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
-          git add src/config/release-wave.json
-          git commit -m "chore: persist verified app auto-promotion baseline"
-          git push origin HEAD:main
-
       - uses: actions/configure-pages@983d7736d9b0ae728b81ab479565c72886d7745b # v5.0.0
-        if: github.event_name != 'pull_request'
       - uses: actions/upload-pages-artifact@56afc609e74202658d3ffba0e8f6dda462b719fa # v3.0.1
-        if: github.event_name != 'pull_request'
         with:
           path: dist
 
@@ -155,16 +119,9 @@ jobs:
           for (const item of report.blockerAndMajor || []) {
             console.log(`FINDING ${item.severity} ${item.gate} ${item.code}: ${item.message} | evidence=${item.evidence || ''}`);
           }
-          const projectTestLog = 'qa-results/qa-logs/project-tests.log';
-          if (fs.existsSync(projectTestLog)) {
-            console.log('--- PROJECT TEST LOG START ---');
-            console.log(fs.readFileSync(projectTestLog, 'utf8'));
-            console.log('--- PROJECT TEST LOG END ---');
-          }
           NODE
 
   deploy:
-    if: github.event_name != 'pull_request'
     needs: qa-build
     runs-on: ubuntu-latest
     environment:

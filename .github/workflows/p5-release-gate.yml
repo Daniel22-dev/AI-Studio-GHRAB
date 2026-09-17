@@ -2,7 +2,10 @@ name: P5 R2 pre-production release gate
 
 on:
   workflow_dispatch:
+  push:
+    branches: [candidate, main]
   pull_request:
+    branches: [main]
 
 permissions:
   contents: read
@@ -28,10 +31,8 @@ jobs:
         run: npm run sync
       - name: Format generated registry files
         run: npm run format:generated-json
-      - name: Verify live release-wave sources and auto-promotion eligibility
-        run: npm run qa:ecosystem:verified
-      - name: Apply verified patch auto-promotions to release wave
-        run: node scripts/apply-auto-promotions.mjs qa-results/release-promotion-report.json src/config/release-wave.json
+      - name: Verify committed release-wave against live sources
+        run: node scripts/sync-platform-consumers.mjs --check && node scripts/qa-ecosystem.mjs --require-source-verification
       - name: Install pinned Playwright Chromium
         shell: bash
         run: |
