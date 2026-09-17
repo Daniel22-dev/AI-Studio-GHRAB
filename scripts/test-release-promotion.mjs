@@ -66,6 +66,20 @@ const decide = (overrides = {}) => evaluateAutoPromotion({
   enabled: Object.prototype.hasOwnProperty.call(overrides, "enabled") ? overrides.enabled : true,
 });
 
+const verifiedV2IdentityFixture = (appId, version) => ({
+  status: "VERIFIED",
+  contract: "ghrab-release-integrity-v2",
+  appId,
+  version,
+  assuranceMode: "TRANSITIONAL",
+  sourceCommit: "a".repeat(40),
+  artifactDigest: "b".repeat(64),
+  manifestSha256: "c".repeat(64),
+  sbomSha256: "d".repeat(64),
+  buildProvenanceSha256: "e".repeat(64),
+  evidenceManifestSha256: "f".repeat(64),
+});
+
 assert.equal(classifyVersionChange("5.10.25", "5.10.25"), "same");
 assert.equal(classifyVersionChange("5.10.25", "5.10.26"), "patch");
 assert.equal(classifyVersionChange("5.10.25", "5.11.0"), "minor");
@@ -117,6 +131,7 @@ const generatorMinimumVersion = actualEntries.get("generator")?.minimumVersion;
 const generatorWaveVersion = actualWaveEntries.get("generator")?.version;
 assert.equal(generatorMinimumVersion, "7.1.40");
 assert.equal(actualEntries.get("generator")?.expectedStudioBridge, "v2");
+assert.equal(actualEntries.get("generator")?.requiredEvidenceContract, "ghrab-release-integrity-v2");
 const generatorBaselineComparison = compareVersions(generatorWaveVersion, generatorMinimumVersion);
 assert.notEqual(generatorBaselineComparison, null, "generator: release-wave/minimum must be stable SemVer");
 assert.ok(generatorBaselineComparison >= 0, `generator: release-wave ${generatorWaveVersion} must not precede reviewed minimum ${generatorMinimumVersion}`);
@@ -173,6 +188,9 @@ for (const entry of actualPolicy.applications) {
     version: nextVersion,
     sourceVersion: nextVersion,
     operationsWarning: null,
+    ...(entry.requiredEvidenceContract === "ghrab-release-integrity-v2"
+      ? { releaseIdentity: verifiedV2IdentityFixture(entry.id, nextVersion) }
+      : {}),
   };
   const decision = evaluateAutoPromotion({
     app: candidate,
@@ -201,6 +219,7 @@ const generatorReport = {
   version: "7.1.41",
   sourceVersion: "7.1.41",
   operationsWarning: null,
+  releaseIdentity: verifiedV2IdentityFixture("generator", "7.1.41"),
 };
 const generatorDecide = (app = generatorCandidate, report = generatorReport) => evaluateAutoPromotion({
   app,
@@ -212,6 +231,10 @@ const generatorDecide = (app = generatorCandidate, report = generatorReport) => 
   enabled: true,
 });
 assert.equal(generatorDecide().status, "ELIGIBLE");
+assert.equal(
+  generatorDecide(generatorCandidate, { ...generatorReport, releaseIdentity: undefined }).reasonCode,
+  "RELEASE_IDENTITY_UNVERIFIED",
+);
 for (const blockedVersion of ["7.2.0", "8.0.0"]) {
   const app = structuredClone(generatorCandidate);
   app.version = blockedVersion;
