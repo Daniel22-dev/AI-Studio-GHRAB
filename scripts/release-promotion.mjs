@@ -146,6 +146,22 @@ export function evaluateAutoPromotion({
 }) {
   const fromVersion = waveApp?.version || null;
   const toVersion = app?.version || null;
+  const releaseIdentity = sourceReport?.releaseIdentity?.status === "VERIFIED"
+    ? {
+        status: sourceReport.releaseIdentity.status,
+        contract: sourceReport.releaseIdentity.contract,
+        appId: sourceReport.releaseIdentity.appId,
+        version: sourceReport.releaseIdentity.version,
+        assuranceMode: sourceReport.releaseIdentity.assuranceMode,
+        sourceCommit: sourceReport.releaseIdentity.sourceCommit,
+        artifactDigest: sourceReport.releaseIdentity.artifactDigest,
+        manifestSha256: sourceReport.releaseIdentity.manifestSha256,
+        sbomSha256: sourceReport.releaseIdentity.sbomSha256,
+        buildProvenanceSha256: sourceReport.releaseIdentity.buildProvenanceSha256,
+        evidenceManifestSha256: sourceReport.releaseIdentity.evidenceManifestSha256,
+        signatureStatus: sourceReport.releaseIdentity.signatureStatus || null,
+      }
+    : null;
   const base = {
     appId: app?.id || waveApp?.id || "unknown",
     fromVersion,
@@ -158,14 +174,7 @@ export function evaluateAutoPromotion({
     requiredEvidenceContract: policyEntry?.requiredEvidenceContract || null,
     verification: sourceReport?.verification || null,
     detectedSourceVersion: sourceReport?.sourceVersion || null,
-    releaseIdentity: sourceReport?.releaseIdentity?.status === "VERIFIED" ? {
-      status: sourceReport.releaseIdentity.status,
-      contract: sourceReport.releaseIdentity.contract,
-      assuranceMode: sourceReport.releaseIdentity.assuranceMode,
-      sourceCommit: sourceReport.releaseIdentity.sourceCommit,
-      artifactDigest: sourceReport.releaseIdentity.artifactDigest,
-      signatureStatus: sourceReport.releaseIdentity.signatureStatus || null,
-    } : null,
+    releaseIdentity,
   };
 
   const blocked = (reasonCode, reason) => ({ ...base, reasonCode, reason });
