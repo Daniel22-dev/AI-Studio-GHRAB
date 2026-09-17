@@ -10,6 +10,7 @@
       "minimumVersion": "7.1.40",
       "assuranceBaseline": "GARP-2.5.1-SHIELD-PREP",
       "requiredVerification": "deployment",
+      "requiredEvidenceContract": "ghrab-release-integrity-v2",
       "note": "Enrolled from the reviewed Generator 7.1.40 GARP 2.5.1 baseline with N5 hardening and green P5/deployment. Future minor/major waves remain manual.",
       "expectedStudioBridge": "v2"
     },
