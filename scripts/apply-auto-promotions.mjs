@@ -65,6 +65,25 @@ const parseJsonBytes = (bytes, label, appId) => {
     fail(`${appId}: ${label} neni validni JSON`);
   }
 };
+const verifyV2DecisionIdentity = (decision) => {
+  const identity = decision?.releaseIdentity;
+  if (
+    identity?.status !== "VERIFIED" ||
+    identity?.contract !== "ghrab-release-integrity-v2" ||
+    identity?.appId !== decision?.appId ||
+    identity?.version !== decision?.toVersion ||
+    identity?.assuranceMode !== "TRANSITIONAL" ||
+    !COMMIT.test(String(identity?.sourceCommit || "")) ||
+    !SHA256.test(String(identity?.artifactDigest || "")) ||
+    !SHA256.test(String(identity?.manifestSha256 || "")) ||
+    !SHA256.test(String(identity?.sbomSha256 || "")) ||
+    !SHA256.test(String(identity?.buildProvenanceSha256 || "")) ||
+    !SHA256.test(String(identity?.evidenceManifestSha256 || ""))
+  ) {
+    fail(`${decision?.appId || "?"}: release-integrity v2 decision nema kompletni VERIFIED identity binding`);
+  }
+  return identity;
+};
 
 if (report?.schema !== "ghrab-release-promotion-report-v1") fail("neplatne schema promotion reportu");
 if (report?.autoPromotionEnabled !== true) fail("promotion report nema povolene auto-promotion");
@@ -105,6 +124,12 @@ for (const decision of eligible) {
   const policyEntry = policyById.get(decision.appId);
   const requiredEvidenceContract = policyEntry?.requiredEvidenceContract || null;
   if (!requiredEvidenceContract) continue;
+
+  if (requiredEvidenceContract === "ghrab-release-integrity-v2") {
+    const identity = verifyV2DecisionIdentity(decision);
+    console.log(`RELEASE-INTEGRITY ${decision.appId} ${decision.toVersion}: VERIFIED ${identity.artifactDigest}`);
+    continue;
+  }
   if (requiredEvidenceContract !== "ghrab-patch-assurance-v1") {
     fail(`${decision.appId}: neznamy requiredEvidenceContract ${requiredEvidenceContract}`);
   }
