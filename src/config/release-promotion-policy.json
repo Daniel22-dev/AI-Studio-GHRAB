@@ -24,6 +24,16 @@
       "expectedStudioBridge": "v2"
     },
     {
+      "id": "differentiator",
+      "mode": "auto-patch",
+      "minimumVersion": "1.3.47",
+      "assuranceBaseline": "GARP-2.5.1-SHIELD-PREP",
+      "requiredVerification": "deployment",
+      "requiredEvidenceContract": "ghrab-release-integrity-v2",
+      "note": "Diferenciator auto-patch requires a live GARP release-integrity v2 binding across appId, version, source commit, exact artifact digest, SBOM, build provenance and evidence manifest. The current signing state is explicitly TRANSITIONAL until a production signing key is available; future minor/major waves remain manual.",
+      "expectedStudioBridge": "v2"
+    },
+    {
       "id": "essay-evaluator",
       "mode": "auto-patch",
       "minimumVersion": "1.5.25",
