@@ -126,7 +126,7 @@ assert.equal(isPendingRepositoryCandidate({ ...pendingRepositorySource, sourceVe
 assert.equal(isPendingRepositoryCandidate({ ...pendingRepositorySource, sourceVersion: "7.1.39" }, "7.1.40"), false);
 
 assert.deepEqual(validatePromotionPolicy(actualPolicy, ["generator", "differentiator", "essay-evaluator", "correspondence", "ludus", "activity-builder", "sortio", "lesson-hub", "maturita-desk"]), []);
-assert.deepEqual(actualPolicy.applications.map((entry) => entry.id), ["generator", "correspondence", "essay-evaluator", "ludus", "activity-builder", "sortio"]);
+assert.deepEqual(actualPolicy.applications.map((entry) => entry.id), ["generator", "correspondence", "differentiator", "essay-evaluator", "ludus", "activity-builder", "sortio"]);
 const generatorMinimumVersion = actualEntries.get("generator")?.minimumVersion;
 const generatorWaveVersion = actualWaveEntries.get("generator")?.version;
 assert.equal(generatorMinimumVersion, "7.1.40");
@@ -140,6 +140,9 @@ assert.ok(
   `generator: release-wave ${generatorWaveVersion} must stay on the reviewed 7.1.x patch line`,
 );
 assert.equal(actualEntries.get("correspondence")?.minimumVersion, "5.10.25");
+assert.equal(actualEntries.get("differentiator")?.minimumVersion, "1.3.47");
+assert.equal(actualEntries.get("differentiator")?.expectedStudioBridge, "v2");
+assert.equal(actualEntries.get("differentiator")?.requiredEvidenceContract, "ghrab-release-integrity-v2");
 assert.equal(actualEntries.get("correspondence")?.expectedStudioBridge, "v2");
 assert.equal(actualEntries.get("essay-evaluator")?.minimumVersion, "1.5.25");
 assert.equal(actualEntries.get("essay-evaluator")?.expectedStudioBridge, "not-applicable");
@@ -150,11 +153,10 @@ assert.equal(actualEntries.get("activity-builder")?.expectedStudioBridge, "v2");
 assert.equal(actualEntries.get("sortio")?.minimumVersion, "1.1.17");
 assert.equal(actualEntries.get("sortio")?.expectedStudioBridge, "not-applicable");
 assert.equal(actualEntries.has("lesson-hub"), false);
-assert.equal(actualEntries.has("differentiator"), false);
 assert.equal(actualEntries.has("maturita-desk"), false);
+assert.equal(actualWaveEntries.get("differentiator")?.version, "1.3.47");
 
 for (const [appId, version] of [
-  ["differentiator", "1.3.46"],
   ["lesson-hub", "1.2.22"],
   ["maturita-desk", "1.0.3"],
 ]) {
@@ -308,4 +310,4 @@ assert.equal(decide({ app: { ...baseApp, compatibility: { ...baseApp.compatibili
 assert.equal(decide({ sourceReport: { ...baseReport, operationsWarning: "operations mismatch" } }).reasonCode, "AI_OPERATIONS_UNVERIFIED");
 assert.equal(decide({ waveApp: { id: "correspondence", version: "5.10.24" } }).reasonCode, "PRE_GARP_BASELINE");
 
-console.log("Release promotion policy tests: PASS (Generator 7.1.40 enrolled; stable patch only, live deployment only, fail-closed). ");
+console.log("Release promotion policy tests: PASS (Generator and Diferenciator reviewed baselines enrolled; stable patch only, live deployment only, fail-closed). ");
