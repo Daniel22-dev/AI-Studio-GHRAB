@@ -20,8 +20,9 @@
       "minimumVersion": "5.10.25",
       "assuranceBaseline": "GARP-2.5.1-SHIELD-PREP",
       "requiredVerification": "deployment",
-      "note": "Enrolled from the reviewed Korespondencni asistent 5.10.25 GARP 2.5.1 deployment pipeline. Future minor/major waves remain manual.",
-      "expectedStudioBridge": "v2"
+      "note": "Korespondencni asistent auto-patch requires a live GARP release-integrity v2 binding across appId, version, source commit, exact artifact digest, SBOM, build provenance and evidence manifest. The current signing state is explicitly TRANSITIONAL until a production signing key is available; future minor/major waves remain manual.",
+      "expectedStudioBridge": "v2",
+      "requiredEvidenceContract": "ghrab-release-integrity-v2"
     },
     {
       "id": "differentiator",
