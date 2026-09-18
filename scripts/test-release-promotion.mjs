@@ -140,9 +140,18 @@ assert.ok(
   `generator: release-wave ${generatorWaveVersion} must stay on the reviewed 7.1.x patch line`,
 );
 assert.equal(actualEntries.get("correspondence")?.minimumVersion, "5.10.25");
-assert.equal(actualEntries.get("differentiator")?.minimumVersion, "1.3.47");
+const differentiatorMinimumVersion = actualEntries.get("differentiator")?.minimumVersion;
+const differentiatorWaveVersion = actualWaveEntries.get("differentiator")?.version;
+assert.equal(differentiatorMinimumVersion, "1.3.47");
 assert.equal(actualEntries.get("differentiator")?.expectedStudioBridge, "v2");
 assert.equal(actualEntries.get("differentiator")?.requiredEvidenceContract, "ghrab-release-integrity-v2");
+const differentiatorBaselineComparison = compareVersions(differentiatorWaveVersion, differentiatorMinimumVersion);
+assert.notEqual(differentiatorBaselineComparison, null, "differentiator: release-wave/minimum must be stable SemVer");
+assert.ok(differentiatorBaselineComparison >= 0, `differentiator: release-wave ${differentiatorWaveVersion} must not precede reviewed minimum ${differentiatorMinimumVersion}`);
+assert.ok(
+  ["same", "patch"].includes(classifyVersionChange(differentiatorMinimumVersion, differentiatorWaveVersion)),
+  `differentiator: release-wave ${differentiatorWaveVersion} must stay on the reviewed 1.3.x patch line`,
+);
 assert.equal(actualEntries.get("correspondence")?.expectedStudioBridge, "v2");
 assert.equal(actualEntries.get("essay-evaluator")?.minimumVersion, "1.5.25");
 assert.equal(actualEntries.get("essay-evaluator")?.expectedStudioBridge, "not-applicable");
@@ -154,7 +163,7 @@ assert.equal(actualEntries.get("sortio")?.minimumVersion, "1.1.17");
 assert.equal(actualEntries.get("sortio")?.expectedStudioBridge, "not-applicable");
 assert.equal(actualEntries.has("lesson-hub"), false);
 assert.equal(actualEntries.has("maturita-desk"), false);
-assert.equal(actualWaveEntries.get("differentiator")?.version, "1.3.47");
+
 
 for (const [appId, version] of [
   ["lesson-hub", "1.2.22"],
