@@ -41,8 +41,8 @@
     "qa:a11y": "node scripts/qa-p5-runtime.mjs",
     "qa:p4": "npm run qa:p5",
     "qa:p4:ci": "npm run qa:p5:ci",
-    "qa:p5": "npm run qa:lock && npm run qa:ecosystem && node scripts/test-maturita-external-launcher.mjs && npm run build && npm run verify:platform && npm run qa:quality && npm run qa:browser && npm run qa:runtime && npm run qa:xss && npm run qa:axe && node scripts/qa-p5-release.mjs && node scripts/qa-p5-acceptance.mjs",
-    "qa:p5:ci": "npm run access:check:required && npm run qa:lock && npm run qa:ecosystem && node scripts/test-maturita-external-launcher.mjs && npm run build && npm run verify:platform && npm run qa:quality && npm run qa:browser && npm run qa:runtime && npm run qa:xss && npm run qa:axe:required && node scripts/qa-p5-release.mjs --require-axe && node scripts/qa-p5-acceptance.mjs",
+    "qa:p5": "npm run qa:lock && npm run qa:ecosystem && node scripts/test-maturita-external-launcher.mjs && npm run build && npm run verify:platform && npm run qa:quality && npm run qa:browser && npm run qa:runtime && npm run qa:xss && npm run qa:axe && node scripts/qa-p5-release.mjs && node scripts/qa-p5-acceptance.mjs && npm run test:auto-patch-idempotence",
+    "qa:p5:ci": "npm run access:check:required && npm run qa:lock && npm run qa:ecosystem && node scripts/test-maturita-external-launcher.mjs && npm run build && npm run verify:platform && npm run qa:quality && npm run qa:browser && npm run qa:runtime && npm run qa:xss && npm run qa:axe:required && node scripts/qa-p5-release.mjs --require-axe && node scripts/qa-p5-acceptance.mjs && npm run test:auto-patch-idempotence",
     "test:p5": "npm run qa:p5",
     "qa:runtime": "node scripts/qa-p5-runtime.mjs",
     "qa:xss": "node scripts/qa-p5-xss-sinks.mjs",
@@ -70,7 +70,8 @@
     "test:performance-phase-a": "node scripts/test-performance-phase-a.mjs",
     "test:performance-phase-b": "node scripts/test-performance-phase-b.mjs",
     "test:performance-phase-c": "node scripts/test-performance-phase-c.mjs",
-    "test:performance-phase-d": "node scripts/test-performance-phase-d.mjs"
+    "test:performance-phase-d": "node scripts/test-performance-phase-d.mjs",
+    "test:auto-patch-idempotence": "node scripts/test-auto-patch-idempotence.mjs"
   },
   "engines": {
     "node": ">=18"
