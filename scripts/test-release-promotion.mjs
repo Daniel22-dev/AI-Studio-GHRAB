@@ -235,6 +235,23 @@ assert.equal(
   generatorDecide(generatorCandidate, { ...generatorReport, releaseIdentity: undefined }).reasonCode,
   "RELEASE_IDENTITY_UNVERIFIED",
 );
+
+for (const mutatedIdentity of [
+  { ...generatorReport.releaseIdentity, contract: "ghrab-release-integrity-v1" },
+  { ...generatorReport.releaseIdentity, appId: "correspondence" },
+  { ...generatorReport.releaseIdentity, version: "7.1.40" },
+  { ...generatorReport.releaseIdentity, sourceCommit: "0".repeat(39) },
+  { ...generatorReport.releaseIdentity, artifactDigest: "0".repeat(63) },
+  { ...generatorReport.releaseIdentity, manifestSha256: "0".repeat(63) },
+  { ...generatorReport.releaseIdentity, sbomSha256: "0".repeat(63) },
+  { ...generatorReport.releaseIdentity, buildProvenanceSha256: "0".repeat(63) },
+  { ...generatorReport.releaseIdentity, evidenceManifestSha256: "0".repeat(63) },
+]) {
+  assert.equal(
+    generatorDecide(generatorCandidate, { ...generatorReport, releaseIdentity: mutatedIdentity }).reasonCode,
+    "RELEASE_IDENTITY_UNVERIFIED",
+  );
+}
 for (const blockedVersion of ["7.2.0", "8.0.0"]) {
   const app = structuredClone(generatorCandidate);
   app.version = blockedVersion;
@@ -299,4 +316,4 @@ assert.equal(decide({ app: { ...baseApp, compatibility: { ...baseApp.compatibili
 assert.equal(decide({ sourceReport: { ...baseReport, operationsWarning: "operations mismatch" } }).reasonCode, "AI_OPERATIONS_UNVERIFIED");
 assert.equal(decide({ waveApp: { id: "correspondence", version: "5.10.24" } }).reasonCode, "PRE_GARP_BASELINE");
 
-console.log("Release promotion policy tests: PASS (Generator 7.1.40 enrolled; stable patch only, live deployment only, fail-closed). ");
+console.log("Release promotion policy tests: PASS (Generator patch-only; rollback/minor/major blocked; malformed release-integrity-v2 blocked fail-closed).");
