@@ -293,6 +293,15 @@ assert.equal(decide({ sourceReport: { ...baseReport, ok: false, verification: "s
 assert.equal(decide({ sourceReport: { ...baseReport, sourceVersion: "5.10.25" } }).reasonCode, "SOURCE_VERSION_DRIFT");
 assert.equal(decide({ sourceReport: { ...baseReport, repository: "attacker/repo" } }).reasonCode, "REPOSITORY_IDENTITY");
 assert.equal(decide({ app: { ...baseApp, platform: { ...baseApp.platform, platformVersion: "1.2.0" } } }).reasonCode, "PLATFORM_VERSION");
+{
+  const app = structuredClone(baseApp);
+  delete app.platform.requiredPlatformRange;
+  assert.equal(
+    decide({ app }).reasonCode,
+    "PLATFORM_RANGE",
+    "manifest contract regression: missing requiredPlatformRange must block auto-patch",
+  );
+}
 assert.equal(decide({ app: { ...baseApp, platform: { ...baseApp.platform, storagePrefix: "ghrab.other." } } }).reasonCode, "STORAGE_NAMESPACE");
 assert.equal(decide({ app: { ...baseApp, platform: { ...baseApp.platform, studioBridge: "not-applicable" }, compatibility: { ...baseApp.compatibility, studioBridge: "not-applicable" } } }).reasonCode, "STUDIO_BRIDGE");
 assert.equal(decide({ app: { ...baseApp, compatibility: { ...baseApp.compatibility, studioBridge: "not-applicable" } } }).reasonCode, "COMPATIBILITY_STUDIO_BRIDGE");
