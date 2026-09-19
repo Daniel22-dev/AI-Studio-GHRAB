@@ -69,8 +69,9 @@
       "minimumVersion": "1.1.17",
       "assuranceBaseline": "GARP-2.5.1-SHIELD-PREP",
       "requiredVerification": "deployment",
-      "note": "Enrolled from the reviewed SORTIO 1.1.17 GARP 2.5.1 SHIELD-PREP baseline. Future minor/major waves remain manual.",
-      "expectedStudioBridge": "not-applicable"
+      "note": "SORTIO 1.1.17 is the reviewed baseline. Automatic PATCH promotion requires a live VERIFIED ghrab-release-integrity-v2 release identity; future minor/major waves remain manual.",
+      "expectedStudioBridge": "not-applicable",
+      "requiredEvidenceContract": "ghrab-release-integrity-v2"
     }
   ]
 }
