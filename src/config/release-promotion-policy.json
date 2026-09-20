@@ -60,8 +60,9 @@
       "minimumVersion": "0.5.27",
       "assuranceBaseline": "GARP-2.5.1-SHIELD-PREP",
       "requiredVerification": "deployment",
-      "note": "Enrolled from the reviewed ACTIVA 0.5.27 GARP 2.5.1 SHIELD-PREP baseline. Future minor/major waves remain manual.",
-      "expectedStudioBridge": "v2"
+      "note": "ACTIVA auto-patch requires a live GARP release-integrity v2 binding across appId, version, source commit, exact artifact digest, SBOM, build provenance and evidence manifest. The current signing state is explicitly TRANSITIONAL until a production signing key is available; future minor/major waves remain manual.",
+      "expectedStudioBridge": "v2",
+      "requiredEvidenceContract": "ghrab-release-integrity-v2"
     },
     {
       "id": "sortio",
