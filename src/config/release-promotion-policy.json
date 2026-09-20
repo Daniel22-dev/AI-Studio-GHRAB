@@ -73,6 +73,16 @@
       "note": "SORTIO 1.1.17 is the reviewed baseline. Automatic PATCH promotion requires a live VERIFIED ghrab-release-integrity-v2 release identity; future minor/major waves remain manual.",
       "expectedStudioBridge": "not-applicable",
       "requiredEvidenceContract": "ghrab-release-integrity-v2"
+    },
+    {
+      "id": "lesson-hub",
+      "mode": "auto-patch",
+      "minimumVersion": "1.2.23",
+      "assuranceBaseline": "GARP-2.5.1-SHIELD-PREP",
+      "requiredVerification": "deployment",
+      "requiredEvidenceContract": "ghrab-release-integrity-v2",
+      "note": "Lesson Hub enrolled from the live 1.2.23 GARP 2.5.1/N5 Safe Promotion baseline with verified release-integrity v2 binding across appId, version, source commit, exact artifact digest, SBOM, build provenance and evidence manifest. The current signing state is explicitly TRANSITIONAL until a production signing key is available; future minor/major waves remain manual.",
+      "expectedStudioBridge": "v2"
     }
   ]
 }

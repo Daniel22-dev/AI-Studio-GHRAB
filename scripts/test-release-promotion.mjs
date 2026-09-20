@@ -126,7 +126,7 @@ assert.equal(isPendingRepositoryCandidate({ ...pendingRepositorySource, sourceVe
 assert.equal(isPendingRepositoryCandidate({ ...pendingRepositorySource, sourceVersion: "7.1.39" }, "7.1.40"), false);
 
 assert.deepEqual(validatePromotionPolicy(actualPolicy, ["generator", "differentiator", "essay-evaluator", "correspondence", "ludus", "activity-builder", "sortio", "lesson-hub", "maturita-desk"]), []);
-assert.deepEqual(actualPolicy.applications.map((entry) => entry.id), ["generator", "correspondence", "differentiator", "essay-evaluator", "ludus", "activity-builder", "sortio"]);
+assert.deepEqual(actualPolicy.applications.map((entry) => entry.id), ["generator", "correspondence", "differentiator", "essay-evaluator", "ludus", "activity-builder", "sortio", "lesson-hub"]);
 const generatorMinimumVersion = actualEntries.get("generator")?.minimumVersion;
 const generatorWaveVersion = actualWaveEntries.get("generator")?.version;
 assert.equal(generatorMinimumVersion, "7.1.40");
@@ -161,12 +161,14 @@ assert.equal(actualEntries.get("activity-builder")?.minimumVersion, "0.5.27");
 assert.equal(actualEntries.get("activity-builder")?.expectedStudioBridge, "v2");
 assert.equal(actualEntries.get("sortio")?.minimumVersion, "1.1.17");
 assert.equal(actualEntries.get("sortio")?.expectedStudioBridge, "not-applicable");
-assert.equal(actualEntries.has("lesson-hub"), false);
+assert.equal(actualEntries.get("lesson-hub")?.minimumVersion, "1.2.23");
+assert.equal(actualEntries.get("lesson-hub")?.expectedStudioBridge, "v2");
+assert.equal(actualEntries.get("lesson-hub")?.requiredEvidenceContract, "ghrab-release-integrity-v2");
+assert.equal(actualWaveEntries.get("lesson-hub")?.version, "1.2.23");
 assert.equal(actualEntries.has("maturita-desk"), false);
 
 
 for (const [appId, version] of [
-  ["lesson-hub", "1.2.22"],
   ["maturita-desk", "1.0.3"],
 ]) {
   assert.equal(actualWaveEntries.get(appId)?.version, version, `${appId}: manual release-wave baseline must match the explicitly accepted version`);
@@ -319,4 +321,4 @@ assert.equal(decide({ app: { ...baseApp, compatibility: { ...baseApp.compatibili
 assert.equal(decide({ sourceReport: { ...baseReport, operationsWarning: "operations mismatch" } }).reasonCode, "AI_OPERATIONS_UNVERIFIED");
 assert.equal(decide({ waveApp: { id: "correspondence", version: "5.10.24" } }).reasonCode, "PRE_GARP_BASELINE");
 
-console.log("Release promotion policy tests: PASS (Generator and Diferenciator reviewed baselines enrolled; stable patch only, live deployment only, fail-closed). ");
+console.log("Release promotion policy tests: PASS (reviewed auto-patch baselines including Lesson Hub enrolled; stable patch only, live deployment only, fail-closed). ");
