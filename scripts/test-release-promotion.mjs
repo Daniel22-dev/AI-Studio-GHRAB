@@ -161,10 +161,18 @@ assert.equal(actualEntries.get("activity-builder")?.minimumVersion, "0.5.27");
 assert.equal(actualEntries.get("activity-builder")?.expectedStudioBridge, "v2");
 assert.equal(actualEntries.get("sortio")?.minimumVersion, "1.1.17");
 assert.equal(actualEntries.get("sortio")?.expectedStudioBridge, "not-applicable");
-assert.equal(actualEntries.get("lesson-hub")?.minimumVersion, "1.2.23");
+const lessonHubMinimumVersion = actualEntries.get("lesson-hub")?.minimumVersion;
+const lessonHubWaveVersion = actualWaveEntries.get("lesson-hub")?.version;
+assert.equal(lessonHubMinimumVersion, "1.2.23");
 assert.equal(actualEntries.get("lesson-hub")?.expectedStudioBridge, "v2");
 assert.equal(actualEntries.get("lesson-hub")?.requiredEvidenceContract, "ghrab-release-integrity-v2");
-assert.equal(actualWaveEntries.get("lesson-hub")?.version, "1.2.23");
+const lessonHubBaselineComparison = compareVersions(lessonHubWaveVersion, lessonHubMinimumVersion);
+assert.notEqual(lessonHubBaselineComparison, null, "lesson-hub: release-wave/minimum must be stable SemVer");
+assert.ok(lessonHubBaselineComparison >= 0, `lesson-hub: release-wave ${lessonHubWaveVersion} must not precede reviewed minimum ${lessonHubMinimumVersion}`);
+assert.ok(
+  ["same", "patch"].includes(classifyVersionChange(lessonHubMinimumVersion, lessonHubWaveVersion)),
+  `lesson-hub: release-wave ${lessonHubWaveVersion} must stay on the reviewed 1.2.x patch line`,
+);
 assert.equal(actualEntries.has("maturita-desk"), false);
 
 
