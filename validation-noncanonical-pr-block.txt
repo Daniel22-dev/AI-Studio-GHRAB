@@ -1,0 +1,1 @@
+Synthetic negative Safe Promotion test. This branch must never merge to main.
