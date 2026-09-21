@@ -126,7 +126,7 @@ assert.equal(isPendingRepositoryCandidate({ ...pendingRepositorySource, sourceVe
 assert.equal(isPendingRepositoryCandidate({ ...pendingRepositorySource, sourceVersion: "7.1.39" }, "7.1.40"), false);
 
 assert.deepEqual(validatePromotionPolicy(actualPolicy, ["generator", "differentiator", "essay-evaluator", "correspondence", "ludus", "activity-builder", "sortio", "lesson-hub", "maturita-desk"]), []);
-assert.deepEqual(actualPolicy.applications.map((entry) => entry.id), ["generator", "correspondence", "differentiator", "essay-evaluator", "ludus", "activity-builder", "sortio", "lesson-hub"]);
+assert.deepEqual(actualPolicy.applications.map((entry) => entry.id), ["generator", "correspondence", "differentiator", "essay-evaluator", "ludus", "activity-builder", "sortio", "lesson-hub", "maturita-desk"]);
 const generatorMinimumVersion = actualEntries.get("generator")?.minimumVersion;
 const generatorWaveVersion = actualWaveEntries.get("generator")?.version;
 assert.equal(generatorMinimumVersion, "7.1.40");
@@ -173,7 +173,18 @@ assert.ok(
   ["same", "patch"].includes(classifyVersionChange(lessonHubMinimumVersion, lessonHubWaveVersion)),
   `lesson-hub: release-wave ${lessonHubWaveVersion} must stay on the reviewed 1.2.x patch line`,
 );
-assert.equal(actualEntries.has("maturita-desk"), false);
+const maturitaDeskMinimumVersion = actualEntries.get("maturita-desk")?.minimumVersion;
+const maturitaDeskWaveVersion = actualWaveEntries.get("maturita-desk")?.version;
+assert.equal(maturitaDeskMinimumVersion, "1.0.3");
+assert.equal(actualEntries.get("maturita-desk")?.expectedStudioBridge, "v2");
+assert.equal(actualEntries.get("maturita-desk")?.requiredEvidenceContract, "ghrab-release-integrity-v2");
+const maturitaDeskBaselineComparison = compareVersions(maturitaDeskWaveVersion, maturitaDeskMinimumVersion);
+assert.notEqual(maturitaDeskBaselineComparison, null, "maturita-desk: release-wave/minimum must be stable SemVer");
+assert.ok(maturitaDeskBaselineComparison >= 0, `maturita-desk: release-wave ${maturitaDeskWaveVersion} must not precede reviewed minimum ${maturitaDeskMinimumVersion}`);
+assert.ok(
+  ["same", "patch"].includes(classifyVersionChange(maturitaDeskMinimumVersion, maturitaDeskWaveVersion)),
+  `maturita-desk: release-wave ${maturitaDeskWaveVersion} must stay on the reviewed 1.0.x patch line`,
+);
 
 
 for (const [appId, version] of [
@@ -329,4 +340,4 @@ assert.equal(decide({ app: { ...baseApp, compatibility: { ...baseApp.compatibili
 assert.equal(decide({ sourceReport: { ...baseReport, operationsWarning: "operations mismatch" } }).reasonCode, "AI_OPERATIONS_UNVERIFIED");
 assert.equal(decide({ waveApp: { id: "correspondence", version: "5.10.24" } }).reasonCode, "PRE_GARP_BASELINE");
 
-console.log("Release promotion policy tests: PASS (reviewed auto-patch baselines including Lesson Hub enrolled; stable patch only, live deployment only, fail-closed). ");
+console.log("Release promotion policy tests: PASS (reviewed auto-patch baselines including Lesson Hub and Maturita Desk enrolled; stable patch only, live deployment only, fail-closed). ");
