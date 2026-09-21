@@ -7,7 +7,7 @@
   "applications": [
     {
       "id": "generator",
-      "version": "7.1.45"
+      "version": "7.1.46"
     },
     {
       "id": "differentiator",
@@ -39,7 +39,7 @@
     },
     {
       "id": "maturita-desk",
-      "version": "1.0.3"
+      "version": "1.0.4"
     }
   ],
   "policy": {
