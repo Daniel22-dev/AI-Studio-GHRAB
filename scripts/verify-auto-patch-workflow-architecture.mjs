@@ -52,6 +52,8 @@ if (!/pull_request:\s*[\s\S]*branches:\s*\[main\]/m.test(p5)) {
 requireText(p5, 'p5-release-gate:', 'p5');
 requireText(p5, 'Enforce canonical PR source', 'p5');
 requireText(p5, 'Safe Promotion requires candidate -> main', 'p5');
+requireText(p5, 'PR_HEAD', 'p5');
+requireText(p5, 'PR_BASE', 'p5');
 
 // Promotion must be fail-closed, exact-SHA and Ruleset-aware.
 requireText(promotion, 'SAFE_PROMOTION_TOKEN', 'safe-promotion');
