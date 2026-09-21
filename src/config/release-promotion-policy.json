@@ -83,6 +83,16 @@
       "requiredEvidenceContract": "ghrab-release-integrity-v2",
       "note": "Lesson Hub enrolled from the live 1.2.23 GARP 2.5.1/N5 Safe Promotion baseline with verified release-integrity v2 binding across appId, version, source commit, exact artifact digest, SBOM, build provenance and evidence manifest. The current signing state is explicitly TRANSITIONAL until a production signing key is available; future minor/major waves remain manual.",
       "expectedStudioBridge": "v2"
+    },
+    {
+      "id": "maturita-desk",
+      "mode": "auto-patch",
+      "minimumVersion": "1.0.3",
+      "assuranceBaseline": "GARP-2.5.1-SHIELD-PREP",
+      "requiredVerification": "deployment",
+      "requiredEvidenceContract": "ghrab-release-integrity-v2",
+      "note": "Maturita Desk auto-patch requires a live VERIFIED ghrab-release-integrity-v2 binding across appId, version, source commit, exact artifact digest, SBOM, build provenance and evidence manifest. The current signing state is explicitly TRANSITIONAL until a production signing key is available; future minor/major waves remain manual.",
+      "expectedStudioBridge": "v2"
     }
   ]
 }
