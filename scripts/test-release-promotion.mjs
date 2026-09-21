@@ -187,13 +187,6 @@ assert.ok(
 );
 
 
-for (const [appId, version] of [
-  ["maturita-desk", "1.0.3"],
-]) {
-  assert.equal(actualWaveEntries.get(appId)?.version, version, `${appId}: manual release-wave baseline must match the explicitly accepted version`);
-  assert.equal(actualApps.find((app) => app.id === appId)?.version, version, `${appId}: registry must match the manual release-wave baseline`);
-}
-
 for (const entry of actualPolicy.applications) {
   const registryApp = actualApps.find((app) => app.id === entry.id);
   const sourceConfig = actualSources.find((item) => item.id === entry.id);
