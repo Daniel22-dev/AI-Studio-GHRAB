@@ -25,7 +25,7 @@ try {
   throw error;
 }
 
-const changed = git("diff", "--name-only", "origin/main...HEAD")
+const changed = git("diff", "--name-only", "origin/main..HEAD")
   .split(/\r?\n/)
   .map((item) => item.trim())
   .filter(Boolean);
