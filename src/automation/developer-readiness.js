@@ -58,12 +58,24 @@ if (!section || !G.isAdmin() || G.isColleaguePreview?.()) {
     return [...counts.entries()].sort((a, b) => b[1] - a[1])[0]?.[0] || "—";
   }
 
+  function versionAtLeast(actual, minimum) {
+    const a = String(actual || "0").split(".").map((value) => Number(value) || 0);
+    const b = String(minimum || "0").split(".").map((value) => Number(value) || 0);
+    for (let index = 0; index < Math.max(a.length, b.length); index += 1) {
+      if ((a[index] || 0) > (b[index] || 0)) return true;
+      if ((a[index] || 0) < (b[index] || 0)) return false;
+    }
+    return true;
+  }
+
   function evaluate(app) {
     const promotion = ctx.promotions.get(app.id);
     const ready = ctx.readiness.get(app.id);
     const source = ctx.sources.get(app.id);
     const targetGarp = expectedGarp(ctx.policy);
-    const garpOk = promotion?.assuranceBaseline === targetGarp;
+    const garpOk =
+      promotion?.assuranceBaseline === targetGarp &&
+      versionAtLeast(app.version, promotion?.minimumVersion);
     const promotionOk = promotion?.mode === "auto-patch" && promotion?.requiredVerification === "deployment";
     const platformOk =
       app.platform?.contract === "ghrab-platform-v1" &&
@@ -112,7 +124,10 @@ if (!section || !G.isAdmin() || G.isColleaguePreview?.()) {
       name.append(strong, version);
 
       const garp = document.createElement("td");
-      garp.append(chip(garpLabel(e.promotion?.assuranceBaseline), e.garpOk ? "ok" : "error"));
+      const garpText = e.promotion?.minimumVersion && !e.garpOk
+        ? `${garpLabel(e.promotion?.assuranceBaseline)} · min v${e.promotion.minimumVersion}`
+        : garpLabel(e.promotion?.assuranceBaseline);
+      garp.append(chip(garpText, e.garpOk ? "ok" : "error"));
 
       const promotion = document.createElement("td");
       promotion.append(chip(
