@@ -1,6 +1,6 @@
 # AI Studio GHRAB
 
-**Aktuální verze:** 0.21.84
+**Aktuální verze:** 0.21.85
 
 0.21.84 dokončuje úpravy Správy, sjednocuje release identitu a PWA cache napříč všemi verzovanými povrchy a zpřesňuje fail-closed release proces.
 

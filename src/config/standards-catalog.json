@@ -8,8 +8,8 @@
         "en": "Overall ecosystem status"
       },
       "version": {
-        "cs": "AI Studio 0.21.84 · 9 aplikací",
-        "en": "AI Studio 0.21.84 · 9 applications"
+        "cs": "AI Studio 0.21.85 · 9 aplikací",
+        "en": "AI Studio 0.21.85 · 9 applications"
       },
       "summary": {
         "cs": "Souhrnný stav vzniká až kombinací všech kontrolních vrstev. Aplikace je zde považována za bezproblémovou pouze tehdy, když současně projde GARP baseline, Safe Promotion, Platform kontraktem, případným AI Core, ověřením zdroje a dostupností manuálu.",

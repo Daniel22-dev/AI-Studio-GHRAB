@@ -1,26 +1,44 @@
 {
   "schema": "ai-studio-changelog-v1",
-  "current": "0.21.84",
+  "current": "0.21.85",
   "items": [
     {
-      "version": "0.21.82",
+      "version": "0.21.85",
       "date": "2026-09-22",
       "title": {
-        "cs": "Hotfix vydání 0.21.82 a dokončení úprav Správy",
-        "en": "0.21.82 release hotfix and Administration completion"
+        "cs": "Hotfix nasazení",
+        "en": "Deployment hotfix"
       },
       "changes": [
         {
-          "cs": "Karta „Dočasně povýšit Adélu“ zůstává ve Správě jako čistá klikací karta; interaktivní manuál se zobrazí až po jejím otevření.",
-          "en": "The Temporarily promote Adéla card remains a clean clickable Administration card; the interactive guide appears only after opening it."
+          "cs": "Sjednocena release metadata a changelog pro produkční QA.",
+          "en": "Release metadata and changelog aligned for production QA."
         },
         {
-          "cs": "Stavové karty Správy používají výraznější názvy, rozšířené technické detaily a přímý PDF export.",
-          "en": "Administration status cards now use stronger titles, expanded technical details and direct PDF export."
+          "cs": "Funkce Správy z 0.21.84 zůstávají beze změny.",
+          "en": "Administration features from 0.21.84 remain unchanged."
+        }
+      ]
+    },
+    {
+      "version": "0.21.84",
+      "date": "2026-09-22",
+      "title": {
+        "cs": "Úpravy Správy",
+        "en": "Administration updates"
+      },
+      "changes": [
+        {
+          "cs": "Karta „Dočasně povýšit Adélu“ otevírá předvyplněný Vydavatel s interaktivním manuálem.",
+          "en": "The Temporarily promote Adéla card opens a prefilled issuer with an interactive guide."
         },
         {
-          "cs": "Release verze, manifest, PWA cache, QA manifest a reporter identita jsou synchronizovány jedním verzovacím kontraktem.",
-          "en": "Release version, manifest, PWA cache, QA manifest and reporter identity are synchronized by one versioning contract."
+          "cs": "Stavové karty mají technické detaily a přímý PDF export.",
+          "en": "Status cards include technical details and direct PDF export."
+        },
+        {
+          "cs": "Release identita a PWA cache jsou sjednoceny.",
+          "en": "Release identity and PWA cache are aligned."
         }
       ]
     },
