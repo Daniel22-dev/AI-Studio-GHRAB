@@ -15,11 +15,13 @@ await checkAccessBundleFreshness({ root, required: false });
 
 function appendRevision(ref, version) {
   if (!ref || /^(?:[a-z]+:|\/\/|#|data:|blob:)/i.test(ref)) return ref;
-  if (/(?:[?&])v=/.test(ref)) return ref;
   const hashIndex = ref.indexOf("#");
   const hash = hashIndex >= 0 ? ref.slice(hashIndex) : "";
   const baseRef = hashIndex >= 0 ? ref.slice(0, hashIndex) : ref;
-  return `${baseRef}${baseRef.includes("?") ? "&" : "?"}v=${version}${hash}`;
+  const revisedBaseRef = /(?:[?&])v=/.test(baseRef)
+    ? baseRef.replace(/([?&])v=[^&#]*/i, `$1v=${version}`)
+    : `${baseRef}${baseRef.includes("?") ? "&" : "?"}v=${version}`;
+  return `${revisedBaseRef}${hash}`;
 }
 
 function revisionHtmlAssets(content, version) {
@@ -153,6 +155,27 @@ const aiCoreRegistry = JSON.parse(
 );
 const aiReadiness = JSON.parse(
   await readFile(path.join(src, "config", "ai-readiness.generated.json"), "utf8"),
+);
+const releasePromotionPolicy = JSON.parse(
+  await readFile(path.join(src, "config", "release-promotion-policy.json"), "utf8"),
+);
+const developerReadinessRuntime = {
+  schema: "ghrab-developer-readiness-runtime-v1",
+  generatedFrom: releasePromotionPolicy.schema,
+  applications: (releasePromotionPolicy.applications || []).map((item) => ({
+    id: item.id,
+    mode: item.mode,
+    minimumVersion: item.minimumVersion,
+    assuranceBaseline: item.assuranceBaseline,
+    requiredVerification: item.requiredVerification,
+    requiredEvidenceContract: item.requiredEvidenceContract || null,
+    expectedStudioBridge: item.expectedStudioBridge || null,
+  })),
+};
+await writeFile(
+  path.join(dist, "config", "developer-readiness.json"),
+  `${JSON.stringify(developerReadinessRuntime, null, 2)}\n`,
+  "utf8",
 );
 await writeFile(
   path.join(dist, "build-info.json"),
@@ -388,6 +411,7 @@ for (const relative of [
   "config/apps.generated.json",
   "config/apps.fallback.json",
   "config/ai-readiness.generated.json",
+  "config/developer-readiness.json",
   "config/sync-report.json",
   "config/platform-consumers.json",
   "config/data-manifest.json",

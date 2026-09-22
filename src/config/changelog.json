@@ -1,7 +1,29 @@
 {
   "schema": "ai-studio-changelog-v1",
-  "current": "0.21.77",
+  "current": "0.21.78",
   "items": [
+    {
+      "version": "0.21.78",
+      "date": "2026-09-22",
+      "title": {
+        "cs": "Oprava vývojářského přehledu ve Správě",
+        "en": "Developer overview fix in Administration"
+      },
+      "changes": [
+        {
+          "cs": "Vývojářský přehled Standardy a ochranné vrstvy po aplikacích už za běhu nenačítá interní release policy, která se do veřejného buildu záměrně nepublikuje. Build místo ní vytváří sanitizovaný runtime přehled potřebných údajů.",
+          "en": "The Standards and protection layers developer overview no longer fetches the internal release policy at runtime. The build now emits a sanitised runtime summary containing only the data the overview needs."
+        },
+        {
+          "cs": "Ze Správy bylo odstraněno zastaralé tlačítko Otevřít integrační návod. Technický integrační dokument zůstává v repozitáři jako vývojářská dokumentace a je aktualizován na devět aplikací.",
+          "en": "The outdated Open integration guide action was removed from Administration. The technical integration document remains in the repository as developer documentation and now reflects all nine applications."
+        },
+        {
+          "cs": "Build nyní při každém release přepisuje i existující parametr ?v= na aktuální verzi, takže staré assetové identity nemohou přežít další verzi PWA.",
+          "en": "The build now rewrites existing ?v= asset parameters to the current release on every build, preventing stale asset identities from surviving future PWA releases."
+        }
+      ]
+    },
     {
       "version": "0.21.77",
       "date": "2026-09-22",

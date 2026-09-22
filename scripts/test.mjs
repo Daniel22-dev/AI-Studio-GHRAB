@@ -1601,6 +1601,7 @@ const required = [
   "manifest.webmanifest",
   "sw.js",
   "build-info.json",
+  "config/developer-readiness.json",
   "access/index.html",
   "access/access-control.js",
   "access/app-guard.js",
@@ -1669,6 +1670,29 @@ for (const rel of required)
     fail(`Build neobsahuje ${rel}`);
 if (distFiles.includes(path.join(dist, "config/deployment.school-server-p0.json")))
   fail("Veřejný build publikuje historický P0 direct-provider profil.");
+const developerReadinessPath = path.join(
+  dist,
+  "config",
+  "developer-readiness.json",
+);
+const developerReadinessRuntime = await loadJson(developerReadinessPath);
+if (
+  developerReadinessRuntime?.schema !== "ghrab-developer-readiness-runtime-v1" ||
+  developerReadinessRuntime?.applications?.length !== 9
+) {
+  fail("Veřejný developer-readiness runtime nemá platný přehled devíti aplikací.");
+}
+const developerReadinessSource = await readFile(
+  path.join(src, "automation", "developer-readiness.js"),
+  "utf8",
+);
+if (
+  !developerReadinessSource.includes("../config/developer-readiness.json") ||
+  developerReadinessSource.includes("../config/release-promotion-policy.json")
+) {
+  fail("Vývojářský přehled nesmí za běhu načítat interní release policy.");
+}
+
 const builtSw = await readFile(path.join(dist, "sw.js"), "utf8");
 
 const localRevision = `v=${pkg.version}`;
