@@ -48,18 +48,36 @@ if (!section || !canView) {
     return span;
   };
   const metric = (value, cs, en, detailKey) => {
-    const card = document.createElement("button");
-    card.type = "button";
-    card.className = "automation-kpi ecosystem-detail-trigger";
+    const card = document.createElement("article");
+    card.className = "automation-kpi ecosystem-metric-card";
     card.dataset.detailKey = detailKey;
-    const strong = document.createElement("strong");
-    strong.textContent = value;
-    const span = document.createElement("span");
-    span.textContent = G.t(cs, en);
-    const hint = document.createElement("small");
-    hint.textContent = G.t("Otevřít detail", "Open details");
-    card.append(strong, span, hint);
-    card.addEventListener("click", () => openDetail(detailKey));
+
+    const title = document.createElement("strong");
+    title.className = "ecosystem-metric-title";
+    title.textContent = G.t(cs, en);
+
+    const metricValue = document.createElement("span");
+    metricValue.className = "ecosystem-metric-value";
+    metricValue.textContent = value;
+
+    const actions = document.createElement("div");
+    actions.className = "ecosystem-metric-actions";
+
+    const detail = document.createElement("button");
+    detail.type = "button";
+    detail.className = "button compact ghost";
+    detail.textContent = G.t("Detail", "Details");
+    detail.addEventListener("click", () => openDetail(detailKey));
+
+    const pdf = document.createElement("button");
+    pdf.type = "button";
+    pdf.className = "button compact secondary ecosystem-pdf-button";
+    pdf.textContent = "PDF";
+    pdf.setAttribute("aria-label", G.t("Stáhnout kartu jako PDF", "Download card as PDF"));
+    pdf.addEventListener("click", () => downloadDetailPdf(detailKey));
+
+    actions.append(detail, pdf);
+    card.append(title, metricValue, actions);
     return card;
   };
   const garpLabel = (value) =>
@@ -276,14 +294,14 @@ if (!section || !canView) {
     summary.replaceChildren(
       metric(
         `${healthy}/${ctx.apps.length}`,
-        "bez problému",
-        "healthy",
+        "Stav ekosystému",
+        "Ecosystem status",
         "ecosystem",
       ),
       metric(
         `${garpPass}/${ctx.apps.length}`,
-        "GARP aktuální",
-        "GARP current",
+        "GARP baseline",
+        "GARP baseline",
         "garp",
       ),
       metric(
@@ -294,8 +312,8 @@ if (!section || !canView) {
       ),
       metric(
         `${platformPass}/${ctx.apps.length}`,
-        `Platform ${ctx.apps[0]?.platform?.platformVersion || "—"}`,
-        `Platform ${ctx.apps[0]?.platform?.platformVersion || "—"}`,
+        "GHRAB Platform",
+        "GHRAB Platform",
         "platform",
       ),
       metric(
@@ -306,14 +324,14 @@ if (!section || !canView) {
       ),
       metric(
         `${sourcePass}/${ctx.apps.length}`,
-        "zdrojů ověřeno",
-        "sources verified",
+        "Ověření zdrojů",
+        "Source verification",
         "sources",
       ),
       metric(
         `${manualPass}/${ctx.apps.length}`,
-        "manuálů dostupných",
-        "manuals available",
+        "Manuály",
+        "Manuals",
         "manuals",
       ),
     );
