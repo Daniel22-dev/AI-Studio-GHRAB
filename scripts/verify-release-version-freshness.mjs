@@ -60,7 +60,14 @@ const runtimePatterns = [
   /^security\//,
   /^ghrab-platform\.consumer\.json$/,
 ];
-const runtimeChanged = changed.filter((path) => runtimePatterns.some((pattern) => pattern.test(path)));
+const nonRuntimePatterns = [
+  /^src\/tests\//,
+];
+const runtimeChanged = changed.filter(
+  (path) =>
+    runtimePatterns.some((pattern) => pattern.test(path)) &&
+    !nonRuntimePatterns.some((pattern) => pattern.test(path)),
+);
 
 if (!runtimeChanged.length) {
   console.log(`Release version gate: no runtime delta against main; ${currentVersion} accepted.`);
