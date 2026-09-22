@@ -6,7 +6,9 @@ const reset = document.querySelector("#temporary-admin-reset");
 
 function readState() {
   try {
-    const parsed = JSON.parse(localStorage.getItem(STORAGE_KEY) || "{}");
+    const parsed = JSON.parse(
+      window.GHRAB?.safeGetItem?.(STORAGE_KEY, "{}") || "{}",
+    );
     return parsed && typeof parsed === "object" ? parsed : {};
   } catch {
     return {};
@@ -18,7 +20,7 @@ function writeState() {
     const state = Object.fromEntries(
       checkboxes.map((input) => [input.dataset.guideStep, input.checked]),
     );
-    localStorage.setItem(STORAGE_KEY, JSON.stringify(state));
+    window.GHRAB?.safeSetJson?.(STORAGE_KEY, state, { silent: true });
   } catch {}
 }
 
@@ -46,7 +48,7 @@ for (const input of checkboxes) {
 reset?.addEventListener("click", () => {
   for (const input of checkboxes) input.checked = false;
   try {
-    localStorage.removeItem(STORAGE_KEY);
+    window.GHRAB?.safeRemoveItem?.(STORAGE_KEY, { silent: true });
   } catch {}
   render();
 });

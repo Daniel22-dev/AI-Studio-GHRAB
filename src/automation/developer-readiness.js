@@ -16,9 +16,13 @@ if (!section || !canView) {
   const summary = document.querySelector("#developer-readiness-summary");
   const note = document.querySelector("#developer-readiness-note");
   const testAll = document.querySelector("#developer-verify-all");
-  const coreMeta = document.querySelector("#ecosystem-core-meta");
-  const sourceMeta = document.querySelector("#ecosystem-source-meta");
-  const manualMeta = document.querySelector("#ecosystem-manual-meta");
+  const detailDialog = document.querySelector("#standard-detail-dialog");
+  const detailTitle = document.querySelector("#standard-detail-title");
+  const detailVersion = document.querySelector("#standard-detail-version");
+  const detailSummary = document.querySelector("#standard-detail-summary");
+  const detailSections = document.querySelector("#standard-detail-sections");
+  const detailSources = document.querySelector("#standard-detail-sources");
+  const detailPdf = document.querySelector("#standard-detail-pdf");
   const STORE = "ghrab.ai-studio.ecosystem-check.v2";
   let ctx;
 
@@ -43,14 +47,19 @@ if (!section || !canView) {
     span.textContent = text;
     return span;
   };
-  const metric = (value, cs, en) => {
-    const card = document.createElement("article");
-    card.className = "automation-kpi";
+  const metric = (value, cs, en, detailKey) => {
+    const card = document.createElement("button");
+    card.type = "button";
+    card.className = "automation-kpi ecosystem-detail-trigger";
+    card.dataset.detailKey = detailKey;
     const strong = document.createElement("strong");
     strong.textContent = value;
     const span = document.createElement("span");
     span.textContent = G.t(cs, en);
-    card.append(strong, span);
+    const hint = document.createElement("small");
+    hint.textContent = G.t("Otevřít detail", "Open details");
+    card.append(strong, span, hint);
+    card.addEventListener("click", () => openDetail(detailKey));
     return card;
   };
   const garpLabel = (value) =>
@@ -259,39 +268,165 @@ if (!section || !canView) {
       body.append(tr);
     }
 
-    summary.replaceChildren(
-      metric(`${healthy}/${ctx.apps.length}`, "bez problému", "healthy"),
-      metric(`${garpPass}/${ctx.apps.length}`, "GARP aktuální", "GARP current"),
-      metric(`${promotionPass}/${ctx.apps.length}`, "Safe Promotion", "Safe Promotion"),
-      metric(`${platformPass}/${ctx.apps.length}`, "Platform 1.1.2", "Platform 1.1.2"),
-      metric(`${sourcePass}/${ctx.apps.length}`, "zdrojů ověřeno", "sources verified"),
-    );
-
     const active = ctx.coreRegistry?.activeRelease;
     const runtime = ctx.runtime?.ai || ctx.readinessRoot?.runtime || {};
-    if (coreMeta) {
-      coreMeta.textContent = active
-        ? `Core ${active.coreVersion} · ${corePass}/${coreScope} · ${runtime.defaultMode || "—"}`
-        : `${corePass}/${coreScope}`;
-    }
-    if (sourceMeta) {
-      sourceMeta.textContent =
+    summary.replaceChildren(
+      metric(
+        `${healthy}/${ctx.apps.length}`,
+        "bez problému",
+        "healthy",
+        "ecosystem",
+      ),
+      metric(
+        `${garpPass}/${ctx.apps.length}`,
+        "GARP aktuální",
+        "GARP current",
+        "garp",
+      ),
+      metric(
+        `${promotionPass}/${ctx.apps.length}`,
+        "Safe Promotion",
+        "Safe Promotion",
+        "safePromotion",
+      ),
+      metric(
+        `${platformPass}/${ctx.apps.length}`,
+        `Platform ${ctx.apps[0]?.platform?.platformVersion || "—"}`,
+        `Platform ${ctx.apps[0]?.platform?.platformVersion || "—"}`,
+        "platform",
+      ),
+      metric(
+        `${corePass}/${coreScope}`,
+        "AI Core",
+        "AI Core",
+        "aiCore",
+      ),
+      metric(
+        `${sourcePass}/${ctx.apps.length}`,
+        "zdrojů ověřeno",
+        "sources verified",
+        "sources",
+      ),
+      metric(
+        `${manualPass}/${ctx.apps.length}`,
+        "manuálů dostupných",
+        "manuals available",
+        "manuals",
+      ),
+    );
+    ctx.liveDetail = {
+      ecosystem: `Studio v${document.documentElement.dataset.ghrabAppVersion || "—"} · ${healthy}/${ctx.apps.length}`,
+      garp: garpLabel(expectedGarp(ctx.policy)),
+      safePromotion: `${promotionPass}/${ctx.apps.length} · auto-patch + deployment verification`,
+      platform: `GHRAB Platform ${ctx.apps[0]?.platform?.platformVersion || "—"}`,
+      aiCore: active
+        ? `AI Core ${active.coreVersion} · ${corePass}/${coreScope} · ${runtime.defaultMode || "—"}`
+        : `${corePass}/${coreScope}`,
+      sources:
         `${sourcePass}/${ctx.apps.length} · ` +
         G.t("poslední plná kontrola", "last full check") +
-        ` ${formatTime(ctx.report?.lastFullSourceVerifiedAt || ctx.report?.generatedAt)}`;
-    }
-    if (manualMeta) {
-      manualMeta.textContent = G.t(
+        ` ${formatTime(ctx.report?.lastFullSourceVerifiedAt || ctx.report?.generatedAt)}`,
+      manuals: G.t(
         `${manualPass}/${ctx.apps.length} dostupných`,
         `${manualPass}/${ctx.apps.length} available`,
-      );
-    }
+      ),
+    };
 
     note.textContent = G.t(
       `GARP baseline: ${garpLabel(expectedGarp(ctx.policy))}. Tato tabulka je jediný provozní přehled ve Správě; repozitářové GARP/P5/N5 testy zůstávají autoritativní release bránou.`,
       `GARP baseline: ${garpLabel(expectedGarp(ctx.policy))}. This table is the single operational status overview in Administration; repository GARP/P5/N5 suites remain the authoritative release gate.`,
     );
   }
+
+  function localised(value) {
+    if (typeof value === "string") return value;
+    return document.documentElement.lang === "en"
+      ? value?.en || value?.cs || ""
+      : value?.cs || value?.en || "";
+  }
+
+  function detailItem(key) {
+    return ctx?.catalog?.items?.[key] || null;
+  }
+
+  function openDetail(key) {
+    const item = detailItem(key);
+    if (!item || !detailDialog) return;
+    ctx.activeDetailKey = key;
+    detailTitle.textContent = localised(item.title);
+    detailVersion.textContent = ctx.liveDetail?.[key] || localised(item.version);
+    detailSummary.textContent = localised(item.summary);
+    detailSections.replaceChildren(
+      ...(item.sections || []).map((section) => {
+        const article = document.createElement("article");
+        article.className = "standard-detail-section";
+        const h3 = document.createElement("h3");
+        h3.textContent = localised(section.title);
+        const ul = document.createElement("ul");
+        for (const point of section.points || []) {
+          const li = document.createElement("li");
+          li.textContent = localised(point);
+          ul.append(li);
+        }
+        article.append(h3, ul);
+        return article;
+      }),
+    );
+    detailSources.replaceChildren(
+      ...(item.sources || []).map((source) => {
+        const li = document.createElement("li");
+        li.textContent = source;
+        return li;
+      }),
+    );
+    detailDialog.showModal();
+  }
+
+  function printDetail() {
+    const key = ctx?.activeDetailKey;
+    const item = detailItem(key);
+    if (!item) return;
+    const printWindow = window.open("", "_blank", "noopener,noreferrer");
+    if (!printWindow) {
+      G.showToast(
+        G.t(
+          "Pro tisk PDF povolte dočasné okno pro tento web.",
+          "Allow the temporary print window for this site.",
+        ),
+      );
+      return;
+    }
+    const title = localised(item.title);
+    const version = ctx.liveDetail?.[key] || localised(item.version);
+    const sections = (item.sections || [])
+      .map(
+        (section) =>
+          `<section><h2>${escapePrint(localised(section.title))}</h2><ul>${(section.points || [])
+            .map((point) => `<li>${escapePrint(localised(point))}</li>`)
+            .join("")}</ul></section>`,
+      )
+      .join("");
+    const sources = (item.sources || [])
+      .map((source) => `<li>${escapePrint(source)}</li>`)
+      .join("");
+    printWindow.document.open();
+    printWindow.document.write(
+      `<!doctype html><html lang="cs"><head><meta charset="utf-8"><title>${escapePrint(title)} - AI Studio GHRAB</title><style>body{font-family:Arial,sans-serif;max-width:820px;margin:40px auto;color:#111;line-height:1.5}h1{margin-bottom:4px}h2{margin-top:28px;font-size:18px}.version{font-weight:700;color:#245}.summary{font-size:17px}.sources{margin-top:32px;border-top:1px solid #bbb;padding-top:18px}@media print{body{margin:0;max-width:none}}</style></head><body><h1>${escapePrint(title)}</h1><p class="version">${escapePrint(version)}</p><p class="summary">${escapePrint(localised(item.summary))}</p>${sections}<section class="sources"><h2>Autoritativní zdroje</h2><ul>${sources}</ul><p>AI Studio GHRAB · technický přehled · ${new Date().toLocaleDateString("cs-CZ")}</p></section></body></html>`,
+    );
+    printWindow.document.close();
+    printWindow.focus();
+    setTimeout(() => printWindow.print(), 250);
+  }
+
+  function escapePrint(value) {
+    return String(value || "")
+      .replaceAll("&", "&amp;")
+      .replaceAll("<", "&lt;")
+      .replaceAll(">", "&gt;")
+      .replaceAll('"', "&quot;");
+  }
+
+  detailPdf?.addEventListener("click", printDetail);
 
   function persist(appId, evaluation) {
     const data = stored();
@@ -370,7 +505,7 @@ if (!section || !canView) {
   }
 
   async function init() {
-    const [apps, policy, readiness, report, coreRegistry, runtime] =
+    const [apps, policy, readiness, report, coreRegistry, runtime, catalog] =
       await Promise.all([
         G.loadApps(),
         loadJson("../config/developer-readiness.json"),
@@ -378,6 +513,7 @@ if (!section || !canView) {
         G.loadSyncReport(),
         G.loadAiCoreRegistry(),
         G.loadAiRuntime(),
+        loadJson("../config/standards-catalog.json"),
       ]);
     ctx = {
       apps,
@@ -389,6 +525,7 @@ if (!section || !canView) {
       sources: mapBy(report?.sources),
       coreRegistry,
       runtime,
+      catalog,
     };
     render();
   }

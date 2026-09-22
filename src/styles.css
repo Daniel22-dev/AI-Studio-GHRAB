@@ -4040,3 +4040,136 @@ input[type="file"] {
     grid-template-columns: 1fr;
   }
 }
+
+/* Click-through technical details for ecosystem standards. */
+.ecosystem-summary {
+  grid-template-columns: repeat(4, minmax(0, 1fr));
+}
+.ecosystem-detail-trigger {
+  appearance: none;
+  color: inherit;
+  font: inherit;
+  cursor: pointer;
+  transition:
+    transform 0.18s ease,
+    border-color 0.18s ease,
+    background 0.18s ease;
+}
+.ecosystem-detail-trigger:hover,
+.ecosystem-detail-trigger:focus-visible {
+  transform: translateY(-2px);
+  border-color: rgba(82, 232, 255, 0.45);
+  background: rgba(8, 29, 47, 0.92);
+}
+.ecosystem-detail-trigger small {
+  display: block;
+  margin-top: 8px;
+  color: var(--cyan);
+  font-size: 0.65rem;
+  font-weight: 850;
+}
+.standard-detail-dialog {
+  width: min(900px, calc(100vw - 32px));
+  max-height: min(86vh, 900px);
+  padding: 0;
+  border: 1px solid rgba(82, 232, 255, 0.28);
+  border-radius: 22px;
+  color: var(--ink);
+  background: #071421;
+  box-shadow: 0 40px 100px rgba(0, 0, 0, 0.62);
+}
+.standard-detail-dialog::backdrop {
+  background: rgba(0, 5, 12, 0.78);
+  backdrop-filter: blur(8px);
+}
+.standard-detail-shell {
+  padding: 24px;
+  overflow: auto;
+  max-height: inherit;
+}
+.standard-detail-head {
+  display: flex;
+  justify-content: space-between;
+  gap: 18px;
+  align-items: flex-start;
+}
+.standard-detail-head h2 {
+  margin: 4px 0 4px;
+  font-size: clamp(1.7rem, 3vw, 2.5rem);
+}
+.standard-detail-version {
+  margin: 0;
+  color: var(--cyan);
+  font-weight: 850;
+}
+.standard-detail-close {
+  width: 42px;
+  height: 42px;
+  border-radius: 50%;
+  border: 1px solid var(--line);
+  background: rgba(7, 24, 39, 0.9);
+  color: var(--ink);
+  font-size: 1.5rem;
+  cursor: pointer;
+}
+.standard-detail-summary {
+  font-size: 1rem;
+  line-height: 1.7;
+  color: #cfe4ee;
+}
+.standard-detail-sections {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 12px;
+  margin-top: 18px;
+}
+.standard-detail-section,
+.standard-detail-sources {
+  padding: 16px 18px;
+  border: 1px solid var(--line);
+  border-radius: 16px;
+  background: rgba(4, 15, 27, 0.72);
+}
+.standard-detail-section h3,
+.standard-detail-sources h3 {
+  margin: 0 0 10px;
+  font-size: 0.95rem;
+}
+.standard-detail-section ul,
+.standard-detail-sources ul {
+  margin: 0;
+  padding-left: 19px;
+}
+.standard-detail-section li,
+.standard-detail-sources li {
+  margin: 7px 0;
+  color: var(--muted);
+  line-height: 1.55;
+}
+.standard-detail-sources {
+  margin-top: 12px;
+}
+.standard-detail-actions {
+  display: flex;
+  gap: 10px;
+  justify-content: flex-end;
+  margin-top: 18px;
+}
+.standard-detail-pdf-note {
+  margin: 8px 0 0;
+  color: var(--muted);
+  font-size: 0.7rem;
+  text-align: right;
+}
+@media (max-width: 760px) {
+  .ecosystem-summary,
+  .standard-detail-sections {
+    grid-template-columns: 1fr;
+  }
+  .standard-detail-actions {
+    justify-content: stretch;
+  }
+  .standard-detail-actions .button {
+    flex: 1;
+  }
+}
