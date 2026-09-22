@@ -3945,39 +3945,6 @@ input[type="file"] {
   .pipeline-compact { grid-template-columns: 1fr; }
 }
 
-/* Temporary administrator guide */
-.temporary-admin-card-with-help {
-  padding: 0;
-  overflow: hidden;
-}
-.temporary-admin-main {
-  display: grid;
-  grid-template-columns: auto 1fr;
-  gap: 14px;
-  align-items: center;
-  padding: 18px 18px 12px;
-  color: inherit;
-  text-decoration: none;
-}
-.temporary-admin-main > span {
-  font-size: 1.25rem;
-}
-.temporary-admin-main div {
-  display: grid;
-  gap: 5px;
-}
-.temporary-admin-help {
-  display: block;
-  margin: 0 18px 16px 50px;
-  width: fit-content;
-  color: var(--cyan);
-  font-size: 0.76rem;
-  font-weight: 800;
-  text-decoration: none;
-}
-.temporary-admin-help:hover {
-  text-decoration: underline;
-}
 .temporary-admin-guide {
   display: grid;
   gap: 16px;
@@ -4029,9 +3996,6 @@ input[type="file"] {
 .temporary-admin-finish .app-actions {
   justify-content: center;
 }
-#temporary-admin-adela {
-  scroll-margin-top: 110px;
-}
 @media (max-width: 820px) {
   .temporary-admin-progress-panel {
     grid-template-columns: 1fr;
@@ -4041,33 +4005,6 @@ input[type="file"] {
   }
 }
 
-/* Click-through technical details for ecosystem standards. */
-.ecosystem-summary {
-  grid-template-columns: repeat(4, minmax(0, 1fr));
-}
-.ecosystem-detail-trigger {
-  appearance: none;
-  color: inherit;
-  font: inherit;
-  cursor: pointer;
-  transition:
-    transform 0.18s ease,
-    border-color 0.18s ease,
-    background 0.18s ease;
-}
-.ecosystem-detail-trigger:hover,
-.ecosystem-detail-trigger:focus-visible {
-  transform: translateY(-2px);
-  border-color: rgba(82, 232, 255, 0.45);
-  background: rgba(8, 29, 47, 0.92);
-}
-.ecosystem-detail-trigger small {
-  display: block;
-  margin-top: 8px;
-  color: var(--cyan);
-  font-size: 0.65rem;
-  font-weight: 850;
-}
 .standard-detail-dialog {
   width: min(900px, calc(100vw - 32px));
   max-height: min(86vh, 900px);
