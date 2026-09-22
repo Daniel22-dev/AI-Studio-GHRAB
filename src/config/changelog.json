@@ -3,11 +3,11 @@
   "current": "0.21.84",
   "items": [
     {
-      "version": "0.21.82",
+      "version": "0.21.84",
       "date": "2026-09-22",
       "title": {
-        "cs": "Hotfix vydání 0.21.82 a dokončení úprav Správy",
-        "en": "0.21.82 release hotfix and Administration completion"
+        "cs": "Správa 0.21.84: detailní karty a dočasné předání pravomocí",
+        "en": "Administration 0.21.84: detailed cards and temporary delegation"
       },
       "changes": [
         {
