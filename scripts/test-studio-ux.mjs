@@ -156,6 +156,20 @@ check(
     standardsCatalog.includes('"Úrovně důvěry"'),
   "Konsolidovany prehled nerozlisuje zivy manifest, GitHub kandidata a zalozni snapshot.",
 );
+check(
+  readinessJs.includes('"Stav ekosystému"') &&
+    readinessJs.includes('"Ověření zdrojů"') &&
+    readinessJs.includes('ecosystem-metric-title') &&
+    readinessJs.includes('downloadDetailPdf') &&
+    readinessJs.includes('downloadTextPdf'),
+  "Souhrnne karty ve Sprave nemaji title-first hierarchii nebo primy PDF export.",
+);
+check(
+  !adminHtml.includes('id="temporary-admin-adela"') &&
+    issuerHtml.includes('id="temporary-admin-adela-prefill"') &&
+    issuerJs.includes('"Adéla Stillerová"'),
+  "Docasne povyseni Adely je stale v hlavni mrizce Spravy nebo chybi uvnitr Vydavatele pristupu.",
+);
 check(syncScript.includes('verification: "repository"') && syncScript.includes('raw.githubusercontent.com') && syncScript.includes('lastFullSourceVerifiedAt') && syncScript.includes('lastFullLiveVerifiedAt'), "Synchronizace nema dvoustupnove overeni nasazeni/GitHub zdroje.");
 check(syncScript.includes('evaluateRepositoryFallback') && syncScript.includes('registryPinned: true') && syncScript.includes('pendingReleaseCandidate: true'), "Repository fallback neumi u novejsiho source kandidata zachovat prijaty release-wave baseline.");
 check(

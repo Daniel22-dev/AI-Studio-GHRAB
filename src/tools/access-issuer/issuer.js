@@ -347,6 +347,17 @@ if (window.GHRAB.isAdmin() && !window.GHRAB.isColleaguePreview?.()) {
   document.querySelectorAll("[data-admin-days]").forEach((button) =>
     button.addEventListener("click", () => setExpiryDays(button.dataset.adminDays)),
   );
+  $("#temporary-admin-adela-prefill")?.addEventListener("click", () => {
+    const name = "Adéla Stillerová";
+    $("#permit-name").value = name;
+    $("#permit-subject").value = slug(name);
+    $("#permit-role").value = "admin";
+    syncRoleUi();
+    feedback(
+      "Předvyplněno pro Adélu Stillerovou. Nyní zvolte 7 / 14 / 30 dní nebo přesné datum konce platnosti.",
+      true,
+    );
+  });
   $("#primary-admin-expiry").addEventListener("click", setMaximumExpiry);
   $("#permit-name").addEventListener("blur", () => {
     if (!$("#permit-subject").value.trim())

@@ -51,6 +51,26 @@
               "en": "Authoritative release decisions are still made by repository GARP/P5/N5 checks."
             }
           ]
+        },
+        {
+          "title": {
+            "cs": "Vyhodnocovací logika",
+            "en": "Evaluation logic"
+          },
+          "points": [
+            {
+              "cs": "Výsledek aplikace se počítá jako AND nad šesti podmínkami: garpOk && promotionOk && platformOk && coreOk && sourceOk && manualOk.",
+              "en": "Application health is an AND across six predicates: garpOk && promotionOk && platformOk && coreOk && sourceOk && manualOk."
+            },
+            {
+              "cs": "coreOk je pro aplikaci bez AI Core pravdivé přes explicitní N/A větev; absence AI Core sama o sobě není chyba.",
+              "en": "coreOk is true for apps outside AI Core scope through an explicit N/A branch; lack of AI Core is not itself a failure."
+            },
+            {
+              "cs": "Souhrnná karta je agregace registru aplikací, release politiky, AI readiness a sync-reportu; není to samostatný zdroj pravdy.",
+              "en": "The summary card aggregates the app registry, release policy, AI readiness and sync report; it is not a separate source of truth."
+            }
+          ]
         }
       ],
       "sources": [
@@ -113,6 +133,26 @@
               "en": "The baseline is a technical minimum standard, not a marketing security certificate."
             }
           ]
+        },
+        {
+          "title": {
+            "cs": "Kontrolní kontrakt",
+            "en": "Control contract"
+          },
+          "points": [
+            {
+              "cs": "garpOk = assuranceBaseline === očekávaná baseline && app.version >= minimumVersion.",
+              "en": "garpOk = assuranceBaseline === expected baseline && app.version >= minimumVersion."
+            },
+            {
+              "cs": "Release integrity svazuje appId, semver, commit SHA a artefakt; nesoulad má skončit fail-closed před deployem.",
+              "en": "Release integrity binds appId, semver, commit SHA and artifact; mismatch is expected to fail closed before deployment."
+            },
+            {
+              "cs": "GARP/P5/N5 zůstávají autoritativní CI bránou; tato obrazovka pouze čte a interpretuje jejich publikovanou evidenci.",
+              "en": "GARP/P5/N5 remain the authoritative CI gate; this screen only reads and interprets their published evidence."
+            }
+          ]
         }
       ],
       "sources": [
@@ -165,6 +205,26 @@
             {
               "cs": "Nesmí automaticky povyšovat neschválené minor/major změny.",
               "en": "It must not automatically promote unapproved minor/major changes."
+            }
+          ]
+        },
+        {
+          "title": {
+            "cs": "Podmínky automatického povýšení",
+            "en": "Automatic promotion conditions"
+          },
+          "points": [
+            {
+              "cs": "promotionOk vyžaduje mode === 'auto-patch' a requiredVerification === 'deployment'.",
+              "en": "promotionOk requires mode === 'auto-patch' and requiredVerification === 'deployment'."
+            },
+            {
+              "cs": "Auto Patch je omezen na kompatibilní PATCH změny; branch protection, povinné checky a následná deployment verification se nepřeskakují.",
+              "en": "Auto Patch is limited to compatible PATCH changes; branch protection, required checks and subsequent deployment verification are never bypassed."
+            },
+            {
+              "cs": "Repository-only kandidát se ve Správě označuje jako čekající na release, aby nebyl zaměněn za živý deploy.",
+              "en": "A repository-only candidate is shown as awaiting release so it cannot be mistaken for the live deployment."
             }
           ]
         }
@@ -228,6 +288,26 @@
               "en": "It allows app compatibility to be checked against one central Platform version."
             }
           ]
+        },
+        {
+          "title": {
+            "cs": "Runtime a datové rozhraní",
+            "en": "Runtime and data interface"
+          },
+          "points": [
+            {
+              "cs": "platformOk vyžaduje contract === 'ghrab-platform-v1', platformVersion === '1.1.2' a requiredPlatformRange obsahující 1.1.2.",
+              "en": "platformOk requires contract === 'ghrab-platform-v1', platformVersion === '1.1.2' and a requiredPlatformRange containing 1.1.2."
+            },
+            {
+              "cs": "Handoff v2 a artifact envelope v1 oddělují aplikační payload od transportní obálky; SHA-256 slouží jako kontrola integrity artefaktu.",
+              "en": "Handoff v2 and artifact envelope v1 separate application payload from the transport envelope; SHA-256 provides artifact integrity checking."
+            },
+            {
+              "cs": "Platform kontrakt sjednocuje PWA/service-worker, storage namespace, session lifecycle a návrat do Studia bez zásahu do pedagogické logiky aplikace.",
+              "en": "The Platform contract standardises PWA/service-worker behaviour, storage namespace, session lifecycle and return-to-Studio without changing pedagogical logic."
+            }
+          ]
         }
       ],
       "sources": [
@@ -281,6 +361,26 @@
               "en": "Applications that do not use AI Core are not failing; they are marked N/A."
             }
           ]
+        },
+        {
+          "title": {
+            "cs": "Readiness a konformance",
+            "en": "Readiness and conformance"
+          },
+          "points": [
+            {
+              "cs": "coreOk vyžaduje coreVersion, conformancePassed === true a kompatibilní readiness stav; aplikace mimo rozsah procházejí přes coreNA.",
+              "en": "coreOk requires coreVersion, conformancePassed === true and a compatible readiness state; out-of-scope apps pass via coreNA."
+            },
+            {
+              "cs": "Aktivní release Core se čte z centrálního registru a runtime politika určuje výchozí režim; karta proto kombinuje release metadata a aplikační konformitu.",
+              "en": "The active Core release comes from the central registry and runtime policy defines the default mode; the card therefore combines release metadata with application conformance."
+            },
+            {
+              "cs": "AI Core neukládá API klíč do frontendu; je připraven jako integrační hranice pro serverový runtime a jednotnou auditní stopu.",
+              "en": "AI Core does not place API keys in the frontend; it is an integration boundary for a server-side runtime and consistent audit trail."
+            }
+          ]
         }
       ],
       "sources": [
@@ -322,6 +422,26 @@
               "en": "Snapshot: fallback information; useful but not equivalent to live verification."
             }
           ]
+        },
+        {
+          "title": {
+            "cs": "Algoritmus důvěry a časové značky",
+            "en": "Trust algorithm and timestamps"
+          },
+          "points": [
+            {
+              "cs": "Priorita důkazu: deployment manifest > repository source > snapshot fallback. Stav 'repository' je důvěryhodný pro zdroj, nikoli automaticky pro produkci.",
+              "en": "Evidence priority: deployment manifest > repository source > snapshot fallback. A repository state is trusted for source, not automatically for production."
+            },
+            {
+              "cs": "sync-report nese lastFullSourceVerifiedAt a lastFullLiveVerifiedAt; detail zobrazuje čas poslední plné zdrojové kontroly.",
+              "en": "sync-report carries lastFullSourceVerifiedAt and lastFullLiveVerifiedAt; the detail shows the latest full source-verification time."
+            },
+            {
+              "cs": "Při novějším repository kandidátu může registr zůstat připnutý k přijaté release baseline a kandidát je označen pendingReleaseCandidate.",
+              "en": "When a newer repository candidate exists, the registry can remain pinned to the accepted release baseline while the candidate is marked pendingReleaseCandidate."
+            }
+          ]
         }
       ],
       "sources": [
@@ -361,6 +481,26 @@
             {
               "cs": "Dokumentace se aktualizuje společně s funkční změnou aplikace.",
               "en": "Documentation is updated together with functional application changes."
+            }
+          ]
+        },
+        {
+          "title": {
+            "cs": "Validace dokumentace",
+            "en": "Documentation validation"
+          },
+          "points": [
+            {
+              "cs": "manualOk = Boolean(app.manualUrl); jde o provozní kontrakt registru, nikoli pouze kontrolu existence libovolného souboru v repozitáři.",
+              "en": "manualOk = Boolean(app.manualUrl); this is a registry-level operational contract, not merely a check that some file exists in the repository."
+            },
+            {
+              "cs": "Samostatný manuál může být nahrazen integrovanou nápovědou pouze tam, kde to metadata aplikace výslovně definují.",
+              "en": "A standalone manual may be replaced by integrated help only where application metadata explicitly defines it."
+            },
+            {
+              "cs": "Dokumentace je součást release kvality: změna workflow bez odpovídající aktualizace manuálu má být zachycena v QA a review.",
+              "en": "Documentation is part of release quality: a workflow change without a matching manual update should be caught during QA and review."
             }
           ]
         }
