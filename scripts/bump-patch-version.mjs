@@ -12,6 +12,7 @@ const consumerPath = "ghrab-platform.consumer.json";
 const indexPath = "src/index.html";
 const acceptancePath = "src/config/release-acceptance.json";
 const reporterConfigPath = "reporter-test.config.json";
+const reporterAdapterPath = "src/tests/error-reporter-adapter.js";
 
 const pkg = JSON.parse(await readFile(pkgPath, "utf8"));
 const oldVersion = pkg.version;
@@ -43,5 +44,9 @@ await writeFile(acceptancePath, `${JSON.stringify(acceptance, null, 2)}\n`, "utf
 const reporterConfig = JSON.parse(await readFile(reporterConfigPath, "utf8"));
 reporterConfig.version = newVersion;
 await writeFile(reporterConfigPath, `${JSON.stringify(reporterConfig, null, 2)}\n`, "utf8");
+
+let reporterAdapter = await readFile(reporterAdapterPath, "utf8");
+reporterAdapter = reporterAdapter.replace(/appVersion:\s*[\'\"]\d+\.\d+\.\d+[\'\"]/, `appVersion: \'${newVersion}\'`);
+await writeFile(reporterAdapterPath, reporterAdapter, "utf8");
 
 console.log(`AI Studio version bumped: ${oldVersion} -> ${newVersion}`);
