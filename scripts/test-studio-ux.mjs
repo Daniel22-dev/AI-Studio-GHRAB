@@ -136,6 +136,8 @@ check(adminHtml.includes('id="preview-monthly-reminder"'), "Sprava nema nahled m
 const automationJs = await text("src/automation/automation.js");
 const readinessJs = await text("src/automation/developer-readiness.js");
 const standardsCatalog = await text("src/config/standards-catalog.json");
+const issuerHtml = await text("src/tools/access-issuer/index.html");
+const issuerJs = await text("src/tools/access-issuer/issuer.js");
 check(adminHtml.includes('data-full-admin-only') && adminHtml.includes('../tools/access-issuer/'), "Vydavatel opravneni neni ve Sprave omezen jen na plneho admina.");
 check(adminHtml.includes('../tools/security-center/') && /security-center\/["'] data-full-admin-only/.test(adminHtml), "Centrum zabezpeceni neni ve Sprave omezeno jen na plneho admina.");
 check(adminHtml.includes('data-operator-only') && adminHtml.includes('deputy-admin.html'), "Sprava nema provozni informaci pro zastupce spravce.");
@@ -179,8 +181,6 @@ check(
 check(syncScript.includes('Promise.all(sources.map(resolveSource))'), "Synchronizace zdroju nebezi soubezne a muze zbytecne blokovat release.");
 check(syncScript.includes('if (!offline || writeOfflineOutputs)') && syncScript.includes('se nepřepisují'), "Offline QA muze prepsat publikovany stav Kontroly zdroju.");
 
-const issuerHtml = await text("src/tools/access-issuer/index.html");
-const issuerJs = await text("src/tools/access-issuer/issuer.js");
 check(issuerHtml.includes('<option value="operator">Zástupce správce</option>'), "Vydavatel neumoznuje vydat roli zastupce spravce.");
 check(["7", "14", "30"].every((days) => issuerHtml.includes(`data-admin-days="${days}"`)), "Vydavatel nema rychle expirace 7/14/30 dni pro docasneho admina.");
 check(issuerHtml.includes('id="primary-admin-expiry"') && issuerHtml.includes('Hlavní správce · maximum'), "Vydavatel nema samostatnou maximalni platnost pro hlavniho spravce.");
