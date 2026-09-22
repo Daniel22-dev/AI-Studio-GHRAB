@@ -238,7 +238,7 @@ if (!section || !G.isAdmin() || G.isColleaguePreview?.()) {
   async function init() {
     const [apps, policy, readiness, report] = await Promise.all([
       G.loadApps(),
-      loadJson("../config/release-promotion-policy.json"),
+      loadJson("../config/developer-readiness.json"),
       G.loadAiReadiness(),
       G.loadSyncReport(),
     ]);
