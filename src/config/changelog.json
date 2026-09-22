@@ -6,21 +6,13 @@
       "version": "0.21.86",
       "date": "2026-09-22",
       "title": {
-        "cs": "Vlastní GARP 2.5.1 a release assurance Studia",
-        "en": "Studio-owned GARP 2.5.1 and release assurance"
+        "cs": "GARP 2.5.1 pro Studio",
+        "en": "Studio GARP 2.5.1"
       },
       "changes": [
         {
-          "cs": "AI Studio má vlastní kanonický GARP 2.5.1 tooling a N5 fail-closed detekci privátního JWK, šifrovaného privátního PEM a privátního PGP bloku.",
-          "en": "AI Studio now has its own canonical GARP 2.5.1 tooling and fail-closed N5 detection for private JWK, encrypted private PEM and private PGP blocks."
-        },
-        {
-          "cs": "P5 candidate/PR/release cesta povinně spouští GARP selftest, source secret scan a deployment leak scan.",
-          "en": "The P5 candidate/PR/release path now mandatorily runs the GARP self-test, source secret scan and deployment leak scan."
-        },
-        {
-          "cs": "Release Studia vytváří TRANSITIONAL strojově ověřenou vazbu verze, source commitu, artefaktu, manifestu, SBOM, provenance a evidence bez předstírání produkčního podpisu.",
-          "en": "Studio releases now create a TRANSITIONAL machine-verifiable binding across version, source commit, artifact, manifest, SBOM, provenance and evidence without claiming a production signature."
+          "cs": "GARP/N5 je povinně v P5; release váže commit, artefakt, manifest, SBOM, provenance a evidenci v režimu TRANSITIONAL.",
+          "en": "GARP/N5 is mandatory in P5; releases bind commit, artifact, manifest, SBOM, provenance and evidence in TRANSITIONAL mode."
         }
       ]
     },
