@@ -15,6 +15,25 @@ function semver(value) {
 const current = JSON.parse(await readFile("package.json", "utf8"));
 const currentVersion = semver(current.version);
 
+const lock = JSON.parse(await readFile("package-lock.json", "utf8"));
+const consumer = JSON.parse(await readFile("ghrab-platform.consumer.json", "utf8"));
+const indexHtml = await readFile("src/index.html", "utf8");
+const acceptance = JSON.parse(await readFile("src/config/release-acceptance.json", "utf8"));
+const htmlVersion = indexHtml.match(/data-ghrab-app-version=["']([^"']+)["']/i)?.[1] || null;
+const versionRefs = [
+  ["package-lock.version", lock.version],
+  ["package-lock.packages[\"\"].version", lock.packages?.[""]?.version],
+  ["consumer.appVersion", consumer.appVersion],
+  ["src/index.html", htmlVersion],
+  ["release-acceptance.appVersion", acceptance.appVersion],
+];
+const mismatches = versionRefs.filter(([, value]) => value !== currentVersion);
+if (mismatches.length) {
+  console.error("Release version gate: inconsistent version references.");
+  for (const [label, value] of mismatches) console.error(` - ${label}: ${value ?? "missing"} (expected ${currentVersion})`);
+  process.exit(1);
+}
+
 let baseVersion = null;
 try {
   git("fetch", "--no-tags", "origin", "main");
