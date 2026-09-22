@@ -1,7 +1,25 @@
 {
   "schema": "ai-studio-changelog-v1",
-  "current": "0.21.76",
+  "current": "0.21.77",
   "items": [
+    {
+      "version": "0.21.77",
+      "date": "2026-09-22",
+      "title": {
+        "cs": "Cache-coherence release pro nové funkce Studia",
+        "en": "Cache-coherence release for the new Studio features"
+      },
+      "changes": [
+        {
+          "cs": "Nové správcovské funkce, diagnostický průběh a prezentační opravy dostávají novou identitu 0.21.77, aby service worker a verzované JS/CSS assety nepoužívaly starou cache 0.21.76.",
+          "en": "The new administration features, diagnostic progress UI and presentation fixes now use version identity 0.21.77 so the service worker and versioned JS/CSS assets cannot reuse the old 0.21.76 cache."
+        },
+        {
+          "cs": "GitHub Pages build tak vytváří nový cache namespace a nové ?v=0.21.77 odkazy napříč aktivními stránkami Studia.",
+          "en": "The GitHub Pages build now creates a new cache namespace and fresh ?v=0.21.77 references across active Studio pages."
+        }
+      ]
+    },
     {
       "version": "0.21.76",
       "date": "2026-09-15",
