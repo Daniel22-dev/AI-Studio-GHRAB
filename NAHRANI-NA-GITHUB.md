@@ -1,8 +1,8 @@
-# Nahrání AI Studio GHRAB 0.21.76
+# Nahrání AI Studio GHRAB 0.21.77
 
-> Aktuální verze: **0.21.76** · etapa P5
+> Aktuální verze: **0.21.77** · etapa P5
 
-> 0.21.76 opravuje source-candidate gate: Generátor zůstává ručně přijatý na 7.1.28 a repository kandidát 7.1.30 se bez úspěšného deploymentu nepovýší ani nezablokuje release Studia.
+> 0.21.77 opravuje source-candidate gate: Generátor zůstává ručně přijatý na 7.1.28 a repository kandidát 7.1.30 se bez úspěšného deploymentu nepovýší ani nezablokuje release Studia.
 
 ## Jednorázová migrace `dist-school-server/`
 
