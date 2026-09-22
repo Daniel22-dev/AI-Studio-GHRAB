@@ -98,6 +98,15 @@ jobs:
       - name: Enforce P5 R2 release gate
         run: npm run qa:p5:ci
 
+      - name: Create LIVE Studio GARP release assurance
+        env:
+          GHRAB_SOURCE_COMMIT: ${{ github.sha }}
+          GHRAB_SOURCE_REPOSITORY: ${{ github.repository }}
+          GHRAB_RELEASE_STAGE: LIVE-PUBLIC-PAGES
+        run: npm run prepare:studio-release
+      - name: Verify LIVE Studio release assurance chain
+        run: npm run verify:studio-release
+
       - uses: actions/configure-pages@983d7736d9b0ae728b81ab479565c72886d7745b # v5.0.0
       - uses: actions/upload-pages-artifact@56afc609e74202658d3ffba0e8f6dda462b719fa # v3.0.1
         with:
