@@ -430,6 +430,7 @@ for (const relative of [
   "config/ai-core.json",
   "config/ai-runtime.json",
   "config/platform-manifest.json",
+  "config/standards-catalog.json",
   "manifest.webmanifest",
   "ghrab-platform.consumer.json",
   "build-info.json",

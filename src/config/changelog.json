@@ -1,7 +1,21 @@
 {
   "schema": "ai-studio-changelog-v1",
-  "current": "0.21.85",
+  "current": "0.21.86",
   "items": [
+    {
+      "version": "0.21.86",
+      "date": "2026-09-22",
+      "title": {
+        "cs": "GARP 2.5.1 pro Studio",
+        "en": "Studio GARP 2.5.1"
+      },
+      "changes": [
+        {
+          "cs": "GARP/N5 je povinně v P5; release váže commit, artefakt, manifest, SBOM, provenance a evidenci v režimu TRANSITIONAL.",
+          "en": "GARP/N5 is mandatory in P5; releases bind commit, artifact, manifest, SBOM, provenance and evidence in TRANSITIONAL mode."
+        }
+      ]
+    },
     {
       "version": "0.21.85",
       "date": "2026-09-22",
