@@ -348,6 +348,19 @@ if (window.GHRAB.isAdmin() && !window.GHRAB.isColleaguePreview?.()) {
     button.addEventListener("click", () => setExpiryDays(button.dataset.adminDays)),
   );
   $("#primary-admin-expiry").addEventListener("click", setMaximumExpiry);
+  $("#temporary-admin-adela-prefill")?.addEventListener("click", () => {
+    $("#permit-name").value = "Adéla Stillerová";
+    $("#permit-subject").value = slug("Adéla Stillerová");
+    $("#permit-role").value = "admin";
+    $("#permit-all").checked = true;
+    selectAllCurrentApps();
+    setExpiryDays(14);
+    syncRoleUi();
+    feedback(
+      "Předvyplněno pro Adélu Stillerovou jako plného správce na 14 dní. Před podpisem zkontrolujte datum konce platnosti.",
+      true,
+    );
+  });
   $("#permit-name").addEventListener("blur", () => {
     if (!$("#permit-subject").value.trim())
       $("#permit-subject").value = slug($("#permit-name").value);
