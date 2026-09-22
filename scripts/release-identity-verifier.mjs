@@ -13,19 +13,50 @@ export function computeArtifactDigest(files) {
   return hex(Buffer.from(header + body, 'utf8'));
 }
 
-async function fetchBytes(url, { timeoutMs = 12000 } = {}) {
-  const controller = new AbortController();
-  const timer = setTimeout(() => controller.abort(), timeoutMs);
-  try {
-    const response = await fetch(url, {
-      signal: controller.signal,
-      headers: { 'user-agent': 'AI-Studio-GHRAB-release-identity' },
-    });
-    if (!response.ok) throw new Error(`HTTP ${response.status} ${url}`);
-    return Buffer.from(await response.arrayBuffer());
-  } finally {
-    clearTimeout(timer);
+const TRANSIENT_HTTP = new Set([408, 425, 429, 500, 502, 503, 504]);
+
+const retryDelay = (attempt) =>
+  new Promise((resolve) => setTimeout(resolve, Math.min(2000, 350 * (2 ** (attempt - 1)))));
+
+async function fetchBytes(url, { timeoutMs = 12000, maxAttempts = 3 } = {}) {
+  let lastError = null;
+
+  for (let attempt = 1; attempt <= maxAttempts; attempt += 1) {
+    const controller = new AbortController();
+    const timer = setTimeout(() => controller.abort(), timeoutMs);
+    try {
+      const response = await fetch(url, {
+        signal: controller.signal,
+        headers: { 'user-agent': 'AI-Studio-GHRAB-release-identity' },
+      });
+
+      if (response.ok) return Buffer.from(await response.arrayBuffer());
+
+      const error = new Error(`HTTP ${response.status} ${url}`);
+      if (!TRANSIENT_HTTP.has(response.status) || attempt === maxAttempts) throw error;
+      lastError = error;
+      console.warn(
+        `Release identity fetch retry ${attempt}/${maxAttempts - 1}: HTTP ${response.status} ${url}`,
+      );
+    } catch (error) {
+      const retryableNetworkError =
+        error?.name === 'AbortError' ||
+        error?.name === 'TimeoutError' ||
+        error instanceof TypeError;
+
+      if (!retryableNetworkError || attempt === maxAttempts) throw error;
+      lastError = error;
+      console.warn(
+        `Release identity fetch retry ${attempt}/${maxAttempts - 1}: ${error?.name || 'network error'} ${url}`,
+      );
+    } finally {
+      clearTimeout(timer);
+    }
+
+    await retryDelay(attempt);
   }
+
+  throw lastError || new Error(`fetch selhal ${url}`);
 }
 
 async function fetchJson(url, options) {
