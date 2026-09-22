@@ -1,4 +1,5 @@
 import { createTaskProgress } from "../modules/task-progress.js";
+import { downloadTextPdf } from "../modules/simple-pdf.js";
 
 const G = window.GHRAB;
 await G.accessReady;
@@ -403,91 +404,47 @@ if (!section || !canView) {
     detailDialog.showModal();
   }
 
-  function printDetail() {
-    const key = ctx?.activeDetailKey;
+  function downloadDetailPdf(key = ctx?.activeDetailKey) {
     const item = detailItem(key);
     if (!item) return;
-    const printWindow = window.open("", "_blank", "noopener,noreferrer");
-    if (!printWindow) {
-      G.showToast(
-        G.t(
-          "Pro tisk PDF povolte dočasné okno pro tento web.",
-          "Allow the temporary print window for this site.",
-        ),
-      );
-      return;
-    }
 
-    const doc = printWindow.document;
     const title = localised(item.title);
     const version = ctx.liveDetail?.[key] || localised(item.version);
-
-    doc.documentElement.lang = document.documentElement.lang || "cs";
-    doc.title = `${title} - AI Studio GHRAB`;
-    doc.head.replaceChildren();
-    doc.body.replaceChildren();
-
-    const meta = doc.createElement("meta");
-    meta.charset = "utf-8";
-    const style = doc.createElement("style");
-    style.textContent =
-      "body{font-family:Arial,sans-serif;max-width:820px;margin:40px auto;color:#111;line-height:1.5}" +
-      "h1{margin-bottom:4px}h2{margin-top:28px;font-size:18px}" +
-      ".version{font-weight:700;color:#245}.summary{font-size:17px}" +
-      ".sources{margin-top:32px;border-top:1px solid #bbb;padding-top:18px}" +
-      "@media print{body{margin:0;max-width:none}}";
-    doc.head.append(meta, style);
-
-    const heading = doc.createElement("h1");
-    heading.textContent = title;
-    const versionNode = doc.createElement("p");
-    versionNode.className = "version";
-    versionNode.textContent = version;
-    const summaryNode = doc.createElement("p");
-    summaryNode.className = "summary";
-    summaryNode.textContent = localised(item.summary);
-    doc.body.append(heading, versionNode, summaryNode);
-
-    for (const section of item.sections || []) {
-      const sectionNode = doc.createElement("section");
-      const sectionTitle = doc.createElement("h2");
-      sectionTitle.textContent = localised(section.title);
-      const list = doc.createElement("ul");
-      for (const point of section.points || []) {
-        const li = doc.createElement("li");
-        li.textContent = localised(point);
-        list.append(li);
-      }
-      sectionNode.append(sectionTitle, list);
-      doc.body.append(sectionNode);
-    }
-
-    const sourcesSection = doc.createElement("section");
-    sourcesSection.className = "sources";
-    const sourcesTitle = doc.createElement("h2");
-    sourcesTitle.textContent = G.t(
-      "Autoritativní zdroje",
-      "Authoritative sources",
-    );
-    const sourcesList = doc.createElement("ul");
-    for (const source of item.sources || []) {
-      const li = doc.createElement("li");
-      li.textContent = source;
-      sourcesList.append(li);
-    }
-    const footer = doc.createElement("p");
-    footer.textContent =
-      `AI Studio GHRAB · technický přehled · ${new Date().toLocaleDateString(
-        document.documentElement.lang === "en" ? "en-GB" : "cs-CZ",
-      )}`;
-    sourcesSection.append(sourcesTitle, sourcesList, footer);
-    doc.body.append(sourcesSection);
-
-    printWindow.focus();
-    setTimeout(() => printWindow.print(), 250);
+    const sections = [
+      {
+        heading: title,
+        paragraphs: [version, localised(item.summary)],
+      },
+      ...(item.sections || []).map((sectionItem) => ({
+        heading: localised(sectionItem.title),
+        items: (sectionItem.points || []).map((point) => localised(point)),
+      })),
+      {
+        heading: G.t("Autoritativní zdroje", "Authoritative sources"),
+        items: item.sources || [],
+      },
+      {
+        paragraphs: [
+          `AI Studio GHRAB · technický přehled · ${new Date().toLocaleDateString(
+            document.documentElement.lang === "en" ? "en-GB" : "cs-CZ",
+          )}`,
+        ],
+      },
+    ];
+    const filename = title
+      .normalize("NFD")
+      .replace(/[\u0300-\u036f]/g, "")
+      .toLowerCase()
+      .replace(/[^a-z0-9]+/g, "-")
+      .replace(/^-|-$/g, "");
+    downloadTextPdf({
+      filename: `AI-Studio-${filename || key}.pdf`,
+      sections,
+    });
+    G.showToast(G.t("PDF bylo staženo.", "PDF downloaded."));
   }
 
-  detailPdf?.addEventListener("click", printDetail);
+  detailPdf?.addEventListener("click", () => downloadDetailPdf());
 
   function persist(appId, evaluation) {
     const data = stored();
