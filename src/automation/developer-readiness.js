@@ -48,7 +48,7 @@ if (!section || !canView) {
     span.textContent = text;
     return span;
   };
-  const metric = (value, cs, en, detailKey) => {
+  const metric = (value, cs, en, detailKey, techCs, techEn) => {
     const card = document.createElement("article");
     card.className = "automation-kpi ecosystem-metric-card";
     card.dataset.detailKey = detailKey;
@@ -60,6 +60,15 @@ if (!section || !canView) {
     const metricValue = document.createElement("span");
     metricValue.className = "ecosystem-metric-value";
     metricValue.textContent = value;
+
+    const catalogItem = detailItem(detailKey);
+    const version = document.createElement("code");
+    version.className = "ecosystem-metric-version";
+    version.textContent = localised(catalogItem?.version) || "—";
+
+    const technical = document.createElement("p");
+    technical.className = "ecosystem-metric-technical";
+    technical.textContent = G.t(techCs, techEn);
 
     const actions = document.createElement("div");
     actions.className = "ecosystem-metric-actions";
@@ -78,7 +87,7 @@ if (!section || !canView) {
     pdf.addEventListener("click", () => downloadDetailPdf(detailKey));
 
     actions.append(detail, pdf);
-    card.append(title, metricValue, actions);
+    card.append(title, metricValue, version, technical, actions);
     return card;
   };
   const garpLabel = (value) =>
@@ -298,42 +307,56 @@ if (!section || !canView) {
         "Stav ekosystému",
         "Ecosystem status",
         "ecosystem",
+        "gate = garp && promotion && platform && core && source && manual",
+        "gate = garp && promotion && platform && core && source && manual",
       ),
       metric(
         `${garpPass}/${ctx.apps.length}`,
         "GARP baseline",
         "GARP baseline",
         "garp",
+        "garpOk = assuranceBaseline === target && app.version >= minimumVersion",
+        "garpOk = assuranceBaseline === target && app.version >= minimumVersion",
       ),
       metric(
         `${promotionPass}/${ctx.apps.length}`,
         "Safe Promotion",
         "Safe Promotion",
         "safePromotion",
+        "mode=auto-patch · requiredVerification=deployment · fail-closed",
+        "mode=auto-patch · requiredVerification=deployment · fail-closed",
       ),
       metric(
         `${platformPass}/${ctx.apps.length}`,
         "GHRAB Platform",
         "GHRAB Platform",
         "platform",
+        "contract=ghrab-platform-v1 · requiredPlatformRange ⊇ 1.1.2",
+        "contract=ghrab-platform-v1 · requiredPlatformRange ⊇ 1.1.2",
       ),
       metric(
         `${corePass}/${coreScope}`,
         "AI Core",
         "AI Core",
         "aiCore",
+        "coreVersion=1.0.0 · conformancePassed=true · scope-aware",
+        "coreVersion=1.0.0 · conformancePassed=true · scope-aware",
       ),
       metric(
         `${sourcePass}/${ctx.apps.length}`,
         "Ověření zdrojů",
         "Source verification",
         "sources",
+        "verification ∈ {deployment, repository}; snapshot != authoritative source",
+        "verification ∈ {deployment, repository}; snapshot != authoritative source",
       ),
       metric(
         `${manualPass}/${ctx.apps.length}`,
         "Manuály",
         "Manuals",
         "manuals",
+        "manualUrl != null · integratedHelp metadata · version-linked documentation",
+        "manualUrl != null · integratedHelp metadata · version-linked documentation",
       ),
     );
     ctx.liveDetail = {
@@ -401,7 +424,9 @@ if (!section || !canView) {
         return li;
       }),
     );
+    document.body.classList.add("standard-detail-open");
     detailDialog.showModal();
+    detailDialog.querySelector(".standard-detail-shell")?.scrollTo(0, 0);
   }
 
   function downloadDetailPdf(key = ctx?.activeDetailKey) {
@@ -445,6 +470,12 @@ if (!section || !canView) {
   }
 
   detailPdf?.addEventListener("click", () => downloadDetailPdf());
+  detailDialog?.addEventListener("close", () => {
+    document.body.classList.remove("standard-detail-open");
+  });
+  detailDialog?.addEventListener("cancel", () => {
+    document.body.classList.remove("standard-detail-open");
+  });
 
   function persist(appId, evaluation) {
     const data = stored();
