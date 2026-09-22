@@ -16,6 +16,14 @@ const reporterAdapterPath = "src/tests/error-reporter-adapter.js";
 const manifestPath = "src/manifest.webmanifest";
 const qaManifestPath = "qa/qa-manifest.json";
 const changelogPath = "src/config/changelog.json";
+const releaseDocPaths = [
+  "BEZPECNOST.md",
+  "AUTOMATIZACE-GITHUB.md",
+  "RELEASE-CHECKLIST.md",
+  "ARCHITEKTURA.md",
+  "POSTUP-NAHRANI.md",
+  "NAHRANI-NA-GITHUB.md",
+];
 
 const pkg = JSON.parse(await readFile(pkgPath, "utf8"));
 const oldVersion = pkg.version;
@@ -68,5 +76,18 @@ await writeFile(qaManifestPath, `${JSON.stringify(qaManifest, null, 2)}\n`, "utf
 const changelog = JSON.parse(await readFile(changelogPath, "utf8"));
 changelog.current = newVersion;
 await writeFile(changelogPath, `${JSON.stringify(changelog, null, 2)}\n`, "utf8");
+
+for (const releaseDocPath of releaseDocPaths) {
+  let releaseDoc = await readFile(releaseDocPath, "utf8");
+  const lines = releaseDoc.split(/\r?\n/);
+  if (lines[0]) lines[0] = lines[0].replace(/\d+\.\d+\.\d+/, newVersion);
+  const currentVersionLine = lines.findIndex((line) => line.includes("Aktuální verze:"));
+  if (currentVersionLine >= 0) {
+    lines[currentVersionLine] = lines[currentVersionLine].replace(/\d+\.\d+\.\d+/, newVersion);
+  }
+  releaseDoc = lines.join("\n");
+  if (!releaseDoc.endsWith("\n")) releaseDoc += "\n";
+  await writeFile(releaseDocPath, releaseDoc, "utf8");
+}
 
 console.log(`AI Studio version bumped: ${oldVersion} -> ${newVersion}`);
