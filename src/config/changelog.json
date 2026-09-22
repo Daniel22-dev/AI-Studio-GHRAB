@@ -1,7 +1,29 @@
 {
   "schema": "ai-studio-changelog-v1",
-  "current": "0.21.79",
+  "current": "0.21.80",
   "items": [
+    {
+      "version": "0.21.80",
+      "date": "2026-09-22",
+      "title": {
+        "cs": "Technické detaily standardů a finální sjednocení Správy",
+        "en": "Technical standard details and final Administration consolidation"
+      },
+      "changes": [
+        {
+          "cs": "Souhrnné karty ve Stavu ekosystému jsou klikací. Každá otevírá technický detail GARP, Safe Promotion, Platformy, AI Core, zdrojů, manuálů nebo celkového stavu včetně autoritativních zdrojů.",
+          "en": "Summary cards in Ecosystem Status are clickable. Each opens technical details for GARP, Safe Promotion, Platform, AI Core, sources, manuals or overall health, including authoritative sources."
+        },
+        {
+          "cs": "Detail nabízí čistou PDF/tiskovou verzi vhodnou ke sdílení se správcem sítě; obsah je řízen centrálním standards-catalog.json pro budoucí aktualizace.",
+          "en": "The detail offers a clean PDF/print view suitable for sharing with a network administrator; content is centrally maintained in standards-catalog.json for future updates."
+        },
+        {
+          "cs": "Manifest, cache a reportovací identita jsou sjednoceny na 0.21.80, aby se neopakovala nekonzistence 0.21.79/0.21.78.",
+          "en": "Manifest, cache and reporter identities are aligned at 0.21.80 to prevent a repeat of the 0.21.79/0.21.78 inconsistency."
+        }
+      ]
+    },
     {
       "version": "0.21.79",
       "date": "2026-09-22",

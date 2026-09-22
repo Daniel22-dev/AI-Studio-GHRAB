@@ -365,12 +365,6 @@
           </div>
 
           <div id="developer-readiness-summary" class="automation-summary ecosystem-summary"></div>
-          <div class="ecosystem-meta-row" aria-live="polite">
-            <div class="ecosystem-meta-item"><span>AI Core</span><strong id="ecosystem-core-meta">Načítám…</strong></div>
-            <div class="ecosystem-meta-item"><span data-cs="Zdroje" data-en="Sources">Zdroje</span><strong id="ecosystem-source-meta">Načítám…</strong></div>
-            <div class="ecosystem-meta-item"><span data-cs="Manuály" data-en="Manuals">Manuály</span><strong id="ecosystem-manual-meta">Načítám…</strong></div>
-          </div>
-
           <div class="table-scroll">
             <table class="sync-table developer-readiness-table ecosystem-status-table">
               <thead>
@@ -390,6 +384,43 @@
           <p id="developer-readiness-note" class="notice sync-neutral" role="status"></p>
         </section>
       </section>
+        <dialog id="standard-detail-dialog" class="standard-detail-dialog">
+          <form method="dialog" class="standard-detail-shell">
+            <div class="standard-detail-head">
+              <div>
+                <p class="eyebrow" id="standard-detail-eyebrow">TECHNICKÝ DETAIL</p>
+                <h2 id="standard-detail-title"></h2>
+                <p id="standard-detail-version" class="standard-detail-version"></p>
+              </div>
+              <button
+                class="standard-detail-close"
+                type="submit"
+                value="cancel"
+                aria-label="Zavřít"
+              >
+                ×
+              </button>
+            </div>
+            <p id="standard-detail-summary" class="standard-detail-summary"></p>
+            <div id="standard-detail-sections" class="standard-detail-sections"></div>
+            <div class="standard-detail-sources">
+              <h3 data-cs="Autoritativní zdroje" data-en="Authoritative sources">
+                Autoritativní zdroje
+              </h3>
+              <ul id="standard-detail-sources"></ul>
+            </div>
+            <div class="standard-detail-actions">
+              <button id="standard-detail-pdf" class="button primary" type="button">
+                Stáhnout PDF
+              </button>
+              <button class="button ghost" type="submit" value="cancel">Zavřít</button>
+            </div>
+            <p class="standard-detail-pdf-note">
+              Tlačítko PDF otevře čistou tiskovou verzi a systémový dialog,
+              kde lze zvolit „Uložit jako PDF“.
+            </p>
+          </form>
+        </dialog>
     </main>
     <footer class="site-footer">
       <div class="shell-wide footer-inner">

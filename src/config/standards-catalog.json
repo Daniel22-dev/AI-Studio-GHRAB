@@ -1,0 +1,375 @@
+{
+  "schema": "ghrab-standards-catalog-v1",
+  "updatedAt": "2026-09-22",
+  "items": {
+    "ecosystem": {
+      "title": {
+        "cs": "Celkový stav ekosystému",
+        "en": "Overall ecosystem status"
+      },
+      "version": {
+        "cs": "AI Studio 0.21.80 · 9 aplikací",
+        "en": "AI Studio 0.21.80 · 9 applications"
+      },
+      "summary": {
+        "cs": "Souhrnný stav vzniká až kombinací všech kontrolních vrstev. Aplikace je zde považována za bezproblémovou pouze tehdy, když současně projde GARP baseline, Safe Promotion, Platform kontraktem, případným AI Core, ověřením zdroje a dostupností manuálu.",
+        "en": "Overall health is calculated only from all control layers together. An application is healthy here only when GARP baseline, Safe Promotion, Platform contract, applicable AI Core, source verification and manual availability all pass."
+      },
+      "sections": [
+        {
+          "title": {
+            "cs": "Co se hodnotí",
+            "en": "What is evaluated"
+          },
+          "points": [
+            {
+              "cs": "Aktuální aplikační verze proti minimální schválené baseline.",
+              "en": "Current application version against the approved minimum baseline."
+            },
+            {
+              "cs": "Release a bezpečnostní kontrakty, ne pouze to, zda stránka odpovídá.",
+              "en": "Release and security contracts, not merely whether a page responds."
+            },
+            {
+              "cs": "Stav devíti aplikací je agregován do jediného provozního přehledu.",
+              "en": "The nine application states are aggregated into one operational overview."
+            }
+          ]
+        },
+        {
+          "title": {
+            "cs": "Co znamená zelený stav",
+            "en": "What green means"
+          },
+          "points": [
+            {
+              "cs": "Nejde o absolutní tvrzení o bezpečnosti; znamená splnění aktuálně definované technické baseline.",
+              "en": "It is not an absolute security claim; it means the currently defined technical baseline is satisfied."
+            },
+            {
+              "cs": "Autoritativní rozhodnutí o release stále provádějí repozitářové GARP/P5/N5 kontroly.",
+              "en": "Authoritative release decisions are still made by repository GARP/P5/N5 checks."
+            }
+          ]
+        }
+      ],
+      "sources": [
+        "src/config/apps.generated.json",
+        "src/config/developer-readiness.json",
+        "src/config/sync-report.json",
+        "src/config/ai-readiness.generated.json"
+      ]
+    },
+    "garp": {
+      "title": {
+        "cs": "GARP 2.5.1 · SHIELD-PREP",
+        "en": "GARP 2.5.1 · SHIELD-PREP"
+      },
+      "version": {
+        "cs": "GARP-2.5.1-SHIELD-PREP",
+        "en": "GARP-2.5.1-SHIELD-PREP"
+      },
+      "summary": {
+        "cs": "GARP je bezpečnostní a release-assurance baseline používaná napříč aplikacemi. Verze 2.5.1 SHIELD-PREP kombinuje hardening zdrojového kódu, release evidence a fail-closed kontroly před nasazením.",
+        "en": "GARP is the security and release-assurance baseline used across the applications. Version 2.5.1 SHIELD-PREP combines source hardening, release evidence and fail-closed controls before deployment."
+      },
+      "sections": [
+        {
+          "title": {
+            "cs": "Hlavní vrstvy",
+            "en": "Core layers"
+          },
+          "points": [
+            {
+              "cs": "N5 hardening a regresní kontroly rizikových konstrukcí a tajemství.",
+              "en": "N5 hardening and regression checks for risky constructs and secrets."
+            },
+            {
+              "cs": "Release-integrity vazba mezi appId, verzí, commitem a přesným artefaktem.",
+              "en": "Release-integrity binding across appId, version, source commit and exact artifact."
+            },
+            {
+              "cs": "SBOM, build provenance a evidence manifest jako auditní stopa releasu.",
+              "en": "SBOM, build provenance and evidence manifest as release audit evidence."
+            },
+            {
+              "cs": "Fail-closed brány: při nesplnění podmínek se release nenasadí.",
+              "en": "Fail-closed gates: deployment is blocked when requirements are not met."
+            }
+          ]
+        },
+        {
+          "title": {
+            "cs": "SHIELD-PREP znamená",
+            "en": "SHIELD-PREP means"
+          },
+          "points": [
+            {
+              "cs": "Aplikace je připravena na přísnější SHIELD/LIVE režim, ale některé produkční kryptografické prvky jsou stále přechodné.",
+              "en": "The app is prepared for stricter SHIELD/LIVE operation while some production cryptographic elements remain transitional."
+            },
+            {
+              "cs": "Baseline je technický minimální standard, ne marketingový bezpečnostní certifikát.",
+              "en": "The baseline is a technical minimum standard, not a marketing security certificate."
+            }
+          ]
+        }
+      ],
+      "sources": [
+        "src/config/release-promotion-policy.json",
+        "BEZPECNOST.md",
+        "scripts/test-garp-security.mjs",
+        "security/"
+      ]
+    },
+    "safePromotion": {
+      "title": {
+        "cs": "Safe Promotion / Auto Patch",
+        "en": "Safe Promotion / Auto Patch"
+      },
+      "version": {
+        "cs": "ghrab-release-promotion-policy-v1 · auto-patch",
+        "en": "ghrab-release-promotion-policy-v1 · auto-patch"
+      },
+      "summary": {
+        "cs": "Safe Promotion je řízená cesta, která dovolí posun změny do main pouze po splnění povinných kontrol. Auto Patch je omezený automatický mechanismus pro předem schválenou PATCH baseline; minor a major změny zůstávají ruční.",
+        "en": "Safe Promotion is the controlled path that allows a change into main only after mandatory checks pass. Auto Patch is a limited automatic mechanism for pre-approved PATCH baselines; minor and major changes remain manual."
+      },
+      "sections": [
+        {
+          "title": {
+            "cs": "Řetězec",
+            "en": "Pipeline"
+          },
+          "points": [
+            {
+              "cs": "candidate → P5/GARP/N5 → pull request → chráněný main → produkční QA → deploy.",
+              "en": "candidate → P5/GARP/N5 → pull request → protected main → production QA → deploy."
+            },
+            {
+              "cs": "Povinné deployment verification brání tomu, aby zelený zdroj byl zaměněn za skutečně nasazenou verzi.",
+              "en": "Required deployment verification prevents a green source state from being confused with the actually deployed version."
+            }
+          ]
+        },
+        {
+          "title": {
+            "cs": "Co Auto Patch nesmí",
+            "en": "What Auto Patch must not do"
+          },
+          "points": [
+            {
+              "cs": "Nesmí přeskočit povinné kontroly nebo branch protection.",
+              "en": "It must not bypass mandatory checks or branch protection."
+            },
+            {
+              "cs": "Nesmí automaticky povyšovat neschválené minor/major změny.",
+              "en": "It must not automatically promote unapproved minor/major changes."
+            }
+          ]
+        }
+      ],
+      "sources": [
+        "src/config/release-promotion-policy.json",
+        "AUTOMATIZACE-GITHUB.md",
+        ".github/workflows/"
+      ]
+    },
+    "platform": {
+      "title": {
+        "cs": "GHRAB Platform 1.1.2",
+        "en": "GHRAB Platform 1.1.2"
+      },
+      "version": {
+        "cs": "ghrab-platform-v1 · Platform 1.1.2",
+        "en": "ghrab-platform-v1 · Platform 1.1.2"
+      },
+      "summary": {
+        "cs": "Platform je společný integrační kontrakt aplikací. Nedefinuje jejich pedagogickou logiku; sjednocuje technické chování, předávání artefaktů, branding, PWA/service-worker kontrakt a vazbu na AI Studio.",
+        "en": "Platform is the shared integration contract across applications. It does not define pedagogical logic; it standardises technical behaviour, artifact handoff, branding, PWA/service-worker contracts and the connection to AI Studio."
+      },
+      "sections": [
+        {
+          "title": {
+            "cs": "Kontrakty 1.1.2",
+            "en": "1.1.2 contracts"
+          },
+          "points": [
+            {
+              "cs": "ghrab-platform-v1 jako společné runtime API.",
+              "en": "ghrab-platform-v1 as the shared runtime API."
+            },
+            {
+              "cs": "ghrab-studio-handoff-v2 pro předávání materiálů mezi aplikacemi a Studiem.",
+              "en": "ghrab-studio-handoff-v2 for handing materials between apps and Studio."
+            },
+            {
+              "cs": "ghrab-artifact-envelope-v1 se SHA-256 pro jednotný formát artefaktů.",
+              "en": "ghrab-artifact-envelope-v1 with SHA-256 for consistent artifact envelopes."
+            },
+            {
+              "cs": "theme-contract-v1, service-worker-v1, storage namespace a suite session lifecycle.",
+              "en": "theme-contract-v1, service-worker-v1, storage namespace and suite session lifecycle."
+            }
+          ]
+        },
+        {
+          "title": {
+            "cs": "Proč je důležitá",
+            "en": "Why it matters"
+          },
+          "points": [
+            {
+              "cs": "Snižuje počet různých integračních řešení mezi devíti aplikacemi.",
+              "en": "It reduces divergent integration patterns across the nine applications."
+            },
+            {
+              "cs": "Umožňuje kontrolovat kompatibilitu aplikace vůči jedné centrální verzi Platformy.",
+              "en": "It allows app compatibility to be checked against one central Platform version."
+            }
+          ]
+        }
+      ],
+      "sources": [
+        "src/config/platform-manifest.json",
+        "ghrab-platform.consumer.json",
+        "platform/"
+      ]
+    },
+    "aiCore": {
+      "title": {
+        "cs": "AI Core 1.0.0",
+        "en": "AI Core 1.0.0"
+      },
+      "version": {
+        "cs": "Core 1.0.0 · kontrakt 1",
+        "en": "Core 1.0.0 · contract 1"
+      },
+      "summary": {
+        "cs": "AI Core je společná AI integrační vrstva pro aplikace, které ji využívají. Odděluje aplikační funkce od konkrétního AI runtime kontraktu a umožňuje centrálně sledovat kompatibilitu a konformitu.",
+        "en": "AI Core is the shared AI integration layer for applications that use it. It separates application features from the concrete AI runtime contract and enables central compatibility and conformance tracking."
+      },
+      "sections": [
+        {
+          "title": {
+            "cs": "Co sjednocuje",
+            "en": "What it standardises"
+          },
+          "points": [
+            {
+              "cs": "Verzi Core a konformitní kontrakt používaný AI aplikacemi.",
+              "en": "The Core version and conformance contract used by AI-enabled applications."
+            },
+            {
+              "cs": "Runtime politiku a povolený režim volání AI.",
+              "en": "Runtime policy and the permitted AI invocation mode."
+            },
+            {
+              "cs": "Readiness stav aplikací před budoucí migrací na serverový AI runtime.",
+              "en": "Application readiness before future migration to a server-side AI runtime."
+            }
+          ]
+        },
+        {
+          "title": {
+            "cs": "Mimo rozsah",
+            "en": "Out of scope"
+          },
+          "points": [
+            {
+              "cs": "Aplikace bez AI Core nejsou chybné; jejich stav je označen jako „Nevyužívá“.",
+              "en": "Applications that do not use AI Core are not failing; they are marked N/A."
+            }
+          ]
+        }
+      ],
+      "sources": [
+        "src/config/ai-readiness.generated.json",
+        "AI Core release manifest",
+        "runtime AI policy"
+      ]
+    },
+    "sources": {
+      "title": {
+        "cs": "Ověření zdrojů",
+        "en": "Source verification"
+      },
+      "version": {
+        "cs": "live manifest → GitHub source → snapshot fallback",
+        "en": "live manifest → GitHub source → snapshot fallback"
+      },
+      "summary": {
+        "cs": "Ověření zdrojů určuje, odkud Studio čerpá důkaz o aktuální verzi aplikace. Preferuje živý nasazený manifest, poté ověřený veřejný repozitář a teprve nakonec lokální snapshot.",
+        "en": "Source verification determines where Studio gets evidence of an application's current version. It prefers the live deployment manifest, then a verified public repository, and only then a local snapshot."
+      },
+      "sections": [
+        {
+          "title": {
+            "cs": "Úrovně důvěry",
+            "en": "Trust levels"
+          },
+          "points": [
+            {
+              "cs": "Živý manifest: nejbližší skutečně nasazené verzi.",
+              "en": "Live manifest: closest to the actually deployed version."
+            },
+            {
+              "cs": "GitHub zdroj: potvrzuje repozitářový stav, ne nutně produkční deploy.",
+              "en": "GitHub source: confirms repository state, not necessarily production deployment."
+            },
+            {
+              "cs": "Snapshot: záložní informace; užitečná, ale není ekvivalentem živého ověření.",
+              "en": "Snapshot: fallback information; useful but not equivalent to live verification."
+            }
+          ]
+        }
+      ],
+      "sources": [
+        "src/config/sync-report.json",
+        "src/config/apps.generated.json",
+        "scripts/sync-registry.mjs"
+      ]
+    },
+    "manuals": {
+      "title": {
+        "cs": "Manuály a provozní dokumentace",
+        "en": "Manuals and operational documentation"
+      },
+      "version": {
+        "cs": "9/9 aplikací · dostupnost dokumentace",
+        "en": "9/9 applications · documentation availability"
+      },
+      "summary": {
+        "cs": "Tato kontrola sleduje, zda má každá aplikace dostupnou aktuální cestu k návodu nebo integrované nápovědě. Nehodnotí pouze existenci souboru, ale provozní dostupnost odkazu v registru Studia.",
+        "en": "This check tracks whether every application exposes a current manual or integrated-help path. It is not just a file-existence check; it validates operational availability through the Studio registry."
+      },
+      "sections": [
+        {
+          "title": {
+            "cs": "Co je cílem",
+            "en": "Goal"
+          },
+          "points": [
+            {
+              "cs": "Každá aplikace musí mít jednoznačnou cestu k dokumentaci.",
+              "en": "Every application must have an unambiguous documentation path."
+            },
+            {
+              "cs": "Integrovaná nápověda je přípustná tam, kde samostatný manuál nedává smysl.",
+              "en": "Integrated help is acceptable where a separate manual is unnecessary."
+            },
+            {
+              "cs": "Dokumentace se aktualizuje společně s funkční změnou aplikace.",
+              "en": "Documentation is updated together with functional application changes."
+            }
+          ]
+        }
+      ],
+      "sources": [
+        "src/config/apps.generated.json",
+        "src/manualy/",
+        "app manualUrl / integratedHelp metadata"
+      ]
+    }
+  }
+}
