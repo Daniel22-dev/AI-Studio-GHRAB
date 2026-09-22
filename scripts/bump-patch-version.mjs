@@ -54,7 +54,7 @@ await writeFile(reporterAdapterPath, reporterAdapter, "utf8");
 
 const manifest = JSON.parse(await readFile(manifestPath, "utf8"));
 manifest.version = newVersion;
-if (manifest.ghrab?.cache_name) manifest.ghrab.cache_name = manifest.ghrab.cache_name.replace(oldVersion, newVersion);
+if (manifest.ghrab_platform?.cache_name) manifest.ghrab_platform.cache_name = manifest.ghrab_platform.cache_name.replace(oldVersion, newVersion);
 if (manifest.cache_name) manifest.cache_name = manifest.cache_name.replace(oldVersion, newVersion);
 await writeFile(manifestPath, `${JSON.stringify(manifest, null, 2)}\n`, "utf8");
 

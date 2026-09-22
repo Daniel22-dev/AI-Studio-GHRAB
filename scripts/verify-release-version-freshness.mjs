@@ -36,7 +36,7 @@ const versionRefs = [
   ["reporter-adapter.appVersion", reporterAdapterVersion],
   ["manifest.version", manifest.version],
   ["manifest.cache_name", String(manifest.cache_name || "").includes(currentVersion) ? currentVersion : null],
-  ["manifest.ghrab.cache_name", String(manifest.ghrab?.cache_name || "").includes(currentVersion) ? currentVersion : null],
+  ["manifest.ghrab_platform.cache_name", String(manifest.ghrab_platform?.cache_name || "").includes(currentVersion) ? currentVersion : null],
   ["qa-manifest.appVersion", qaManifest.appVersion],
   ["qa-manifest.versionChecks", (qaManifest.versionChecks || []).every((check) => !check.expected || check.expected === currentVersion) ? currentVersion : null],
   ["changelog.current", changelog.current],
