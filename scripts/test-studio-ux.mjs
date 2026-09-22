@@ -170,12 +170,14 @@ check(
   "Souhrnne karty ve Sprave nemaji title-first hierarchii, technicky detail nebo primy PDF export.",
 );
 check(
-  !adminHtml.includes('id="temporary-admin-adela"') &&
+  adminHtml.includes('id="temporary-admin-adela"') &&
+    adminHtml.includes('name=Ad%C3%A9la%20Stillerov%C3%A1&role=admin&days=14') &&
     issuerHtml.includes('id="temporary-admin-adela-prefill"') &&
+    issuerHtml.includes('Interaktivní manuál') &&
     issuerJs.includes('"Adéla Stillerová"') &&
     issuerJs.includes('setExpiryDays(14)') &&
     issuerJs.includes('$("#permit-role").value = "admin"'),
-  "Dočasné povýšení Adély není schované ve Vydavateli nebo nemá bezpečné 14denní předvyplnění plného správce.",
+  "Karta Dočasně povýšit Adélu není ve Správě, nevede do předvyplněného Vydavatele nebo uvnitř chybí interaktivní manuál.",
 );
 check(
   readinessJs.includes('document.body.classList.add("standard-detail-open")') &&
