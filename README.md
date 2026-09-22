@@ -1,13 +1,13 @@
 # AI Studio GHRAB
 
-**Aktuální verze:** 0.21.78
+**Aktuální verze:** 0.21.79
 
-0.21.78 odděluje schválený release-wave baseline od novějšího repository-only kandidáta. Kandidát se eviduje, ale bez deployment evidence nebo explicitního ručního reconciliation nepřepisuje runtime registry.
+0.21.79 odděluje schválený release-wave baseline od novějšího repository-only kandidáta. Kandidát se eviduje, ale bez deployment evidence nebo explicitního ručního reconciliation nepřepisuje runtime registry.
 
 **Performance budget:** precache 1 250 000 B; critical entry 420 000 B; runtime limity jsou povinně měřené v P5 release gate.
 **Platforma:** GHRAB Platform 1.1.2 · etapa P5
 
-## Nově v 0.21.78
+## Nově v 0.21.79
 
 - **Source candidate ≠ release**: novější verze nalezená pouze v GitHub repository je `PENDING`, nikoli automaticky přijatá verze.
 - **Runtime zůstává na wave baseline**: pokud deployment manifest není dostupný a repository je novější, `apps.generated` zůstane na explicitně přijaté release-wave verzi.

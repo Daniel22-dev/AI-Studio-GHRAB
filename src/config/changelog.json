@@ -1,7 +1,33 @@
 {
   "schema": "ai-studio-changelog-v1",
-  "current": "0.21.78",
+  "current": "0.21.79",
   "items": [
+    {
+      "version": "0.21.79",
+      "date": "2026-09-22",
+      "title": {
+        "cs": "Přehlednější Správa, jednotné návraty a manuál pro dočasné povýšení",
+        "en": "Cleaner Administration, consistent returns and temporary-admin guide"
+      },
+      "changes": [
+        {
+          "cs": "Správa má jediný přehled stavu všech devíti aplikací. Samostatné tabulky AI Core a zdrojů byly sloučeny do jednoho přehledu bez duplicit.",
+          "en": "Administration now uses one status overview for all nine applications. Separate AI Core and source tables were merged into a single non-duplicated view."
+        },
+        {
+          "cs": "Nástroje otevřené ze Správy mají jednotný návrat Zpět do Správy; AI Akademie se ze Studia otevírá ve stejném kontextu prohlížeče.",
+          "en": "Tools opened from Administration now use a consistent Back to Administration action; AI Academy opens from Studio in the same browser context."
+        },
+        {
+          "cs": "Karta Dočasně povýšit Adélu obsahuje nový interaktivní HTML manuál s přesným sedmikrokovým checklistem a návratem přímo na danou kartu.",
+          "en": "The Temporarily promote Adéla card now includes an interactive HTML guide with an exact seven-step checklist and a direct return to that card."
+        },
+        {
+          "cs": "Build automaticky sjednocuje data-ghrab-app-version na aktuální release, aby podstránky nezůstávaly na starém čísle verze.",
+          "en": "The build now automatically stamps data-ghrab-app-version with the current release so subpages cannot retain an old version number."
+        }
+      ]
+    },
     {
       "version": "0.21.78",
       "date": "2026-09-22",

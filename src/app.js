@@ -752,18 +752,16 @@ function ensureAcademyNavigation() {
   if (!nav || nav.querySelector('[data-nav="academy"]')) return;
   const link = document.createElement("a");
   link.href = academyLaunchUrl();
-  link.target = "_blank";
-  link.rel = "noopener noreferrer";
   link.dataset.nav = "academy";
   link.dataset.adminNav = "";
   link.dataset.cs = "AI Akademie";
   link.dataset.en = "AI Academy";
-  link.dataset.csAria = "Otevřít školicí středisko AI Akademie";
-  link.dataset.enAria = "Open the AI Academy training centre";
+  link.dataset.csAria = "Otevřít AI Akademii";
+  link.dataset.enAria = "Open AI Academy";
   link.textContent = t("AI Akademie", "AI Academy");
   link.setAttribute(
     "aria-label",
-    t("Otevřít školicí středisko AI Akademie", "Open the AI Academy training centre"),
+    t("Otevřít AI Akademii", "Open AI Academy"),
   );
   link.hidden = true;
   const colleaguePreview = nav.querySelector('[data-nav="colleague-preview"]');
