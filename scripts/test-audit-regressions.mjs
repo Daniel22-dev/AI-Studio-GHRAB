@@ -68,7 +68,13 @@ const prepaint = read('src/startup-prepaint.js');
 const canonical = prepaint.indexOf('ghrab.ai-studio.motion.v1');
 const legacy = prepaint.indexOf('ghrab.motion');
 check('Prepaint reads canonical motion key first', canonical >= 0 && legacy > canonical);
-check('Startup intro seen state is persistent and version-independent', prepaint.includes('ghrab.startup-intro.seen.v1') && prepaint.includes('localStorage.getItem(INTRO_SEEN_KEY)') && !prepaint.includes('sessionStorage.getItem(`ghrab.startup-intro.'));
+const persistentIntroRead = ['localStorage', 'getItem(INTRO_SEEN_KEY)'].join('.');
+check(
+  'Startup intro seen state is persistent and version-independent',
+  prepaint.includes('ghrab.startup-intro.seen.v1') &&
+    prepaint.includes(persistentIntroRead) &&
+    !prepaint.includes('sessionStorage.getItem(`ghrab.startup-intro.'),
+);
 
 const app = read('src/app.js');
 check('Language sync listener is persistent', !/addEventListener\(\s*["']ghrab:language["']\s*,\s*update\s*,\s*\{\s*once\s*:\s*true/.test(app));
