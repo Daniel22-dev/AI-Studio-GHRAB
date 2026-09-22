@@ -22,11 +22,13 @@
         "cs": "Zástupce správce",
         "en": "Deputy administrator"
       },
-      "canUseAll": true,
+      "canUseAll": false,
       "canManageTraining": false,
       "canViewInternalStats": true,
       "canIssueAdministrator": false,
-      "canChangeSigningKeys": false
+      "canChangeSigningKeys": false,
+      "canManageSecurityPolicy": false,
+      "canAccessDeveloperSecurityDashboard": false
     },
     {
       "id": "teacher",
