@@ -22,13 +22,13 @@ if (!section || !G.isAdmin() || G.isColleaguePreview?.()) {
   };
   const mapBy = (items = [], key = "id") => new Map(items.map((item) => [item[key], item]));
   const stored = () => {
-    try { return JSON.parse(localStorage.getItem(STORE) || "{}"); }
-    catch { return {}; }
+    try {
+      return JSON.parse(G.safeGetItem(STORE, "{}") || "{}");
+    } catch {
+      return {};
+    }
   };
-  const save = (value) => {
-    try { localStorage.setItem(STORE, JSON.stringify(value)); }
-    catch {}
-  };
+  const save = (value) => G.safeSetJson(STORE, value, { silent: true });
   const chip = (text, state = "neutral") => {
     const span = document.createElement("span");
     span.className = `developer-status ${state}`;
