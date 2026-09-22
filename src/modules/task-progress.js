@@ -3,42 +3,42 @@ export function createTaskProgress({
   description = "",
   total = 1,
 } = {}) {
-  document.querySelector(".task-progress-overlay")?.remove();
+  document.querySelector(".operation-progress-overlay")?.remove();
 
   const safeTotal = Math.max(1, Number(total) || 1);
   const overlay = document.createElement("div");
-  overlay.className = "task-progress-overlay";
+  overlay.className = "operation-progress-overlay";
 
   const dialog = document.createElement("section");
-  dialog.className = "task-progress-dialog";
+  dialog.className = "operation-progress-dialog";
   dialog.setAttribute("role", "dialog");
   dialog.setAttribute("aria-modal", "true");
-  dialog.setAttribute("aria-labelledby", "task-progress-title");
+  dialog.setAttribute("aria-labelledby", "operation-progress-title");
 
   const eyebrow = document.createElement("p");
   eyebrow.className = "eyebrow";
   eyebrow.textContent = "INTERNÍ KONTROLA";
 
   const heading = document.createElement("h2");
-  heading.id = "task-progress-title";
+  heading.id = "operation-progress-title";
   heading.textContent = title;
 
   const intro = document.createElement("p");
-  intro.className = "task-progress-description";
+  intro.className = "operation-progress-description";
   intro.textContent = description;
 
   const top = document.createElement("div");
-  top.className = "task-progress-top";
+  top.className = "operation-progress-top";
   const percent = document.createElement("strong");
-  percent.className = "task-progress-percent";
+  percent.className = "operation-progress-percent";
   percent.textContent = "0 %";
   const counter = document.createElement("span");
-  counter.className = "task-progress-counter";
+  counter.className = "operation-progress-counter";
   counter.textContent = `0 / ${safeTotal}`;
   top.append(percent, counter);
 
   const meter = document.createElement("div");
-  meter.className = "task-progress-meter";
+  meter.className = "operation-progress-meter";
   meter.setAttribute("role", "progressbar");
   meter.setAttribute("aria-valuemin", "0");
   meter.setAttribute("aria-valuemax", "100");
@@ -47,15 +47,15 @@ export function createTaskProgress({
   meter.append(fill);
 
   const current = document.createElement("strong");
-  current.className = "task-progress-current";
+  current.className = "operation-progress-current";
   current.textContent = "Připravuji kontrolu…";
 
   const detail = document.createElement("p");
-  detail.className = "task-progress-detail";
+  detail.className = "operation-progress-detail";
   detail.textContent = "Výsledek se aktualizuje po skutečně dokončených krocích.";
 
   const close = document.createElement("button");
-  close.className = "button primary task-progress-close";
+  close.className = "button primary operation-progress-close";
   close.type = "button";
   close.hidden = true;
   close.textContent = "Zavřít";
