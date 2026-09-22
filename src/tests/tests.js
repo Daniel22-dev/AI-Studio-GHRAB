@@ -145,6 +145,14 @@ if (T.canAccessAdminPage?.("tests")) {
         status: "fail",
         detail: error.message,
       });
+      addResult({
+        label: T.t("Ikony aplikací", "Application icons"),
+        status: "fail",
+        detail: T.t(
+          "Ikony nelze ověřit bez načteného registru aplikací.",
+          "Icons cannot be verified without a loaded application registry.",
+        ),
+      });
     }
     const access = T.getAccessSnapshot();
     addResult({
@@ -312,6 +320,8 @@ if (T.canAccessAdminPage?.("tests")) {
     run.textContent = T.t("Spustit úplnou kontrolu", "Run full check");
   }
   run.addEventListener("click", runChecks);
-  document.addEventListener("ghrab:language", runChecks);
+  document.addEventListener("ghrab:language", () => {
+    if (!run.disabled) run.textContent = T.t("Spustit úplnou kontrolu", "Run full check");
+  });
   runChecks();
 }
