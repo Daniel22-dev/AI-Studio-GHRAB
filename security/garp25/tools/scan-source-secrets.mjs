@@ -15,7 +15,7 @@ if (fs.existsSync(exceptionPath)) {
   exceptionEntries = parsed.entries;
 }
 function gitBlobSha(buffer) {
-  return createHash('sha1').update(Buffer.from(`blob ${buffer.length}\\0`, 'utf8')).update(buffer).digest('hex');
+  return createHash('sha1').update(Buffer.from(`blob ${buffer.length}\0`, 'utf8')).update(buffer).digest('hex');
 }
 function exactException(hitPath, sourcePath, sourceSha, rules) {
   if (rules.some((id) => isPrivateKeyRule(id))) return null;
