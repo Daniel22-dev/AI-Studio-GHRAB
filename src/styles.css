@@ -4173,3 +4173,72 @@ input[type="file"] {
     flex: 1;
   }
 }
+
+
+/* Administration status cards: title-first hierarchy and inline PDF actions. */
+.ecosystem-metric-card {
+  display: grid;
+  gap: 10px;
+  align-content: start;
+  min-height: 142px;
+  text-align: left;
+}
+.ecosystem-metric-card .ecosystem-metric-title {
+  display: block;
+  color: var(--ink);
+  font-size: 1rem;
+  font-weight: 900;
+  line-height: 1.25;
+  letter-spacing: -0.01em;
+}
+.ecosystem-metric-card .ecosystem-metric-value {
+  display: block;
+  color: var(--muted);
+  font-size: 0.75rem;
+  font-weight: 760;
+  line-height: 1.4;
+  font-variant-numeric: tabular-nums;
+}
+.ecosystem-metric-actions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 7px;
+  margin-top: auto;
+  padding-top: 4px;
+}
+.ecosystem-metric-actions .button {
+  min-height: 31px;
+  padding: 6px 9px;
+  font-size: 0.7rem;
+}
+.ecosystem-pdf-button {
+  color: var(--cyan);
+}
+.temporary-admin-shortcut {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) auto;
+  gap: 16px;
+  align-items: center;
+  margin: 14px 0;
+  padding: 14px 16px;
+  border: 1px solid rgba(243, 180, 77, 0.24);
+  border-radius: 14px;
+  background: rgba(243, 180, 77, 0.06);
+}
+.temporary-admin-shortcut p {
+  margin: 5px 0 0;
+  color: var(--muted);
+  font-size: 0.78rem;
+  line-height: 1.5;
+}
+.temporary-admin-shortcut .app-actions {
+  justify-content: flex-end;
+}
+@media (max-width: 760px) {
+  .temporary-admin-shortcut {
+    grid-template-columns: 1fr;
+  }
+  .temporary-admin-shortcut .app-actions {
+    justify-content: flex-start;
+  }
+}
