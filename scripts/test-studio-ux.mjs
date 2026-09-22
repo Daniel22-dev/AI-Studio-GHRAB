@@ -75,7 +75,11 @@ const academyBridgeSource = academyBridgeStart >= 0 && academyBridgeEnd > academ
   ? appJs.slice(academyBridgeStart, academyBridgeEnd)
   : "";
 check(academyBridgeSource.includes('function ensureAcademyNavigation()') && academyBridgeSource.includes('link.dataset.nav = "academy"') && academyBridgeSource.includes('link.dataset.adminNav = ""'), "AI Akademie nema full-admin vstup v hlavni navigaci Studia.");
-check(academyBridgeSource.includes('link.target = "_blank"') && academyBridgeSource.includes('link.rel = "noopener noreferrer"'), "AI Akademie se ze Studia neotevira mimo PWA scope v novem bezpecnem kontextu.");
+check(
+  !academyBridgeSource.includes('link.target = "_blank"') &&
+    academyBridgeSource.includes('link.dataset.nav = "academy"'),
+  "AI Akademie se ze Studia musi otevirat ve stejnem kontextu bez nove karty.",
+);
 check(/target\.searchParams\.set\(\s*["']studio/i.test(academyBridgeSource) && academyBridgeSource.includes("target.origin !== location.origin") && !/searchParams\.set\(["'](?:token|permit|access)/i.test(academyBridgeSource), "Propojeni s AI Akademii nepredava pouze bezpecnou same-origin navratovou adresu Studia.");
 const deploymentConfig = JSON.parse(await text("src/config/deployment.json"));
 const deploymentSchoolConfig = JSON.parse(await text("src/config/deployment.school-server.json"));
@@ -130,6 +134,8 @@ check(!adminHtml.includes('class="admin-command-card" href="../demo/"'), "Sprava
 check(adminHtml.includes('class="admin-command-card" href="../report/"'), "Sprava nema primy vstup do mesicniho reportu.");
 check(adminHtml.includes('id="preview-monthly-reminder"'), "Sprava nema nahled mesicni prosby.");
 const automationJs = await text("src/automation/automation.js");
+const readinessJs = await text("src/automation/developer-readiness.js");
+const standardsCatalog = await text("src/config/standards-catalog.json");
 check(adminHtml.includes('data-full-admin-only') && adminHtml.includes('../tools/access-issuer/'), "Vydavatel opravneni neni ve Sprave omezen jen na plneho admina.");
 check(adminHtml.includes('../tools/security-center/') && /security-center\/["'] data-full-admin-only/.test(adminHtml), "Centrum zabezpeceni neni ve Sprave omezeno jen na plneho admina.");
 check(adminHtml.includes('data-operator-only') && adminHtml.includes('deputy-admin.html'), "Sprava nema provozni informaci pro zastupce spravce.");
@@ -137,11 +143,25 @@ check(automationJs.includes('canAccessAdminPage?.("automation")'), "Sprava neuzn
 check(/preview-monthly-reminder[\s\S]{0,180}setupMonthlyReportReminder\(\{[\s\S]{0,40}force:\s*true/.test(automationJs), "Nahled mesicni prosby nespousti vynuceny nahled.");
 check(/function setupMonthlyReportReminder\(options = \{\}\)[\s\S]{0,500}const force = Boolean\(options\.force\)[\s\S]{0,500}!force/.test(appJs), "Mesicni reminder nema otestovanou force vetev mimo datum/roli.");
 const syncScript = await text("scripts/sync-registry.mjs");
-check(adminHtml.includes('id="sync-health-note"') && adminHtml.includes('Naposledy ověřeno'), "Sprava nema srozumitelne vysvetleni a datum overeni zdroju.");
-check(automationJs.includes('Zdrojový repozitář ověřen') && automationJs.includes('Záložní snapshot · zdroj neověřen') && automationJs.includes('lastFullSourceVerifiedAt') && automationJs.includes('lastFullLiveVerifiedAt'), "Sprava nerozlisuje nasazeny manifest, GitHub zdroj a zalozni snapshot.");
+check(
+  adminHtml.includes('id="developer-readiness-summary"') &&
+    adminHtml.includes('id="standard-detail-dialog"') &&
+    readinessJs.includes("lastFullSourceVerifiedAt"),
+  "Sprava nema konsolidovany zdrojovy prehled s datem posledniho overeni.",
+);
+check(
+  readinessJs.includes('"živý manifest"') &&
+    readinessJs.includes('"GitHub · čeká na release"') &&
+    readinessJs.includes('"jen snapshot"') &&
+    standardsCatalog.includes('"Úrovně důvěry"'),
+  "Konsolidovany prehled nerozlisuje zivy manifest, GitHub kandidata a zalozni snapshot.",
+);
 check(syncScript.includes('verification: "repository"') && syncScript.includes('raw.githubusercontent.com') && syncScript.includes('lastFullSourceVerifiedAt') && syncScript.includes('lastFullLiveVerifiedAt'), "Synchronizace nema dvoustupnove overeni nasazeni/GitHub zdroje.");
 check(syncScript.includes('evaluateRepositoryFallback') && syncScript.includes('registryPinned: true') && syncScript.includes('pendingReleaseCandidate: true'), "Repository fallback neumi u novejsiho source kandidata zachovat prijaty release-wave baseline.");
-check(automationJs.includes('kandidát čeká na release') && automationJs.includes('pendingReleaseCandidate'), "Sprava nezobrazuje novy repository kandidát jako cekajici na release.");
+check(
+  readinessJs.includes('"GitHub · čeká na release"'),
+  "Sprava nezobrazuje repository-only kandidata jako cekajici na release.",
+);
 check(syncScript.includes('Promise.all(sources.map(resolveSource))'), "Synchronizace zdroju nebezi soubezne a muze zbytecne blokovat release.");
 check(syncScript.includes('if (!offline || writeOfflineOutputs)') && syncScript.includes('se nepřepisují'), "Offline QA muze prepsat publikovany stav Kontroly zdroju.");
 
@@ -156,7 +176,11 @@ check(!/syncRoleUi\(\)[\s\S]{0,700}setExpiryDays\(14\)/.test(issuerJs), "Volba r
 check(issuerJs.includes('if (role === "admin") {') && issuerJs.includes('$("#permit-all").checked = true;') && !issuerJs.includes('["admin", "operator"].includes(role)'), "Zastupce spravce se stale automaticky rozsiri na vsechny aplikace.");
 check(issuerJs.includes('function selectAllCurrentApps()') && /permit-all[\s\S]{0,180}addEventListener\("change"[\s\S]{0,180}selectAllCurrentApps\(\)/.test(issuerJs), "Volba vsech soucasnych i budoucich aplikaci neoznaci aktualni aplikace ve Studiu.");
 check(issuerJs.includes('input.checked = grantsAllApps || record.apps.includes(input.value);'), "Nacteni wildcard pristupu nezobrazi vsechny soucasne aplikace jako oznacene.");
-check(issuerHtml.includes('← Zpět do evidence přístupů') && issuerHtml.includes('Hotovo → zpět do evidence'), "Vydavatel nema zretelny navrat do evidence pristupu.");
+check(
+  issuerHtml.includes('← Zpět do Správy') &&
+    issuerHtml.includes('Otevřít evidenci přístupů'),
+  "Vydavatel nema primarni navrat do Spravy a oddeleny kontextovy vstup do evidence.",
+);
 check(issuerJs.includes('supersededBy: payload.jti') && issuerJs.includes('připravte původní JTI ke zneplatnění'), "Vydani nahradniho pristupu neoznaci puvodni zaznam jako nahrazeny nebo nevysvetli dalsi krok.");
 check(deputyGuide.includes('Vydat nový přístup') && deputyGuide.includes('starý učitelský JTI zneplatnit') && deputyGuide.includes('Dosavadní výběr aplikací zůstane zachován'), "Manual zastupce nepopisuje bezpecne povyseni existujiciho trained teacher.");
 const registryJs = await text("src/tools/access-registry/registry.js");

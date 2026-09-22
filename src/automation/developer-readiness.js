@@ -153,7 +153,10 @@ if (!section || !canView) {
     if (source?.verification === "deployment")
       return G.t("živý manifest", "live manifest");
     if (source?.verification === "repository")
-      return G.t("GitHub zdroj", "GitHub source");
+      return G.t(
+        "GitHub · čeká na release",
+        "GitHub · awaiting release",
+      );
     if (source?.verification === "snapshot")
       return G.t("jen snapshot", "snapshot only");
     return G.t("neověřeno", "unverified");
