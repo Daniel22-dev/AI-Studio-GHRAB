@@ -396,34 +396,74 @@ if (!section || !canView) {
       );
       return;
     }
+
+    const doc = printWindow.document;
     const title = localised(item.title);
     const version = ctx.liveDetail?.[key] || localised(item.version);
-    const sections = (item.sections || [])
-      .map(
-        (section) =>
-          `<section><h2>${escapePrint(localised(section.title))}</h2><ul>${(section.points || [])
-            .map((point) => `<li>${escapePrint(localised(point))}</li>`)
-            .join("")}</ul></section>`,
-      )
-      .join("");
-    const sources = (item.sources || [])
-      .map((source) => `<li>${escapePrint(source)}</li>`)
-      .join("");
-    printWindow.document.open();
-    printWindow.document.write(
-      `<!doctype html><html lang="cs"><head><meta charset="utf-8"><title>${escapePrint(title)} - AI Studio GHRAB</title><style>body{font-family:Arial,sans-serif;max-width:820px;margin:40px auto;color:#111;line-height:1.5}h1{margin-bottom:4px}h2{margin-top:28px;font-size:18px}.version{font-weight:700;color:#245}.summary{font-size:17px}.sources{margin-top:32px;border-top:1px solid #bbb;padding-top:18px}@media print{body{margin:0;max-width:none}}</style></head><body><h1>${escapePrint(title)}</h1><p class="version">${escapePrint(version)}</p><p class="summary">${escapePrint(localised(item.summary))}</p>${sections}<section class="sources"><h2>Autoritativní zdroje</h2><ul>${sources}</ul><p>AI Studio GHRAB · technický přehled · ${new Date().toLocaleDateString("cs-CZ")}</p></section></body></html>`,
+
+    doc.documentElement.lang = document.documentElement.lang || "cs";
+    doc.title = `${title} - AI Studio GHRAB`;
+    doc.head.replaceChildren();
+    doc.body.replaceChildren();
+
+    const meta = doc.createElement("meta");
+    meta.charset = "utf-8";
+    const style = doc.createElement("style");
+    style.textContent =
+      "body{font-family:Arial,sans-serif;max-width:820px;margin:40px auto;color:#111;line-height:1.5}" +
+      "h1{margin-bottom:4px}h2{margin-top:28px;font-size:18px}" +
+      ".version{font-weight:700;color:#245}.summary{font-size:17px}" +
+      ".sources{margin-top:32px;border-top:1px solid #bbb;padding-top:18px}" +
+      "@media print{body{margin:0;max-width:none}}";
+    doc.head.append(meta, style);
+
+    const heading = doc.createElement("h1");
+    heading.textContent = title;
+    const versionNode = doc.createElement("p");
+    versionNode.className = "version";
+    versionNode.textContent = version;
+    const summaryNode = doc.createElement("p");
+    summaryNode.className = "summary";
+    summaryNode.textContent = localised(item.summary);
+    doc.body.append(heading, versionNode, summaryNode);
+
+    for (const section of item.sections || []) {
+      const sectionNode = doc.createElement("section");
+      const sectionTitle = doc.createElement("h2");
+      sectionTitle.textContent = localised(section.title);
+      const list = doc.createElement("ul");
+      for (const point of section.points || []) {
+        const li = doc.createElement("li");
+        li.textContent = localised(point);
+        list.append(li);
+      }
+      sectionNode.append(sectionTitle, list);
+      doc.body.append(sectionNode);
+    }
+
+    const sourcesSection = doc.createElement("section");
+    sourcesSection.className = "sources";
+    const sourcesTitle = doc.createElement("h2");
+    sourcesTitle.textContent = G.t(
+      "Autoritativní zdroje",
+      "Authoritative sources",
     );
-    printWindow.document.close();
+    const sourcesList = doc.createElement("ul");
+    for (const source of item.sources || []) {
+      const li = doc.createElement("li");
+      li.textContent = source;
+      sourcesList.append(li);
+    }
+    const footer = doc.createElement("p");
+    footer.textContent =
+      `AI Studio GHRAB · technický přehled · ${new Date().toLocaleDateString(
+        document.documentElement.lang === "en" ? "en-GB" : "cs-CZ",
+      )}`;
+    sourcesSection.append(sourcesTitle, sourcesList, footer);
+    doc.body.append(sourcesSection);
+
     printWindow.focus();
     setTimeout(() => printWindow.print(), 250);
-  }
-
-  function escapePrint(value) {
-    return String(value || "")
-      .replaceAll("&", "&amp;")
-      .replaceAll("<", "&lt;")
-      .replaceAll(">", "&gt;")
-      .replaceAll('"', "&quot;");
   }
 
   detailPdf?.addEventListener("click", printDetail);
