@@ -1,11 +1,19 @@
 # AI Studio GHRAB
 
-**Aktuální verze:** 0.21.80
+**Aktuální verze:** 0.21.82
 
-0.21.80 odděluje schválený release-wave baseline od novějšího repository-only kandidáta. Kandidát se eviduje, ale bez deployment evidence nebo explicitního ručního reconciliation nepřepisuje runtime registry.
+0.21.82 dokončuje úpravy Správy, sjednocuje release identitu a PWA cache napříč všemi verzovanými povrchy a zpřesňuje fail-closed release proces.
 
 **Performance budget:** precache 1 250 000 B; critical entry 420 000 B; runtime limity jsou povinně měřené v P5 release gate.
 **Platforma:** GHRAB Platform 1.1.2 · etapa P5
+
+## Nově v 0.21.82
+
+- **Správa**: stavové karty mají výraznější názvy, rozšířené technické detaily a přímý PDF export.
+- **Dočasně povýšit Adélu**: karta zůstává ve Správě a samostatný interaktivní manuál se otevře až po kliknutí na kartu.
+- **Release identita a cache**: package, manifest, QA manifest, reporter, consumer a oba PWA cache klíče používají jednotnou verzi 0.21.82.
+- **Odolnější deployment verification**: přechodné HTTP 429/5xx a timeouty při čtení release identity mají omezený retry; skutečný kontraktní, verzový nebo hashový nesoulad dál okamžitě blokuje release.
+- **Version freshness gate**: runtime změna bez nové release verze se před promotion zablokuje.
 
 ## Nově v 0.21.80
 
