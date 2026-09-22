@@ -21,16 +21,26 @@ const indexHtml = await readFile("src/index.html", "utf8");
 const acceptance = JSON.parse(await readFile("src/config/release-acceptance.json", "utf8"));
 const reporterConfig = JSON.parse(await readFile("reporter-test.config.json", "utf8"));
 const reporterAdapter = await readFile("src/tests/error-reporter-adapter.js", "utf8");
+const manifest = JSON.parse(await readFile("src/manifest.webmanifest", "utf8"));
+const qaManifest = JSON.parse(await readFile("qa/qa-manifest.json", "utf8"));
+const changelog = JSON.parse(await readFile("src/config/changelog.json", "utf8"));
 const reporterAdapterVersion = reporterAdapter.match(/appVersion:\s*[\'\"](\d+\.\d+\.\d+)[\'\"]/i)?.[1] || null;
 const htmlVersion = indexHtml.match(/data-ghrab-app-version=["']([^"']+)["']/i)?.[1] || null;
 const versionRefs = [
   ["package-lock.version", lock.version],
   ["package-lock.packages[\"\"].version", lock.packages?.[""]?.version],
   ["consumer.appVersion", consumer.appVersion],
+  ["consumer.cache.name", String(consumer.cache?.name || "").includes(currentVersion) ? currentVersion : null],
   ["src/index.html", htmlVersion],
   ["release-acceptance.appVersion", acceptance.appVersion],
   ["reporter-test.config.version", reporterConfig.version],
   ["reporter-adapter.appVersion", reporterAdapterVersion],
+  ["manifest.version", manifest.version],
+  ["manifest.cache_name", String(manifest.cache_name || "").includes(currentVersion) ? currentVersion : null],
+  ["manifest.ghrab_platform.cache_name", String(manifest.ghrab_platform?.cache_name || "").includes(currentVersion) ? currentVersion : null],
+  ["qa-manifest.appVersion", qaManifest.appVersion],
+  ["qa-manifest.versionChecks", (qaManifest.versionChecks || []).every((check) => !check.expected || check.expected === currentVersion) ? currentVersion : null],
+  ["changelog.current", changelog.current],
 ];
 const mismatches = versionRefs.filter(([, value]) => value !== currentVersion);
 if (mismatches.length) {

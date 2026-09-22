@@ -13,6 +13,9 @@ const indexPath = "src/index.html";
 const acceptancePath = "src/config/release-acceptance.json";
 const reporterConfigPath = "reporter-test.config.json";
 const reporterAdapterPath = "src/tests/error-reporter-adapter.js";
+const manifestPath = "src/manifest.webmanifest";
+const qaManifestPath = "qa/qa-manifest.json";
+const changelogPath = "src/config/changelog.json";
 
 const pkg = JSON.parse(await readFile(pkgPath, "utf8"));
 const oldVersion = pkg.version;
@@ -28,8 +31,8 @@ await writeFile(lockPath, `${JSON.stringify(lock, null, 2)}\n`, "utf8");
 
 const consumer = JSON.parse(await readFile(consumerPath, "utf8"));
 consumer.appVersion = newVersion;
-if (consumer.serviceWorker?.cache?.name) {
-  consumer.serviceWorker.cache.name = consumer.serviceWorker.cache.name.replace(oldVersion, newVersion);
+if (consumer.cache?.name) {
+  consumer.cache.name = consumer.cache.name.replace(oldVersion, newVersion);
 }
 await writeFile(consumerPath, `${JSON.stringify(consumer, null, 2)}\n`, "utf8");
 
@@ -48,5 +51,22 @@ await writeFile(reporterConfigPath, `${JSON.stringify(reporterConfig, null, 2)}\
 let reporterAdapter = await readFile(reporterAdapterPath, "utf8");
 reporterAdapter = reporterAdapter.replace(/appVersion:\s*[\'\"]\d+\.\d+\.\d+[\'\"]/, `appVersion: \'${newVersion}\'`);
 await writeFile(reporterAdapterPath, reporterAdapter, "utf8");
+
+const manifest = JSON.parse(await readFile(manifestPath, "utf8"));
+manifest.version = newVersion;
+if (manifest.ghrab_platform?.cache_name) manifest.ghrab_platform.cache_name = manifest.ghrab_platform.cache_name.replace(oldVersion, newVersion);
+if (manifest.cache_name) manifest.cache_name = manifest.cache_name.replace(oldVersion, newVersion);
+await writeFile(manifestPath, `${JSON.stringify(manifest, null, 2)}\n`, "utf8");
+
+const qaManifest = JSON.parse(await readFile(qaManifestPath, "utf8"));
+qaManifest.appVersion = newVersion;
+for (const check of qaManifest.versionChecks || []) {
+  if (check.expected === oldVersion) check.expected = newVersion;
+}
+await writeFile(qaManifestPath, `${JSON.stringify(qaManifest, null, 2)}\n`, "utf8");
+
+const changelog = JSON.parse(await readFile(changelogPath, "utf8"));
+changelog.current = newVersion;
+await writeFile(changelogPath, `${JSON.stringify(changelog, null, 2)}\n`, "utf8");
 
 console.log(`AI Studio version bumped: ${oldVersion} -> ${newVersion}`);

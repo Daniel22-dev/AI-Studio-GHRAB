@@ -1,7 +1,29 @@
 {
   "schema": "ai-studio-changelog-v1",
-  "current": "0.21.80",
+  "current": "0.21.82",
   "items": [
+    {
+      "version": "0.21.82",
+      "date": "2026-09-22",
+      "title": {
+        "cs": "Hotfix vydání 0.21.82 a dokončení úprav Správy",
+        "en": "0.21.82 release hotfix and Administration completion"
+      },
+      "changes": [
+        {
+          "cs": "Karta „Dočasně povýšit Adélu“ zůstává ve Správě jako čistá klikací karta; interaktivní manuál se zobrazí až po jejím otevření.",
+          "en": "The Temporarily promote Adéla card remains a clean clickable Administration card; the interactive guide appears only after opening it."
+        },
+        {
+          "cs": "Stavové karty Správy používají výraznější názvy, rozšířené technické detaily a přímý PDF export.",
+          "en": "Administration status cards now use stronger titles, expanded technical details and direct PDF export."
+        },
+        {
+          "cs": "Release verze, manifest, PWA cache, QA manifest a reporter identita jsou synchronizovány jedním verzovacím kontraktem.",
+          "en": "Release version, manifest, PWA cache, QA manifest and reporter identity are synchronized by one versioning contract."
+        }
+      ]
+    },
     {
       "version": "0.21.80",
       "date": "2026-09-22",
