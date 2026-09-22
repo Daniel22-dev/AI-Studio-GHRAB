@@ -36,6 +36,13 @@ function revisionHtmlAssets(content, version) {
     );
 }
 
+function stampHtmlAppVersion(content, version) {
+  return content.replace(
+    /(data-ghrab-app-version=["'])[^"']*(["'])/gi,
+    `$1${version}$2`,
+  );
+}
+
 function revisionModuleImports(content, version) {
   const revise = (whole, prefix, ref, suffix) =>
     `${prefix}${appendRevision(ref, version)}${suffix}`;
@@ -360,7 +367,7 @@ for (const file of await walk(dist)) {
   if (!/\.(?:html|js)$/.test(file)) continue;
   const content = await readFile(file, "utf8");
   const revised = file.endsWith(".html")
-    ? revisionHtmlAssets(content, pkg.version)
+    ? revisionHtmlAssets(stampHtmlAppVersion(content, pkg.version), pkg.version)
     : revisionModuleImports(content, pkg.version);
   if (revised !== content) await writeFile(file, revised, "utf8");
 }

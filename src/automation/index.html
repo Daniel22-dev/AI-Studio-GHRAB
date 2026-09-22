@@ -283,205 +283,85 @@
             </button>
           </div>
         </section>
-        <div
-          id="automation-summary"
-          class="automation-summary"
-          aria-live="polite"
-        ></div>
-        <div class="automation-layout">
-          <section class="panel">
-            <p
-              class="eyebrow"
-              data-cs="PŘIPOJENÉ APLIKACE"
-              data-en="CONNECTED APPLICATIONS"
-            >
-              PŘIPOJENÉ APLIKACE
+        <div class="automation-layout automation-layout-compact">
+          <section class="panel automation-concept-card">
+            <p class="eyebrow" data-cs="JAK SPRÁVA FUNGUJE" data-en="HOW ADMINISTRATION WORKS">
+              JAK SPRÁVA FUNGUJE
             </p>
-            <h2
-              data-cs="Samostatné repozitáře"
-              data-en="Independent repositories"
-            >
-              Samostatné repozitáře
-            </h2>
-            <div id="automation-apps" class="automation-stack"></div>
-          </section>
-          <section class="panel automation-core">
-            <p class="eyebrow" data-cs="MODEL PŘÍSTUPU" data-en="ACCESS MODEL">
-              MODEL PŘÍSTUPU
-            </p>
-            <img src="../assets/brand/portal-core.svg" alt="" />
-            <h2
-              data-cs="Podepsaná oprávnění bez soukromého klíče v portálu"
-              data-en="Signed permits without a private key in the portal"
-            >
-              Podepsaná oprávnění bez soukromého klíče v portálu
+            <h2 data-cs="Přístup a bezpečnost na jednom místě" data-en="Access and security in one place">
+              Přístup a bezpečnost na jednom místě
             </h2>
             <p
-              data-cs="Studio ověřuje oprávnění veřejným klíčem. Stav ochrany jednotlivých aplikací se řídí jejich aktuálním integračním kontraktem a ověřuje se v release gate."
-              data-en="The Studio verifies permits with a public key. Protection for each application follows its current integration contract and is verified by the release gate."
+              data-cs="Správa odděluje provozní kontrolu od citlivých zásahů. Zástupce může kontrolovat stav a diagnostiku; vydávání správců, podpisové klíče a bezpečnostní politika zůstávají plnému správci."
+              data-en="Administration separates operational oversight from sensitive actions. A deputy can review status and diagnostics; administrator issuance, signing keys and security policy remain restricted to the full administrator."
             >
-              Studio ověřuje oprávnění veřejným klíčem. Stav ochrany jednotlivých
-              aplikací se řídí jejich aktuálním integračním kontraktem a ověřuje se
-              v release gate.
+              Správa odděluje provozní kontrolu od citlivých zásahů. Zástupce může
+              kontrolovat stav a diagnostiku; vydávání správců, podpisové klíče a
+              bezpečnostní politika zůstávají plnému správci.
             </p>
           </section>
-          <section class="panel">
-            <p
-              class="eyebrow"
-              data-cs="VYDÁVACÍ ŘETĚZEC"
-              data-en="RELEASE PIPELINE"
-            >
+          <section class="panel automation-concept-card">
+            <p class="eyebrow" data-cs="VYDÁVACÍ ŘETĚZEC" data-en="RELEASE PIPELINE">
               VYDÁVACÍ ŘETĚZEC
             </p>
-            <h2
-              data-cs="Od manifestu k ověřenému vydání"
-              data-en="From manifest to verified release"
-            >
-              Od manifestu k ověřenému vydání
+            <h2 data-cs="Od změny k ověřenému nasazení" data-en="From change to verified deployment">
+              Od změny k ověřenému nasazení
             </h2>
-            <div class="pipeline">
-              <article class="pipeline-step">
-                <span>01</span>
-                <h3 data-cs="Synchronizace" data-en="Synchronisation">
-                  Synchronizace
-                </h3>
-                <p
-                  data-cs="Stažení a porovnání manifestů."
-                  data-en="Download and compare manifests."
-                >
-                  Stažení a porovnání manifestů.
-                </p>
-              </article>
-              <article class="pipeline-step">
-                <span>02</span>
-                <h3>Build</h3>
-                <p
-                  data-cs="Validace verzí, odkazů a povinných polí."
-                  data-en="Validate versions, links and required fields."
-                >
-                  Validace verzí, odkazů a povinných polí.
-                </p>
-              </article>
-              <article class="pipeline-step">
-                <span>03</span>
-                <h3>QA</h3>
-                <p
-                  data-cs="Automatické a prohlížečové smoke testy."
-                  data-en="Automated and browser smoke tests."
-                >
-                  Automatické a prohlížečové smoke testy.
-                </p>
-              </article>
-              <article class="pipeline-step">
-                <span>04</span>
-                <h3>GitHub Pages</h3>
-                <p
-                  data-cs="Publikace ověřeného balíku."
-                  data-en="Publish the verified package."
-                >
-                  Publikace ověřeného balíku.
-                </p>
-              </article>
+            <div class="pipeline pipeline-compact">
+              <article class="pipeline-step"><span>01</span><h3 data-cs="Synchronizace" data-en="Synchronisation">Synchronizace</h3></article>
+              <article class="pipeline-step"><span>02</span><h3>Build</h3></article>
+              <article class="pipeline-step"><span>03</span><h3>QA / P5</h3></article>
+              <article class="pipeline-step"><span>04</span><h3>Deploy</h3></article>
             </div>
           </section>
         </div>
-        <section class="panel automation-report">
-          <div class="section-heading compact">
+
+        <section
+          class="panel automation-report developer-readiness-section ecosystem-status-section"
+          id="developer-readiness-section"
+        >
+          <div class="section-heading split-heading ecosystem-heading">
             <div>
-              <p
-                class="eyebrow"
-                data-cs="POSLEDNÍ SYNCHRONIZACE"
-                data-en="LATEST SYNCHRONISATION"
-              >
-                POSLEDNÍ SYNCHRONIZACE
+              <p class="eyebrow" data-cs="STAV EKOSYSTÉMU" data-en="ECOSYSTEM STATUS">
+                STAV EKOSYSTÉMU
               </p>
-              <h2 data-cs="Kontrola zdrojů" data-en="Source check">
-                Kontrola zdrojů
+              <h2 data-cs="Jeden přehled všech aplikací" data-en="One overview for every application">
+                Jeden přehled všech aplikací
               </h2>
+              <p
+                data-cs="Jediný provozní přehled verzí a ochranných vrstev. Každá informace je zde právě jednou: GARP, Safe Promotion, Platform, AI Core, zdroj, manuál a výsledek kontroly."
+                data-en="The single operational overview of versions and protection layers. Each fact appears here once: GARP, Safe Promotion, Platform, AI Core, source, manual and check result."
+              >
+                Jediný provozní přehled verzí a ochranných vrstev. Každá informace
+                je zde právě jednou: GARP, Safe Promotion, Platform, AI Core,
+                zdroj, manuál a výsledek kontroly.
+              </p>
             </div>
+            <button id="developer-verify-all" class="button secondary" type="button" data-cs="Otestovat vše" data-en="Test all">
+              Otestovat vše
+            </button>
           </div>
+
+          <div id="developer-readiness-summary" class="automation-summary ecosystem-summary"></div>
+          <div class="ecosystem-meta-row" aria-live="polite">
+            <div class="ecosystem-meta-item"><span>AI Core</span><strong id="ecosystem-core-meta">Načítám…</strong></div>
+            <div class="ecosystem-meta-item"><span data-cs="Zdroje" data-en="Sources">Zdroje</span><strong id="ecosystem-source-meta">Načítám…</strong></div>
+            <div class="ecosystem-meta-item"><span data-cs="Manuály" data-en="Manuals">Manuály</span><strong id="ecosystem-manual-meta">Načítám…</strong></div>
+          </div>
+
           <div class="table-scroll">
-            <table class="sync-table">
+            <table class="sync-table developer-readiness-table ecosystem-status-table">
               <thead>
                 <tr>
                   <th data-cs="Aplikace" data-en="Application">Aplikace</th>
-                  <th data-cs="Zdroj" data-en="Source">Zdroj</th>
-                  <th data-cs="Výsledek" data-en="Result">Výsledek</th>
-                  <th data-cs="Načtená verze" data-en="Loaded version">
-                    Načtená verze
-                  </th>
-                  <th data-cs="Naposledy ověřeno" data-en="Last source verification">
-                    Naposledy ověřeno
-                  </th>
+                  <th>GARP</th>
+                  <th>Safe Promotion</th>
+                  <th>Platform</th>
+                  <th>AI Core</th>
+                  <th data-cs="Zdroj + manuál" data-en="Source + manual">Zdroj + manuál</th>
+                  <th data-cs="Kontrola" data-en="Check">Kontrola</th>
                 </tr>
               </thead>
-              <tbody id="sync-table-body"></tbody>
-            </table>
-          </div>
-          <p
-            id="sync-health-note"
-            class="notice"
-            data-cs="Načítám stav synchronizace zdrojů…"
-            data-en="Loading source synchronisation status…"
-          >
-            Načítám stav synchronizace zdrojů…
-          </p>
-        </section>
-        <section class="panel automation-report ai-core-report">
-          <div class="section-heading split-heading">
-            <div>
-              <p class="eyebrow" data-cs="Sdílená AI vrstva" data-en="Shared AI layer">Sdílená AI vrstva</p>
-              <h2 data-cs="GHRAB AI Core a připravenost aplikací" data-en="GHRAB AI Core and application readiness">GHRAB AI Core a připravenost aplikací</h2>
-              <p data-cs="Studio vydává neměnný Core, společný kontrakt a runtime politiku. Výchozí provoz aplikací zůstává přes osobní Gemini klíče." data-en="Studio publishes the immutable Core, shared contract and runtime policy. Applications continue to use personal Gemini keys by default.">Studio vydává neměnný Core, společný kontrakt a runtime politiku. Výchozí provoz aplikací zůstává přes osobní Gemini klíče.</p>
-            </div>
-          </div>
-          <div id="ai-core-summary" class="automation-summary ai-core-summary"></div>
-          <div class="ai-core-meta-grid">
-            <article class="ai-core-meta-card"><span data-cs="Aktivní vydání" data-en="Active release">Aktivní vydání</span><strong id="ai-core-release">—</strong><small id="ai-core-build">—</small></article>
-            <article class="ai-core-meta-card"><span data-cs="Runtime politika" data-en="Runtime policy">Runtime politika</span><strong id="ai-runtime-mode">—</strong><small id="ai-runtime-policy">—</small></article>
-            <article class="ai-core-meta-card ai-core-downloads"><span data-cs="Artefakty" data-en="Artifacts">Artefakty</span><div><a id="ai-core-manifest-link" class="button compact ghost" href="#" data-cs="Release manifest" data-en="Release manifest">Release manifest</a><a id="ai-core-kit-link" class="button compact ghost" href="#" data-cs="Migrační kit" data-en="Migration kit">Migrační kit</a></div></article>
-          </div>
-          <div class="table-scroll"><table class="sync-table ai-readiness-table"><thead><tr><th data-cs="Aplikace" data-en="Application">Aplikace</th><th data-cs="Nasazená verze" data-en="Deployed version">Nasazená verze</th><th data-cs="Stav migrace" data-en="Migration status">Stav migrace</th><th>Core</th><th data-cs="Konformita" data-en="Conformance">Konformita</th></tr></thead><tbody id="ai-readiness-table-body"></tbody></table></div>
-          <p
-            class="notice"
-            data-cs="Server-ready stav je uznán jako nasazený až tehdy, když jej aktuální živý manifest doloží aktivní verzí Core, HTTPS registrem operací a úspěšnou konformitní sadou. Certifikační baseline se vede odděleně jako auditní důkaz a není natvrdo svázána s jednou živou patch verzí."
-            data-en="Server-ready status is considered deployed only when the current live manifest proves the active Core version, an HTTPS operations registry and a passing conformance suite. The certification baseline is retained separately as audit evidence and is not hard-wired to one live patch version."
-          >
-            Server-ready stav je uznán jako nasazený až tehdy, když jej aktuální
-            živý manifest doloží aktivní verzí Core, HTTPS registrem operací a
-            úspěšnou konformitní sadou. Certifikační baseline se vede odděleně
-            jako auditní důkaz a není natvrdo svázána s jednou živou patch verzí.
-          </p>
-        </section>
-
-        <section class="panel automation-report developer-readiness-section" id="developer-readiness-section" data-full-admin-only hidden>
-          <div class="section-heading split-heading">
-            <div>
-              <p class="eyebrow" data-cs="VÝVOJÁŘSKÁ KONTROLA" data-en="DEVELOPER CONTROL">VÝVOJÁŘSKÁ KONTROLA</p>
-              <h2 data-cs="Standardy a ochranné vrstvy po aplikacích" data-en="Standards and protection layers by application">Standardy a ochranné vrstvy po aplikacích</h2>
-              <p
-                data-cs="Přehled GARP baseline, Safe Promotion / Auto Patch, GHRAB Platform, AI Core, zdroje a manuálu. Ruční test ověřuje integrační kontrakty Studia; nenahrazuje repozitářové P5/GARP testy."
-                data-en="Overview of the GARP baseline, Safe Promotion / Auto Patch, GHRAB Platform, AI Core, source and manual. The manual check validates Studio integration contracts; it does not replace repository P5/GARP suites."
-              >
-                Přehled GARP baseline, Safe Promotion / Auto Patch, GHRAB Platform, AI Core,
-                zdroje a manuálu. Ruční test ověřuje integrační kontrakty Studia;
-                nenahrazuje repozitářové P5/GARP testy.
-              </p>
-            </div>
-            <button id="developer-verify-all" class="button secondary" type="button" data-cs="Otestovat vše" data-en="Test all">Otestovat vše</button>
-          </div>
-          <div id="developer-readiness-summary" class="automation-summary"></div>
-          <div class="table-scroll">
-            <table class="sync-table developer-readiness-table">
-              <thead><tr>
-                <th data-cs="Aplikace" data-en="Application">Aplikace</th>
-                <th>GARP</th>
-                <th>Safe Promotion</th>
-                <th>Platform</th>
-                <th>AI Core</th>
-                <th data-cs="Zdroj + manuál" data-en="Source + manual">Zdroj + manuál</th>
-                <th data-cs="Ruční kontrola" data-en="Manual check">Ruční kontrola</th>
-              </tr></thead>
               <tbody id="developer-readiness-table-body"></tbody>
             </table>
           </div>

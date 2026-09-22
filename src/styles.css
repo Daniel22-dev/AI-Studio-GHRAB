@@ -3879,3 +3879,68 @@ input[type="file"] {
 @media (prefers-reduced-motion: reduce) {
   .operation-progress-meter span { transition: none; }
 }
+
+/* Administration 0.21.79: one status overview and consistent return actions. */
+.automation-layout-compact {
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  margin-top: 22px;
+}
+.automation-concept-card { min-height: 0; }
+.pipeline-compact {
+  grid-template-columns: repeat(4, minmax(0, 1fr));
+  gap: 10px;
+}
+.pipeline-compact .pipeline-step { min-height: 92px; }
+.pipeline-compact .pipeline-step:not(:last-child)::after {
+  content: "→";
+  right: -10px;
+  left: auto;
+  bottom: auto;
+  top: 50%;
+  translate: 50% -50%;
+}
+.ecosystem-status-section { margin-top: 22px; }
+.ecosystem-heading { margin-bottom: 18px; }
+.ecosystem-summary {
+  grid-template-columns: repeat(5, minmax(0, 1fr));
+  margin: 0 0 14px;
+}
+.ecosystem-meta-row {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 10px;
+  margin: 0 0 18px;
+}
+.ecosystem-meta-item {
+  display: grid;
+  gap: 5px;
+  padding: 12px 14px;
+  border: 1px solid var(--line);
+  border-radius: 14px;
+  background: rgba(4, 15, 27, 0.64);
+}
+.ecosystem-meta-item span {
+  color: var(--muted);
+  font-size: 0.68rem;
+  font-weight: 800;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+}
+.ecosystem-meta-item strong { font-size: 0.82rem; }
+.ecosystem-status-table { min-width: 980px; }
+.admin-return {
+  display: flex;
+  gap: 10px;
+  margin-top: 18px;
+}
+@media (max-width: 1120px) {
+  .automation-layout-compact,
+  .ecosystem-meta-row { grid-template-columns: 1fr; }
+  .ecosystem-summary { grid-template-columns: repeat(3, minmax(0, 1fr)); }
+  .pipeline-compact { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+  .pipeline-compact .pipeline-step:not(:last-child)::after { display: none; }
+}
+@media (max-width: 700px) {
+  .ecosystem-summary,
+  .pipeline-compact { grid-template-columns: 1fr; }
+}

@@ -4,7 +4,11 @@ const G = window.GHRAB;
 await G.accessReady;
 
 const section = document.querySelector("#developer-readiness-section");
-if (!section || !G.isAdmin() || G.isColleaguePreview?.()) {
+const canView =
+  G.canAccessAdminPage?.("automation") === true &&
+  !G.isTeacherPreview?.();
+
+if (!section || !canView) {
   if (section) section.hidden = true;
 } else {
   section.hidden = false;
@@ -12,7 +16,10 @@ if (!section || !G.isAdmin() || G.isColleaguePreview?.()) {
   const summary = document.querySelector("#developer-readiness-summary");
   const note = document.querySelector("#developer-readiness-note");
   const testAll = document.querySelector("#developer-verify-all");
-  const STORE = "ghrab.ai-studio.developer-readiness.v1";
+  const coreMeta = document.querySelector("#ecosystem-core-meta");
+  const sourceMeta = document.querySelector("#ecosystem-source-meta");
+  const manualMeta = document.querySelector("#ecosystem-manual-meta");
+  const STORE = "ghrab.ai-studio.ecosystem-check.v2";
   let ctx;
 
   const loadJson = async (url) => {
@@ -20,7 +27,8 @@ if (!section || !G.isAdmin() || G.isColleaguePreview?.()) {
     if (!response.ok) throw new Error(`${url}: ${response.status}`);
     return response.json();
   };
-  const mapBy = (items = [], key = "id") => new Map(items.map((item) => [item[key], item]));
+  const mapBy = (items = [], key = "id") =>
+    new Map(items.map((item) => [item[key], item]));
   const stored = () => {
     try {
       return JSON.parse(G.safeGetItem(STORE, "{}") || "{}");
@@ -45,15 +53,19 @@ if (!section || !G.isAdmin() || G.isColleaguePreview?.()) {
     card.append(strong, span);
     return card;
   };
-  const garpLabel = (value) => String(value || "—")
-    .replace(/^GARP-/i, "GARP ")
-    .replace(/-SHIELD-PREP$/i, " · SHIELD-PREP");
+  const garpLabel = (value) =>
+    String(value || "—")
+      .replace(/^GARP-/i, "GARP ")
+      .replace(/-SHIELD-PREP$/i, " · SHIELD-PREP");
 
   function expectedGarp(policy) {
     const counts = new Map();
     for (const item of policy?.applications || []) {
       if (!item.assuranceBaseline) continue;
-      counts.set(item.assuranceBaseline, (counts.get(item.assuranceBaseline) || 0) + 1);
+      counts.set(
+        item.assuranceBaseline,
+        (counts.get(item.assuranceBaseline) || 0) + 1,
+      );
     }
     return [...counts.entries()].sort((a, b) => b[1] - a[1])[0]?.[0] || "—";
   }
@@ -68,6 +80,15 @@ if (!section || !G.isAdmin() || G.isColleaguePreview?.()) {
     return true;
   }
 
+  function formatTime(value) {
+    if (!value) return "—";
+    const date = new Date(value);
+    if (Number.isNaN(date.getTime())) return "—";
+    return date.toLocaleString(
+      document.documentElement.lang === "en" ? "en-GB" : "cs-CZ",
+    );
+  }
+
   function evaluate(app) {
     const promotion = ctx.promotions.get(app.id);
     const ready = ctx.readiness.get(app.id);
@@ -76,39 +97,79 @@ if (!section || !G.isAdmin() || G.isColleaguePreview?.()) {
     const garpOk =
       promotion?.assuranceBaseline === targetGarp &&
       versionAtLeast(app.version, promotion?.minimumVersion);
-    const promotionOk = promotion?.mode === "auto-patch" && promotion?.requiredVerification === "deployment";
+    const promotionOk =
+      promotion?.mode === "auto-patch" &&
+      promotion?.requiredVerification === "deployment";
     const platformOk =
       app.platform?.contract === "ghrab-platform-v1" &&
       app.platform?.platformVersion === "1.1.2" &&
       String(app.platform?.requiredPlatformRange || "").includes("1.1.2");
     const coreNA = app.aiCore?.status === "not-applicable" || !app.aiCore;
-    const coreOk = coreNA || (
-      Boolean(app.aiCore?.coreVersion) &&
-      app.aiCore?.conformancePassed === true &&
-      (!ready || ready.status === "ready" || ready.conformancePassed === true)
-    );
-    const sourceOk = source == null || source.ok === true || ["deployment", "repository"].includes(source.verification);
+    const coreOk =
+      coreNA ||
+      (Boolean(app.aiCore?.coreVersion) &&
+        app.aiCore?.conformancePassed === true &&
+        (!ready ||
+          ready.status === "ready" ||
+          ready.conformancePassed === true));
+    const sourceOk =
+      source?.ok === true ||
+      ["deployment", "repository"].includes(source?.verification);
     const manualOk = Boolean(app.manualUrl);
-    const checks = [garpOk, promotionOk, platformOk, coreOk, sourceOk, manualOk];
+    const checks = [
+      garpOk,
+      promotionOk,
+      platformOk,
+      coreOk,
+      sourceOk,
+      manualOk,
+    ];
     return {
-      promotion, ready, source, targetGarp, garpOk, promotionOk, platformOk,
-      coreNA, coreOk, sourceOk, manualOk,
+      promotion,
+      source,
+      garpOk,
+      promotionOk,
+      platformOk,
+      coreNA,
+      coreOk,
+      sourceOk,
+      manualOk,
       passed: checks.filter(Boolean).length,
       total: checks.length,
       ok: checks.every(Boolean),
     };
   }
 
+  function sourceLabel(source) {
+    if (source?.verification === "deployment")
+      return G.t("živý manifest", "live manifest");
+    if (source?.verification === "repository")
+      return G.t("GitHub zdroj", "GitHub source");
+    if (source?.verification === "snapshot")
+      return G.t("jen snapshot", "snapshot only");
+    return G.t("neověřeno", "unverified");
+  }
+
   function render() {
     const prior = stored();
-    let garpPass = 0, promotionPass = 0, platformPass = 0, corePass = 0, coreScope = 0;
+    let healthy = 0;
+    let garpPass = 0;
+    let promotionPass = 0;
+    let platformPass = 0;
+    let corePass = 0;
+    let coreScope = 0;
+    let sourcePass = 0;
+    let manualPass = 0;
     body.replaceChildren();
 
     for (const app of ctx.apps) {
       const e = evaluate(app);
+      healthy += e.ok ? 1 : 0;
       garpPass += e.garpOk ? 1 : 0;
       promotionPass += e.promotionOk ? 1 : 0;
       platformPass += e.platformOk ? 1 : 0;
+      sourcePass += e.sourceOk ? 1 : 0;
+      manualPass += e.manualOk ? 1 : 0;
       if (!e.coreNA) {
         coreScope += 1;
         corePass += e.coreOk ? 1 : 0;
@@ -124,38 +185,54 @@ if (!section || !G.isAdmin() || G.isColleaguePreview?.()) {
       name.append(strong, version);
 
       const garp = document.createElement("td");
-      const garpText = e.promotion?.minimumVersion && !e.garpOk
-        ? `${garpLabel(e.promotion?.assuranceBaseline)} · min v${e.promotion.minimumVersion}`
-        : garpLabel(e.promotion?.assuranceBaseline);
+      const garpText =
+        e.promotion?.minimumVersion && !e.garpOk
+          ? `${garpLabel(e.promotion?.assuranceBaseline)} · min v${e.promotion.minimumVersion}`
+          : garpLabel(e.promotion?.assuranceBaseline);
       garp.append(chip(garpText, e.garpOk ? "ok" : "error"));
 
       const promotion = document.createElement("td");
-      promotion.append(chip(
-        e.promotion?.mode === "auto-patch" ? "Auto Patch" : G.t("Ruční", "Manual"),
-        e.promotionOk ? "ok" : "warn",
-      ));
+      promotion.append(
+        chip(
+          e.promotion?.mode === "auto-patch"
+            ? "Auto Patch"
+            : G.t("Ruční", "Manual"),
+          e.promotionOk ? "ok" : "warn",
+        ),
+      );
 
       const platform = document.createElement("td");
-      platform.append(chip(app.platform?.platformVersion ? `v${app.platform.platformVersion}` : "—", e.platformOk ? "ok" : "error"));
+      platform.append(
+        chip(
+          app.platform?.platformVersion
+            ? `v${app.platform.platformVersion}`
+            : "—",
+          e.platformOk ? "ok" : "error",
+        ),
+      );
 
       const core = document.createElement("td");
-      core.append(chip(
-        e.coreNA ? G.t("Nevyužívá", "N/A") : app.aiCore?.coreVersion ? `Core ${app.aiCore.coreVersion}` : G.t("Chybí", "Missing"),
-        e.coreOk ? (e.coreNA ? "neutral" : "ok") : "error",
-      ));
+      core.append(
+        chip(
+          e.coreNA
+            ? G.t("Nevyužívá", "N/A")
+            : app.aiCore?.coreVersion
+              ? `Core ${app.aiCore.coreVersion}`
+              : G.t("Chybí", "Missing"),
+          e.coreOk ? (e.coreNA ? "neutral" : "ok") : "error",
+        ),
+      );
 
       const sourceManual = document.createElement("td");
-      const sourceText = e.source?.verification === "deployment"
-        ? G.t("živý manifest", "live manifest")
-        : e.source?.verification === "repository"
-          ? G.t("GitHub zdroj", "GitHub source")
-          : e.source?.verification === "snapshot"
-            ? G.t("jen snapshot", "snapshot only")
-            : G.t("ověří build", "build verifies");
       sourceManual.append(
-        chip(sourceText, e.sourceOk ? "ok" : "warn"),
+        chip(sourceLabel(e.source), e.sourceOk ? "ok" : "warn"),
         document.createTextNode(" "),
-        chip(e.manualOk ? G.t("manuál ano", "manual yes") : G.t("manuál chybí", "manual missing"), e.manualOk ? "ok" : "error"),
+        chip(
+          e.manualOk
+            ? G.t("manuál", "manual")
+            : G.t("manuál chybí", "manual missing"),
+          e.manualOk ? "ok" : "error",
+        ),
       );
 
       const test = document.createElement("td");
@@ -165,10 +242,16 @@ if (!section || !G.isAdmin() || G.isColleaguePreview?.()) {
       button.textContent = G.t("Otestovat", "Test");
       button.addEventListener("click", () => runOne(app.id));
       test.append(button);
+
       if (prior[app.id]) {
         const stamp = document.createElement("small");
-        stamp.className = `developer-last-test ${prior[app.id].ok ? "ok" : "error"}`;
-        stamp.textContent = `${prior[app.id].ok ? "✓" : "!"} ${prior[app.id].passed}/${prior[app.id].total} · ${new Date(prior[app.id].at).toLocaleString(document.documentElement.lang === "en" ? "en-GB" : "cs-CZ")}`;
+        stamp.className =
+          `developer-last-test ${prior[app.id].ok ? "ok" : "error"}`;
+        stamp.textContent =
+          `${prior[app.id].ok ? "✓" : "!"} ${prior[app.id].passed}/${prior[app.id].total} · ` +
+          new Date(prior[app.id].at).toLocaleString(
+            document.documentElement.lang === "en" ? "en-GB" : "cs-CZ",
+          );
         test.append(stamp);
       }
 
@@ -177,38 +260,70 @@ if (!section || !G.isAdmin() || G.isColleaguePreview?.()) {
     }
 
     summary.replaceChildren(
+      metric(`${healthy}/${ctx.apps.length}`, "bez problému", "healthy"),
       metric(`${garpPass}/${ctx.apps.length}`, "GARP aktuální", "GARP current"),
       metric(`${promotionPass}/${ctx.apps.length}`, "Safe Promotion", "Safe Promotion"),
       metric(`${platformPass}/${ctx.apps.length}`, "Platform 1.1.2", "Platform 1.1.2"),
-      metric(`${corePass}/${coreScope}`, "AI Core v rozsahu", "AI Core in scope"),
+      metric(`${sourcePass}/${ctx.apps.length}`, "zdrojů ověřeno", "sources verified"),
     );
+
+    const active = ctx.coreRegistry?.activeRelease;
+    const runtime = ctx.runtime?.ai || ctx.readinessRoot?.runtime || {};
+    if (coreMeta) {
+      coreMeta.textContent = active
+        ? `Core ${active.coreVersion} · ${corePass}/${coreScope} · ${runtime.defaultMode || "—"}`
+        : `${corePass}/${coreScope}`;
+    }
+    if (sourceMeta) {
+      sourceMeta.textContent =
+        `${sourcePass}/${ctx.apps.length} · ` +
+        G.t("poslední plná kontrola", "last full check") +
+        ` ${formatTime(ctx.report?.lastFullSourceVerifiedAt || ctx.report?.generatedAt)}`;
+    }
+    if (manualMeta) {
+      manualMeta.textContent = G.t(
+        `${manualPass}/${ctx.apps.length} dostupných`,
+        `${manualPass}/${ctx.apps.length} available`,
+      );
+    }
+
     note.textContent = G.t(
-      `Aktuální baseline podle release politiky: ${garpLabel(expectedGarp(ctx.policy))}. Ruční kontrola ověřuje integrační kontrakty Studia; repozitářové GARP/P5/N5 testy zůstávají autoritativní release bránou.`,
-      `Current baseline from the release policy: ${garpLabel(expectedGarp(ctx.policy))}. The manual check validates Studio integration contracts; repository GARP/P5/N5 suites remain the authoritative release gate.`,
+      `GARP baseline: ${garpLabel(expectedGarp(ctx.policy))}. Tato tabulka je jediný provozní přehled ve Správě; repozitářové GARP/P5/N5 testy zůstávají autoritativní release bránou.`,
+      `GARP baseline: ${garpLabel(expectedGarp(ctx.policy))}. This table is the single operational status overview in Administration; repository GARP/P5/N5 suites remain the authoritative release gate.`,
     );
   }
 
-  function persist(appId, e) {
+  function persist(appId, evaluation) {
     const data = stored();
-    data[appId] = { ok: e.ok, passed: e.passed, total: e.total, at: new Date().toISOString() };
+    data[appId] = {
+      ok: evaluation.ok,
+      passed: evaluation.passed,
+      total: evaluation.total,
+      at: new Date().toISOString(),
+    };
     save(data);
   }
 
   function runOne(appId) {
     const app = ctx.apps.find((item) => item.id === appId);
     if (!app) return;
-    const e = evaluate(app);
-    persist(app.id, e);
+    const evaluation = evaluate(app);
+    persist(app.id, evaluation);
     render();
-    G.showToast(e.ok
-      ? G.t("Integrační kontrola prošla.", "Integration check passed.")
-      : G.t(`Kontrola našla ${e.total - e.passed} problémů.`, `The check found ${e.total - e.passed} issues.`));
+    G.showToast(
+      evaluation.ok
+        ? G.t("Integrační kontrola prošla.", "Integration check passed.")
+        : G.t(
+            `Kontrola našla ${evaluation.total - evaluation.passed} problémů.`,
+            `The check found ${evaluation.total - evaluation.passed} issues.`,
+          ),
+    );
   }
 
   async function runAll() {
     testAll.disabled = true;
     const progress = createTaskProgress({
-      title: G.t("Vývojářská kontrola ekosystému", "Ecosystem developer check"),
+      title: G.t("Kontrola stavu ekosystému", "Ecosystem status check"),
       description: G.t(
         "Procento roste pouze po skutečně vyhodnocené aplikaci.",
         "The percentage grows only after an application has actually been evaluated.",
@@ -218,47 +333,73 @@ if (!section || !G.isAdmin() || G.isColleaguePreview?.()) {
     let failed = 0;
     for (let index = 0; index < ctx.apps.length; index += 1) {
       const app = ctx.apps[index];
-      progress.update(index, G.localised(app.name), G.t("Ověřuji integrační kontrakty…", "Checking integration contracts…"));
-      const e = evaluate(app);
-      persist(app.id, e);
-      failed += e.ok ? 0 : 1;
-      progress.update(index + 1, G.localised(app.name), e.ok ? G.t("Kontrola prošla.", "Check passed.") : G.t("Vyžaduje pozornost.", "Requires attention."));
+      progress.update(
+        index,
+        G.localised(app.name),
+        G.t(
+          "Ověřuji ochranné vrstvy a zdroje…",
+          "Checking protection layers and sources…",
+        ),
+      );
+      const evaluation = evaluate(app);
+      persist(app.id, evaluation);
+      failed += evaluation.ok ? 0 : 1;
+      progress.update(
+        index + 1,
+        G.localised(app.name),
+        evaluation.ok
+          ? G.t("Kontrola prošla.", "Check passed.")
+          : G.t("Vyžaduje pozornost.", "Requires attention."),
+      );
       await new Promise((resolve) => setTimeout(resolve, 25));
     }
     render();
     progress.finish({
       failed,
       message: failed
-        ? G.t(`${failed} aplikací vyžaduje pozornost.`, `${failed} applications require attention.`)
-        : G.t("Všechny aplikace prošly integrační kontrolou Studia.", "All applications passed the Studio integration check."),
+        ? G.t(
+            `${failed} aplikací vyžaduje pozornost.`,
+            `${failed} applications require attention.`,
+          )
+        : G.t(
+            "Všechny aplikace prošly kontrolou stavu.",
+            "All applications passed the status check.",
+          ),
     });
     testAll.disabled = false;
   }
 
   async function init() {
-    const [apps, policy, readiness, report] = await Promise.all([
-      G.loadApps(),
-      loadJson("../config/developer-readiness.json"),
-      G.loadAiReadiness(),
-      G.loadSyncReport(),
-    ]);
+    const [apps, policy, readiness, report, coreRegistry, runtime] =
+      await Promise.all([
+        G.loadApps(),
+        loadJson("../config/developer-readiness.json"),
+        G.loadAiReadiness(),
+        G.loadSyncReport(),
+        G.loadAiCoreRegistry(),
+        G.loadAiRuntime(),
+      ]);
     ctx = {
       apps,
       policy,
       promotions: mapBy(policy.applications),
       readiness: mapBy(readiness?.applications, "appId"),
+      readinessRoot: readiness,
+      report,
       sources: mapBy(report?.sources),
+      coreRegistry,
+      runtime,
     };
     render();
   }
 
-  testAll.addEventListener("click", runAll);
+  testAll?.addEventListener("click", runAll);
   document.addEventListener("ghrab:language", render);
   init().catch((error) => {
     note.className = "notice sync-error";
     note.textContent = G.t(
-      `Vývojářský přehled se nepodařilo načíst: ${error.message}`,
-      `Developer overview could not be loaded: ${error.message}`,
+      `Přehled stavu se nepodařilo načíst: ${error.message}`,
+      `Status overview could not be loaded: ${error.message}`,
     );
   });
 }
