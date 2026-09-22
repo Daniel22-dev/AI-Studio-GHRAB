@@ -20,6 +20,8 @@ const consumer = JSON.parse(await readFile("ghrab-platform.consumer.json", "utf8
 const indexHtml = await readFile("src/index.html", "utf8");
 const acceptance = JSON.parse(await readFile("src/config/release-acceptance.json", "utf8"));
 const reporterConfig = JSON.parse(await readFile("reporter-test.config.json", "utf8"));
+const reporterAdapter = await readFile("src/tests/error-reporter-adapter.js", "utf8");
+const reporterAdapterVersion = reporterAdapter.match(/appVersion:\s*[\'\"](\d+\.\d+\.\d+)[\'\"]/i)?.[1] || null;
 const htmlVersion = indexHtml.match(/data-ghrab-app-version=["']([^"']+)["']/i)?.[1] || null;
 const versionRefs = [
   ["package-lock.version", lock.version],
@@ -28,6 +30,7 @@ const versionRefs = [
   ["src/index.html", htmlVersion],
   ["release-acceptance.appVersion", acceptance.appVersion],
   ["reporter-test.config.version", reporterConfig.version],
+  ["reporter-adapter.appVersion", reporterAdapterVersion],
 ];
 const mismatches = versionRefs.filter(([, value]) => value !== currentVersion);
 if (mismatches.length) {
@@ -57,7 +60,14 @@ const runtimePatterns = [
   /^security\//,
   /^ghrab-platform\.consumer\.json$/,
 ];
-const runtimeChanged = changed.filter((path) => runtimePatterns.some((pattern) => pattern.test(path)));
+const nonRuntimePatterns = [
+  /^src\/tests\//,
+];
+const runtimeChanged = changed.filter(
+  (path) =>
+    runtimePatterns.some((pattern) => pattern.test(path)) &&
+    !nonRuntimePatterns.some((pattern) => pattern.test(path)),
+);
 
 if (!runtimeChanged.length) {
   console.log(`Release version gate: no runtime delta against main; ${currentVersion} accepted.`);
