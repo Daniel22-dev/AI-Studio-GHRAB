@@ -1,8 +1,8 @@
-# Přesný postup nahrání AI Studio GHRAB 0.21.77 na GitHub – až po schválení
+# Přesný postup nahrání AI Studio GHRAB 0.21.78 na GitHub – až po schválení
 
-> Aktuální verze: **0.21.77** · etapa P5
+> Aktuální verze: **0.21.78** · etapa P5
 
-> 0.21.77 opravuje falešný ecosystem blocker způsobený novějším repository kandidátem MANUAL aplikace, aniž by jej automaticky přijímala do release-wave.
+> 0.21.78 opravuje falešný ecosystem blocker způsobený novějším repository kandidátem MANUAL aplikace, aniž by jej automaticky přijímala do release-wave.
 
 ## Předpoklady
 
@@ -14,14 +14,14 @@ Nejprve musí být nasazeny KS 5.10.25, SORTIO 1.1.17, Lesson Hub 1.2.22, Difere
 
 ## Nahrání
 
-1. Stáhněte a rozbalte `AI-Studio-GHRAB-0.21.77-SOURCE-CANDIDATE-GATE-HOTFIX.zip`.
+1. Stáhněte a rozbalte `AI-Studio-GHRAB-0.21.78-SOURCE-CANDIDATE-GATE-HOTFIX.zip`.
 2. Do kořene repozitáře `AI-Studio-GHRAB` nahrajte přímo všechny soubory a složky z rozbaleného archivu.
-3. Commit pojmenujte například `AI Studio 0.21.77 – source-candidate gate hotfix`.
+3. Commit pojmenujte například `AI Studio 0.21.78 – source-candidate gate hotfix`.
 4. Vyčkejte na dokončení GitHub Actions. Workflow instaluje závislosti, synchronizuje manifesty, spustí regresi reportéru, celý GHRAB QA release gate, sestaví `dist` a až poté nasadí GitHub Pages.
 
 ## Kontrola po nasazení
 
-- `dist/build-info.json`, PWA manifest a service worker musí uvádět 0.21.77.
+- `dist/build-info.json`, PWA manifest a service worker musí uvádět 0.21.78.
 - `dist/config/access-config-bundle.json` musí uvádět `access-p1-20260824175535Z-k_wtm7Zj`.
 - Staré učitelské oprávnění kolegyně musí být po online obnovení odmítnuto a v Evidenci přístupů označeno jako centrálně zneplatněné.
 - Nové oprávnění správce zástupce musí zůstat funkční; má jiné JTI a podpisový klíč oprávnění se v tomto vydání nemění.

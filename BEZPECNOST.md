@@ -1,8 +1,8 @@
-# Bezpečnostní hranice AI Studio GHRAB 0.21.77
+# Bezpečnostní hranice AI Studio GHRAB 0.21.78
 
-> Aktuální verze: **0.21.77** · etapa P5
+> Aktuální verze: **0.21.78** · etapa P5
 
-> 0.21.77 zachovává fail-closed release-wave: repository-only kandidát se nesmí stát runtime verzí bez deployment evidence nebo explicitního ručního přijetí; skutečně nasazený drift zůstává blockerem.
+> 0.21.78 zachovává fail-closed release-wave: repository-only kandidát se nesmí stát runtime verzí bez deployment evidence nebo explicitního ručního přijetí; skutečně nasazený drift zůstává blockerem.
 
 ## Rychlá kontrola dat v portálu
 
