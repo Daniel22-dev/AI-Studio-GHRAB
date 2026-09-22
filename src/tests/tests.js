@@ -1,4 +1,5 @@
 import { safeExportSelfTest } from "../shared/safe-export.js";
+import { createTaskProgress } from "../modules/task-progress.js";
 const T = window.GHRAB;
 await T.accessReady;
 if (T.canAccessAdminPage?.("tests")) {
@@ -90,6 +91,15 @@ if (T.canAccessAdminPage?.("tests")) {
   async function runChecks() {
     run.disabled = true;
     run.textContent = T.t("Kontroluji…", "Checking…");
+    const totalChecks = 12;
+    const progress = createTaskProgress({
+      title: T.t("Interní diagnostika AI Studia", "AI Studio internal diagnostics"),
+      description: T.t(
+        "Procenta odpovídají skutečně dokončeným kontrolám, nikoli odhadu času.",
+        "The percentage reflects actually completed checks, not an estimated duration.",
+      ),
+      total: totalChecks,
+    });
     box.replaceChildren(
       card(
         T.t("Probíhá kontrola", "Check in progress"),
@@ -101,9 +111,16 @@ if (T.canAccessAdminPage?.("tests")) {
       ),
     );
     const results = [];
+    const progressStep = (label, detail = "") =>
+      progress.update(results.length, label, detail);
+    const addResult = (result) => {
+      results.push(result);
+      progress.update(results.length, result.label, result.detail);
+    };
+    progressStep(T.t("Registr aplikací", "Application registry"));
     try {
       const apps = await T.loadApps();
-      results.push({
+      addResult({
         label: T.t("Registr aplikací", "Application registry"),
         status: Array.isArray(apps) && apps.length >= 5 ? "ok" : "fail",
         detail: T.t(
@@ -114,7 +131,7 @@ if (T.canAccessAdminPage?.("tests")) {
       const icons = await Promise.all(
         apps.map((app) => imageOk(`../${app.icon}`)),
       );
-      results.push({
+      addResult({
         label: T.t("Ikony aplikací", "Application icons"),
         status: icons.every(Boolean) ? "ok" : "fail",
         detail: T.t(
@@ -123,14 +140,22 @@ if (T.canAccessAdminPage?.("tests")) {
         ),
       });
     } catch (error) {
-      results.push({
+      addResult({
         label: T.t("Registr aplikací", "Application registry"),
         status: "fail",
         detail: error.message,
       });
+      addResult({
+        label: T.t("Ikony aplikací", "Application icons"),
+        status: "fail",
+        detail: T.t(
+          "Ikony nelze ověřit bez načteného registru aplikací.",
+          "Icons cannot be verified without a loaded application registry.",
+        ),
+      });
     }
     const access = T.getAccessSnapshot();
-    results.push({
+    addResult({
       label: T.t(
         "Podepsaný správcovský přístup",
         "Signed administrator access",
@@ -160,7 +185,7 @@ if (T.canAccessAdminPage?.("tests")) {
         policy.schema === "ghrab-access-policy-v1" &&
         key.schema === "ghrab-access-public-key-v1" &&
         revocations.schema === "ghrab-access-revocation-list-v1";
-      results.push({
+      addResult({
         label: T.t("Konfigurace oprávnění", "Access configuration"),
         status: ok ? "ok" : "fail",
         detail: T.t(
@@ -169,14 +194,14 @@ if (T.canAccessAdminPage?.("tests")) {
         ),
       });
     } catch (error) {
-      results.push({
+      addResult({
         label: T.t("Konfigurace oprávnění", "Access configuration"),
         status: "fail",
         detail: error.message,
       });
     }
     const storage = storageCheck();
-    results.push({
+    addResult({
       label: T.t("Místní úložiště", "Local storage"),
       status: storage ? "ok" : "fail",
       detail: storage
@@ -190,7 +215,7 @@ if (T.canAccessAdminPage?.("tests")) {
           ),
     });
     try {
-      results.push({
+      addResult({
         label: T.t("Předání materiálu", "Material handoff"),
         status: validHandoff() ? "ok" : "fail",
         detail: T.t(
@@ -199,14 +224,14 @@ if (T.canAccessAdminPage?.("tests")) {
         ),
       });
     } catch (error) {
-      results.push({
+      addResult({
         label: T.t("Předání materiálu", "Material handoff"),
         status: "fail",
         detail: error.message,
       });
     }
     const invalid = T.validateMaterialPackage({ schema: "ghrab-material-v1" });
-    results.push({
+    addResult({
       label: T.t("Hloubková validace importu", "Deep import validation"),
       status:
         invalid.valid === false && invalid.errors.length >= 3 ? "ok" : "fail",
@@ -215,7 +240,7 @@ if (T.canAccessAdminPage?.("tests")) {
         `The invalid test file produced ${invalid.errors.length} validation issues.`,
       ),
     });
-    results.push({
+    addResult({
       label: T.t("Bezpečný anonymní export", "Safe anonymous export"),
       status: safeExportSelfTest() ? "ok" : "fail",
       detail: T.t(
@@ -231,7 +256,7 @@ if (T.canAccessAdminPage?.("tests")) {
       "../safety/",
     ];
     const pageChecks = await Promise.all(pages.map(fetchOk));
-    results.push({
+    addResult({
       label: T.t("Klíčové stránky portálu", "Core portal pages"),
       status: pageChecks.every(Boolean) ? "ok" : "fail",
       detail: T.t(
@@ -248,7 +273,7 @@ if (T.canAccessAdminPage?.("tests")) {
         "../assets/apps/essay-evaluator-v2.webp",
       ].map(fetchOk),
     );
-    results.push({
+    addResult({
       label: T.t("Ochrana dílčích aplikací", "Individual app protection"),
       status: guardChecks.every(Boolean) ? "ok" : "fail",
       detail: T.t(
@@ -257,7 +282,7 @@ if (T.canAccessAdminPage?.("tests")) {
       ),
     });
     const worker = "serviceWorker" in navigator;
-    results.push({
+    addResult({
       label: T.t("PWA prostředí", "PWA environment"),
       status: worker ? "ok" : "fail",
       detail: worker
@@ -271,7 +296,7 @@ if (T.canAccessAdminPage?.("tests")) {
           ),
     });
     const usage = T.storageUsage();
-    results.push({
+    addResult({
       label: T.t("Velikost místních dat", "Local data size"),
       status: Number.isFinite(usage.bytes) ? "ok" : "fail",
       detail: T.t(
@@ -283,10 +308,20 @@ if (T.canAccessAdminPage?.("tests")) {
       ...results.map((item) => card(item.label, item.status, item.detail)),
     );
     renderSummary(results);
+    const failed = results.filter((item) => item.status === "fail").length;
+    progress.finish({
+      failed,
+      message: T.t(
+        `${results.length - failed}/${results.length} kontrol dokončeno v pořádku.`,
+        `${results.length - failed}/${results.length} checks completed successfully.`,
+      ),
+    });
     run.disabled = false;
     run.textContent = T.t("Spustit úplnou kontrolu", "Run full check");
   }
   run.addEventListener("click", runChecks);
-  document.addEventListener("ghrab:language", runChecks);
+  document.addEventListener("ghrab:language", () => {
+    if (!run.disabled) run.textContent = T.t("Spustit úplnou kontrolu", "Run full check");
+  });
   runChecks();
 }

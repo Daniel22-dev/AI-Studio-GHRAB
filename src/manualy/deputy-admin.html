@@ -40,6 +40,7 @@
   <section class="section shell manual-article">
    <article class="panel"><p class="eyebrow">ROLE</p>
    <h2>Co může zástupce správce</h2>
+    <p><strong>Role zástupce je provozní, nikoli vývojářská.</strong> Odemkne správcovské přehledy uvedené níže, ale sama automaticky neodemkne aplikace, ke kterým uživatel nemá platné školení a oprávnění.</p>
     <ul><li>otevřít Správu, diagnostiku a stav všech devíti aplikací,</li>
      <li>kontrolovat registr, nasazené manifesty, ověření veřejných zdrojů a stav záložního snapshotu,</li>
      <li>pracovat se Statistikami používání a souhrnnými anonymními reporty,</li>
@@ -69,7 +70,7 @@
    <h2>Když kolega hlásí, že něco nefunguje</h2>
     <ol><li>Otevřete <strong>Pohled kolegy</strong>, vyberte konkrétního kolegu z místní evidence (nebo modelový učitelský pohled) a ověřte problém ve stejném typu rozhraní. Náhled aplikace nespouští a nemění vaše skutečné oprávnění.</li>
      <li>Ve <strong>Správě</strong> zkontrolujte stav registru, živých manifestů a konkrétní aplikace.</li>
-     <li>Spusťte <strong>Diagnostiku</strong>. Pokud test ukáže konkrétní chybu, zaznamenejte její text a čas.</li>
+     <li>Spusťte <strong>Diagnostiku</strong>. Po spuštění se zobrazí stavové okno s reálným procentem dokončených kontrol; pokud test ukáže konkrétní chybu, zaznamenejte její text a čas.</li>
      <li>Pokud je chyba v deployi, otevřete GitHub Actions příslušného repozitáře. Opakujte pouze známý bezpečný workflow; při nové chybě nejprve zachovejte log.</li>
      <li>Pokud je problém jen v oprávnění uživatele, otevřete Evidenci přístupů a ověřte platnost, JTI, roli a odemčené aplikace.</li></ol>
    </article>
@@ -95,7 +96,7 @@
      <li>Log a SHA commitu uchovejte pro hlavního správce.</li></ol>
    </article>
    <article class="panel"><p class="eyebrow">DOČASNÝ PLNÝ SPRÁVCE</p>
-   <h2>Když omezená role nestačí</h2><p>Hlavní správce může vystavit samostatné plné oprávnění s krátkou expirací, typicky 7, 14 nebo 30 dní. Jde o mimořádný režim. Po expiraci se práva automaticky ztratí a běžné oprávnění zástupce zůstává oddělené.</p><p><strong>Plné povýšení použijte jen tehdy, když je nezbytný zásah, který role Zástupce správce záměrně blokuje.</strong></p>
+   <h2>Když omezená role nestačí</h2><p>Hlavní správce může vystavit samostatné plné oprávnění s krátkou expirací, typicky 7, 14 nebo 30 dní. Ve Správě má plný administrátor viditelné tlačítko <strong>Dočasně povýšit Adélu</strong>; otevře Vydavatele předvyplněného pro Adélu Stillerovou a roli Správce. Před podpisem je vždy nutné zkontrolovat přesné datum konce platnosti. Jde o mimořádný režim. Po expiraci se práva automaticky ztratí a běžné oprávnění zástupce zůstává oddělené.</p><p><strong>Plné povýšení použijte jen tehdy, když je nezbytný zásah, který role Zástupce správce záměrně blokuje.</strong></p>
    </article>
    <article class="panel"><p class="eyebrow">GITHUB</p>
    <h2>Doporučený externí přístup</h2><p><strong>Běžná role Zástupce správce GitHub vůbec nepotřebuje.</strong> GitHub přístup přidělte jen tehdy, pokud má kolega současně technicky zastupovat vývoj nebo deploy. V takovém případě používá vlastní GitHub účet a pouze nejnižší potřebná práva k vybraným repozitářům. Nikdy nesdílí účet, heslo, token, SSH klíč ani 2FA hlavního správce a jen kvůli provozní roli ve Studiu nedostává vlastnictví organizace.</p>

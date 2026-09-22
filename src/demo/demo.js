@@ -64,11 +64,14 @@ function sceneList() {
 }
 
 function renderOrbit() {
+  const orbitCount = Math.max(1, apps.length);
   appsHost.replaceChildren(...apps.map((app, index) => {
     const item = document.createElement("article");
     item.className = "presentation-orbit-app";
     item.dataset.appId = app.id;
     item.style.setProperty("--orbit-index", String(index));
+    item.style.setProperty("--orbit-count", String(orbitCount));
+    item.style.setProperty("--angle", `${index * (360 / orbitCount) - 90}deg`);
     item.style.setProperty("--app-accent", app.accent || "#50e8ff");
     const icon = document.createElement("img");
     icon.src = app.icon?.startsWith("http") ? app.icon : `../${app.icon}`;

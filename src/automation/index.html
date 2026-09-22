@@ -121,6 +121,16 @@
               >
             </div></a
           >
+          <a class="admin-command-card temporary-admin-card" href="../tools/access-issuer/?name=Ad%C3%A9la%20Stillerov%C3%A1&role=admin" data-full-admin-only hidden
+            ><span>◷</span>
+            <div>
+              <strong data-cs="Dočasně povýšit Adélu" data-en="Temporarily promote Adéla">Dočasně povýšit Adélu</strong>
+              <small
+                data-cs="Adéla Stillerová · plný správce jen do zvoleného data; přesné datum nebo 7 / 14 / 30 dní"
+                data-en="Adéla Stillerová · full administrator only until the selected date; exact date or 7 / 14 / 30 days"
+                >Adéla Stillerová · plný správce jen do zvoleného data; přesné datum nebo 7 / 14 / 30 dní</small>
+            </div></a
+          >
           <a class="admin-command-card" href="../tools/security-center/" data-full-admin-only hidden
             ><span>⛨</span>
             <div>
@@ -450,6 +460,33 @@
             jako auditní důkaz a není natvrdo svázána s jednou živou patch verzí.
           </p>
         </section>
+
+        <section class="panel automation-report developer-readiness-section" id="developer-readiness-section" data-full-admin-only hidden>
+          <div class="section-heading split-heading">
+            <div>
+              <p class="eyebrow" data-cs="VÝVOJÁŘSKÁ KONTROLA" data-en="DEVELOPER CONTROL">VÝVOJÁŘSKÁ KONTROLA</p>
+              <h2 data-cs="Standardy a ochranné vrstvy po aplikacích" data-en="Standards and protection layers by application">Standardy a ochranné vrstvy po aplikacích</h2>
+              <p data-cs="Přehled GARP baseline, Safe Promotion / Auto Patch, GHRAB Platform, AI Core, zdroje a manuálu. Ruční test ověřuje integrační kontrakty Studia; nenahrazuje repozitářové P5/GARP testy." data-en="Overview of the GARP baseline, Safe Promotion / Auto Patch, GHRAB Platform, AI Core, source and manual. The manual check validates Studio integration contracts; it does not replace repository P5/GARP suites.">Přehled GARP baseline, Safe Promotion / Auto Patch, GHRAB Platform, AI Core, zdroje a manuálu. Ruční test ověřuje integrační kontrakty Studia; nenahrazuje repozitářové P5/GARP testy.</p>
+            </div>
+            <button id="developer-verify-all" class="button secondary" type="button" data-cs="Otestovat vše" data-en="Test all">Otestovat vše</button>
+          </div>
+          <div id="developer-readiness-summary" class="automation-summary"></div>
+          <div class="table-scroll">
+            <table class="sync-table developer-readiness-table">
+              <thead><tr>
+                <th data-cs="Aplikace" data-en="Application">Aplikace</th>
+                <th>GARP</th>
+                <th>Safe Promotion</th>
+                <th>Platform</th>
+                <th>AI Core</th>
+                <th data-cs="Zdroj + manuál" data-en="Source + manual">Zdroj + manuál</th>
+                <th data-cs="Ruční kontrola" data-en="Manual check">Ruční kontrola</th>
+              </tr></thead>
+              <tbody id="developer-readiness-table-body"></tbody>
+            </table>
+          </div>
+          <p id="developer-readiness-note" class="notice sync-neutral" role="status"></p>
+        </section>
       </section>
     </main>
     <footer class="site-footer">
@@ -468,5 +505,6 @@
     </footer>
     <script src="../app.js" type="module"></script>
     <script src="./automation.js" type="module"></script>
+    <script src="./developer-readiness.js" type="module"></script>
   </body>
 </html>

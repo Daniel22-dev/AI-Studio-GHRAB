@@ -3176,7 +3176,7 @@ body {
   z-index: 2;
 }
 .presentation-orbit-app {
-  --angle: calc(var(--orbit-index) * 45deg - 90deg);
+  --angle: calc(var(--orbit-index) * 40deg - 90deg);
   position: absolute;
   left: 50%;
   top: 50%;

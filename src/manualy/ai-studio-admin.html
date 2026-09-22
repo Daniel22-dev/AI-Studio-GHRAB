@@ -90,7 +90,7 @@
    <section class="section admin-extra" id="administration">
     <span class="role-badge admin">Navíc pro administrátora</span>
     <h2>Co vidím navíc oproti učiteli</h2>
-    <p>Administrátor má běžné funkce Studia a navíc horní záložky <strong>Pohled kolegy</strong>, <strong>Report</strong>, <strong>Správa</strong>, <strong>Prezentace</strong> a <strong>AI Akademie</strong>. AI Akademie je správcovské školicí centrum a vrací se do Studia samostatným tlačítkem vlevo nahoře. Ze Správy se správce dostává k vydávání a evidenci přístupů, statistikám používání a interním kontrolním nástrojům. Běžný učitel tyto části v navigaci nemá.</p>
+    <p>Administrátor má běžné funkce Studia a navíc horní záložky <strong>Pohled kolegy</strong>, <strong>Report</strong>, <strong>Správa</strong>, <strong>Prezentace</strong> a <strong>AI Akademie</strong>. AI Akademie je správcovské školicí centrum a vrací se do Studia samostatným tlačítkem vlevo nahoře. Ze Správy se správce dostává k vydávání a evidenci přístupů, statistikám používání, interním kontrolním nástrojům a novému <strong>Vývojářskému přehledu standardů</strong>, který po aplikacích ukazuje GARP baseline, Safe Promotion / Auto Patch, Platform, AI Core, stav zdroje a manuálu. Běžný učitel tyto části v navigaci nemá.</p>
     <h3>Přístupy po školení</h3>
     <ol class="steps">
      <li>Po absolvování školení vydat nebo aktualizovat kolegovi podepsané oprávnění pouze pro příslušné aplikace.</li>
@@ -100,7 +100,7 @@
     <h3>Zástupce správce a dočasné plné zastoupení</h3>
     <p>Role <strong>Zástupce správce</strong> slouží pro provozní zastupitelnost. Vidí Správu, diagnostiku, stav zdrojů, Statistiky používání, měsíční report, Evidenci přístupů a Pohled kolegy, ale nemá Vydavatele oprávnění, Prezentaci ani citlivé zásahy do podpisových klíčů a bezpečnostní politiky.</p>
     <p><strong>Hlavní správce nepřichází uplynutím data o vlastnictví ani správu Studia.</strong> Končí pouze platnost konkrétního podepsaného souboru, aby případná zkopírovaná správcovská licence nezůstala použitelná navždy. Ve Vydavateli proto použijte volbu <strong>Hlavní správce · maximum</strong>, která nastaví aktuální bezpečnostní limit 90 dní; před koncem si vydáte nový soubor.</p>
-    <p>Pokud je při delší nepřítomnosti nutný zásah vyžadující plná práva, administrátor může vystavit samostatné <strong>časově omezené správcovské oprávnění</strong>. Vydavatel nabízí rychlé nastavení 7, 14 nebo 30 dní; po expiraci se oprávnění automaticky stane neplatným.</p>
+    <p>Pokud je při delší nepřítomnosti nutný zásah vyžadující plná práva, administrátor může vystavit samostatné <strong>časově omezené správcovské oprávnění</strong>. Ve <strong>Správě</strong> je viditelné tlačítko <strong>Dočasně povýšit Adélu</strong>, které otevře Vydavatele předvyplněného pro Adélu Stillerovou a roli Správce. Potom nastavte přesný konec platnosti nebo použijte 7, 14 či 30 dní, načtěte soukromý podpisový klíč a oprávnění vydejte. Po expiraci se tento konkrétní plný přístup automaticky stane neplatným.</p>
     <p>Pro zástupce je v centru Manuálů připraven samostatný krizový návod s triáží incidentů a hranicemi pravomocí.</p>
     <h3>Pohled kolegy</h3>
     <p><strong>Pohled kolegy</strong> nejprve otevře volbu role. Jedním kliknutím lze zobrazit pohled zástupce
@@ -126,6 +126,7 @@
    <h2>Stav testování aplikací</h2>
    <p>V záhlaví každé karty aplikace má plný správce vlastní tříúrovňové označení: <strong>○ netestováno</strong>, <strong>◐ lehce otestováno</strong> a <strong>✓ otestováno</strong>. Kliknutím na symbol se stav posune na další úroveň.</p>
    <p>Stav se ukládá podle stabilního ID aplikace v aktuálním prohlížeči a profilu. Nově přidaná aplikace se proto automaticky zobrazí jako netestovaná. Označení se nezobrazuje učitelům ani v Pohledu kolegy a bez školního serveru se nepřenáší mezi zařízeními.</p>
+     <p>Při spuštění <strong>Interní diagnostiky</strong> nebo hromadné vývojářské kontroly se otevře stavové okno s reálným procentem dokončených kroků, počtem hotových kontrol a názvem právě prováděného kroku. Procento se neposouvá podle času, ale pouze po skutečně dokončené kontrole.</p>
   </section>
    <section class="section admin-extra" id="release">
     <span class="role-badge admin">Provoz a release</span>
