@@ -1,8 +1,8 @@
 # AI Studio GHRAB
 
-**Aktuální verze:** 0.21.85
+**Aktuální verze:** 0.21.86
 
-0.21.84 dokončuje úpravy Správy, sjednocuje release identitu a PWA cache napříč všemi verzovanými povrchy a zpřesňuje fail-closed release proces.
+0.21.86 zavádí vlastní GARP 2.5.1/N5 release assurance Studia, povinně napojenou do P5 a produkčního release řetězce; funkční logika a UI zůstávají beze změny.
 
 **Performance budget:** precache 1 250 000 B; critical entry 420 000 B; runtime limity jsou povinně měřené v P5 release gate.
 **Platforma:** GHRAB Platform 1.1.2 · etapa P5
