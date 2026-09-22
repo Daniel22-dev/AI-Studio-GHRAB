@@ -40,6 +40,8 @@ jobs:
         run: |
           node -e "const p=require('./node_modules/axe-core/package.json'); if(p.version!=='4.12.1') process.exit(1)"
           node -e "const p=require('./node_modules/playwright/package.json'); if(p.version!=='1.61.1') process.exit(1)"
+      - name: Enforce release version freshness
+        run: npm run verify:release-version
       - name: Synchronise application manifests
         run: npm run sync
       - name: Format generated registry files
