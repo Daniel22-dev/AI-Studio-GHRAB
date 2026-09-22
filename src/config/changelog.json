@@ -1,7 +1,25 @@
 {
   "schema": "ai-studio-changelog-v1",
-  "current": "0.21.84",
+  "current": "0.21.85",
   "items": [
+    {
+      "version": "0.21.85",
+      "date": "2026-09-22",
+      "title": {
+        "cs": "Release-integrity hotfix pro nasazení 0.21.84",
+        "en": "Release-integrity hotfix for the 0.21.84 deployment"
+      },
+      "changes": [
+        {
+          "cs": "README a changelog jsou sjednoceny s aktuální release identitou, aby produkční GHRAB QA neblokovala nasazení kvůli nesouladu verzí.",
+          "en": "README and changelog are aligned with the current release identity so production GHRAB QA no longer blocks deployment on version drift."
+        },
+        {
+          "cs": "Funkční změny Správy z 0.21.84 zůstávají beze změny: karta Dočasně povýšit Adélu je ve Správě, otevírá předvyplněný Vydavatel a uvnitř je dostupný interaktivní manuál.",
+          "en": "The 0.21.84 Administration changes remain unchanged: the Temporarily promote Adéla card stays in Administration, opens the prefilled issuer, and exposes the interactive guide inside."
+        }
+      ]
+    },
     {
       "version": "0.21.84",
       "date": "2026-09-22",
