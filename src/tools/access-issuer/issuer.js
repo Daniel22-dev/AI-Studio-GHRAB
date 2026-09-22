@@ -123,24 +123,47 @@ if (window.GHRAB.isAdmin() && !window.GHRAB.isColleaguePreview?.()) {
   function applyPrefill() {
     const params = new URLSearchParams(location.search);
     const subject = params.get("subject");
-    if (!subject) return;
-    const record = G.getIssuedAccessRecords().find(
-      (item) => item.subject === subject || item.jti === subject,
-    );
-    if (!record) return;
-    replacementRecord = record;
-    $("#permit-name").value = record.displayName || "";
-    $("#permit-subject").value = record.subject || "";
-    $("#permit-role").value = ["admin", "operator"].includes(record.role) ? record.role : "teacher";
-    const grantsAllApps = record.apps.includes("*");
-    $("#permit-all").checked = grantsAllApps;
-    document.querySelectorAll("[data-app]").forEach((input) => {
-      input.checked = grantsAllApps || record.apps.includes(input.value);
-    });
-    feedback(
-      `Načteny údaje uživatele ${record.displayName}. Po vydání se nový přístup automaticky zapíše do evidence.`,
-      true,
-    );
+    const name = (params.get("name") || "").trim();
+    const requestedRole = params.get("role");
+    const requestedDays = Number(params.get("days") || 0);
+    const allowedRole = ["teacher", "operator", "admin"].includes(requestedRole)
+      ? requestedRole
+      : null;
+
+    if (subject) {
+      const record = G.getIssuedAccessRecords().find(
+        (item) => item.subject === subject || item.jti === subject,
+      );
+      if (record) {
+        replacementRecord = record;
+        $("#permit-name").value = record.displayName || "";
+        $("#permit-subject").value = record.subject || "";
+        $("#permit-role").value = allowedRole || (["admin", "operator"].includes(record.role) ? record.role : "teacher");
+        const grantsAllApps = record.apps.includes("*");
+        $("#permit-all").checked = grantsAllApps;
+        document.querySelectorAll("[data-app]").forEach((input) => {
+          input.checked = grantsAllApps || record.apps.includes(input.value);
+        });
+        feedback(
+          `Načteny údaje uživatele ${record.displayName}. Po vydání se nový přístup automaticky zapíše do evidence.`,
+          true,
+        );
+      }
+    } else if (name) {
+      $("#permit-name").value = name;
+      $("#permit-subject").value = slug(name);
+      if (allowedRole) $("#permit-role").value = allowedRole;
+      feedback(
+        `Předvyplněno pro ${name}. Zkontrolujte roli a hlavně datum konce platnosti před podepsáním.`,
+        true,
+      );
+    } else if (allowedRole) {
+      $("#permit-role").value = allowedRole;
+    }
+
+    if (Number.isFinite(requestedDays) && requestedDays > 0) {
+      setExpiryDays(Math.min(requestedDays, MAX_NEW_PERMIT_DAYS));
+    }
   }
 
   async function issue() {
