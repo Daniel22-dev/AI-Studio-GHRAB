@@ -31,8 +31,8 @@ await writeFile(lockPath, `${JSON.stringify(lock, null, 2)}\n`, "utf8");
 
 const consumer = JSON.parse(await readFile(consumerPath, "utf8"));
 consumer.appVersion = newVersion;
-if (consumer.serviceWorker?.cache?.name) {
-  consumer.serviceWorker.cache.name = consumer.serviceWorker.cache.name.replace(oldVersion, newVersion);
+if (consumer.cache?.name) {
+  consumer.cache.name = consumer.cache.name.replace(oldVersion, newVersion);
 }
 await writeFile(consumerPath, `${JSON.stringify(consumer, null, 2)}\n`, "utf8");
 

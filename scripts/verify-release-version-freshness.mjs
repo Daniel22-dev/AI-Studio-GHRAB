@@ -30,6 +30,7 @@ const versionRefs = [
   ["package-lock.version", lock.version],
   ["package-lock.packages[\"\"].version", lock.packages?.[""]?.version],
   ["consumer.appVersion", consumer.appVersion],
+  ["consumer.cache.name", String(consumer.cache?.name || "").includes(currentVersion) ? currentVersion : null],
   ["src/index.html", htmlVersion],
   ["release-acceptance.appVersion", acceptance.appVersion],
   ["reporter-test.config.version", reporterConfig.version],
