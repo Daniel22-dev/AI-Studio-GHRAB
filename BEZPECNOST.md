@@ -4,6 +4,12 @@
 
 > 0.21.82 zachovává fail-closed release-wave: repository-only kandidát se nesmí stát runtime verzí bez deployment evidence nebo explicitního ručního přijetí; skutečně nasazený drift zůstává blockerem.
 
+## Release assurance Studia
+
+AI Studio má vlastní GARP 2.5.1/N5 release tooling a povinné source i deployment kontroly. N5 negative controls explicitně ověřují detekci private JWK materiálu s parametrem `d`, šifrovaného private PEM, private PGP i zakódovaných/binárních/komprimovaných variant. Release chain váže `appId`, verzi a source commit na přesný artefakt a současně kontroluje manifest, CycloneDX SBOM, build provenance a security evidence manifest.
+
+Aktuální režim release assurance je **TRANSITIONAL**, nikoli plně kryptograficky uzavřený. Studio nemá produkční release signing key a release evidence proto nesmí tvrdit podpis, který neexistuje. U dílčích aplikací používá osm enrollmentů `ghrab-release-integrity-v2`; LUDUS má zatím schválený přechodový `ghrab-patch-assurance-v1`. Auto-patch přesto vyžaduje živý deployment a strojově ověřitelnou evidence vazbu podle kontraktu konkrétní aplikace.
+
 ## Rychlá kontrola dat v portálu
 
 Záložka **Bezpečnost** obsahuje jednoduchý semafor a volitelnou pomůcku **Nejsem si jistý → rychle posoudit**. Uživatel do ní nevkládá dokument ani text; pouze označí typy údajů. Kontrola běží lokálně, nic neposílá a nepoužívá AI. Není povinná před každým použitím aplikace. Od 0.21.34 obsahuje deset praktických kategorií pro běžnou školní rutinu (identifikátory, práce žáka, známky/docházka, komunikace, obraz/hlas/rukopis, nepřímá identifikace, citlivé údaje, přístupové údaje a důvěrné interní dokumenty). Při více označených položkách vždy rozhoduje nejvyšší riziko: červená > oranžová > zelená; bezpečná anonymní volba se s rizikovými volbami nekombinuje.

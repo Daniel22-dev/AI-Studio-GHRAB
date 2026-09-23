@@ -7,6 +7,14 @@
 **Performance budget:** precache 1 250 000 B; critical entry 420 000 B; runtime limity jsou povinně měřené v P5 release gate.
 **Platforma:** GHRAB Platform 1.1.2 · etapa P5
 
+### Aktuální release assurance 0.21.89
+
+- AI Studio má vlastní povinný GARP 2.5.1/N5 release gate; nejde pouze o orchestrátor GARP aplikací.
+- Safe Promotion vede výhradně přes `candidate → P5 → PR → chráněný main → deploy`; auto-patch nepíše přímo do `main`.
+- Všech devět dílčích aplikací je aktuálně explicitně enrolled do auto-patch politiky. Osm používá `ghrab-release-integrity-v2`; LUDUS používá schválený přechodový `ghrab-patch-assurance-v1`.
+- Release assurance Studia je záměrně označen `TRANSITIONAL`: commit, artefakt, manifest, SBOM, provenance a evidence jsou strojově svázány, ale produkční release signing key zatím není zaveden. Dokumentace proto netvrdí plné kryptografické uzavření.
+
+
 ## Nově v 0.21.84
 
 - **Správa**: stavové karty mají výraznější názvy, rozšířené technické detaily a přímý PDF export.
