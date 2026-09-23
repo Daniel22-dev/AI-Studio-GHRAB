@@ -80,6 +80,20 @@ const verifiedV2IdentityFixture = (appId, version) => ({
   evidenceManifestSha256: "f".repeat(64),
 });
 
+const verifiedPatchAssuranceFixture = (appId, version) => ({
+  status: "VERIFIED",
+  contract: "ghrab-patch-assurance-v1",
+  appId,
+  version,
+  assuranceMode: "FOUNDATION",
+  sourceCommit: "1".repeat(40),
+  patchAssuranceSha256: "2".repeat(64),
+  securityEvidenceManifestSha256: "3".repeat(64),
+  sourceSbomSha256: "4".repeat(64),
+  deploymentSbomSha256: "5".repeat(64),
+  aiAssuranceFingerprintSha256: "6".repeat(64),
+});
+
 assert.equal(classifyVersionChange("5.10.25", "5.10.25"), "same");
 assert.equal(classifyVersionChange("5.10.25", "5.10.26"), "patch");
 assert.equal(classifyVersionChange("5.10.25", "5.11.0"), "minor");
@@ -155,7 +169,9 @@ assert.ok(
 assert.equal(actualEntries.get("correspondence")?.expectedStudioBridge, "v2");
 assert.equal(actualEntries.get("essay-evaluator")?.minimumVersion, "1.5.25");
 assert.equal(actualEntries.get("essay-evaluator")?.expectedStudioBridge, "not-applicable");
-assert.equal(actualEntries.get("ludus")?.minimumVersion, "1.16.23");
+assert.equal(actualEntries.get("ludus")?.minimumVersion, "1.16.27");
+assert.equal(actualEntries.get("ludus")?.assuranceBaseline, "GARP-2.7");
+assert.equal(actualEntries.get("ludus")?.requiredEvidenceContract, "ghrab-patch-assurance-v1");
 assert.equal(actualEntries.get("ludus")?.expectedStudioBridge, "v2");
 assert.equal(actualEntries.get("activity-builder")?.minimumVersion, "0.5.27");
 assert.equal(actualEntries.get("activity-builder")?.expectedStudioBridge, "v2");
@@ -215,7 +231,9 @@ for (const entry of actualPolicy.applications) {
     operationsWarning: null,
     ...(entry.requiredEvidenceContract === "ghrab-release-integrity-v2"
       ? { releaseIdentity: verifiedV2IdentityFixture(entry.id, nextVersion) }
-      : {}),
+      : entry.requiredEvidenceContract === "ghrab-patch-assurance-v1"
+        ? { releaseIdentity: verifiedPatchAssuranceFixture(entry.id, nextVersion) }
+        : {}),
   };
   const decision = evaluateAutoPromotion({
     app: candidate,
@@ -332,5 +350,72 @@ assert.equal(decide({ app: { ...baseApp, platform: { ...baseApp.platform, studio
 assert.equal(decide({ app: { ...baseApp, compatibility: { ...baseApp.compatibility, studioBridge: "not-applicable" } } }).reasonCode, "COMPATIBILITY_STUDIO_BRIDGE");
 assert.equal(decide({ sourceReport: { ...baseReport, operationsWarning: "operations mismatch" } }).reasonCode, "AI_OPERATIONS_UNVERIFIED");
 assert.equal(decide({ waveApp: { id: "correspondence", version: "5.10.24" } }).reasonCode, "PRE_GARP_BASELINE");
+
+const ludusPolicy = actualEntries.get("ludus");
+const ludusRegistry = actualApps.find((app) => app.id === "ludus");
+const ludusSource = actualSources.find((item) => item.id === "ludus");
+assert.ok(ludusPolicy && ludusRegistry && ludusSource, "ludus: GARP 2.7 policy/source/registry fixture missing");
+{
+  const app = structuredClone(ludusRegistry);
+  app.version = "1.16.28";
+  app.platform = { ...app.platform, cacheName: "ghrab-ludus-v1.16.28" };
+  const report = {
+    id: "ludus",
+    ok: true,
+    verification: "deployment",
+    repository: ludusSource.repository,
+    version: "1.16.28",
+    sourceVersion: "1.16.28",
+    operationsWarning: null,
+    releaseIdentity: verifiedPatchAssuranceFixture("ludus", "1.16.28"),
+  };
+  const decision = evaluateAutoPromotion({
+    app,
+    waveApp: { id: "ludus", version: "1.16.27" },
+    source: ludusSource,
+    sourceReport: report,
+    policyEntry: ludusPolicy,
+    wave,
+    enabled: true,
+  });
+  assert.equal(decision.status, "ELIGIBLE", "ludus: verified GARP 2.7 patch assurance must allow next patch");
+  assert.equal(
+    evaluateAutoPromotion({
+      app,
+      waveApp: { id: "ludus", version: "1.16.27" },
+      source: ludusSource,
+      sourceReport: { ...report, releaseIdentity: undefined },
+      policyEntry: ludusPolicy,
+      wave,
+      enabled: true,
+    }).reasonCode,
+    "RELEASE_IDENTITY_UNVERIFIED",
+    "ludus: missing patch assurance must fail closed",
+  );
+  assert.equal(
+    evaluateAutoPromotion({
+      app,
+      waveApp: { id: "ludus", version: "1.16.27" },
+      source: ludusSource,
+      sourceReport: { ...report, releaseIdentity: { ...report.releaseIdentity, patchAssuranceSha256: "x" } },
+      policyEntry: ludusPolicy,
+      wave,
+      enabled: true,
+    }).reasonCode,
+    "RELEASE_IDENTITY_UNVERIFIED",
+    "ludus: malformed patch assurance digest must fail closed",
+  );
+}
+
+assert.ok(
+  validatePromotionPolicy({
+    schema: "ghrab-release-promotion-policy-v1",
+    mode: "transitional",
+    atomic: true,
+    defaultMode: "manual",
+    applications: [{ ...policyEntry, id: "correspondence", assuranceBaseline: "GARP-9.9" }],
+  }, ["correspondence"]).some((error) => error.includes("neschvaleny GARP baseline")),
+  "unknown GARP baseline must be rejected",
+);
 
 console.log("Release promotion policy tests: PASS (reviewed auto-patch baselines including Lesson Hub and Maturita Desk enrolled; stable patch only, live deployment only, fail-closed). ");
