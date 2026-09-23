@@ -153,7 +153,11 @@ assert.ok(
   ["same", "patch"].includes(classifyVersionChange(generatorMinimumVersion, generatorWaveVersion)),
   `generator: release-wave ${generatorWaveVersion} must stay on the reviewed 7.1.x patch line`,
 );
-assert.equal(actualEntries.get("correspondence")?.minimumVersion, "5.10.25");
+assert.equal(actualEntries.get("correspondence")?.minimumVersion, "5.10.28");
+assert.equal(actualEntries.get("correspondence")?.assuranceBaseline, "GARP-2.7");
+assert.equal(actualEntries.get("correspondence")?.requiredEvidenceContract, "ghrab-release-integrity-v2");
+assert.equal(actualWaveEntries.get("correspondence")?.version, "5.10.28");
+assert.equal(actualApps.find((app) => app.id === "correspondence")?.version, "5.10.28");
 const differentiatorMinimumVersion = actualEntries.get("differentiator")?.minimumVersion;
 const differentiatorWaveVersion = actualWaveEntries.get("differentiator")?.version;
 assert.equal(differentiatorMinimumVersion, "1.3.47");

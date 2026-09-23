@@ -1,7 +1,29 @@
 {
   "schema": "ai-studio-changelog-v1",
-  "current": "0.21.92",
+  "current": "0.21.93",
   "items": [
+    {
+      "version": "0.21.93",
+      "date": "2026-09-23",
+      "title": {
+        "cs": "Korespondenční asistent · GARP 2.7 ve Správě",
+        "en": "Correspondence Assistant · GARP 2.7 in Administration"
+      },
+      "changes": [
+        {
+          "cs": "Správa AI Studia nyní vede Korespondenčního asistenta 5.10.28 pod aktivní baseline GARP 2.7.",
+          "en": "AI Studio Administration now records Correspondence Assistant 5.10.28 under the active GARP 2.7 baseline."
+        },
+        {
+          "cs": "Regresní kontrola hlídá verzi 5.10.28, GARP 2.7 a release-integrity v2 evidence kontrakt.",
+          "en": "Regression coverage pins version 5.10.28, GARP 2.7 and the release-integrity v2 evidence contract."
+        },
+        {
+          "cs": "Auto-patch ingest nově považuje změnu živého registru aplikací za release-worthy změnu i tehdy, když release-wave už byl aktuální.",
+          "en": "Auto-patch ingest now treats a live app-registry change as release-worthy even when the release wave was already current."
+        }
+      ]
+    },
     {
       "version": "0.21.92",
       "date": "2026-09-23",

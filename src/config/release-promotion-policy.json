@@ -17,10 +17,10 @@
     {
       "id": "correspondence",
       "mode": "auto-patch",
-      "minimumVersion": "5.10.25",
-      "assuranceBaseline": "GARP-2.5.1-SHIELD-PREP",
+      "minimumVersion": "5.10.28",
+      "assuranceBaseline": "GARP-2.7",
       "requiredVerification": "deployment",
-      "note": "Korespondencni asistent auto-patch requires a live GARP release-integrity v2 binding across appId, version, source commit, exact artifact digest, SBOM, build provenance and evidence manifest. The current signing state is explicitly TRANSITIONAL until a production signing key is available; future minor/major waves remain manual.",
+      "note": "Korespondencni asistent 5.10.28 is the second reviewed GARP 2.7 CONSOLIDATED FOUNDATION application after LUDUS. The active baseline requires GARP 2.7 architecture-integrity, mutation/contract/foundation gates and fail-closed LIVE separation while preserving the exact ghrab-release-integrity-v2 deployment binding. Historical GARP 2.5.1/N5 controls remain regression inputs; school-server SHIELD-LIVE/RI-LIVE stays DEFERRED/NOT_TESTED until management approval.",
       "expectedStudioBridge": "v2",
       "requiredEvidenceContract": "ghrab-release-integrity-v2"
     },

@@ -78,12 +78,22 @@ jobs:
         shell: bash
         run: |
           set -euo pipefail
-          if git diff --quiet -- src/config/release-wave.json; then
+          wave_changed=false
+          registry_changed=false
+          if ! git diff --quiet -- src/config/release-wave.json; then
+            wave_changed=true
+          fi
+          if ! git diff --quiet -- src/config/apps.generated.json; then
+            registry_changed=true
+          fi
+          if [ "$wave_changed" != "true" ] && [ "$registry_changed" != "true" ]; then
             echo "AUTO_PATCH_CHANGED=false" >> "$GITHUB_ENV"
-            echo "No verified release-wave delta; Studio version remains unchanged."
+            echo "No verified release-wave or app-registry delta; Studio version remains unchanged."
             exit 0
           fi
 
+          echo "AUTO_PATCH_WAVE_CHANGED=$wave_changed" >> "$GITHUB_ENV"
+          echo "AUTO_PATCH_REGISTRY_CHANGED=$registry_changed" >> "$GITHUB_ENV"
           npm run release:patch -- --auto-patch
           echo "AUTO_PATCH_CHANGED=true" >> "$GITHUB_ENV"
 
@@ -107,6 +117,9 @@ jobs:
           git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
           git add \
             src/config/release-wave.json \
+            src/config/apps.generated.json \
+            src/config/sync-report.json \
+            src/config/ai-readiness.generated.json \
             package.json \
             package-lock.json \
             ghrab-platform.consumer.json \
