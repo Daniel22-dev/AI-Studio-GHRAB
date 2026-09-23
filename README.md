@@ -1,8 +1,8 @@
 # AI Studio GHRAB
 
-**Aktuální verze:** 0.21.86
+**Aktuální verze:** 0.21.87
 
-0.21.86 zavádí vlastní GARP 2.5.1/N5 release assurance Studia, povinně napojenou do P5 a produkčního release řetězce; funkční logika a UI zůstávají beze změny.
+0.21.87 dokončuje vlastní GARP 2.5.1/N5 release assurance Studia a opravuje auto-patch tak, aby skutečně přijatý PATCH současně zvýšil patch verzi Studia právě jednou; duplicitní a bezezměnové běhy zůstávají NO-OP.
 
 **Performance budget:** precache 1 250 000 B; critical entry 420 000 B; runtime limity jsou povinně měřené v P5 release gate.
 **Platforma:** GHRAB Platform 1.1.2 · etapa P5

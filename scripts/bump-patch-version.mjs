@@ -19,6 +19,7 @@ const manifestPath = "src/manifest.webmanifest";
 const qaManifestPath = "qa/qa-manifest.json";
 const changelogPath = "src/config/changelog.json";
 const releaseDocPaths = [
+  "README.md",
   "BEZPECNOST.md",
   "AUTOMATIZACE-GITHUB.md",
   "RELEASE-CHECKLIST.md",

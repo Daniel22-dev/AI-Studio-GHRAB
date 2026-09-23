@@ -117,6 +117,7 @@ jobs:
             src/manifest.webmanifest \
             qa/qa-manifest.json \
             src/config/changelog.json \
+            README.md \
             BEZPECNOST.md \
             AUTOMATIZACE-GITHUB.md \
             RELEASE-CHECKLIST.md \

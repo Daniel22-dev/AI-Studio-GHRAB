@@ -49,6 +49,8 @@ if (!/push:\s*[\s\S]*branches:\s*\[candidate, main\]/m.test(p5)) {
 if (!/pull_request:\s*[\s\S]*branches:\s*\[main\]/m.test(p5)) {
   errors.push('p5: pull_request trigger musi cilit na main');
 }
+requireText(p5, 'candidate-to-main:', 'p5');
+requireText(p5, 'needs: candidate-to-main', 'p5');
 requireText(p5, 'p5-release-gate:', 'p5');
 requireText(p5, 'Enforce canonical PR source', 'p5');
 requireText(p5, 'Safe Promotion requires candidate -> main', 'p5');
