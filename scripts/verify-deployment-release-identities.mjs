@@ -32,7 +32,7 @@ for (const item of report.sources || []) {
     item.releaseIdentity = identity;
     if (identity.status === 'VERIFIED') {
       verified += 1;
-      console.log(`Release identity ${item.id}: VERIFIED ${identity.version} commit=${identity.sourceCommit} artifact=${identity.artifactDigest}`);
+      console.log(`Release identity ${item.id}: VERIFIED ${identity.version} contract=${identity.contract} commit=${identity.sourceCommit} artifact=${identity.artifactDigest || identity.patchAssuranceSha256}`);
     } else {
       absent += 1;
       console.log(`Release identity ${item.id}: ABSENT (live deployment has no declared exact-release contract yet).`);
@@ -41,7 +41,7 @@ for (const item of report.sources || []) {
     failed += 1;
     item.releaseIdentity = {
       status: 'FAILED',
-      contract: app?.releaseIdentity?.contract || null,
+      contract: app?.releaseIdentity?.contract || app?.assurance?.schema || null,
       error: error.message,
     };
     item.ok = false;
