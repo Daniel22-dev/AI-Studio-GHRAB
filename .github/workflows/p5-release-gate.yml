@@ -15,7 +15,36 @@ permissions:
   contents: read
 
 jobs:
+  candidate-to-main:
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+    steps:
+      - name: Enforce Safe Promotion topology
+        shell: bash
+        env:
+          EVENT_NAME: ${{ github.event_name }}
+          PR_HEAD: ${{ github.head_ref }}
+          PR_BASE: ${{ github.base_ref }}
+          REF_NAME: ${{ github.ref_name }}
+        run: |
+          set -euo pipefail
+          if [ "$EVENT_NAME" = "pull_request" ]; then
+            if [ "$PR_BASE" != "main" ] || [ "$PR_HEAD" != "candidate" ]; then
+              echo "::error::candidate-to-main requires candidate -> main; got ${PR_HEAD:-<empty>} -> ${PR_BASE:-<empty>}."
+              exit 1
+            fi
+            echo "candidate-to-main verified: candidate -> main."
+            exit 0
+          fi
+
+          if [ "$REF_NAME" != "candidate" ] && [ "$REF_NAME" != "main" ]; then
+            echo "::error::candidate-to-main may run only for candidate/main outside PR context; got ${REF_NAME:-<empty>}."
+            exit 1
+          fi
+          echo "candidate-to-main context emitted for ${REF_NAME}."
+
   p5-release-gate:
+    needs: candidate-to-main
     runs-on: ubuntu-latest
     timeout-minutes: 45
     steps:

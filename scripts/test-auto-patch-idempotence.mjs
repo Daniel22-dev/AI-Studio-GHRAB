@@ -154,6 +154,16 @@ assert.match(
   /duplicate or no-change runs do not bump the Studio version/,
   "auto-patch bump must leave an auditable changelog statement about idempotence",
 );
+assert.match(
+  workflowText,
+  /git add[\s\S]*README\.md/,
+  "auto-patch must persist README version metadata with the release identity",
+);
+assert.match(
+  bumpScriptText,
+  /releaseDocPaths[\s\S]*"README\.md"/,
+  "release bump must keep README in the canonical versioned documentation surfaces",
+);
 
 const tmp = await mkdtemp(path.join(os.tmpdir(), "ghrab-auto-patch-idempotence-"));
 try {
