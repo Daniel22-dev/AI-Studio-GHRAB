@@ -2,132 +2,65 @@
 
 > Aktuální verze: **0.21.89** · etapa P5
 
-> 0.21.82 drží runtime registry na schváleném release-wave baseline při novějším repository-only kandidátu; živý deployment drift a neověřené zdroje zůstávají fail-closed.
+> Toto je aktivní checklist po finálním GARP 2.5.1/N5/Safe Promotion cleanupu. Předchozí historický checklist je zachován v `docs/archive/RELEASE-CHECKLIST-pre-final-0.21.89.md`.
 
-## Stav bezpečnostního kandidáta GARP 2.3
+## GARP 2.5.1 / N5
 
-- [x] Claude na 0.21.38 nezávisle potvrdil C-01, C-02 a C-03, včetně přirozeného Browser Back na localhostu.
-- [x] D-01 / HIGH z kontroly 0.21.38 byl proti kódu potvrzen: `deleteMyData()` odstraňoval generační značku, ale po destruktivním smazání ji znovu nerotoval.
-- [x] 0.21.43 rotuje generační značku po `deleteMyData()` i shared-device `endWork()` a fail-closed odmítne plný úspěch při selhání zápisu tombstone.
-- [x] GARP regrese obsahují samostatný případ `delete-rotates-generation`; sabotážní negative control bez rotace jej prokazatelně vyvolá do FAIL.
-- [x] SIM-03 browser harness testuje obě destruktivní cesty, následné psaní a novou kartu a zapisuje evidence mimo veřejný `dist/`.
-- [x] Nový nezávislý auditní cyklus byl uživatelem výslovně zahájen.
-- [ ] 0.21.43 musí projít druhým nezávislým Claude ověřením tohoto nového cyklu, protože obsahuje distribuovanou opravu D-01.
-- [ ] RT-16 account-side (MFA, branch protection, secret scanning, key custody) zůstává bez úplného důkazu.
-- [ ] Do uzavření všech gate kandidát není schválen pro reálná studentská data.
+- [x] AI Studio má vlastní GARP 2.5.1 tooling a není považováno za GARP pouze proto, že orchestruje dílčí aplikace.
+- [x] `qa:p5:ci` spouští GARP self-test, source secret scan a deployment leak scan jako povinné release gate.
+- [x] Kanonický GARP self-test prochází 98/98.
+- [x] N5 negative controls fail-closed detekují private JWK s `d`, encrypted private PEM a private PGP.
+- [x] N5 pokrývá také DER/binary a zakódované nebo komprimované varianty včetně base64, hex, gzip a ZIP.
+- [x] Soukromý materiál nelze obejít reviewed výjimkou; výjimky jsou hashově vázané na přesný source blob.
+- [x] Produkční `dist/` je před releasem znovu skenován.
 
-## Veřejný balík
+## Release identity a evidence
 
-- [x] 0.21.76 rozlišuje repository-only kandidáta od deployment evidence a při vyšším source kandidátu zachová runtime registry na schváleném release-wave baseline.
-- [x] Vyšší repository kandidát je v sync/promotion reportu `PENDING`; skutečný deployment drift MANUAL aplikace, starší repository než wave a snapshot zůstávají blokující.
-- [x] `release-promotion-policy.json` zůstává beze změny; Generátor, Diferenciátor, Lesson Hub a Maturita Desk nejsou tímto hotfixem zařazeny do auto-patche.
-- [x] Verze 0.21.63 je shodná v package, PWA manifestu, QA manifestu, buildu, dokumentaci a changelogu.
-- [x] Všechny aplikace jsou ve výchozím stavu uzamčené.
-- [x] Veřejný balík obsahuje pouze veřejný ověřovací klíč.
-- [x] Centrum zabezpečení je dostupné jen plnému správci; zástupce může v evidenci pouze připravit JTI.
-- [x] Konfigurační klíč se neukládá do webového úložiště a po podpisu, opuštění stránky nebo deseti minutách se vymaže.
-- [x] Veřejný aktualizační balíček zachovává politiku a permitový klíč, je podepsaný ES256 a neobsahuje soukromý materiál.
-- [x] Aktualizační balíček prošel 23/23 validačními kontrolami a navazuje na bundle z verze 0.21.32.
-- [x] Nasazený bundle obsahuje právě JTI starého učitelského oprávnění; `revokedBefore` zůstává prázdné a nové oprávnění správce zástupce není dotčeno.
-- [x] Samostatný regresní test ověřuje podpis, přesné JTI a shodu `sharedAccessVersion` v obou aktivních deployment profilech.
-- [x] `access:validate-update` před začleněním odmítne neplatný podpis, cizí trust anchor, rollback revokací nebo soukromý materiál.
-- [x] Klíč pro uživatelská oprávnění zůstává beze změny, takže dosud platná oprávnění nejsou rotací konfigurace zneplatněna.
-- [x] Ve zdroji ani buildu není soukromý klíč ani `.ghrab-access.json`.
-- [x] Učitelské a správcovské rozhraní jsou oddělené.
-- [x] Správcovské moduly se bez role admin nespouštějí.
-- [x] Top 4 a sci-fi herní styl jsou zachovány.
-- [x] Katalog změn je dostupný všem přihlášeným uživatelům jen v horní navigaci.
-- [x] Materiály jsou v běžné navigaci jako server-ready katalog; centrální Tvorba materiálů v navigaci není. Bez serveru zůstává sdílení viditelně neaktivní.
-- [x] Pilotní metriky jsou přesně označeny jako místní.
-- [x] PWA cache se generuje automaticky z produkčního stromu a neobsahuje neplatné cesty.
-- [x] Každá změna runtime UI musí zvýšit verzi aplikace; stejná verze nesmí být znovu použita pro změněné JS/CSS, protože PWA cache je verzovaná číslem aplikace.
-- [x] Všechny lokální JS/CSS vstupy a relativní modulové importy mají ve výsledném buildu revizi `?v=0.21.62`.
-- [x] Odkazy přístupové brány při vložení do iframe opustí rámec a otevřou AI Studio v hlavním okně.
-- [x] Viewer obsahuje pojistku proti vnořenému AI Studiu a styly brány odolávají obecnému CSS vložených aplikací.
-- [x] Serverový katalog se aktivuje pouze při `school-server` + `schoolServerConnected` + `sharedMaterialLibrary`; GitHub profil nemůže omylem publikovat materiál.
-- [x] Rychlá kontrola dat je rozbalovací pomocník pro nejisté situace, ne povinný krok před každým použitím AI.
-- [x] Semafor má deset praktických kategorií, používá nejvyšší zvolené riziko a bezpečná anonymní volba je výlučná.
-- [x] Kontrola zdrojů rozlišuje deploy / veřejný GitHub zdroj / snapshot a offline QA nepřepisuje poslední síťový stav.
-- [x] Zástupce správce se při povýšení existujícího učitele automaticky nerozšiřuje na všechny aplikace.
-- [x] Showcase video propouští Range požadavky mimo CacheStorage a fullscreen orbit je omezen i výškou viewportu.
-- [x] Showcase video nemá vadný černý snímek v prologu; zvuková stopa má souvislou časovou osu, 48 kHz stereo AAC-LC a webový fast-start export.
-- [x] Reportér po povolení snímání nečeká bez omezení na `loadedmetadata`, má časově omezené čekání na skutečný frame a viditelně potvrzuje uložení screenshotu.
-- [x] Produkční CSP povoluje `blob:` v `img-src`, takže náhled zachyceného screenshotu není zablokovaný po převodu z canvasu.
-- [x] Produkční regresní test před reálným MediaStreamem vrací kartu AI Studia do popředí a ověřuje její viditelnost, aby Chromium throttling pozadí nevytvářel falešný CSP pád.
-- [x] Regrese reportéru pokrývá pořízení snímku v dialogu i z plovoucího panelu, opožděné zpřístupnění video rozměrů a skutečný canvas MediaStream na produkčním indexu AI Studia.
-- [x] AI Studio má samostatný manuál učitele a rozšířený manuál administrátora; admin verze má vlastní runtime kontrolu role.
-- [x] Domovský odkaz „Poprvé v AI Studiu?“ je pouze drobný role-aware text pod stavem Studia, nikoli další panel.
-- [x] Úvodní překryv má nezávislý fail-open watchdog a při selhání uvolní inertní stav rozhraní.
-- [x] Startup intro se po prvním zobrazení ukládá do stabilního persistentního klíče a není navázané na patch verzi, takže běžný návrat do Studia neblokuje opakovaná animace.
-- [x] Service worker omezuje volitelný precache na dávky po čtyřech a navigace používá cache aktuální verze před síťovým fallbackem.
-- [x] Report vykresluje A4 preview lazy a rozepsané zadání lze smazat pouze ve stavu `draft`; uzavřené karty zůstávají auditně dohledatelné.
-- [x] V mobilním Nastavení (do 650 px) je přepínač CZ/EN viditelný a kritický browser flow jej fyzicky přepne EN → CS.
-- [x] `npm test` prochází bez chyby.
-- [x] Statické `no-store` registry mají network-first cache fallback a runtime API/deployment zůstávají mimo service worker.
-- [x] Podepsaný access bundle a jeho podpis jsou mimo service worker; 24hodinový offline limit se počítá od posledního online načtení a podepsaný bundle má samostatný 30denní limit.
-- [x] `bundle.version` odpovídá zapečenému `sharedAccessVersion` a release brána kontroluje podpis, stáří i shodu verze podle skutečného času.
-- [x] GitHub i school-server build mají zapečený deployment profil; neznámý profil je uzamčený a nesmaže osobní klíč jen kvůli chybě načtení konfigurace.
-- [x] XSS sink baseline je nula a nový `innerHTML`, `outerHTML`, `insertAdjacentHTML`, `document.write`, `eval` nebo `new Function` zastaví release.
-- [x] Všechny použité GitHub Actions jsou připnuté na plný commit SHA.
-- [x] `npm run test:security-regressions` behaviorálně ověřuje SW bypass, oba časové limity, odolnost proti podvrženému času a fail-closed školní profil bez lokálních API klíčů.
-- [x] Behaviorální test Centra zabezpečení ověřuje platný podpis, sjednocení revokací, obnovu bundle, odmítnutí cizího klíče a neměnnost vstupu.
-- [x] Offline-start Playwright test je součástí `qa:browser` a na GitHubu musí potvrdit 8 online + 8 offline karet.
+- [x] AI Studio používá `ghrab-release-integrity-v2`.
+- [x] Release identity váže `appId`, verzi, source commit a exact artifact digest.
+- [x] Stejný release současně váže manifest, CycloneDX SBOM, build provenance a security evidence manifest.
+- [x] P5 i LIVE deploy ověřují vytvořený release chain před publikací.
+- [x] Režim je pravdivě označen `TRANSITIONAL`; produkční release signing key zatím není zaveden a evidence netvrdí neexistující podpis.
+- [x] Auditní evidence se ukládá jako GitHub Actions artifact konkrétního SHA/runu.
 
-## Soukromý administrátorský balík
+## Safe Promotion a ochrana main
 
-- [x] Obsahuje soukromý klíč.
-- [x] Obsahuje platné správcovské oprávnění.
-- [x] Obsahuje bezpečnostní návod.
-- [ ] Uložit do bezpečné soukromé zálohy.
-- [ ] Nikdy nenahrát na GitHub ani nesdílet s kolegy.
+- [x] Trvalá release cesta je `candidate → candidate-to-main → p5-release-gate → PR candidate→main → p5-release-gate → main → deploy`.
+- [x] Aktivní Ruleset pro `main` vyžaduje PR a `p5-release-gate`, blokuje deletion a non-fast-forward a nemá bypass actors.
+- [x] `p5-release-gate` závisí na jobu `candidate-to-main`; PR z jiné větve se odmítne.
+- [x] Safe Promotion pracuje s exact checked SHA a ignoruje stale GREEN.
+- [x] Auto-patch ani deploy workflow nepíší přímo do `main`.
+- [x] Produkční deploy běží pouze z `main` a ověřuje původ aktuálního main SHA z merged candidate PR.
+- [x] FAIL kandidáta ponechá `main` beze změny; GREEN kandidát může být automaticky promován.
 
-## Dílčí aplikace
+## AI Studio auto-patch
 
-- [x] `release-promotion-policy.json` má `defaultMode: manual`, `atomic: true` a auto-patch nepovoluje aplikaci bez explicitního GARP 2.5.1 enrollmentu.
-- [x] Verified ecosystem gate povoluje auto-patch pouze z `verification: deployment`; repository fallback ani snapshot nesmí patch povýšit.
-- [x] Syntetická regrese potvrzuje PASS pro `5.10.25 → 5.10.26` a BLOCK pro minor, rollback, source drift, repository drift, Platform drift a neověřený AI operations manifest.
-- [x] `release-wave.json` se při QA nemutuje a audit rozhodnutí vzniká pouze v gitignorovaném `qa-results/release-promotion-report.json`.
+- [x] Promotion přijímá pouze vyšší stabilní PATCH ve stejné major/minor řadě.
+- [x] Rollback, stejná verze jako nová promotion, minor, major, repository fallback a snapshot se automaticky nepřijímají.
+- [x] Vyžaduje se live deployment, správné appId/repository, Platform 1.1.2/range, Studio Bridge, artifact envelope, storage namespace a cache identity.
+- [x] Aktuálně je explicitně enrolled všech devět dílčích aplikací.
+- [x] Osm aplikací vyžaduje `ghrab-release-integrity-v2`; LUDUS používá schválený přechodový `ghrab-patch-assurance-v1`.
+- [x] Skutečný release-wave delta zvýší patch verzi AI Studia právě jednou.
+- [x] Duplicate dispatch je GREEN/NO-OP bez dalšího commitu nebo version bumpu.
+- [x] Concurrent duplicate dispatch je serializovaný; stale persistence guard brání druhé konfliktující promotion.
+- [x] Idempotence test explicitně ověřuje PATCH=ELIGIBLE, minor/major=BLOCKED a duplicate=CURRENT.
 
+## Kvalita releasu
 
-- [ ] Vložit správný `*-access-bootstrap.example.js` do každého repozitáře.
-- [ ] Upravit poslední dynamický import podle skutečného vstupního modulu.
-- [ ] Ověřit přímou URL bez oprávnění.
-- [ ] Ověřit oprávnění pro jinou aplikaci.
-- [ ] Ověřit správné učitelské oprávnění.
-- [ ] Ověřit správcovské oprávnění.
+- [x] Package, lockfile, consumer, PWA manifest, reporter, QA manifest, changelog a cache identity používají verzi 0.21.89.
+- [x] Platform 1.1.2 a required range jsou zamčené a kontrolované.
+- [x] Source verification, browser/runtime, XSS, axe, performance, PWA, technical, security a critical gate jsou součástí release cesty.
+- [x] GitHub Actions použité v aktivních workflow jsou připnuté na plný commit SHA.
+- [x] Podepsaný access bundle musí být před buildem čerstvý a validní.
+- [x] Serverless profil neobsahuje provider API klíče ani soukromé podpisové klíče.
+- [x] School-server build zůstává fail-closed a nepovoluje lokální provider keys.
 
-## Po nasazení
+## Známé přechodové limity — nejsou maskovány jako GREEN kryptografické uzavření
 
-- [ ] Ověřit zelený GitHub Actions build.
-- [ ] V anonymním okně potvrdit osm viditelných a uzamčených aplikací (čtyři v Top 4 a čtyři v katalogu).
-- [ ] Načíst správcovské oprávnění.
-- [ ] Spustit Kontrolu Studia.
-- [ ] Ověřit Android Chrome, desktop Chrome/Edge a iPhone Safari.
-- [ ] Ověřit přenos materiálu do všech podporovaných aplikací.
+- Produkční release signing key pro AI Studio zatím není zaveden; assurance proto zůstává `TRANSITIONAL`.
+- LUDUS ještě nepublikuje `ghrab-release-integrity-v2` exact-release identity a zůstává na přechodovém `ghrab-patch-assurance-v1` kontraktu.
+- Současný GitHub Pages provoz není náhradou školní identity/serverové relace; serverové funkce se aktivují až v `school-server` profilu.
 
-## Manuály
+## Provozní pravidlo
 
-- [ ] Každý manifest obsahuje platné HTTPS `manualUrl`.
-- [ ] Katalog zobrazuje všech osm karet i bez přístupu.
-- [ ] Učitel otevře jen manuály povolených aplikací.
-- [ ] Správce otevře všechny manuály.
-- [ ] `manualy/index.html`, `manualy/manualy.js` a `manualy/manualy.css` jsou v PWA precache.
-
-## GHRAB AI Core 1.0.0
-
-- [x] Core manifest a SHA-256 jsou ověřovány buildem.
-- [x] `.prettierignore` chrání celý `src/ai-core/releases/**` před změnou bajtové podoby.
-- [x] Formátovací příkazy i GitHub Actions ověřují Core před formátováním a workflow také bezprostředně po něm.
-- [x] Runtime povoluje pouze `direct-gemini` a zakazuje automatický fallback.
-- [x] Migrační stav se odvozuje z živých manifestů; lokální certifikace se nezobrazuje jako nasazená.
-- [x] Regresní test akceptuje pravdivý přechodový stav i živý stav `ready` a kontroluje konzistenci souhrnných počtů.
-- [x] Migration Kit 1.0.3 obsahuje kontrakt, neměnný Core, konformitní sadu, opravený integrační prompt a bezpečný consumer workflow.
-
-## Jednotný reportér chyb
-
-- [x] Centrální základ a synchronizované lokální kopie jsou shodné.
-- [x] Samostatné aplikace používají `errorReporter: false` a vytvářejí právě jednu lokální instanci.
-- [x] Service worker cachuje JS a CSS reportéru.
-- [x] Automatická sada ověřuje motivy, koncept, pět screenshotů, Gmail odkaz, novou kartu, ZIP, soukromí a iframe AI Studia.
-- [ ] Ručně ověřit skutečný systémový picker sdílení obrazovky a lištu Chromu.
-- [ ] Ručně ověřit přihlášený Gmail a přiložení ZIPu.
+Při jakékoli budoucí runtime změně musí znovu projít stejný candidate/P5/Safe Promotion/deploy řetězec. Dokumentační nebo archivní změna smí ponechat stejnou verzi pouze tehdy, pokud version-freshness gate potvrdí, že proti `main` neexistuje runtime delta.
