@@ -77,7 +77,94 @@ function normalizeRepository(value) {
 }
 
 export async function verifyDeploymentReleaseIdentity({ app, source }) {
-  const contract = app?.releaseIdentity?.contract || null;
+  const releaseContract = app?.releaseIdentity?.contract || null;
+  const assuranceContract = app?.assurance?.schema || null;
+
+  if (!releaseContract && assuranceContract === 'ghrab-patch-assurance-v1') {
+    const baseUrl = new URL('.', source.url);
+    const assuranceUrl = new URL(app.assurance.evidenceManifestUrl || './patch-assurance.json', baseUrl).href;
+    if (!assuranceUrl.startsWith(baseUrl.href)) throw new Error('patch assurance URL opouští povolený deployment prefix');
+    assertSha256('assurance.evidenceManifestSha256', app.assurance.evidenceManifestSha256);
+
+    const assuranceBytes = await fetchBytes(assuranceUrl);
+    if (hex(assuranceBytes) !== app.assurance.evidenceManifestSha256) throw new Error('patch-assurance digest neodpovídá Studio manifestu');
+
+    let assurance;
+    try {
+      assurance = JSON.parse(assuranceBytes.toString('utf8'));
+    } catch (error) {
+      throw new Error(`neplatný patch-assurance JSON: ${error.message}`);
+    }
+    if (assurance.schema !== 'ghrab-patch-assurance-manifest-v1') throw new Error('patch-assurance má neplatné schema');
+    if (assurance.appId !== app.id || assurance.version !== app.version) throw new Error('patch-assurance appId/version drift');
+    if (assurance.algorithm !== 'SHA-256') throw new Error('patch-assurance nepoužívá SHA-256');
+    if (!SHA40.test(String(assurance.sourceRevision || ''))) throw new Error('patch-assurance nemá platný sourceRevision');
+
+    const requiredArtifacts = [
+      ['securityEvidenceManifest', 'ghrab-security-evidence-manifest-v2'],
+      ['sourceSbom', 'CycloneDX'],
+      ['deploymentSbom', 'CycloneDX'],
+      ['aiAssuranceFingerprint', 'ghrab-ai-assurance-fingerprint-v2'],
+    ];
+    const verifiedArtifacts = {};
+    for (const [name] of requiredArtifacts) {
+      const ref = assurance.artifacts?.[name];
+      if (!ref?.url) throw new Error(`patch-assurance chybí artifact ${name}`);
+      assertSha256(`patch-assurance ${name}.sha256`, ref.sha256);
+      const artifactUrl = new URL(ref.url, baseUrl).href;
+      if (!artifactUrl.startsWith(baseUrl.href)) throw new Error(`patch-assurance artifact ${name} opouští deployment prefix`);
+      const bytes = await fetchBytes(artifactUrl);
+      if (hex(bytes) !== ref.sha256) throw new Error(`patch-assurance artifact digest drift ${name}`);
+      let value;
+      try {
+        value = JSON.parse(bytes.toString('utf8'));
+      } catch (error) {
+        throw new Error(`patch-assurance artifact ${name} není platný JSON: ${error.message}`);
+      }
+      verifiedArtifacts[name] = { ref, value };
+    }
+
+    const evidence = verifiedArtifacts.securityEvidenceManifest.value;
+    if (evidence.schema !== 'ghrab-security-evidence-manifest-v2') throw new Error('patch-assurance security evidence schema drift');
+    if (evidence.appId !== app.id || evidence.version !== app.version) throw new Error('patch-assurance security evidence app/version drift');
+    if (!SHA40.test(String(evidence.sourceRevision || ''))) throw new Error('patch-assurance security evidence nemá platný sourceRevision');
+    if (String(evidence.sourceRevision).toLowerCase() !== String(assurance.sourceRevision).toLowerCase()) throw new Error('patch-assurance sourceRevision/evidence drift');
+
+    for (const name of ['sourceSbom','deploymentSbom']) {
+      const sbom = verifiedArtifacts[name].value;
+      if (sbom.bomFormat !== 'CycloneDX') throw new Error(`patch-assurance ${name} není CycloneDX`);
+      const componentVersion = sbom.metadata?.component?.version;
+      if (componentVersion && componentVersion !== app.version) throw new Error(`patch-assurance ${name} version drift`);
+    }
+
+    const fingerprint = verifiedArtifacts.aiAssuranceFingerprint.value;
+    if (fingerprint.schema !== 'ghrab-ai-assurance-fingerprint-v2') throw new Error('patch-assurance AI fingerprint schema drift');
+    if (fingerprint.appId !== app.id || fingerprint.appVersion !== app.version) throw new Error('patch-assurance AI fingerprint app/version drift');
+
+    const repo = source.repository;
+    if (!/^[A-Za-z0-9_.-]+\/[A-Za-z0-9_.-]+$/.test(repo || '')) throw new Error('registrovaný repository identifikátor je neplatný');
+    const sourcePackageUrl = `https://raw.githubusercontent.com/${repo}/${assurance.sourceRevision}/package.json`;
+    const { value: sourcePackage } = await fetchJson(sourcePackageUrl);
+    if (sourcePackage.version !== app.version) throw new Error(`source commit package version ${sourcePackage.version || '?'} != deployment ${app.version}`);
+
+    return {
+      status: 'VERIFIED',
+      contract: 'ghrab-patch-assurance-v1',
+      assuranceMode: 'FOUNDATION',
+      appId: app.id,
+      version: app.version,
+      sourceCommit: String(assurance.sourceRevision).toLowerCase(),
+      patchAssuranceSha256: hex(assuranceBytes),
+      securityEvidenceManifestSha256: verifiedArtifacts.securityEvidenceManifest.ref.sha256,
+      sourceSbomSha256: verifiedArtifacts.sourceSbom.ref.sha256,
+      deploymentSbomSha256: verifiedArtifacts.deploymentSbom.ref.sha256,
+      aiAssuranceFingerprintSha256: verifiedArtifacts.aiAssuranceFingerprint.ref.sha256,
+      releaseIdentityUrl: assuranceUrl,
+      signatureStatus: 'NOT_APPLICABLE',
+    };
+  }
+
+  const contract = releaseContract;
   if (!contract) {
     return {
       status: 'ABSENT',
