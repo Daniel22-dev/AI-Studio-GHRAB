@@ -270,11 +270,12 @@ const correspondencePromotion = releasePromotionPolicy?.applications?.find(
 );
 if (
   correspondencePromotion?.mode !== "auto-patch" ||
-  correspondencePromotion?.minimumVersion !== "5.10.25" ||
-  correspondencePromotion?.assuranceBaseline !== "GARP-2.5.1-SHIELD-PREP" ||
-  correspondencePromotion?.requiredVerification !== "deployment"
+  correspondencePromotion?.minimumVersion !== "5.10.28" ||
+  correspondencePromotion?.assuranceBaseline !== "GARP-2.7" ||
+  correspondencePromotion?.requiredVerification !== "deployment" ||
+  correspondencePromotion?.requiredEvidenceContract !== "ghrab-release-integrity-v2"
 )
-  fail("Korespondenční asistent není správně zařazen do GARP 2.5.1 auto-patch politiky.");
+  fail("Korespondenční asistent není správně zařazen do GARP 2.7 auto-patch politiky pro release 5.10.28.");
 if (!prettierIgnore.includes("src/ai-core/releases/**"))
   fail(".prettierignore nechrání neměnné release artefakty GHRAB AI Core.");
 const formatScript = pkg?.scripts?.format || "";
