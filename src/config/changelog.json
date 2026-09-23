@@ -1,7 +1,25 @@
 {
   "schema": "ai-studio-changelog-v1",
-  "current": "0.21.89",
+  "current": "0.21.90",
   "items": [
+    {
+      "version": "0.21.90",
+      "date": "2026-09-23",
+      "title": {
+        "cs": "GARP 2.7 ve Správě a bezpečný postupný rollout",
+        "en": "GARP 2.7 administration and safe staged rollout"
+      },
+      "changes": [
+        {
+          "cs": "Správa vyhodnocuje GARP pro každou aplikaci proti její vlastní schválené baseline; přechod více aplikací na různé verze už nepoužívá chybnou většinovou baseline.",
+          "en": "Administration evaluates GARP per application against its own approved baseline; staged migration no longer relies on an incorrect majority baseline."
+        },
+        {
+          "cs": "Detail GARP je rozšířen na kumulativní bezpečnostní katalog GARP 2.7 včetně 12 AG oblastí, FOUNDATION/SHIELD-LIVE/ASSURANCE/AUTO-PATCH-GUARD, architecture-integrity, RED TEAMu, evidence a pravidel pro režim bez školního serveru.",
+          "en": "The GARP detail now provides the cumulative GARP 2.7 security catalogue including all 12 AG areas, FOUNDATION/SHIELD-LIVE/ASSURANCE/AUTO-PATCH-GUARD, architecture integrity, RED TEAM, evidence and no-school-server rules."
+        }
+      ]
+    },
     {
       "version": "0.21.89",
       "date": "2026-09-23",

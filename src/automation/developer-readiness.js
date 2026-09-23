@@ -95,7 +95,7 @@ if (!section || !canView) {
       .replace(/^GARP-/i, "GARP ")
       .replace(/-SHIELD-PREP$/i, " · SHIELD-PREP");
 
-  function expectedGarp(policy) {
+  function garpRolloutSummary(policy) {
     const counts = new Map();
     for (const item of policy?.applications || []) {
       if (!item.assuranceBaseline) continue;
@@ -104,7 +104,10 @@ if (!section || !canView) {
         (counts.get(item.assuranceBaseline) || 0) + 1,
       );
     }
-    return [...counts.entries()].sort((a, b) => b[1] - a[1])[0]?.[0] || "—";
+    return [...counts.entries()]
+      .sort((a, b) => String(b[0]).localeCompare(String(a[0])))
+      .map(([baseline, count]) => `${garpLabel(baseline)} ×${count}`)
+      .join(" · ") || "—";
   }
 
   function versionAtLeast(actual, minimum) {
@@ -130,9 +133,10 @@ if (!section || !canView) {
     const promotion = ctx.promotions.get(app.id);
     const ready = ctx.readiness.get(app.id);
     const source = ctx.sources.get(app.id);
-    const targetGarp = expectedGarp(ctx.policy);
+    // GARP rollout is evaluated per application. During a controlled migration
+    // different approved baselines may coexist; the majority baseline is never authority.
     const garpOk =
-      promotion?.assuranceBaseline === targetGarp &&
+      Boolean(promotion?.assuranceBaseline) &&
       versionAtLeast(app.version, promotion?.minimumVersion);
     const promotionOk =
       promotion?.mode === "auto-patch" &&
@@ -315,8 +319,8 @@ if (!section || !canView) {
         "GARP baseline",
         "GARP baseline",
         "garp",
-        "garpOk = assuranceBaseline === target && app.version >= minimumVersion",
-        "garpOk = assuranceBaseline === target && app.version >= minimumVersion",
+        "per-app GARP baseline · app.version >= minimumVersion · mixed rollout supported",
+        "per-app GARP baseline · app.version >= minimumVersion · mixed rollout supported",
       ),
       metric(
         `${promotionPass}/${ctx.apps.length}`,
@@ -361,7 +365,10 @@ if (!section || !canView) {
     );
     ctx.liveDetail = {
       ecosystem: `Studio v${document.documentElement.dataset.ghrabAppVersion || "—"} · ${healthy}/${ctx.apps.length}`,
-      garp: garpLabel(expectedGarp(ctx.policy)),
+      garp: G.t(
+        `Aktuální standard GARP 2.7 · rollout: ${garpRolloutSummary(ctx.policy)}`,
+        `Current standard GARP 2.7 · rollout: ${garpRolloutSummary(ctx.policy)}`,
+      ),
       safePromotion: `${promotionPass}/${ctx.apps.length} · auto-patch + deployment verification`,
       platform: `GHRAB Platform ${ctx.apps[0]?.platform?.platformVersion || "—"}`,
       aiCore: active
@@ -378,8 +385,8 @@ if (!section || !canView) {
     };
 
     note.textContent = G.t(
-      `GARP baseline: ${garpLabel(expectedGarp(ctx.policy))}. Tato tabulka je jediný provozní přehled ve Správě; repozitářové GARP/P5/N5 testy zůstávají autoritativní release bránou.`,
-      `GARP baseline: ${garpLabel(expectedGarp(ctx.policy))}. This table is the single operational status overview in Administration; repository GARP/P5/N5 suites remain the authoritative release gate.`,
+      `GARP se vyhodnocuje pro každou aplikaci proti její vlastní schválené baseline. Postupný rollout může bezpečně kombinovat více verzí: ${garpRolloutSummary(ctx.policy)}. Repozitářové GARP/P5/N5 testy zůstávají autoritativní release bránou.`,
+      `GARP is evaluated per application against its own approved baseline. A controlled rollout may safely contain multiple versions: ${garpRolloutSummary(ctx.policy)}. Repository GARP/P5/N5 suites remain the authoritative release gate.`,
     );
   }
 
