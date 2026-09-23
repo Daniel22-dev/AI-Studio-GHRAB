@@ -1,6 +1,6 @@
-# Release checklist AI Studio GHRAB 0.21.86
+# Release checklist AI Studio GHRAB 0.21.87
 
-> Aktuální verze: **0.21.86** · etapa P5
+> Aktuální verze: **0.21.87** · etapa P5
 
 > 0.21.82 drží runtime registry na schváleném release-wave baseline při novějším repository-only kandidátu; živý deployment drift a neověřené zdroje zůstávají fail-closed.
 

@@ -81,6 +81,31 @@ const firstDecision = evaluateAutoPromotion({
 });
 assert.equal(firstDecision.status, "ELIGIBLE", "first higher patch must be eligible");
 
+const nonPatchDecisionFor = (version) => {
+  const app = structuredClone(currentApp);
+  app.version = version;
+  if (app.platform?.cacheName) app.platform.cacheName = `ghrab-${appId}-v${version}`;
+  return evaluateAutoPromotion({
+    app,
+    waveApp: structuredClone(waveApp),
+    source,
+    sourceReport: reportFor(version, identityFor(version)),
+    policyEntry,
+    wave,
+    enabled: true,
+  });
+};
+
+const minorVersion = `${major}.${minor + 1}.0`;
+const minorDecision = nonPatchDecisionFor(minorVersion);
+assert.equal(minorDecision.status, "BLOCKED", "minor update must never auto-promote");
+assert.equal(minorDecision.reasonCode, "NON_PATCH_CHANGE", "minor update must fail with NON_PATCH_CHANGE");
+
+const majorVersion = `${major + 1}.0.0`;
+const majorDecision = nonPatchDecisionFor(majorVersion);
+assert.equal(majorDecision.status, "BLOCKED", "major update must never auto-promote");
+assert.equal(majorDecision.reasonCode, "NON_PATCH_CHANGE", "major update must fail with NON_PATCH_CHANGE");
+
 const afterFirstWave = { ...waveApp, version: nextVersion };
 const queuedDuplicateDecision = evaluateAutoPromotion({
   app: nextApp,
@@ -104,6 +129,30 @@ assert.match(
   workflowText,
   /remote_candidate[\s\S]*BASE_SHA[\s\S]*refusing stale persistence/,
   "workflow must retain stale-candidate fail-closed persistence guard",
+);
+assert.match(
+  workflowText,
+  /git diff --quiet -- src\/config\/release-wave\.json[\s\S]*npm run release:patch -- --auto-patch/,
+  "Studio patch bump must happen only after an actual verified release-wave delta",
+);
+assert.match(
+  workflowText,
+  /AUTO_PATCH_CHANGED=false[\s\S]*AUTO_PATCH_CHANGED=true/,
+  "workflow must carry an explicit changed/no-op state into persistence",
+);
+assert.match(
+  workflowText,
+  /git add[\s\S]*src\/config\/release-wave\.json[\s\S]*package\.json[\s\S]*package-lock\.json[\s\S]*src\/config\/changelog\.json/,
+  "verified promotion must persist the release-wave and Studio release identity surfaces together",
+);
+assert.doesNotMatch(workflowText, /git add\s+(?:-A|--all)/, "auto-patch must not stage unrelated workspace changes");
+
+const bumpScriptText = await readFile(path.join(root, "scripts/bump-patch-version.mjs"), "utf8");
+assert.match(bumpScriptText, /process\.argv\.includes\("--auto-patch"\)/, "release bump must expose an explicit auto-patch mode");
+assert.match(
+  bumpScriptText,
+  /duplicate or no-change runs do not bump the Studio version/,
+  "auto-patch bump must leave an auditable changelog statement about idempotence",
 );
 
 const tmp = await mkdtemp(path.join(os.tmpdir(), "ghrab-auto-patch-idempotence-"));
@@ -160,5 +209,5 @@ try {
 }
 
 console.log(
-  `Auto-patch idempotence tests: PASS (${appId} duplicate=CURRENT; concurrent duplicate=serialized/NO-OP; wave unchanged).`,
+  `Auto-patch idempotence tests: PASS (${appId} patch=ELIGIBLE; minor/major=BLOCKED; duplicate=CURRENT; concurrent duplicate=serialized/NO-OP; Studio bump gated by verified wave delta).`,
 );

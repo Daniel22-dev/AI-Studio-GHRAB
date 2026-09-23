@@ -74,11 +74,24 @@ jobs:
       - name: Apply verified patch promotions
         run: node scripts/apply-auto-promotions.mjs qa-results/release-promotion-report.json src/config/release-wave.json
 
-      - name: Persist only verified release-wave delta to candidate
+      - name: Bind Studio patch version to verified promotion
         shell: bash
         run: |
           set -euo pipefail
           if git diff --quiet -- src/config/release-wave.json; then
+            echo "AUTO_PATCH_CHANGED=false" >> "$GITHUB_ENV"
+            echo "No verified release-wave delta; Studio version remains unchanged."
+            exit 0
+          fi
+
+          npm run release:patch -- --auto-patch
+          echo "AUTO_PATCH_CHANGED=true" >> "$GITHUB_ENV"
+
+      - name: Persist verified promotion and Studio release metadata to candidate
+        shell: bash
+        run: |
+          set -euo pipefail
+          if [ "${AUTO_PATCH_CHANGED:-false}" != "true" ]; then
             echo "No verified release-wave delta; safe NO-OP."
             exit 0
           fi
@@ -92,6 +105,30 @@ jobs:
 
           git config user.name "github-actions[bot]"
           git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
-          git add src/config/release-wave.json
-          git commit -m "chore: stage verified app auto-promotion"
+          git add \
+            src/config/release-wave.json \
+            package.json \
+            package-lock.json \
+            ghrab-platform.consumer.json \
+            src/index.html \
+            src/config/release-acceptance.json \
+            reporter-test.config.json \
+            src/tests/error-reporter-adapter.js \
+            src/manifest.webmanifest \
+            qa/qa-manifest.json \
+            src/config/changelog.json \
+            BEZPECNOST.md \
+            AUTOMATIZACE-GITHUB.md \
+            RELEASE-CHECKLIST.md \
+            ARCHITEKTURA.md \
+            POSTUP-NAHRANI.md \
+            NAHRANI-NA-GITHUB.md
+
+          if git diff --cached --quiet; then
+            echo "::error::Auto-patch expected a staged Studio release delta but index is empty."
+            exit 1
+          fi
+
+          studio_version="$(node -p "require('./package.json').version")"
+          git commit -m "chore: stage verified app auto-promotion (Studio ${studio_version})"
           git push origin HEAD:candidate
