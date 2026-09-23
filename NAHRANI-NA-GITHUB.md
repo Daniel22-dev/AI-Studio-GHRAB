@@ -1,6 +1,6 @@
-# Nahrání AI Studio GHRAB 0.21.90
+# Nahrání AI Studio GHRAB 0.21.91
 
-> Aktuální verze: **0.21.90** · etapa P5
+> Aktuální verze: **0.21.91** · etapa P5
 
 > 0.21.82 opravuje source-candidate gate: Generátor zůstává ručně přijatý na 7.1.28 a repository kandidát 7.1.30 se bez úspěšného deploymentu nepovýší ani nezablokuje release Studia.
 
@@ -10,7 +10,7 @@
 
 ## Povinné pořadí
 
-1. Korespondenční asistent 5.10.27
+1. Korespondenční asistent 5.10.28
 2. SORTIO 1.1.20
 3. Lesson Hub 1.2.24
 4. Diferenciátor 1.3.48
