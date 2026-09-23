@@ -5,6 +5,10 @@ const SUPPORTED_EVIDENCE_CONTRACTS = new Set([
   "ghrab-patch-assurance-v1",
   "ghrab-release-integrity-v2",
 ]);
+const SUPPORTED_ASSURANCE_BASELINES = new Set([
+  "GARP-2.5.1-SHIELD-PREP",
+  "GARP-2.7",
+]);
 
 export function parseStrictSemver(value) {
   const match = String(value || "").match(STRICT_SEMVER);
@@ -98,7 +102,7 @@ export function validatePromotionPolicy(policy, knownAppIds = []) {
     if (known.size && !known.has(entry.id)) errors.push(`promotion policy: nezname appId ${entry.id}.`);
     if (entry.mode !== "auto-patch") errors.push(`${entry.id}: jediny podporovany automaticky rezim je auto-patch.`);
     if (!parseStrictSemver(entry.minimumVersion)) errors.push(`${entry.id}: minimumVersion neni stabilni SemVer.`);
-    if (entry.assuranceBaseline !== "GARP-2.5.1-SHIELD-PREP") errors.push(`${entry.id}: chybi schvaleny GARP 2.5.1 SHIELD-PREP baseline.`);
+    if (!SUPPORTED_ASSURANCE_BASELINES.has(entry.assuranceBaseline)) errors.push(`${entry.id}: neznamy nebo neschvaleny GARP baseline ${entry.assuranceBaseline || "missing"}.`);
     if (entry.requiredVerification !== "deployment") errors.push(`${entry.id}: auto-patch musi vyzadovat zive deployment overeni.`);
     if (entry.requiredEvidenceContract != null && !SUPPORTED_EVIDENCE_CONTRACTS.has(entry.requiredEvidenceContract)) errors.push(`${entry.id}: neznamy requiredEvidenceContract ${entry.requiredEvidenceContract}.`);
     if (!["v2", "not-applicable"].includes(entry.expectedStudioBridge)) errors.push(`${entry.id}: chybi explicitni expectedStudioBridge baseline.`);
@@ -111,25 +115,43 @@ export function promotionEntryById(policy) {
 }
 
 function verifiedReleaseIdentity(sourceReport, app, policyEntry) {
-  if (policyEntry?.requiredEvidenceContract !== "ghrab-release-integrity-v2") return { ok: true };
+  const requiredContract = policyEntry?.requiredEvidenceContract || null;
+  if (!requiredContract) return { ok: true };
+
   const identity = sourceReport?.releaseIdentity;
-  if (
-    identity?.status !== "VERIFIED" ||
-    identity?.contract !== "ghrab-release-integrity-v2" ||
-    identity?.appId !== app?.id ||
-    identity?.version !== app?.version ||
-    identity?.assuranceMode !== "TRANSITIONAL" ||
-    !SHA40.test(String(identity?.sourceCommit || "")) ||
-    !SHA256.test(String(identity?.artifactDigest || "")) ||
-    !SHA256.test(String(identity?.manifestSha256 || "")) ||
-    !SHA256.test(String(identity?.sbomSha256 || "")) ||
-    !SHA256.test(String(identity?.buildProvenanceSha256 || "")) ||
-    !SHA256.test(String(identity?.evidenceManifestSha256 || ""))
-  ) {
+  const commonOk =
+    identity?.status === "VERIFIED" &&
+    identity?.contract === requiredContract &&
+    identity?.appId === app?.id &&
+    identity?.version === app?.version &&
+    SHA40.test(String(identity?.sourceCommit || ""));
+
+  let contractOk = false;
+  if (requiredContract === "ghrab-release-integrity-v2") {
+    contractOk =
+      commonOk &&
+      identity?.assuranceMode === "TRANSITIONAL" &&
+      SHA256.test(String(identity?.artifactDigest || "")) &&
+      SHA256.test(String(identity?.manifestSha256 || "")) &&
+      SHA256.test(String(identity?.sbomSha256 || "")) &&
+      SHA256.test(String(identity?.buildProvenanceSha256 || "")) &&
+      SHA256.test(String(identity?.evidenceManifestSha256 || ""));
+  } else if (requiredContract === "ghrab-patch-assurance-v1") {
+    contractOk =
+      commonOk &&
+      identity?.assuranceMode === "FOUNDATION" &&
+      SHA256.test(String(identity?.patchAssuranceSha256 || "")) &&
+      SHA256.test(String(identity?.securityEvidenceManifestSha256 || "")) &&
+      SHA256.test(String(identity?.sourceSbomSha256 || "")) &&
+      SHA256.test(String(identity?.deploymentSbomSha256 || "")) &&
+      SHA256.test(String(identity?.aiAssuranceFingerprintSha256 || ""));
+  }
+
+  if (!contractOk) {
     return {
       ok: false,
       reasonCode: "RELEASE_IDENTITY_UNVERIFIED",
-      reason: "Auto-patch vyzaduje strojove overenou GARP release identity: appId, verzi, source commit, exact artifact digest, manifest, SBOM, build provenance a evidence manifest.",
+      reason: `Auto-patch vyzaduje strojove overeny evidence kontrakt ${requiredContract}: appId, verzi, source commit a vsechny povinne SHA-256 vazby.`,
     };
   }
   return { ok: true, identity };
@@ -154,11 +176,16 @@ export function evaluateAutoPromotion({
         version: sourceReport.releaseIdentity.version,
         assuranceMode: sourceReport.releaseIdentity.assuranceMode,
         sourceCommit: sourceReport.releaseIdentity.sourceCommit,
-        artifactDigest: sourceReport.releaseIdentity.artifactDigest,
-        manifestSha256: sourceReport.releaseIdentity.manifestSha256,
-        sbomSha256: sourceReport.releaseIdentity.sbomSha256,
-        buildProvenanceSha256: sourceReport.releaseIdentity.buildProvenanceSha256,
-        evidenceManifestSha256: sourceReport.releaseIdentity.evidenceManifestSha256,
+        artifactDigest: sourceReport.releaseIdentity.artifactDigest || null,
+        manifestSha256: sourceReport.releaseIdentity.manifestSha256 || null,
+        sbomSha256: sourceReport.releaseIdentity.sbomSha256 || null,
+        buildProvenanceSha256: sourceReport.releaseIdentity.buildProvenanceSha256 || null,
+        evidenceManifestSha256: sourceReport.releaseIdentity.evidenceManifestSha256 || null,
+        patchAssuranceSha256: sourceReport.releaseIdentity.patchAssuranceSha256 || null,
+        securityEvidenceManifestSha256: sourceReport.releaseIdentity.securityEvidenceManifestSha256 || null,
+        sourceSbomSha256: sourceReport.releaseIdentity.sourceSbomSha256 || null,
+        deploymentSbomSha256: sourceReport.releaseIdentity.deploymentSbomSha256 || null,
+        aiAssuranceFingerprintSha256: sourceReport.releaseIdentity.aiAssuranceFingerprintSha256 || null,
         signatureStatus: sourceReport.releaseIdentity.signatureStatus || null,
       }
     : null;
@@ -182,7 +209,7 @@ export function evaluateAutoPromotion({
     ...base,
     status: "ELIGIBLE",
     reasonCode: "SAFE_PATCH_DEPLOYMENT",
-    reason: "Vyssi patch verze je zive nasazena, zdrojove, platformne a release-identitne konzistentni a aplikace je zarazena do GARP 2.5.1 auto-patch politiky.",
+    reason: `Vyssi patch verze je zive nasazena, zdrojove, platformne a evidence-konzistentni a aplikace je zarazena do schvalene ${policyEntry?.assuranceBaseline || "GARP"} auto-patch politiky.`,
   });
 
   if (base.change === "same" && isPendingRepositoryCandidate(sourceReport, toVersion)) {
@@ -198,9 +225,9 @@ export function evaluateAutoPromotion({
     return { ...base, status: "CURRENT", reasonCode: "NO_DRIFT", reason: "Verze odpovida release-wave baseline." };
   }
   if (!enabled) return blocked("AUTO_PROMOTION_DISABLED", "Automaticke promotion neni pro tento gate povoleno.");
-  if (!policyEntry) return blocked("NOT_ENROLLED", "Aplikace jeste neni zarazena do GARP 2.5.1 auto-patch politiky.");
+  if (!policyEntry) return blocked("NOT_ENROLLED", "Aplikace jeste neni zarazena do schvalene GARP auto-patch politiky.");
   if (policyEntry.mode !== "auto-patch") return blocked("POLICY_MODE", "Aplikace nema rezim auto-patch.");
-  if (policyEntry.assuranceBaseline !== "GARP-2.5.1-SHIELD-PREP") return blocked("ASSURANCE_BASELINE", "Aplikace nema schvaleny GARP 2.5.1 SHIELD-PREP baseline.");
+  if (!SUPPORTED_ASSURANCE_BASELINES.has(policyEntry.assuranceBaseline)) return blocked("ASSURANCE_BASELINE", `Aplikace nema podporovany schvaleny GARP baseline: ${policyEntry.assuranceBaseline || "missing"}.`);
   if (policyEntry.requiredVerification !== "deployment") return blocked("POLICY_VERIFICATION", "Auto-patch politika nevyzaduje zive deployment overeni.");
   if (base.change === "invalid") return blocked("INVALID_VERSION", "Promotion podporuje pouze stabilni SemVer x.y.z bez prerelease/build suffixu.");
   if (base.change === "rollback") return blocked("ROLLBACK", "Rollback se nikdy neprijima automaticky.");
