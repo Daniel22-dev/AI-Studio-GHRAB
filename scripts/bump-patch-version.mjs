@@ -6,6 +6,8 @@ function nextPatch(version) {
   return `${match[1]}.${match[2]}.${Number(match[3]) + 1}`;
 }
 
+const autoPatch = process.argv.includes("--auto-patch");
+
 const pkgPath = "package.json";
 const lockPath = "package-lock.json";
 const consumerPath = "ghrab-platform.consumer.json";
@@ -75,6 +77,25 @@ await writeFile(qaManifestPath, `${JSON.stringify(qaManifest, null, 2)}\n`, "utf
 
 const changelog = JSON.parse(await readFile(changelogPath, "utf8"));
 changelog.current = newVersion;
+if (autoPatch && !changelog.items?.some((item) => item?.version === newVersion)) {
+  changelog.items = [
+    {
+      version: newVersion,
+      date: new Date().toISOString().slice(0, 10),
+      title: {
+        cs: "Bezpečné automatické PATCH povýšení",
+        en: "Safe automatic PATCH promotion"
+      },
+      changes: [
+        {
+          cs: "Ověřená PATCH změna aplikace aktualizovala release-wave a současně zvýšila patch verzi AI Studia právě jednou; duplicitní nebo bezezměnový běh verzi Studia nezvyšuje.",
+          en: "A verified application PATCH update changed the release wave and bumped the AI Studio patch version exactly once; duplicate or no-change runs do not bump the Studio version."
+        }
+      ]
+    },
+    ...(changelog.items || [])
+  ];
+}
 await writeFile(changelogPath, `${JSON.stringify(changelog, null, 2)}\n`, "utf8");
 
 for (const releaseDocPath of releaseDocPaths) {
@@ -90,4 +111,4 @@ for (const releaseDocPath of releaseDocPaths) {
   await writeFile(releaseDocPath, releaseDoc, "utf8");
 }
 
-console.log(`AI Studio version bumped: ${oldVersion} -> ${newVersion}`);
+console.log(`AI Studio version bumped: ${oldVersion} -> ${newVersion}${autoPatch ? " (verified auto-patch)" : ""}`);

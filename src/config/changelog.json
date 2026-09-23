@@ -1,7 +1,21 @@
 {
   "schema": "ai-studio-changelog-v1",
-  "current": "0.21.86",
+  "current": "0.21.87",
   "items": [
+    {
+      "version": "0.21.87",
+      "date": "2026-09-23",
+      "title": {
+        "cs": "Bezpečné automatické PATCH povýšení",
+        "en": "Safe automatic PATCH promotion"
+      },
+      "changes": [
+        {
+          "cs": "Ověřená PATCH změna Generátoru byla svázána s release-wave a patch verzí AI Studia. Auto-patch nyní při skutečné změně zvýší verzi Studia právě jednou; duplicitní a bezezměnové běhy zůstávají NO-OP.",
+          "en": "The verified Generator PATCH update is now bound to the release wave and AI Studio patch version. Auto-patch now bumps Studio exactly once for a real change; duplicate and no-change runs remain NO-OP."
+        }
+      ]
+    },
     {
       "version": "0.21.86",
       "date": "2026-09-22",
