@@ -1,6 +1,6 @@
 {
   "schema": "ghrab-standards-catalog-v1",
-  "updatedAt": "2026-09-22",
+  "updatedAt": "2026-09-23",
   "items": {
     "ecosystem": {
       "title": {
@@ -82,84 +82,180 @@
     },
     "garp": {
       "title": {
-        "cs": "GARP 2.5.1 · SHIELD-PREP",
-        "en": "GARP 2.5.1 · SHIELD-PREP"
+        "cs": "GARP 2.7 · kumulativní bezpečnostní standard",
+        "en": "GARP 2.7 · cumulative security standard"
       },
       "version": {
-        "cs": "GARP-2.5.1-SHIELD-PREP",
-        "en": "GARP-2.5.1-SHIELD-PREP"
+        "cs": "GARP 2.7 · zahrnuje zachované vrstvy 2.5/2.6 + rozšíření 2.7",
+        "en": "GARP 2.7 · retained 2.5/2.6 layers + 2.7 extensions"
       },
       "summary": {
-        "cs": "GARP je bezpečnostní a release-assurance baseline používaná napříč aplikacemi. Verze 2.5.1 SHIELD-PREP kombinuje hardening zdrojového kódu, release evidence a fail-closed kontroly před nasazením.",
-        "en": "GARP is the security and release-assurance baseline used across the applications. Version 2.5.1 SHIELD-PREP combines source hardening, release evidence and fail-closed controls before deployment."
+        "cs": "GARP 2.7 je aktuální souhrnný bezpečnostní kontrakt AI Studia. Nepřepisuje funkční ochrany předchozích generací: zachovává jejich hardening, release assurance a fail-closed principy a rozšiřuje je o explicitní architektonickou integritu, přesnější evidenci, mutační negativní testy a přísné oddělení lokální/CI evidence od skutečného LIVE ověření.",
+        "en": "GARP 2.7 is the current cumulative security contract for AI Studio. It does not discard working protections from earlier generations: it retains their hardening, release assurance and fail-closed principles and extends them with explicit architecture integrity, stronger evidence, mutation-based negative tests and strict separation of local/CI evidence from actual LIVE verification."
       },
       "sections": [
         {
           "title": {
-            "cs": "Hlavní vrstvy",
-            "en": "Core layers"
+            "cs": "12 ochranných oblastí AG-01 až AG-12",
+            "en": "12 protection areas AG-01 to AG-12"
           },
           "points": [
             {
-              "cs": "N5 hardening a regresní kontroly rizikových konstrukcí a tajemství.",
-              "en": "N5 hardening and regression checks for risky constructs and secrets."
+              "cs": "AG-01 Policy Engine: platnost politiky, precedence, fail-closed rozhodování a zákaz samo-schválení.",
+              "en": "AG-01 Policy Engine: policy validity, precedence, fail-closed decisions and prevention of self-approval."
             },
             {
-              "cs": "Release-integrity vazba mezi appId, verzí, commitem a přesným artefaktem.",
-              "en": "Release-integrity binding across appId, version, source commit and exact artifact."
+              "cs": "AG-02 Identity Guard: identita, role, relace, objektová oprávnění, revokace a step-up hranice.",
+              "en": "AG-02 Identity Guard: identity, roles, sessions, object authorization, revocation and step-up boundaries."
             },
             {
-              "cs": "SBOM, build provenance a evidence manifest jako auditní stopa releasu.",
-              "en": "SBOM, build provenance and evidence manifest as release audit evidence."
+              "cs": "AG-03 Request/API/AI Guard: schémata vstupů, limity, business-logic validace, AI operace a bezpečné zpracování výstupů.",
+              "en": "AG-03 Request/API/AI Guard: input schemas, limits, business-logic validation, AI operations and safe output handling."
             },
             {
-              "cs": "Fail-closed brány: při nesplnění podmínek se release nenasadí.",
-              "en": "Fail-closed gates: deployment is blocked when requirements are not met."
+              "cs": "AG-04 až AG-06: egress/SSRF hranice, soubory a karanténa, datový lifecycle, cache, exporty a mazání.",
+              "en": "AG-04 to AG-06: egress/SSRF boundaries, files and quarantine, data lifecycle, cache, exports and deletion."
+            },
+            {
+              "cs": "AG-07 až AG-09: release integrity, konfigurační drift, inventář endpointů, schopností, závislostí a aktiv.",
+              "en": "AG-07 to AG-09: release integrity, configuration drift, inventory of endpoints, capabilities, dependencies and assets."
+            },
+            {
+              "cs": "AG-10 až AG-12: security health, containment/recovery, orchestraci, alerting a kontrolované bezpečnostní testy.",
+              "en": "AG-10 to AG-12: security health, containment/recovery, orchestration, alerting and controlled security testing."
             }
           ]
         },
         {
           "title": {
-            "cs": "SHIELD-PREP znamená",
-            "en": "SHIELD-PREP means"
+            "cs": "FOUNDATION · SHIELD-LIVE · ASSURANCE · AUTO-PATCH-GUARD",
+            "en": "FOUNDATION · SHIELD-LIVE · ASSURANCE · AUTO-PATCH-GUARD"
           },
           "points": [
             {
-              "cs": "Aplikace je připravena na přísnější SHIELD/LIVE režim, ale některé produkční kryptografické prvky jsou stále přechodné.",
-              "en": "The app is prepared for stricter SHIELD/LIVE operation while some production cryptographic elements remain transitional."
+              "cs": "FOUNDATION ověřuje kontrakty, zdrojový kód, architekturu, build a artefakty před nasazením.",
+              "en": "FOUNDATION verifies contracts, source code, architecture, build and artifacts before deployment."
             },
             {
-              "cs": "Baseline je technický minimální standard, ne marketingový bezpečnostní certifikát.",
-              "en": "The baseline is a technical minimum standard, not a marketing security certificate."
+              "cs": "SHIELD-LIVE znamená skutečné runtime vynucování a provozní ověření; bez cílového prostředí zůstává NOT_TESTED, nikdy falešný PASS.",
+              "en": "SHIELD-LIVE means actual runtime enforcement and operational verification; without the target environment it remains NOT_TESTED, never a false PASS."
+            },
+            {
+              "cs": "ASSURANCE odděluje Presence, Health, Effectiveness a Freshness a odmítá rozporné nebo nedoložené celkové PASS.",
+              "en": "ASSURANCE separates Presence, Health, Effectiveness and Freshness and rejects contradictory or unsupported overall PASS claims."
+            },
+            {
+              "cs": "AUTO-PATCH-GUARD chrání aktualizační cestu: úplné povinné brány, důvěryhodný původ, digesty, evidence, replay ochranu a fail-closed přijetí.",
+              "en": "AUTO-PATCH-GUARD protects the update path: complete mandatory gates, trusted origin, digests, evidence, replay protection and fail-closed admission."
             }
           ]
         },
         {
           "title": {
-            "cs": "Kontrolní kontrakt",
-            "en": "Control contract"
+            "cs": "Architecture Integrity — novinka GARP 2.7",
+            "en": "Architecture Integrity — new in GARP 2.7"
           },
           "points": [
             {
-              "cs": "garpOk = assuranceBaseline === očekávaná baseline && app.version >= minimumVersion.",
-              "en": "garpOk = assuranceBaseline === expected baseline && app.version >= minimumVersion."
+              "cs": "Kontrola grafu závislostí, zakázaných importů, cyklů a nevyřešených dynamických vazeb přes bezpečnostní hranice.",
+              "en": "Checks dependency graphs, forbidden imports, cycles and unresolved dynamic links across security boundaries."
             },
             {
-              "cs": "Release integrity svazuje appId, semver, commit SHA a artefakt; nesoulad má skončit fail-closed před deployem.",
-              "en": "Release integrity binds appId, semver, commit SHA and artifact; mismatch is expected to fail closed before deployment."
+              "cs": "Inspekce skutečného distribučního artefaktu: zákaz test runnerů, mock-auth/bypass kódu, secrets, zdrojových map a interních bezpečnostních nástrojů v produkčním balíku.",
+              "en": "Inspects the actual distributable artifact: no test runners, mock-auth/bypass code, secrets, source maps or internal security tooling in the production bundle."
             },
             {
-              "cs": "GARP/P5/N5 zůstávají autoritativní CI bránou; tato obrazovka pouze čte a interpretuje jejich publikovanou evidenci.",
-              "en": "GARP/P5/N5 remain the authoritative CI gate; this screen only reads and interprets their published evidence."
+              "cs": "Capability drift: nové routy, AI operace, file inputy, joby nebo privilegované operace nesmějí tiše zdědit staré N/A.",
+              "en": "Capability drift: new routes, AI operations, file inputs, jobs or privileged operations must not silently inherit an old N/A."
+            },
+            {
+              "cs": "Trust gate musí prokázat vlastní integritu, scope a externí očekávání; chyba harnessu nebo nulový scope není PASS.",
+              "en": "The trust gate must prove its own integrity, scope and external expectation; harness errors or zero scope are not PASS."
+            },
+            {
+              "cs": "Jedna aktivní autorita: historické 2.5/2.6 mohou zůstat jako regresní baseline, ale nesmějí paralelně rozhodovat jako konkurenční bezpečnostní engine.",
+              "en": "Single active authority: historical 2.5/2.6 may remain as regression baselines but must not act as competing security engines."
+            }
+          ]
+        },
+        {
+          "title": {
+            "cs": "RED TEAM a negativní testování",
+            "en": "RED TEAM and negative testing"
+          },
+          "points": [
+            {
+              "cs": "67 specifikací GARP 2.7: kontrakt/harness, identita, web/data, AI, update/release, runtime/recovery a architecture-integrity.",
+              "en": "67 GARP 2.7 specifications covering contract/harness, identity, web/data, AI, update/release, runtime/recovery and architecture integrity."
+            },
+            {
+              "cs": "Identity a objektové útoky: unauthenticated access, IDOR/object swap, role escalation, revokace relace, CSRF/origin, service identity a break-glass.",
+              "en": "Identity and object attacks: unauthenticated access, IDOR/object swapping, role escalation, session revocation, CSRF/origin, service identity and break-glass."
+            },
+            {
+              "cs": "Web/data útoky: XSS, postMessage/iframe hranice, upload a parser isolation, cache/fronty, export-import, TTL/mazání, offline/service-worker cache a business logic.",
+              "en": "Web/data attacks: XSS, postMessage/iframe boundaries, upload and parser isolation, cache/queues, export-import, TTL/deletion, offline/service-worker cache and business logic."
+            },
+            {
+              "cs": "AI RED TEAM: přímá, nepřímá, vícejazyčná, vícekolová a multimodální prompt injection, cross-app důvěra, RAG oprávnění, AI Core bypass, budget/race a model/prompt drift.",
+              "en": "AI RED TEAM: direct, indirect, multilingual, multi-turn and multimodal prompt injection, cross-app trust, RAG permissions, AI Core bypass, budget/race and model/prompt drift."
+            },
+            {
+              "cs": "Release/runtime útoky: podvržený artefakt či digest, replay, trust-root záměna, rollback, souběžná aktualizace, CI/policy drift, egress/SSRF, výpadky ochran, log injection, plný disk a recovery.",
+              "en": "Release/runtime attacks: forged artifact or digest, replay, trust-root substitution, rollback, concurrent updates, CI/policy drift, egress/SSRF, protection failures, log injection, disk exhaustion and recovery."
+            },
+            {
+              "cs": "Mutation testing prokazuje, že testovací harness umí skutečně zčervenat: úmyslně porušená jednorázová kopie musí FAIL, po odstranění mutace znovu PASS.",
+              "en": "Mutation testing proves the harness can actually fail: an intentionally broken disposable copy must FAIL and return to PASS after the mutation is removed."
+            }
+          ]
+        },
+        {
+          "title": {
+            "cs": "Release, supply chain a evidence",
+            "en": "Release, supply chain and evidence"
+          },
+          "points": [
+            {
+              "cs": "SBOM, build provenance, evidence manifest, přesné SHA-256 vazby a release identity spojují zdroj, commit, konfiguraci a konkrétní artefakt.",
+              "en": "SBOM, build provenance, evidence manifest, exact SHA-256 bindings and release identity connect source, commit, configuration and the exact artifact."
+            },
+            {
+              "cs": "Secret scanning, dependency/release kontroly a fail-closed brány zastaví kandidáta při neúplné nebo nedůvěryhodné evidenci.",
+              "en": "Secret scanning, dependency/release checks and fail-closed gates block candidates with incomplete or untrusted evidence."
+            },
+            {
+              "cs": "Stará evidence se po relevantní změně modelu, promptu, tool schématu, policy, parseru nebo deploymentu zneplatňuje; historický PASS není automaticky aktuální PASS.",
+              "en": "Old evidence is invalidated after relevant model, prompt, tool-schema, policy, parser or deployment changes; a historical PASS is not automatically a current PASS."
+            }
+          ]
+        },
+        {
+          "title": {
+            "cs": "Bez serveru — co znamená stav",
+            "en": "Without the server — what the status means"
+          },
+          "points": [
+            {
+              "cs": "Lokální a CI ochrany běží normálně a nesmějí se kvůli chybějícímu serveru vypnout ani změkčit.",
+              "en": "Local and CI protections continue normally and must not be disabled or weakened because the server is unavailable."
+            },
+            {
+              "cs": "Kontroly vyžadující skutečný školní runtime se označí DEFERRED/NOT_TESTED. Nejsou FAIL jen proto, že server ještě není schválen, a nejsou ani PASS bez důkazu.",
+              "en": "Checks that require the real school runtime are marked DEFERRED/NOT_TESTED. They are not FAIL merely because the server is not yet approved, and they are not PASS without evidence."
+            },
+            {
+              "cs": "Aktivní příprava serverového řešení je odložena do samostatné budoucí fáze po případném souhlasu vedení a doplnění technických podkladů správce serveru.",
+              "en": "Active server implementation is deferred to a separate future phase after management approval and the server administrator's technical inputs."
             }
           ]
         }
       ],
       "sources": [
         "src/config/release-promotion-policy.json",
-        "BEZPECNOST.md",
-        "scripts/test-garp-security.mjs",
-        "security/"
+        "security/garp25/",
+        "scripts/test-garp-security-regressions.mjs",
+        "GARP 2.7 consolidated protocol and RED TEAM catalogue"
       ]
     },
     "safePromotion": {
