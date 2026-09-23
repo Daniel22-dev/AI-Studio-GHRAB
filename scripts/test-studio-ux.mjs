@@ -167,7 +167,7 @@ check(
     readinessJs.includes("function garpRolloutSummary") &&
     readinessJs.includes("Boolean(promotion?.assuranceBaseline)") &&
     !readinessJs.includes("expectedGarp(") &&
-    standardsCatalog.includes('"GARP 2.7"') &&
+    standardsCatalog.includes("GARP 2.7") &&
     readinessJs.includes('downloadDetailPdf') &&
     readinessJs.includes('downloadTextPdf'),
   "Souhrnne karty ve Sprave nemaji title-first hierarchii, technicky detail nebo primy PDF export.",
