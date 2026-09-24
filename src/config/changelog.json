@@ -25,6 +25,10 @@
         {
           "cs": "Nemediální dist budget je úzce upraven z 2 405 000 na 2 410 000 B, protože přesnější r2/G-02 metadata přidala přibližně 1,1 kB; entry, precache, největší soubor i runtime limity zůstávají beze změny.",
           "en": "The non-media dist budget is narrowly adjusted from 2,405,000 to 2,410,000 B because the more precise r2/G-02 metadata added about 1.1 kB; entry, precache, largest-file and runtime limits remain unchanged."
+        },
+        {
+          "cs": "KS Safe Promotion regrese už nepřipíná živý patch na jedno konkrétní číslo; hlídá minimální baseline 5.10.28, stejnou patch řadu 5.10.x a přesnou shodu registru s release-wave, takže ověřený 5.10.29 není falešný blocker.",
+          "en": "The Correspondence Safe Promotion regression no longer pins the live patch to one exact number; it enforces minimum baseline 5.10.28, the same 5.10.x patch line, and exact registry/release-wave agreement, so verified 5.10.29 is not a false blocker."
         }
       ]
     },
