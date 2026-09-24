@@ -324,7 +324,7 @@
       "cs": "Korespondenční asistent",
       "en": "Correspondence Assistant"
     },
-    "version": "5.10.28",
+    "version": "5.10.29",
     "status": {
       "cs": "Pracovní pilotní verze",
       "en": "Working pilot release"
@@ -365,7 +365,7 @@
       "platformContract": "ghrab-platform-v1",
       "platformRange": ">=1.1.2 <2.0.0"
     },
-    "publishedAt": "2026-09-23T16:47:53.150Z",
+    "publishedAt": "2026-09-24T06:50:24.912Z",
     "aiCore": {
       "schema": "ghrab-ai-app-integration-v1",
       "status": "integrated-p1",
@@ -397,7 +397,7 @@
       "studioBridge": "ghrab-studio-handoff-v2",
       "artifactEnvelope": "ghrab-artifact-envelope-v1",
       "storagePrefix": "ghrab.correspondence.",
-      "cacheName": "ghrab-correspondence-v5.10.28",
+      "cacheName": "ghrab-correspondence-v5.10.29",
       "accessibilityContract": "ghrab-a11y-v1",
       "performanceContract": "ghrab-performance-v1",
       "moduleContract": "ghrab-lazy-modules-v1"

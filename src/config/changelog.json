@@ -1,7 +1,41 @@
 {
   "schema": "ai-studio-changelog-v1",
-  "current": "0.21.95",
+  "current": "0.21.96",
   "items": [
+    {
+      "version": "0.21.96",
+      "date": "2026-09-24",
+      "title": {
+        "cs": "Finální GARP 2.7 r2 clean-up ve Správě",
+        "en": "Final GARP 2.7 r2 Administration cleanup"
+      },
+      "changes": [
+        {
+          "cs": "Technický detail GARP ve Správě nyní výslovně uvádí konsolidovanou revizi 2.7 r2 / G-02 a její fail-closed policy validaci.",
+          "en": "The GARP technical detail now explicitly identifies consolidated revision 2.7 r2 / G-02 and its fail-closed policy validation."
+        },
+        {
+          "cs": "LUDUS baseline pro GARP 2.7 je posunuta z historické r1 verze 1.16.27 na první r2/G-02 implementaci 1.16.28; aktuální nasazený LUDUS zůstává 1.16.29.",
+          "en": "The LUDUS GARP 2.7 baseline moves from historical r1 version 1.16.27 to the first r2/G-02 implementation, 1.16.28; the current deployed LUDUS remains 1.16.29."
+        },
+        {
+          "cs": "Katalog standardů už neobsahuje natvrdo zastarávající číslo verze AI Studia v souhrnu ekosystému.",
+          "en": "The standards catalog no longer hard-codes an AI Studio version that can become stale in the ecosystem summary."
+        },
+        {
+          "cs": "Nemediální dist budget je úzce upraven z 2 405 000 na 2 410 000 B, protože přesnější r2/G-02 metadata přidala přibližně 1,1 kB; entry, precache, největší soubor i runtime limity zůstávají beze změny.",
+          "en": "The non-media dist budget is narrowly adjusted from 2,405,000 to 2,410,000 B because the more precise r2/G-02 metadata added about 1.1 kB; entry, precache, largest-file and runtime limits remain unchanged."
+        },
+        {
+          "cs": "KS Safe Promotion regrese už nepřipíná živý patch na jedno konkrétní číslo; hlídá minimální baseline 5.10.28, stejnou patch řadu 5.10.x a přesnou shodu registru s release-wave, takže ověřený 5.10.29 není falešný blocker.",
+          "en": "The Correspondence Safe Promotion regression no longer pins the live patch to one exact number; it enforces minimum baseline 5.10.28, the same 5.10.x patch line, and exact registry/release-wave agreement, so verified 5.10.29 is not a false blocker."
+        },
+        {
+          "cs": "LUDUS Safe Promotion fixture je srovnán s r2 baseline: pozitivní scénář testuje 1.16.28 → 1.16.29 a negativní scénáře dál fail-closed odmítají chybějící nebo poškozenou patch-assurance.",
+          "en": "The LUDUS Safe Promotion fixture now matches the r2 baseline: the positive case tests 1.16.28 → 1.16.29 while negative cases still fail closed on missing or malformed patch assurance."
+        }
+      ]
+    },
     {
       "version": "0.21.95",
       "date": "2026-09-24",

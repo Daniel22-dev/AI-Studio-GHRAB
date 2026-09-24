@@ -1,6 +1,6 @@
 {
   "schema": "ghrab-standards-catalog-v1",
-  "updatedAt": "2026-09-23",
+  "updatedAt": "2026-09-24",
   "items": {
     "ecosystem": {
       "title": {
@@ -8,8 +8,8 @@
         "en": "Overall ecosystem status"
       },
       "version": {
-        "cs": "AI Studio 0.21.86 · 9 aplikací",
-        "en": "AI Studio 0.21.86 · 9 applications"
+        "cs": "AI Studio · 9 aplikací · aktuální release",
+        "en": "AI Studio · 9 applications · current release"
       },
       "summary": {
         "cs": "Souhrnný stav vzniká až kombinací všech kontrolních vrstev. Aplikace je zde považována za bezproblémovou pouze tehdy, když současně projde GARP baseline, Safe Promotion, Platform kontraktem, případným AI Core, ověřením zdroje a dostupností manuálu.",
@@ -86,12 +86,12 @@
         "en": "GARP 2.7 · cumulative security standard"
       },
       "version": {
-        "cs": "2.7 · zachovává 2.5/2.6 + rozšíření 2.7",
-        "en": "2.7 · retains 2.5/2.6 + 2.7 extensions"
+        "cs": "2.7 r2 · G-02 hardened · zachovává 2.5/2.6",
+        "en": "2.7 r2 · G-02 hardened · retains 2.5/2.6"
       },
       "summary": {
-        "cs": "Aktuální bezpečnostní kontrakt. Zachovává funkční hardening a fail-closed ochrany 2.5/2.6 a přidává architektonickou integritu, silnější evidence, mutační testy a oddělení FOUNDATION od LIVE.",
-        "en": "Current security contract. It retains working 2.5/2.6 hardening and fail-closed controls and adds architecture integrity, stronger evidence, mutation tests and FOUNDATION/LIVE separation."
+        "cs": "Aktuální bezpečnostní kontrakt GARP 2.7 r2. Zachovává funkční hardening a fail-closed ochrany 2.5/2.6, přidává architektonickou integritu, silnější evidence, mutační testy, oddělení FOUNDATION od LIVE a G-02 ochranu proti formálně vyplněným, ale sémanticky prázdným policy.",
+        "en": "Current GARP 2.7 r2 security contract. It retains working 2.5/2.6 hardening and fail-closed controls, adds architecture integrity, stronger evidence, mutation tests, FOUNDATION/LIVE separation, and G-02 protection against formally populated but semantically empty policies."
       },
       "sections": [
         {
@@ -152,6 +152,22 @@
         },
         {
           "title": {
+            "cs": "r2 / G-02 policy hardening",
+            "en": "r2 / G-02 policy hardening"
+          },
+          "points": [
+            {
+              "cs": "Policy validator fail-closed odmítá nedotčenou šablonu, neznámé appId, verzi 0.0.0, sekce vyplněné pouze obecným mode a placeholdery; referenční master má pro G-02 pět negativních případů.",
+              "en": "The policy validator fails closed on untouched templates, unknown app IDs, version 0.0.0, sections populated only by a generic mode, and placeholders; the reference master contains five G-02 negative cases."
+            },
+            {
+              "cs": "Aplikační policy musí být sémantická, inventárně platná a semver-validní. Commit-specific PASS pro externí trust anchor zůstává důkazem CI, nikoli tvrzením uloženým ve zdrojových metadatech.",
+              "en": "Application policy must be semantic, inventory-valid and semver-valid. Commit-specific PASS for the external trust anchor remains CI evidence rather than a claim stored in source metadata."
+            }
+          ]
+        },
+        {
+          "title": {
             "cs": "RED TEAM a negativní testy",
             "en": "RED TEAM and negative tests"
           },
@@ -187,7 +203,7 @@
         "src/config/release-promotion-policy.json",
         "security/garp25/",
         "scripts/test-garp-security-regressions.mjs",
-        "GARP 2.7 consolidated protocol"
+        "GARP 2.7 consolidated r2 / G-02 reference master"
       ]
     },
     "safePromotion": {

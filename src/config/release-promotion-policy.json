@@ -47,11 +47,11 @@
     {
       "id": "ludus",
       "mode": "auto-patch",
-      "minimumVersion": "1.16.27",
+      "minimumVersion": "1.16.28",
       "assuranceBaseline": "GARP-2.7",
       "requiredVerification": "deployment",
       "requiredEvidenceContract": "ghrab-patch-assurance-v1",
-      "note": "LUDUS 1.16.27 is the first reference implementation of GARP 2.7 CONSOLIDATED FOUNDATION. The reviewed baseline preserves historical GARP 2.5.1 regression tooling, requires SHA-256-bound patch assurance and external architecture-policy trust in CI, and keeps school-server SHIELD-LIVE/RI-LIVE explicitly DEFERRED/NOT_TESTED until management approval.",
+      "note": "LUDUS 1.16.28 is the first reviewed GARP 2.7 r2 / G-02 FOUNDATION implementation; LUDUS 1.16.29 is the final metadata-clean reference release. The baseline preserves historical GARP 2.5.1 regression tooling, requires semantic/inventory-valid policy admission, SHA-256-bound patch assurance and external architecture-policy trust in CI, and keeps school-server SHIELD-LIVE/RI-LIVE explicitly DEFERRED/NOT_TESTED until management approval. LUDUS 1.16.27 remains historical r1 and is no longer the minimum approved r2 baseline.",
       "expectedStudioBridge": "v2"
     },
     {
