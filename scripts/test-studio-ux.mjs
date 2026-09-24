@@ -200,7 +200,8 @@ check(
     !standardsCatalog.includes("AI Studio 0.21.86") &&
     releasePromotionPolicy.includes('"id": "ludus"') &&
     releasePromotionPolicy.includes('"minimumVersion": "1.16.28"') &&
-    releasePromotionPolicy.includes("1.16.27 remains historical r1"),
+    releasePromotionPolicy.includes("1.16.28 is the first reviewed GARP 2.7 r2/G-02 baseline") &&
+    releasePromotionPolicy.includes("1.16.29 is the final audited reference"),
   "Finalni GARP r2 metadata cleanup ve Sprave se vratil ke stare r1 nebo hard-coded verzi Studia.",
 );
 
