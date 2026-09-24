@@ -139,6 +139,9 @@ async function verifyLegacyAppDeploymentIsolation() {
   ).replace(
     /^import \{ BAKED_DEPLOYMENT_CONFIG \} from "\.\.\/config\/deployment-baked\.js";$/m,
     `const BAKED_DEPLOYMENT_CONFIG = Object.freeze(${JSON.stringify(studioDeployment)});`,
+  ).replace(
+    /^const CONFIG_BASE = new URL\("\.\.\/config\/", import\.meta\.url\);$/m,
+    'const CONFIG_BASE = new URL("https://daniel22-dev.github.io/AI-Studio-GHRAB/config/");',
   );
   const storage = new MemoryStorage();
   const classList = { toggle: () => {} };
