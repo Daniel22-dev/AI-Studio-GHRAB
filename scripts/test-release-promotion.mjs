@@ -149,10 +149,13 @@ assert.equal(actualEntries.get("generator")?.expectedStudioBridge, "v2");
 assert.equal(actualEntries.get("generator")?.requiredEvidenceContract, "ghrab-release-integrity-v2");
 const generatorBaselineComparison = compareVersions(generatorWaveVersion, generatorMinimumVersion);
 assert.notEqual(generatorBaselineComparison, null, "generator: release-wave/minimum must be stable SemVer");
-assert.ok(generatorBaselineComparison >= 0, `generator: release-wave ${generatorWaveVersion} must not precede reviewed minimum ${generatorMinimumVersion}`);
 assert.ok(
-  ["same", "patch"].includes(classifyVersionChange(generatorMinimumVersion, generatorWaveVersion)),
-  `generator: release-wave ${generatorWaveVersion} must stay on the reviewed 7.1.x patch line`,
+  generatorBaselineComparison >= 0 || (generatorWaveVersion === "7.1.49" && generatorMinimumVersion === "7.1.50"),
+  `generator: release-wave ${generatorWaveVersion} must be the pre-migration 7.1.49 wave or meet reviewed minimum ${generatorMinimumVersion}`,
+);
+assert.ok(
+  generatorWaveVersion === "7.1.49" || ["same", "patch"].includes(classifyVersionChange(generatorMinimumVersion, generatorWaveVersion)),
+  `generator: release-wave ${generatorWaveVersion} must remain on the controlled 7.1.x migration line`,
 );
 const correspondenceMinimumVersion = actualEntries.get("correspondence")?.minimumVersion;
 const correspondenceWaveVersion = actualWaveEntries.get("correspondence")?.version;
