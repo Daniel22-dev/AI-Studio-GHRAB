@@ -21,6 +21,10 @@
         {
           "cs": "Katalog standardů už neobsahuje natvrdo zastarávající číslo verze AI Studia v souhrnu ekosystému.",
           "en": "The standards catalog no longer hard-codes an AI Studio version that can become stale in the ecosystem summary."
+        },
+        {
+          "cs": "Nemediální dist budget je úzce upraven z 2 405 000 na 2 410 000 B, protože přesnější r2/G-02 metadata přidala přibližně 1,1 kB; entry, precache, největší soubor i runtime limity zůstávají beze změny.",
+          "en": "The non-media dist budget is narrowly adjusted from 2,405,000 to 2,410,000 B because the more precise r2/G-02 metadata added about 1.1 kB; entry, precache, largest-file and runtime limits remain unchanged."
         }
       ]
     },
