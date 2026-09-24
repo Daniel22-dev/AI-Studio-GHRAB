@@ -279,7 +279,7 @@ const generatorReport = {
   verification: "deployment",
   repository: generatorSource.repository,
   version: "7.1.51",
-  sourceVersion: "7.1.41",
+  sourceVersion: "7.1.51",
   operationsWarning: null,
   releaseIdentity: verifiedV2IdentityFixture("generator", "7.1.51"),
 };
