@@ -172,7 +172,8 @@ assert.ok(
 assert.equal(actualApps.find((app) => app.id === "correspondence")?.version, correspondenceWaveVersion);
 const differentiatorMinimumVersion = actualEntries.get("differentiator")?.minimumVersion;
 const differentiatorWaveVersion = actualWaveEntries.get("differentiator")?.version;
-assert.equal(differentiatorMinimumVersion, "1.3.47");
+assert.equal(differentiatorMinimumVersion, "1.3.49");
+assert.equal(actualEntries.get("differentiator")?.assuranceBaseline, "GARP-2.7");
 assert.equal(actualEntries.get("differentiator")?.expectedStudioBridge, "v2");
 assert.equal(actualEntries.get("differentiator")?.requiredEvidenceContract, "ghrab-release-integrity-v2");
 const differentiatorBaselineComparison = compareVersions(differentiatorWaveVersion, differentiatorMinimumVersion);

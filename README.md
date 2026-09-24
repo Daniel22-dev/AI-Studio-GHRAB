@@ -1,6 +1,6 @@
 # AI Studio GHRAB
 
-**Aktuální verze:** 0.21.101
+**Aktuální verze:** 0.21.102
 
 0.21.87 dokončuje vlastní GARP 2.5.1/N5 release assurance Studia a opravuje auto-patch tak, aby skutečně přijatý PATCH současně zvýšil patch verzi Studia právě jednou; duplicitní a bezezměnové běhy zůstávají NO-OP.
 
