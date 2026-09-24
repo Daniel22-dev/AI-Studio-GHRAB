@@ -114,7 +114,11 @@ async function fetchJson(url, timeoutMs = 5000) {
   return response.json();
 }
 async function deploymentContext() {
-  if (globalThis.__GHRAB_DEPLOYMENT_CONFIG__) return globalThis.__GHRAB_DEPLOYMENT_CONFIG__;
+  // The central access guard must use the AI Studio deployment contract.
+  // Child applications also expose __GHRAB_DEPLOYMENT_CONFIG__, but their
+  // sharedAccessVersion can legitimately lag behind while they are being tested
+  // on an older GARP release. Treating a child deployment as authoritative here
+  // makes a valid central bundle look mismatched and locks the application.
   if (BAKED_DEPLOYMENT_CONFIG) {
     const originBase = new URL("/", location.href);
     return {
@@ -128,6 +132,8 @@ async function deploymentContext() {
         : "",
     };
   }
+  const runtimeDeployment = globalThis.__GHRAB_DEPLOYMENT_CONFIG__;
+  if (runtimeDeployment?.appId === "ai-studio") return runtimeDeployment;
   try {
     const response = await fetchWithTimeout(new URL("deployment.json", CONFIG_BASE), {
       cache: "no-store",
