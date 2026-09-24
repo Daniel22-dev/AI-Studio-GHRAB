@@ -1,6 +1,6 @@
-# Release checklist AI Studio GHRAB 0.21.100
+# Release checklist AI Studio GHRAB 0.21.101
 
-> Aktuální verze: **0.21.100** · etapa P5
+> Aktuální verze: **0.21.101** · etapa P5
 
 > Toto je aktivní checklist po finálním GARP 2.5.1/N5/Safe Promotion cleanupu. Předchozí historický checklist je zachován v `docs/archive/RELEASE-CHECKLIST-pre-final-0.21.89.md`.
 
