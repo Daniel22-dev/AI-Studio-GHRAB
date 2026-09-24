@@ -123,6 +123,84 @@ async function verifySchoolProfileFailClosed() {
   );
 }
 
+async function verifyLegacyAppDeploymentIsolation() {
+  const studioDeployment = JSON.parse(
+    fs.readFileSync(path.join(root, "src/config/deployment.json"), "utf8"),
+  );
+  const bundle = JSON.parse(
+    fs.readFileSync(path.join(root, "src/config/access-config-bundle.json"), "utf8"),
+  );
+  const signature = JSON.parse(
+    fs.readFileSync(path.join(root, "src/config/access-config-bundle.sig.json"), "utf8"),
+  );
+  const source = fs.readFileSync(
+    path.join(root, "src/access/access-control.js"),
+    "utf8",
+  ).replace(
+    /^import \{ BAKED_DEPLOYMENT_CONFIG \} from "\.\.\/config\/deployment-baked\.js";$/m,
+    `const BAKED_DEPLOYMENT_CONFIG = Object.freeze(${JSON.stringify(studioDeployment)});`,
+  );
+  const storage = new MemoryStorage();
+  const classList = { toggle: () => {} };
+  Object.defineProperties(globalThis, {
+    crypto: { value: webcrypto, configurable: true },
+    localStorage: { value: storage, configurable: true },
+    location: { value: new URL("https://daniel22-dev.github.io/generator-testu/"), configurable: true },
+    navigator: { value: { onLine: true }, configurable: true },
+    document: {
+      value: {
+        documentElement: { classList, dataset: {} },
+        dispatchEvent: () => {},
+      },
+      configurable: true,
+    },
+    CustomEvent: {
+      value: class CustomEvent {
+        constructor(type, options = {}) { this.type = type; this.detail = options.detail; }
+      },
+      configurable: true,
+    },
+  });
+  globalThis.__GHRAB_DEPLOYMENT_CONFIG__ = {
+    schema: "ghrab-deployment-config-v1",
+    version: 1,
+    appId: "generator",
+    profile: "github-pages",
+    authMode: "signed-permit",
+    apiBaseUrl: "",
+    sharedAccessVersion: "access-p1-20260824175535Z-k_wtm7Zj",
+    access: { maxOfflineAgeHours: 24, maxSignedBundleAgeDays: 30, failClosedWhenStale: true },
+    features: { allowLocalProviderKeys: true },
+  };
+  globalThis.fetch = async (input) => {
+    const href = String(input);
+    if (href.endsWith("access-config-bundle.json")) {
+      return new Response(JSON.stringify(bundle), { status: 200, headers: { "Content-Type": "application/json" } });
+    }
+    if (href.endsWith("access-config-bundle.sig.json")) {
+      return new Response(JSON.stringify(signature), { status: 200, headers: { "Content-Type": "application/json" } });
+    }
+    throw new Error(`Neočekávaný fetch ${href}`);
+  };
+
+  const moduleUrl = `data:text/javascript;base64,${Buffer.from(source).toString("base64")}`;
+  const access = await import(moduleUrl);
+  const snapshot = await access.initialiseAccess({ timeoutMs: 500 });
+
+  check(
+    snapshot.sharedAccessVersion === studioDeployment.sharedAccessVersion,
+    "Centrální guard ignoruje zastaralou sharedAccessVersion podřízené aplikace.",
+  );
+  check(
+    snapshot.connectionState === "online",
+    "GARP 2.5 aplikace přijme aktuální podepsaný centrální access bundle.",
+  );
+  check(
+    snapshot.reason === "missing",
+    "Po kompatibilním načtení bundle rozhoduje permit, ne falešný configuration-unavailable.",
+  );
+}
+
 async function verifySignedOfflineAge() {
   const bundle = JSON.parse(fs.readFileSync(path.join(root, "src/config/access-config-bundle.json"), "utf8"));
   const signature = JSON.parse(fs.readFileSync(path.join(root, "src/config/access-config-bundle.sig.json"), "utf8"));
@@ -223,6 +301,7 @@ async function verifySignedOfflineAge() {
 
 verifyServiceWorkerBypass();
 await verifySchoolProfileFailClosed();
+await verifyLegacyAppDeploymentIsolation();
 await verifySignedOfflineAge();
 
 for (const item of checks) console.log(`PASS ${item.message}`);
