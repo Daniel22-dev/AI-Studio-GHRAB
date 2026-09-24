@@ -153,11 +153,19 @@ assert.ok(
   ["same", "patch"].includes(classifyVersionChange(generatorMinimumVersion, generatorWaveVersion)),
   `generator: release-wave ${generatorWaveVersion} must stay on the reviewed 7.1.x patch line`,
 );
-assert.equal(actualEntries.get("correspondence")?.minimumVersion, "5.10.28");
+const correspondenceMinimumVersion = actualEntries.get("correspondence")?.minimumVersion;
+const correspondenceWaveVersion = actualWaveEntries.get("correspondence")?.version;
+assert.equal(correspondenceMinimumVersion, "5.10.28");
 assert.equal(actualEntries.get("correspondence")?.assuranceBaseline, "GARP-2.7");
 assert.equal(actualEntries.get("correspondence")?.requiredEvidenceContract, "ghrab-release-integrity-v2");
-assert.equal(actualWaveEntries.get("correspondence")?.version, "5.10.28");
-assert.equal(actualApps.find((app) => app.id === "correspondence")?.version, "5.10.28");
+const correspondenceBaselineComparison = compareVersions(correspondenceWaveVersion, correspondenceMinimumVersion);
+assert.notEqual(correspondenceBaselineComparison, null, "correspondence: release-wave/minimum must be stable SemVer");
+assert.ok(correspondenceBaselineComparison >= 0, `correspondence: release-wave ${correspondenceWaveVersion} must not precede reviewed minimum ${correspondenceMinimumVersion}`);
+assert.ok(
+  ["same", "patch"].includes(classifyVersionChange(correspondenceMinimumVersion, correspondenceWaveVersion)),
+  `correspondence: release-wave ${correspondenceWaveVersion} must stay on the reviewed 5.10.x patch line`,
+);
+assert.equal(actualApps.find((app) => app.id === "correspondence")?.version, correspondenceWaveVersion);
 const differentiatorMinimumVersion = actualEntries.get("differentiator")?.minimumVersion;
 const differentiatorWaveVersion = actualWaveEntries.get("differentiator")?.version;
 assert.equal(differentiatorMinimumVersion, "1.3.47");
