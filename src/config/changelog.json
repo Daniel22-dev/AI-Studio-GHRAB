@@ -1,7 +1,25 @@
 {
   "schema": "ai-studio-changelog-v1",
-  "current": "0.21.102",
+  "current": "0.21.103",
   "items": [
+    {
+      "version": "0.21.103",
+      "date": "2026-09-24",
+      "title": {
+        "cs": "Dokončení registrace Diferenciátoru GARP 2.7",
+        "en": "Finalize Differentiator GARP 2.7 enrollment"
+      },
+      "changes": [
+        {
+          "cs": "Správa AI Studia nyní eviduje Diferenciátor 1.3.49 proti schválené baseline GARP 2.7 r2 / G-02 a release metadata jsou konzistentní s verzí Studia.",
+          "en": "AI Studio Administration now tracks Differentiator 1.3.49 against the approved GARP 2.7 r2 / G-02 baseline, with release metadata consistent with the Studio version."
+        },
+        {
+          "cs": "Produkční QA hotfix doplňuje chybějící položku changelogu; bezpečnostní politika, release identity Diferenciátoru a DEFERRED / NOT_TESTED hranice školního serveru se nemění.",
+          "en": "The production QA hotfix adds the missing changelog entry; Differentiator security policy, release identity, and the school-server DEFERRED / NOT_TESTED boundary are unchanged."
+        }
+      ]
+    },
     {
       "version": "0.21.101",
       "date": "2026-09-24",
