@@ -181,7 +181,7 @@ assert.ok(
 assert.equal(actualEntries.get("correspondence")?.expectedStudioBridge, "v2");
 assert.equal(actualEntries.get("essay-evaluator")?.minimumVersion, "1.5.25");
 assert.equal(actualEntries.get("essay-evaluator")?.expectedStudioBridge, "not-applicable");
-assert.equal(actualEntries.get("ludus")?.minimumVersion, "1.16.27");
+assert.equal(actualEntries.get("ludus")?.minimumVersion, "1.16.28");
 assert.equal(actualEntries.get("ludus")?.assuranceBaseline, "GARP-2.7");
 assert.equal(actualEntries.get("ludus")?.requiredEvidenceContract, "ghrab-patch-assurance-v1");
 assert.equal(actualEntries.get("ludus")?.expectedStudioBridge, "v2");
@@ -369,21 +369,21 @@ const ludusSource = actualSources.find((item) => item.id === "ludus");
 assert.ok(ludusPolicy && ludusRegistry && ludusSource, "ludus: GARP 2.7 policy/source/registry fixture missing");
 {
   const app = structuredClone(ludusRegistry);
-  app.version = "1.16.28";
-  app.platform = { ...app.platform, cacheName: "ghrab-ludus-v1.16.28" };
+  app.version = "1.16.29";
+  app.platform = { ...app.platform, cacheName: "ghrab-ludus-v1.16.29" };
   const report = {
     id: "ludus",
     ok: true,
     verification: "deployment",
     repository: ludusSource.repository,
-    version: "1.16.28",
-    sourceVersion: "1.16.28",
+    version: "1.16.29",
+    sourceVersion: "1.16.29",
     operationsWarning: null,
-    releaseIdentity: verifiedPatchAssuranceFixture("ludus", "1.16.28"),
+    releaseIdentity: verifiedPatchAssuranceFixture("ludus", "1.16.29"),
   };
   const decision = evaluateAutoPromotion({
     app,
-    waveApp: { id: "ludus", version: "1.16.27" },
+    waveApp: { id: "ludus", version: "1.16.28" },
     source: ludusSource,
     sourceReport: report,
     policyEntry: ludusPolicy,
@@ -394,7 +394,7 @@ assert.ok(ludusPolicy && ludusRegistry && ludusSource, "ludus: GARP 2.7 policy/s
   assert.equal(
     evaluateAutoPromotion({
       app,
-      waveApp: { id: "ludus", version: "1.16.27" },
+      waveApp: { id: "ludus", version: "1.16.28" },
       source: ludusSource,
       sourceReport: { ...report, releaseIdentity: undefined },
       policyEntry: ludusPolicy,
@@ -407,7 +407,7 @@ assert.ok(ludusPolicy && ludusRegistry && ludusSource, "ludus: GARP 2.7 policy/s
   assert.equal(
     evaluateAutoPromotion({
       app,
-      waveApp: { id: "ludus", version: "1.16.27" },
+      waveApp: { id: "ludus", version: "1.16.28" },
       source: ludusSource,
       sourceReport: { ...report, releaseIdentity: { ...report.releaseIdentity, patchAssuranceSha256: "x" } },
       policyEntry: ludusPolicy,
