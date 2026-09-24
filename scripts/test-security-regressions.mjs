@@ -239,6 +239,7 @@ async function verifySignedOfflineAge() {
     },
   });
   globalThis.__GHRAB_DEPLOYMENT_CONFIG__ = {
+    appId: "ai-studio",
     profile: "github-pages",
     authMode: "signed-permit",
     apiBaseUrl: "",
