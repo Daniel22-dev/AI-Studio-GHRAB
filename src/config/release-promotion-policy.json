@@ -7,11 +7,11 @@
     {
       "id": "generator",
       "mode": "auto-patch",
-      "minimumVersion": "7.1.50",
-      "assuranceBaseline": "GARP-2.7",
+      "minimumVersion": "7.1.40",
+      "assuranceBaseline": "GARP-2.5.1-SHIELD-PREP",
       "requiredVerification": "deployment",
       "requiredEvidenceContract": "ghrab-release-integrity-v2",
-      "note": "Generator 7.1.50 is the reviewed GARP 2.7 r2/G-02 baseline. The active baseline requires semantic policy admission, architecture-integrity, mutation/contract/foundation gates and fail-closed LIVE separation while preserving ghrab-release-integrity-v2 deployment binding. Historical GARP 2.5.1/N5 controls remain regression inputs; school-server SHIELD-LIVE/RI-LIVE stays DEFERRED/NOT_TESTED until management approval.",
+      "note": "Enrolled from the reviewed Generator 7.1.40 GARP 2.5.1 baseline with N5 hardening and green P5/deployment. Future minor/major waves remain manual.",
       "expectedStudioBridge": "v2"
     },
     {
