@@ -1,7 +1,25 @@
 {
   "schema": "ai-studio-changelog-v1",
-  "current": "0.21.96",
+  "current": "0.21.97",
   "items": [
+    {
+      "version": "0.21.97",
+      "date": "2026-09-24",
+      "title": {
+        "cs": "Finální auditní hotfix formátování",
+        "en": "Final audit formatting hotfix"
+      },
+      "changes": [
+        {
+          "cs": "Zkrácen je pouze dlouhý vysvětlující text LUDUS r2 v release policy, aby produkční format-check prošel; bezpečnostní význam baseline, evidence a DEFERRED/NOT_TESTED hranice se nemění.",
+          "en": "Only the long explanatory LUDUS r2 release-policy text is shortened so the production format check passes; baseline, evidence and DEFERRED/NOT_TESTED semantics are unchanged."
+        },
+        {
+          "cs": "Zachovává se finální GARP 2.7 r2/G-02 clean-up z 0.21.96, baseline-relative KS a LUDUS Safe Promotion testy i úzce upravený dist budget 2 410 000 B.",
+          "en": "The final GARP 2.7 r2/G-02 cleanup from 0.21.96, baseline-relative Correspondence and LUDUS Safe Promotion tests, and narrowly adjusted 2,410,000 B dist budget are retained."
+        }
+      ]
+    },
     {
       "version": "0.21.96",
       "date": "2026-09-24",
