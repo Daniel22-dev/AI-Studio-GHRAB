@@ -3,6 +3,28 @@
   "current": "0.21.98",
   "items": [
     {
+      "version": "0.21.98",
+      "date": "2026-09-24",
+      "title": {
+        "cs": "Finální clean-up přístupu a GARP r2 regresí",
+        "en": "Final access and GARP r2 regression cleanup"
+      },
+      "changes": [
+        {
+          "cs": "Centrální přístupová brána AI Studia už nepřebírá zastaralou deployment identitu otevřené podřízené aplikace; při postupném GARP rolloutu proto platný centrální podepsaný bundle nezamkne starší aplikaci jen kvůli odlišné sharedAccessVersion.",
+          "en": "The central AI Studio access guard no longer adopts a stale deployment identity from an opened child app; during staged GARP rollout a valid centrally signed bundle therefore cannot lock an older app merely because its sharedAccessVersion differs."
+        },
+        {
+          "cs": "Nový regresní test ověřuje kompatibilitu centrálního access bundle se starší GARP aplikací a finální GARP 2.7 r2 test Správy hlídá skutečný baseline LUDUS 1.16.28 a auditovanou referenci 1.16.29.",
+          "en": "A new regression test verifies central access-bundle compatibility with an older GARP app, while the final GARP 2.7 r2 Administration test pins the real LUDUS 1.16.28 baseline and audited 1.16.29 reference."
+        },
+        {
+          "cs": "Hash-bound výjimka secret scanneru pro runtime permit-token flow byla po změně access-control znovu ručně ověřena a svázána s novým blob SHA; další změna souboru ji opět automaticky zneplatní.",
+          "en": "The hash-bound secret-scanner exception for runtime permit-token flow was re-reviewed after the access-control change and bound to the new blob SHA; any later source change will invalidate it again automatically."
+        }
+      ]
+    },
+    {
       "version": "0.21.97",
       "date": "2026-09-24",
       "title": {
