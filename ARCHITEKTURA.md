@@ -1,6 +1,6 @@
-# Architektura AI Studio GHRAB 0.21.97
+# Architektura AI Studio GHRAB 0.21.98
 
-> Aktuální verze: **0.21.97** · etapa P5
+> Aktuální verze: **0.21.98** · etapa P5
 
 > 0.21.82 odděluje schválený release-wave baseline od novějšího repository kandidáta: source-only kandidát se eviduje jako PENDING, ale do runtime registry se nepřijme bez deploymentu nebo explicitního ručního reconciliation.
 
