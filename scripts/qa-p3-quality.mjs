@@ -27,8 +27,14 @@ const size = (file) => fs.statSync(file).size;
 const lazyMedia = quality.lazyMedia || {};
 const lazyMediaPrefixes = Array.isArray(lazyMedia.prefixes) ? lazyMedia.prefixes.map((value) => String(value).replace(/^\.\//, "")) : [];
 const isLazyMedia = (file) => lazyMediaPrefixes.some((prefix) => rel(file).startsWith(prefix));
-const payloadFiles = files.filter((file) => !isLazyMedia(file));
+// Production deployment removes QA-only test pages in prepare-production-dist.mjs.
+// Keep them in the QA corpus below, but do not count bytes that can never reach production.
+const productionPrunedPrefixes = ["tests/"];
+const isProductionPruned = (file) =>
+  productionPrunedPrefixes.some((prefix) => rel(file).startsWith(prefix));
+const payloadFiles = files.filter((file) => !isLazyMedia(file) && !isProductionPruned(file));
 const lazyMediaFiles = files.filter(isLazyMedia);
+const productionPrunedFiles = files.filter(isProductionPruned);
 const sumExt = (extensions) => payloadFiles.filter((file) => extensions.some((ext) => file.toLowerCase().endsWith(ext))).reduce((sum, file) => sum + size(file), 0);
 const htmlFiles = files.filter((file) => file.toLowerCase().endsWith('.html'));
 const fullHtml = htmlFiles.filter((file) => /<html\b[^>]*>[\s\S]*<\/html>/i.test(fs.readFileSync(file, 'utf8')));
@@ -122,6 +128,8 @@ const metrics = {
   largestFileBytes: largestFile ? size(largestFile) : 0,
   largestFilePath: largestFile ? rel(largestFile) : '',
   duplicateLargeBytes: duplicate.avoidableBytes,
+  productionPrunedBytes: productionPrunedFiles.reduce((sum, file) => sum + size(file), 0),
+  productionPrunedFileCount: productionPrunedFiles.length,
 };
 
 check(fs.existsSync(dist), 'dist.exists');
