@@ -29,6 +29,10 @@
         {
           "cs": "KS Safe Promotion regrese už nepřipíná živý patch na jedno konkrétní číslo; hlídá minimální baseline 5.10.28, stejnou patch řadu 5.10.x a přesnou shodu registru s release-wave, takže ověřený 5.10.29 není falešný blocker.",
           "en": "The Correspondence Safe Promotion regression no longer pins the live patch to one exact number; it enforces minimum baseline 5.10.28, the same 5.10.x patch line, and exact registry/release-wave agreement, so verified 5.10.29 is not a false blocker."
+        },
+        {
+          "cs": "LUDUS Safe Promotion fixture je srovnán s r2 baseline: pozitivní scénář testuje 1.16.28 → 1.16.29 a negativní scénáře dál fail-closed odmítají chybějící nebo poškozenou patch-assurance.",
+          "en": "The LUDUS Safe Promotion fixture now matches the r2 baseline: the positive case tests 1.16.28 → 1.16.29 while negative cases still fail closed on missing or malformed patch assurance."
         }
       ]
     },
