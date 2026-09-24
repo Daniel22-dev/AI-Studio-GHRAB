@@ -131,7 +131,7 @@ const pendingRepositorySource = {
   pendingReleaseCandidate: true,
   releaseWaveVersion: "7.1.40",
   version: "7.1.40",
-  sourceVersion: "7.1.41",
+  sourceVersion: "7.1.51",
 };
 assert.equal(isPendingRepositoryCandidate(pendingRepositorySource, "7.1.40"), true);
 assert.equal(isPendingRepositoryCandidate({ ...pendingRepositorySource, verification: "deployment" }, "7.1.40"), false);
@@ -143,15 +143,19 @@ assert.deepEqual(validatePromotionPolicy(actualPolicy, ["generator", "differenti
 assert.deepEqual(actualPolicy.applications.map((entry) => entry.id), ["generator", "correspondence", "differentiator", "essay-evaluator", "ludus", "activity-builder", "sortio", "lesson-hub", "maturita-desk"]);
 const generatorMinimumVersion = actualEntries.get("generator")?.minimumVersion;
 const generatorWaveVersion = actualWaveEntries.get("generator")?.version;
-assert.equal(generatorMinimumVersion, "7.1.40");
+assert.equal(generatorMinimumVersion, "7.1.50");
+assert.equal(actualEntries.get("generator")?.assuranceBaseline, "GARP-2.7");
 assert.equal(actualEntries.get("generator")?.expectedStudioBridge, "v2");
 assert.equal(actualEntries.get("generator")?.requiredEvidenceContract, "ghrab-release-integrity-v2");
 const generatorBaselineComparison = compareVersions(generatorWaveVersion, generatorMinimumVersion);
 assert.notEqual(generatorBaselineComparison, null, "generator: release-wave/minimum must be stable SemVer");
-assert.ok(generatorBaselineComparison >= 0, `generator: release-wave ${generatorWaveVersion} must not precede reviewed minimum ${generatorMinimumVersion}`);
+assert.ok(
+  generatorBaselineComparison >= 0,
+  `generator: release-wave ${generatorWaveVersion} must not precede reviewed minimum ${generatorMinimumVersion}`,
+);
 assert.ok(
   ["same", "patch"].includes(classifyVersionChange(generatorMinimumVersion, generatorWaveVersion)),
-  `generator: release-wave ${generatorWaveVersion} must stay on the reviewed 7.1.x patch line`,
+  `generator: release-wave ${generatorWaveVersion} must remain on the controlled 7.1.x migration line`,
 );
 const correspondenceMinimumVersion = actualEntries.get("correspondence")?.minimumVersion;
 const correspondenceWaveVersion = actualWaveEntries.get("correspondence")?.version;
@@ -227,7 +231,10 @@ for (const entry of actualPolicy.applications) {
   current.platform = { ...current.platform, cacheName: `ghrab-${entry.id}-v${acceptedVersion}` };
   const currentVsMinimum = compareVersions(current.version, entry.minimumVersion);
   assert.notEqual(currentVsMinimum, null, `${entry.id}: current/minimum version must be stable SemVer`);
-  assert.ok(currentVsMinimum >= 0, `${entry.id}: accepted baseline must not be below reviewed enrollment minimum`);
+  assert.ok(
+    currentVsMinimum >= 0,
+    `${entry.id}: accepted baseline must not be below reviewed enrollment minimum`,
+  );
   const [major, minor, patch] = current.version.split(".").map(Number);
   const nextVersion = `${major}.${minor}.${patch + 1}`;
   const candidate = structuredClone(current);
@@ -264,21 +271,21 @@ const generatorSource = actualSources.find((item) => item.id === "generator");
 const generatorPolicy = actualEntries.get("generator");
 assert.ok(generatorRegistry && generatorSource && generatorPolicy, "generator: policy/source/registry fixture missing");
 const generatorCandidate = structuredClone(generatorRegistry);
-generatorCandidate.version = "7.1.41";
-generatorCandidate.platform = { ...generatorCandidate.platform, cacheName: "ghrab-generator-v7.1.41" };
+generatorCandidate.version = "7.1.51";
+generatorCandidate.platform = { ...generatorCandidate.platform, cacheName: "ghrab-generator-v7.1.51" };
 const generatorReport = {
   id: "generator",
   ok: true,
   verification: "deployment",
   repository: generatorSource.repository,
-  version: "7.1.41",
-  sourceVersion: "7.1.41",
+  version: "7.1.51",
+  sourceVersion: "7.1.51",
   operationsWarning: null,
-  releaseIdentity: verifiedV2IdentityFixture("generator", "7.1.41"),
+  releaseIdentity: verifiedV2IdentityFixture("generator", "7.1.51"),
 };
 const generatorDecide = (app = generatorCandidate, report = generatorReport) => evaluateAutoPromotion({
   app,
-  waveApp: { id: "generator", version: "7.1.40" },
+  waveApp: { id: "generator", version: "7.1.50" },
   source: generatorSource,
   sourceReport: report,
   policyEntry: generatorPolicy,
@@ -299,9 +306,9 @@ for (const blockedVersion of ["7.2.0", "8.0.0"]) {
 }
 {
   const app = structuredClone(generatorCandidate);
-  app.version = "7.1.39";
-  app.platform.cacheName = "ghrab-generator-v7.1.39";
-  const report = { ...generatorReport, version: "7.1.39", sourceVersion: "7.1.39" };
+  app.version = "7.1.49";
+  app.platform.cacheName = "ghrab-generator-v7.1.49";
+  const report = { ...generatorReport, version: "7.1.49", sourceVersion: "7.1.49" };
   assert.equal(generatorDecide(app, report).reasonCode, "ROLLBACK");
 }
 assert.equal(generatorDecide(generatorCandidate, { ...generatorReport, repository: "attacker/repo" }).reasonCode, "REPOSITORY_IDENTITY");

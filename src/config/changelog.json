@@ -1,7 +1,39 @@
 {
   "schema": "ai-studio-changelog-v1",
-  "current": "0.21.98",
+  "current": "0.21.100",
   "items": [
+    {
+      "version": "0.21.100",
+      "date": "2026-09-24",
+      "title": {
+        "cs": "Bezpečné automatické PATCH povýšení",
+        "en": "Safe automatic PATCH promotion"
+      },
+      "changes": [
+        {
+          "cs": "Ověřená PATCH změna aplikace aktualizovala release-wave a současně zvýšila patch verzi AI Studia právě jednou; duplicitní nebo bezezměnový běh verzi Studia nezvyšuje.",
+          "en": "A verified application PATCH update changed the release wave and bumped the AI Studio patch version exactly once; duplicate or no-change runs do not bump the Studio version."
+        }
+      ]
+    },
+    {
+      "version": "0.21.99",
+      "date": "2026-09-24",
+      "title": {
+        "cs": "Generátor převeden na GARP 2.7",
+        "en": "Generator migrated to GARP 2.7"
+      },
+      "changes": [
+        {
+          "cs": "Správa AI Studia nyní vyhodnocuje Generátor 7.1.50 proti schválené baseline GARP 2.7.",
+          "en": "AI Studio Administration now evaluates Generator 7.1.50 against the approved GARP 2.7 baseline."
+        },
+        {
+          "cs": "Serverová LIVE validace zůstává pravdivě DEFERRED / NOT_TESTED.",
+          "en": "School-server LIVE validation remains explicitly DEFERRED / NOT_TESTED."
+        }
+      ]
+    },
     {
       "version": "0.21.98",
       "date": "2026-09-24",
