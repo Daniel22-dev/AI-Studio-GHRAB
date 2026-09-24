@@ -1,7 +1,29 @@
 {
   "schema": "ai-studio-changelog-v1",
-  "current": "0.21.95",
+  "current": "0.21.96",
   "items": [
+    {
+      "version": "0.21.96",
+      "date": "2026-09-24",
+      "title": {
+        "cs": "Finální GARP 2.7 r2 clean-up ve Správě",
+        "en": "Final GARP 2.7 r2 Administration cleanup"
+      },
+      "changes": [
+        {
+          "cs": "Technický detail GARP ve Správě nyní výslovně uvádí konsolidovanou revizi 2.7 r2 / G-02 a její fail-closed policy validaci.",
+          "en": "The GARP technical detail now explicitly identifies consolidated revision 2.7 r2 / G-02 and its fail-closed policy validation."
+        },
+        {
+          "cs": "LUDUS baseline pro GARP 2.7 je posunuta z historické r1 verze 1.16.27 na první r2/G-02 implementaci 1.16.28; aktuální nasazený LUDUS zůstává 1.16.29.",
+          "en": "The LUDUS GARP 2.7 baseline moves from historical r1 version 1.16.27 to the first r2/G-02 implementation, 1.16.28; the current deployed LUDUS remains 1.16.29."
+        },
+        {
+          "cs": "Katalog standardů už neobsahuje natvrdo zastarávající číslo verze AI Studia v souhrnu ekosystému.",
+          "en": "The standards catalog no longer hard-codes an AI Studio version that can become stale in the ecosystem summary."
+        }
+      ]
+    },
     {
       "version": "0.21.95",
       "date": "2026-09-24",

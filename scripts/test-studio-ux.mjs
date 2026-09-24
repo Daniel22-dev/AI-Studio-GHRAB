@@ -136,6 +136,7 @@ check(adminHtml.includes('id="preview-monthly-reminder"'), "Sprava nema nahled m
 const automationJs = await text("src/automation/automation.js");
 const readinessJs = await text("src/automation/developer-readiness.js");
 const standardsCatalog = await text("src/config/standards-catalog.json");
+const releasePromotionPolicy = await text("src/config/release-promotion-policy.json");
 const issuerHtml = await text("src/tools/access-issuer/index.html");
 const issuerJs = await text("src/tools/access-issuer/issuer.js");
 check(adminHtml.includes('data-full-admin-only') && adminHtml.includes('../tools/access-issuer/'), "Vydavatel opravneni neni ve Sprave omezen jen na plneho admina.");
@@ -193,6 +194,16 @@ check(
   readinessJs.includes('"GitHub · čeká na release"'),
   "Sprava nezobrazuje repository-only kandidata jako cekajici na release.",
 );
+check(
+  standardsCatalog.includes("2.7 r2") &&
+    standardsCatalog.includes("G-02") &&
+    !standardsCatalog.includes("AI Studio 0.21.86") &&
+    releasePromotionPolicy.includes('"id": "ludus"') &&
+    releasePromotionPolicy.includes('"minimumVersion": "1.16.28"') &&
+    releasePromotionPolicy.includes("1.16.27 remains historical r1"),
+  "Finalni GARP r2 metadata cleanup ve Sprave se vratil ke stare r1 nebo hard-coded verzi Studia.",
+);
+
 check(syncScript.includes('Promise.all(sources.map(resolveSource))'), "Synchronizace zdroju nebezi soubezne a muze zbytecne blokovat release.");
 check(syncScript.includes('if (!offline || writeOfflineOutputs)') && syncScript.includes('se nepřepisují'), "Offline QA muze prepsat publikovany stav Kontroly zdroju.");
 
