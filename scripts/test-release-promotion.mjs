@@ -143,7 +143,8 @@ assert.deepEqual(validatePromotionPolicy(actualPolicy, ["generator", "differenti
 assert.deepEqual(actualPolicy.applications.map((entry) => entry.id), ["generator", "correspondence", "differentiator", "essay-evaluator", "ludus", "activity-builder", "sortio", "lesson-hub", "maturita-desk"]);
 const generatorMinimumVersion = actualEntries.get("generator")?.minimumVersion;
 const generatorWaveVersion = actualWaveEntries.get("generator")?.version;
-assert.equal(generatorMinimumVersion, "7.1.40");
+assert.equal(generatorMinimumVersion, "7.1.50");
+assert.equal(actualEntries.get("generator")?.assuranceBaseline, "GARP-2.7");
 assert.equal(actualEntries.get("generator")?.expectedStudioBridge, "v2");
 assert.equal(actualEntries.get("generator")?.requiredEvidenceContract, "ghrab-release-integrity-v2");
 const generatorBaselineComparison = compareVersions(generatorWaveVersion, generatorMinimumVersion);
