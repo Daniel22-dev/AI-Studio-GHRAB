@@ -41,7 +41,7 @@
       "assuranceBaseline": "GARP-2.7",
       "requiredVerification": "deployment",
       "requiredEvidenceContract": "ghrab-release-integrity-v2",
-      "note": "Hodnotitel maturitnich slohu 1.5.29 is the reviewed GARP 2.7 r2/G-02 FOUNDATION baseline. The active baseline requires semantic policy admission, architecture-integrity, mutation/contract/foundation gates and fail-closed LIVE separation while preserving ghrab-release-integrity-v2, Safe Promotion and the existing four-operation AI Core boundary. Historical GARP 2.5.1/N5 controls remain regression inputs; school-server LIVE stays DEFERRED/NOT_TESTED until the approved school runtime is connected and validated.",
+      "note": "Hodnotitel 1.5.29 is the reviewed GARP 2.7 r2/G-02 baseline. GARP 2.7 gates, release-integrity v2, Safe Promotion and the four-operation AI Core boundary remain required; GARP 2.5.1/N5 stays regression-only and school-server LIVE remains DEFERRED/NOT_TESTED.",
       "expectedStudioBridge": "not-applicable"
     },
     {
