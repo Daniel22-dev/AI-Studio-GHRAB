@@ -184,7 +184,8 @@ assert.ok(
   `differentiator: release-wave ${differentiatorWaveVersion} must stay on the reviewed 1.3.x patch line`,
 );
 assert.equal(actualEntries.get("correspondence")?.expectedStudioBridge, "v2");
-assert.equal(actualEntries.get("essay-evaluator")?.minimumVersion, "1.5.25");
+assert.equal(actualEntries.get("essay-evaluator")?.minimumVersion, "1.5.29");
+assert.equal(actualEntries.get("essay-evaluator")?.assuranceBaseline, "GARP-2.7");
 assert.equal(actualEntries.get("essay-evaluator")?.expectedStudioBridge, "not-applicable");
 assert.equal(actualEntries.get("ludus")?.minimumVersion, "1.16.28");
 assert.equal(actualEntries.get("ludus")?.assuranceBaseline, "GARP-2.7");
