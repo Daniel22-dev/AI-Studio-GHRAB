@@ -191,7 +191,7 @@ assert.equal(actualEntries.get("ludus")?.minimumVersion, "1.16.28");
 assert.equal(actualEntries.get("ludus")?.assuranceBaseline, "GARP-2.7");
 assert.equal(actualEntries.get("ludus")?.requiredEvidenceContract, "ghrab-patch-assurance-v1");
 assert.equal(actualEntries.get("ludus")?.expectedStudioBridge, "v2");
-assert.equal(actualEntries.get("activity-builder")?.minimumVersion, "0.5.28");
+assert.equal(actualEntries.get("activity-builder")?.minimumVersion, "0.5.27");
 assert.equal(actualEntries.get("activity-builder")?.expectedStudioBridge, "v2");
 assert.equal(actualEntries.get("sortio")?.minimumVersion, "1.1.17");
 assert.equal(actualEntries.get("sortio")?.expectedStudioBridge, "not-applicable");
