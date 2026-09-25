@@ -603,7 +603,7 @@
       "platformContract": "ghrab-platform-v1",
       "platformRange": ">=1.1.2 <2.0.0"
     },
-    "publishedAt": "2026-09-25T11:51:24+02:00",
+    "publishedAt": "2026-09-25T13:01:40+02:00",
     "aiCore": {
       "schema": "ghrab-ai-app-integration-v1",
       "status": "integrated-p1",
@@ -654,9 +654,9 @@
       "version": "0.5.28",
       "source": {
         "repository": "Daniel22-dev/ACTIVA",
-        "commit": "1a78408d0dace5e6d8073c2ba2f2830ccc96a313"
+        "commit": "508bced01df9ac2b733ee393e5a6e5c7f5b73864"
       },
-      "buildId": "github-36120914722-1",
+      "buildId": "github-36127296319-1",
       "evidence": {
         "releaseIntegrity": "release-integrity.json",
         "provenance": "build-provenance.json",
