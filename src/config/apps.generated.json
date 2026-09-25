@@ -515,7 +515,7 @@
       "cs": "ACTIVA",
       "en": "ACTIVA"
     },
-    "version": "0.5.27",
+    "version": "0.5.28",
     "status": {
       "cs": "Připraveno k řízenému pilotu",
       "en": "Ready for controlled pilot"
@@ -603,7 +603,7 @@
       "platformContract": "ghrab-platform-v1",
       "platformRange": ">=1.1.2 <2.0.0"
     },
-    "publishedAt": "2026-09-20T17:00:52+02:00",
+    "publishedAt": "2026-09-25T13:01:40+02:00",
     "aiCore": {
       "schema": "ghrab-ai-app-integration-v1",
       "status": "integrated-p1",
@@ -635,7 +635,7 @@
       "studioBridge": 2,
       "artifactEnvelope": 1,
       "storagePrefix": "ghrab.activity-builder.",
-      "cacheName": "ghrab-activity-builder-v0.5.27",
+      "cacheName": "ghrab-activity-builder-v0.5.28",
       "requiredRange": ">=1.1.2 <2.0.0",
       "storageContract": "ghrab-storage-namespace-v1",
       "bridgeContract": "ghrab-studio-handoff-v2",
@@ -651,12 +651,12 @@
       "url": "./release-integrity.json",
       "assuranceMode": "TRANSITIONAL",
       "appId": "activity-builder",
-      "version": "0.5.27",
+      "version": "0.5.28",
       "source": {
         "repository": "Daniel22-dev/ACTIVA",
-        "commit": "a2a4ea130ae685907508393cf1f20ea492af180a"
+        "commit": "508bced01df9ac2b733ee393e5a6e5c7f5b73864"
       },
-      "buildId": "github-35518316065-1",
+      "buildId": "github-36127296319-1",
       "evidence": {
         "releaseIntegrity": "release-integrity.json",
         "provenance": "build-provenance.json",
