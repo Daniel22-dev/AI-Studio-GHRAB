@@ -67,10 +67,10 @@
     {
       "id": "sortio",
       "mode": "auto-patch",
-      "minimumVersion": "1.1.17",
-      "assuranceBaseline": "GARP-2.5.1-SHIELD-PREP",
+      "minimumVersion": "1.1.21",
+      "assuranceBaseline": "GARP-2.7",
       "requiredVerification": "deployment",
-      "note": "SORTIO 1.1.17 is the reviewed baseline. Automatic PATCH promotion requires a live VERIFIED ghrab-release-integrity-v2 release identity; future minor/major waves remain manual.",
+      "note": "SORTIO 1.1.21 is the reviewed GARP 2.7 r2/G-02 baseline. Automatic PATCH promotion requires a live VERIFIED ghrab-release-integrity-v2 release identity; school-server dependent controls remain DEFERRED/NOT_TESTED until runtime evidence exists.",
       "expectedStudioBridge": "not-applicable",
       "requiredEvidenceContract": "ghrab-release-integrity-v2"
     },
