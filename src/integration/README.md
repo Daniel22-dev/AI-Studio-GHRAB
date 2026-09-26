@@ -6,18 +6,14 @@ Ochranná vrstva je součástí federovaného přístupového modelu všech dev�
 Konkrétní nasazené verze se v tomto dokumentu záměrně neudržují; autoritativní stav vede
 aplikační registr, release-wave a release gate.
 
-- Generátor interaktivních testů — ID `generator`
-- Diferenciátor — ID `differentiator`
-- Hodnotitel maturitních slohů — ID `essay-evaluator`
-- Korespondenční asistent — ID `correspondence`
-- LUDUS — ID `ludus`
-- ACTIVA — ID `activity-builder`
-- SORTIO — ID `sortio`
-- Lesson Hub — ID `lesson-hub`
-- Maturita Desk — ID `maturita-desk`
-
-Tento soubor je vývojářská dokumentace v repozitáři. Není součástí běžného provozního
-workflow Správy AI Studia.
+- Generátor interaktivních testů 7.1.53 — ID `generator`,
+- Diferenciátor 1.3.49 — ID `differentiator`,
+- Hodnotitel maturitních slohů 1.5.29 — ID `essay-evaluator`,
+- LUDUS 1.16.29 — ID `ludus`,
+- Korespondenční asistent 5.10.29 — ID `correspondence`,
+- ACTIVA 0.5.28 — ID `activity-builder`,
+- SORTIO 1.1.21 — ID `sortio`,
+- Lesson Hub 1.2.24 — ID `lesson-hub`.
 
 ## Princip pro budoucí aplikace
 
