@@ -6,7 +6,7 @@
       "cs": "Generátor interaktivních testů",
       "en": "Interactive Test Generator"
     },
-    "version": "7.1.52",
+    "version": "7.1.53",
     "status": {
       "cs": "Připraveno k řízenému pilotu",
       "en": "Ready for controlled pilot"
@@ -52,7 +52,7 @@
       "platformContract": "ghrab-platform-v1",
       "platformRange": ">=1.1.2 <2.0.0"
     },
-    "publishedAt": "2026-09-26T05:10:32.301Z",
+    "publishedAt": "2026-09-26T07:21:47.228Z",
     "aiCore": {
       "schema": "ghrab-ai-app-integration-v1",
       "status": "integrated-p1",
@@ -91,7 +91,7 @@
       "accessibilityContract": "ghrab-a11y-v1",
       "performanceContract": "ghrab-performance-v1",
       "moduleContract": "ghrab-lazy-modules-v1",
-      "cacheName": "ghrab-generator-v7.1.52"
+      "cacheName": "ghrab-generator-v7.1.53"
     },
     "releaseIdentity": {
       "contract": "ghrab-release-integrity-v2",
