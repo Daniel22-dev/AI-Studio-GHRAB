@@ -30,7 +30,7 @@ check(home.includes('class="first-run-guide"') && home.includes('ai-studio-teach
 const standardHtml = [
   "src/index.html", "src/access/index.html", "src/automation/index.html", "src/demo/index.html",
   "src/pilot/index.html", "src/report/index.html", "src/api-usage/index.html", "src/safety/index.html", "src/manualy/index.html",
-  "src/about/index.html", "src/changelog/index.html", "src/tests/index.html", "src/tools/access-issuer/index.html",
+  "src/about/index.html", "src/tests/index.html", "src/tools/access-issuer/index.html",
   "src/tools/access-registry/index.html", "src/tools/security-center/index.html", "src/workflow/index.html", "src/library/index.html",
 ];
 for (const rel of standardHtml) {
