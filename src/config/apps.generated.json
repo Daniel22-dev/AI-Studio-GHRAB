@@ -6,7 +6,7 @@
       "cs": "Generátor interaktivních testů",
       "en": "Interactive Test Generator"
     },
-    "version": "7.1.50",
+    "version": "7.1.52",
     "status": {
       "cs": "Připraveno k řízenému pilotu",
       "en": "Ready for controlled pilot"
@@ -52,7 +52,7 @@
       "platformContract": "ghrab-platform-v1",
       "platformRange": ">=1.1.2 <2.0.0"
     },
-    "publishedAt": "2026-09-24T12:27:43.960Z",
+    "publishedAt": "2026-09-26T05:10:32.301Z",
     "aiCore": {
       "schema": "ghrab-ai-app-integration-v1",
       "status": "integrated-p1",
@@ -91,7 +91,7 @@
       "accessibilityContract": "ghrab-a11y-v1",
       "performanceContract": "ghrab-performance-v1",
       "moduleContract": "ghrab-lazy-modules-v1",
-      "cacheName": "ghrab-generator-v7.1.50"
+      "cacheName": "ghrab-generator-v7.1.52"
     },
     "releaseIdentity": {
       "contract": "ghrab-release-integrity-v2",
@@ -672,7 +672,7 @@
       "cs": "SORTIO – Výukový panel",
       "en": "SORTIO – Teaching Panel"
     },
-    "version": "1.1.20",
+    "version": "1.1.21",
     "status": {
       "cs": "Připraveno k řízenému pilotu",
       "en": "Ready for controlled pilot"
@@ -794,7 +794,7 @@
       "platformContract": "ghrab-platform-v1",
       "platformRange": ">=1.1.2 <2.0.0"
     },
-    "publishedAt": "2026-09-20T09:48:04.856Z",
+    "publishedAt": "2026-09-26T05:18:47.845Z",
     "aiCore": {
       "schema": "ghrab-ai-app-integration-v1",
       "status": "not-applicable",
@@ -817,7 +817,7 @@
       "studioBridge": "not-applicable",
       "artifactEnvelope": 1,
       "storagePrefix": "ghrab.sortio.",
-      "cacheName": "ghrab-sortio-v1.1.20",
+      "cacheName": "ghrab-sortio-v1.1.21",
       "requiredRange": ">=1.1.2 <2.0.0",
       "storageContract": "ghrab-storage-namespace-v1",
       "bridgeContract": "ghrab-studio-handoff-v2",
@@ -832,12 +832,12 @@
       "url": "./release-integrity.json",
       "assuranceMode": "TRANSITIONAL",
       "appId": "sortio",
-      "version": "1.1.20",
+      "version": "1.1.21",
       "source": {
         "repository": "Daniel22-dev/SORTIO",
-        "commit": "980e4534a11779ba2edeb5846ec04af110054704"
+        "commit": "d7bb93e2ac88a715802dbd69ba76e7b9ff6c888c"
       },
-      "buildId": "github-35503225612-1",
+      "buildId": "github-36220335435-1",
       "evidence": {
         "releaseIntegrity": "release-integrity.json",
         "provenance": "build-provenance.json",
