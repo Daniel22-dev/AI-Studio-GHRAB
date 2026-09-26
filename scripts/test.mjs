@@ -905,6 +905,8 @@ const standardPages = new Set([
   "manualy/error-report.html",
   "safety/index.html",
   "pilot/index.html",
+  "about/index.html",
+  "about/about.js",
   "changelog/index.html",
   "tests/index.html",
   "tools/access-issuer/index.html",
@@ -937,8 +939,10 @@ for (const file of sourceFiles.filter((f) => f.endsWith(".html"))) {
       fail(`Chybí záložka Manuály v ${rel}`);
     if (!html.includes('data-nav="safety"'))
       fail(`Chybí platná záložka Bezpečnost v ${rel}`);
-    if (!html.includes('data-nav="changelog"'))
-      fail(`Chybí záložka Katalog změn v ${rel}`);
+    if (!html.includes('data-nav="about"'))
+      fail(`Chybí záložka O aplikaci v ${rel}`);
+    if (html.includes('data-nav="changelog"'))
+      fail(`Navigace stále obsahuje samostatný Katalog změn v ${rel}`);
     if (!html.includes('data-nav="library"'))
       fail(`Běžná navigace neobsahuje server-ready Materiály v ${rel}`);
     if (html.includes('data-nav="workflow"'))
@@ -1221,6 +1225,8 @@ if (!policy?.administratorPages?.includes("access-registry"))
   fail("Evidence přístupů není označena jako správcovská stránka.");
 if (policy?.administratorPages?.includes("changelog"))
   fail("Katalog změn nesmí být správcovská stránka.");
+if (policy?.administratorPages?.includes("about"))
+  fail("O aplikaci musí zůstat společná stránka pro všechny role.");
 if (/recordLaunch\(app\.id\)/.test(mainAppText))
   fail(
     "Studio stále počítá kliknutí před otevřením aplikace a mohlo by spuštění zdvojit.",
@@ -1641,6 +1647,8 @@ const required = [
   "manualy/error-report.css",
   "safety/index.html",
   "pilot/index.html",
+  "about/index.html",
+  "about/about.js",
   "changelog/index.html",
   "tests/index.html",
   "config/access-policy.json",

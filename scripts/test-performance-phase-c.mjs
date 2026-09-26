@@ -32,7 +32,7 @@ for (const asset of ['./access/error-reporter.js', './access/error-reporter.css'
 
 for (const prefix of [
   './manualy/', './library/', './workflow/', './automation/', './demo/', './pilot/',
-  './safety/', './changelog/', './assets/presentation/', './report/', './tools/',
+  './safety/', './about/', './changelog/', './assets/presentation/', './report/', './tools/',
   './api-usage/', './tests/', './integration/', './schemas/',
 ]) {
   check(![...installAssets].some((asset) => asset.startsWith(prefix)), `On-demand prefix leaked into install precache: ${prefix}`);

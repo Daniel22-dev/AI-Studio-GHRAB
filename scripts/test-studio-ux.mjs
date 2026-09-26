@@ -21,7 +21,8 @@ const home = await text("src/index.html");
 for (const oldBlock of ["mission-strip", "workflow-home", "communication-lane", "admin-home"]) {
   check(!home.includes(oldBlock), `Domovska stranka stale obsahuje ${oldBlock}.`);
 }
-check(home.includes('data-nav="changelog"'), "Domovska navigace nema Katalog zmen.");
+check(home.includes('data-nav="about"'), "Domovska navigace nema O aplikaci.");
+check(!home.includes('data-nav="changelog"'), "Domovska navigace stale obsahuje samostatny Katalog zmen.");
 check(home.includes('data-nav="library"'), "Domovska navigace nema server-ready Materialy.");
 check(!home.includes('data-nav="workflow"'), "Domovska navigace znovu propaguje centralni tvorbu materialu.");
 check(home.includes('class="first-run-guide"') && home.includes('ai-studio-teacher.html') && home.includes('ai-studio-admin.html'), "Domovska stranka nema nenapadny role-aware prvni pruvodce AI Studia.");
@@ -29,12 +30,13 @@ check(home.includes('class="first-run-guide"') && home.includes('ai-studio-teach
 const standardHtml = [
   "src/index.html", "src/access/index.html", "src/automation/index.html", "src/demo/index.html",
   "src/pilot/index.html", "src/report/index.html", "src/api-usage/index.html", "src/safety/index.html", "src/manualy/index.html",
-  "src/changelog/index.html", "src/tests/index.html", "src/tools/access-issuer/index.html",
+  "src/about/index.html", "src/changelog/index.html", "src/tests/index.html", "src/tools/access-issuer/index.html",
   "src/tools/access-registry/index.html", "src/tools/security-center/index.html", "src/workflow/index.html", "src/library/index.html",
 ];
 for (const rel of standardHtml) {
   const html = await text(rel);
-  check(html.includes('data-nav="changelog"'), `${rel} nema Katalog zmen v horni navigaci.`);
+  check(html.includes('data-nav="about"'), `${rel} nema O aplikaci v horni navigaci.`);
+  check(!html.includes('data-nav="changelog"'), `${rel} stale obsahuje samostatny Katalog zmen v horni navigaci.`);
   check(html.includes('data-nav="library"'), `${rel} nema server-ready Materialy v horni navigaci.`);
   check(html.includes('data-nav="colleague-preview"') && html.includes('data-colleague-preview-link') && html.includes('data-ops-nav'), `${rel} nema provozni Pohled kolegy v horni navigaci.`);
   check(!html.includes('data-nav="workflow"'), `${rel} stale obsahuje centralni tvorbu materialu v hlavni navigaci.`);
@@ -44,14 +46,16 @@ for (const rel of standardHtml) {
 
 const policy = JSON.parse(await text("src/config/access-policy.json"));
 check(!policy.administratorPages.includes("changelog"), "Katalog zmen je stale spravcovska stranka.");
+check(!policy.administratorPages.includes("about"), "O aplikaci je omylem spravcovska stranka.");
 check(Array.isArray(policy.operatorRoles) && policy.operatorRoles.includes("operator"), "Access policy nema roli operator.");
 check(Array.isArray(policy.operatorPages) && ["automation", "pilot", "report", "tests", "access-registry", "deputy-admin"].every((page) => policy.operatorPages.includes(page)), "Access policy nema bezpecny rozsah stranek zastupce spravce.");
 check(!policy.operatorPages.includes("security-center"), "Zastupce spravce nesmi mit Centrum zabezpeceni v podepsanem rozsahu.");
 const accessControlJs = await text("src/access/access-control.js");
 check(accessControlJs.includes("export function isOperator()") && accessControlJs.includes("export function canAccessAdminPage(pageId)"), "Runtime nema oddelenou roli zastupce spravce a strankova opravneni.");
 check(accessControlJs.includes('return "invalid-role"'), "Podepsany permit nepripustne role neodmita.");
-const changelogJs = await text("src/changelog/changelog.js");
-check(!changelogJs.includes("isAdmin"), "Katalog zmen se stale renderuje jen spravci.");
+const aboutJs = await text("src/about/about.js");
+check(!aboutJs.includes("isAdmin"), "Katalog zmen uvnitr O aplikaci se stale renderuje jen spravci.");
+check(aboutJs.includes("data.archives") && aboutJs.includes('details.addEventListener("toggle"'), "Katalog zmen v O aplikaci neni nacitan on-demand vcetne archivu.");
 const polishCss = await text("src/polish.css");
 const platformConfig = await text("src/platform/ghrab-platform-config.js");
 check(platformConfig.includes('"autoFooter": false'), "Platforma stale muze prepsat sjednocenou paticku vlastnim boxem.");
@@ -65,7 +69,7 @@ const operationalStatusJs = await text("src/modules/operational-status.js");
 check(appJs.includes("innerHeight <= 820"), "Desktop presentation-fit se znovu spousti na beznem 1080p/scaled viewportu.");
 check(stylesCss.includes("grid-template-rows: repeat(2, auto)") && stylesCss.includes("justify-content: flex-start"), "Kompaktni portal znovu nuti karty do pevne vysky nebo centruje pretikajici obsah.");
 check(!/\.main-nav\s*\{[^}]*flex-wrap:\s*wrap/.test(polishCss), "Hlavni navigace se na desktopu znovu muze zalomit do druheho radku.");
-check(appJs.includes('if (page === "changelog") return;'), "Katalog zmen nema runtime kompatibilitu pro starsi podepsany policy bundle.");
+check(appJs.includes('["about", "changelog"].includes(page)'), "O aplikaci nema garantovany pristup pro vsechny role ani kompatibilitu stareho changelog route.");
 check(appJs.includes('[data-teacher-only]'), "Chybi role teacher-only.");
 check(appJs.includes('COLLEAGUE_PREVIEW_KEY') && appJs.includes('function isColleaguePreview()') && appJs.includes('function mountColleaguePreviewBanner()'), "Chybi session Pohled kolegy.");
 check(appJs.includes('function ensureReportNavigation()') && appJs.includes('link.dataset.nav = "report"') && appJs.includes('link.href = `${base}report/`'), "Report nema primy vstup v hlavni navigaci Studia.");

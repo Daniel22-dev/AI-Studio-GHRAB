@@ -35,7 +35,7 @@ for (const rel of ['./access/app-guard.js', './access/access-control.js', './acc
 check('Deployment profile is not precached as required', !installPrecache.includes('./config/deployment.json'));
 check('Changelog is excluded from install precache', !installPrecache.includes('./config/changelog.json'));
 check('Runtime changelog is split into bounded archive chunks', build.includes('maxChunkBytes = 120000') && build.includes('changelog.archive-'));
-check('Changelog UI loads runtime archives', fs.readFileSync(path.join(root, 'src/changelog/changelog.js'), 'utf8').includes('data.archives'));
+check('Changelog UI loads runtime archives', fs.readFileSync(path.join(root, 'src/about/about.js'), 'utf8').includes('data.archives'));
 const sourceChangelog = json('src/config/changelog.json');
 const runtimeChangelog = json('dist/config/changelog.json');
 const runtimeArchiveNames = Array.isArray(runtimeChangelog.archives) ? runtimeChangelog.archives : [];
