@@ -4245,3 +4245,217 @@ body.standard-detail-open {
     justify-content: flex-start;
   }
 }
+
+
+/* About / application card */
+.about-page-hero {
+  padding-bottom: 18px;
+}
+.about-overview-section {
+  padding-top: 34px;
+}
+.about-overview-grid {
+  display: grid;
+  grid-template-columns: minmax(310px, 0.95fr) minmax(0, 1.7fr);
+  gap: 16px;
+  align-items: stretch;
+}
+.about-identity-card {
+  min-height: 470px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  text-align: center;
+  padding: 36px;
+}
+.about-brand-mark {
+  width: 168px;
+  height: 168px;
+  display: grid;
+  place-items: center;
+  border-radius: 38px;
+  background: rgba(2, 10, 22, 0.72);
+  border: 1px solid rgba(80, 232, 255, 0.12);
+  box-shadow: inset 0 0 32px rgba(80, 232, 255, 0.04);
+}
+.about-brand-mark img {
+  width: 132px;
+  height: 132px;
+}
+.about-wordmark {
+  margin: 24px 0 2px;
+  color: #edf8ff;
+  font-size: clamp(1.45rem, 2.4vw, 2rem);
+  font-weight: 900;
+  letter-spacing: 0.28em;
+  text-indent: 0.28em;
+}
+.about-identity-card h2 {
+  margin: 0;
+  font-size: 1.05rem;
+  letter-spacing: 0.08em;
+}
+.about-identity-lead {
+  margin: 8px 0 16px;
+  color: var(--cyan);
+  font-weight: 800;
+}
+.about-identity-card > p:last-child {
+  max-width: 42ch;
+  margin-bottom: 0;
+  color: var(--muted);
+}
+.about-facts-grid {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 16px;
+}
+.about-fact-card {
+  min-height: 220px;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  padding: 27px;
+}
+.about-fact-card .eyebrow {
+  margin-bottom: 14px;
+}
+.about-fact-card h2 {
+  margin: 0 0 10px;
+  font-size: clamp(1.25rem, 2vw, 1.75rem);
+}
+.about-fact-card > p:last-child {
+  margin: 0;
+  color: var(--muted);
+}
+.about-principles-section,
+.about-changelog-section {
+  padding-top: 24px;
+}
+.about-principles-grid {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 16px;
+}
+.about-principle-card > span {
+  display: inline-grid;
+  place-items: center;
+  width: 38px;
+  height: 38px;
+  border-radius: 50%;
+  border: 1px solid rgba(80, 232, 255, 0.35);
+  color: var(--cyan);
+  font-size: 0.72rem;
+  font-weight: 900;
+}
+.about-principle-card h3 {
+  margin: 16px 0 8px;
+}
+.about-principle-card p {
+  margin: 0;
+  color: var(--muted);
+}
+.about-principle-card a {
+  color: var(--cyan);
+  font-weight: 800;
+  text-decoration: none;
+}
+.about-principle-card a:hover {
+  text-decoration: underline;
+}
+.about-changelog {
+  padding: 0;
+  overflow: clip;
+}
+.about-changelog > summary {
+  min-height: 118px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 24px;
+  padding: 24px 28px;
+  cursor: pointer;
+  list-style: none;
+}
+.about-changelog > summary::-webkit-details-marker {
+  display: none;
+}
+.about-changelog > summary > span:first-child {
+  display: grid;
+  gap: 5px;
+}
+.about-changelog > summary strong {
+  font-size: clamp(1.35rem, 2.4vw, 2rem);
+}
+.about-changelog > summary small {
+  color: var(--muted);
+}
+.about-changelog-toggle {
+  flex: 0 0 auto;
+  width: 42px;
+  height: 42px;
+  border-radius: 50%;
+  border: 1px solid rgba(80, 232, 255, 0.28);
+  position: relative;
+}
+.about-changelog-toggle::before,
+.about-changelog-toggle::after {
+  content: "";
+  position: absolute;
+  left: 50%;
+  top: 50%;
+  width: 14px;
+  height: 2px;
+  background: var(--cyan);
+  translate: -50% -50%;
+  transition: transform 0.2s ease;
+}
+.about-changelog-toggle::after {
+  transform: rotate(90deg);
+}
+.about-changelog[open] .about-changelog-toggle::after {
+  transform: rotate(0deg);
+}
+.about-changelog-body {
+  border-top: 1px solid var(--line);
+  padding: 26px;
+}
+.about-changelog-intro {
+  max-width: 78ch;
+  margin: 0 0 20px;
+  color: var(--muted);
+}
+.about-changelog .changelog-list {
+  min-height: 0;
+}
+.about-changelog .change-card {
+  box-shadow: none;
+}
+
+@media (max-width: 980px) {
+  .about-overview-grid {
+    grid-template-columns: 1fr;
+  }
+  .about-identity-card {
+    min-height: 0;
+  }
+  .about-principles-grid {
+    grid-template-columns: 1fr;
+  }
+}
+
+@media (max-width: 680px) {
+  .about-facts-grid {
+    grid-template-columns: 1fr;
+  }
+  .about-fact-card {
+    min-height: 0;
+  }
+  .about-changelog > summary {
+    padding: 22px;
+  }
+  .about-changelog-body {
+    padding: 18px;
+  }
+}

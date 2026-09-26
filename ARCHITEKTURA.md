@@ -1,6 +1,6 @@
-# Architektura AI Studio GHRAB 0.21.110
+# Architektura AI Studio GHRAB 0.21.112
 
-> Aktuální verze: **0.21.110** · etapa P5
+> Aktuální verze: **0.21.112** · etapa P5
 
 > 0.21.82 odděluje schválený release-wave baseline od novějšího repository kandidáta: source-only kandidát se eviduje jako PENDING, ale do runtime registry se nepřijme bez deploymentu nebo explicitního ručního reconciliation.
 
@@ -51,7 +51,7 @@ Studio tedy není devátý editor. Materiál vzniká v konkrétní aplikaci; Stu
 
 ## Role rozhraní
 
-**Učitel:** Aplikace, Materiály, Manuály, Bezpečnost, Můj přístup a Katalog změn.
+**Učitel:** Aplikace, Materiály, Manuály, Bezpečnost, Můj přístup a O aplikaci (včetně rozbalovacího katalogu změn).
 **Zástupce správce (`operator`):** navíc Pohled kolegy, Správa, Diagnostika, Pilot, souhrnný Report a Evidence přístupů; nemá Vydavatele oprávnění, Prezentaci ani správu podpisových klíčů.
 **Správce (`admin`):** plná sada provozních a bezpečnostních nástrojů včetně Vydavatele oprávnění a Prezentace.
 

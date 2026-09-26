@@ -3004,7 +3004,7 @@ async function registerPwa() {
 }
 
 function renderPageAccessGate() {
-  if (page === "changelog") return;
+  if (["about", "changelog"].includes(page)) return;
   const administratorPages = new Set([
     ...(getAccessSnapshot().policy?.administratorPages || []),
     "deputy-admin",

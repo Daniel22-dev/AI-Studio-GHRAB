@@ -2,6 +2,184 @@
 
 > Tento soubor se generuje ze `src/config/changelog.json`. Neupravujte jej ručně.
 
+## 0.21.111 — 2026-09-26
+**Karta O aplikaci a přesunutý katalog změn**
+
+- Hlavní navigace nově obsahuje společnou záložku O aplikaci pro správce, zástupce správce i proškoleného učitele; samostatná záložka Katalog změn byla z navigace odstraněna.
+- Karta O aplikaci shrnuje účel AI Studia, autora a vývojového garanta, školní projekt, přístupový model, technický stav a základní provozní zásady.
+- Katalog změn je nově rozbalovací částí O aplikaci a načítá se až po otevření; původní adresa /changelog/ zůstává jako kompatibilní přesměrování.
+
+## 0.21.110 — 2026-09-26
+**Bezpečné automatické PATCH povýšení**
+
+- Ověřená PATCH změna aplikace aktualizovala release-wave a současně zvýšila patch verzi AI Studia právě jednou; duplicitní nebo bezezměnový běh verzi Studia nezvyšuje.
+
+## 0.21.109 — 2026-09-26
+**Bezpečné automatické PATCH povýšení**
+
+- Ověřená PATCH změna aplikace aktualizovala release-wave a současně zvýšila patch verzi AI Studia právě jednou; duplicitní nebo bezezměnový běh verzi Studia nezvyšuje.
+
+## 0.21.108 — 2026-09-26
+**Bezpečné automatické PATCH povýšení**
+
+- Ověřená PATCH změna aplikace aktualizovala release-wave a současně zvýšila patch verzi AI Studia právě jednou; duplicitní nebo bezezměnový běh verzi Studia nezvyšuje.
+
+## 0.21.107 — 2026-09-25
+**Bezpečné automatické PATCH povýšení**
+
+- Ověřená PATCH změna aplikace aktualizovala release-wave a současně zvýšila patch verzi AI Studia právě jednou; duplicitní nebo bezezměnový běh verzi Studia nezvyšuje.
+
+## 0.21.106 — 2026-09-25
+**Bezpečné automatické PATCH povýšení**
+
+- Ověřená PATCH změna aplikace aktualizovala release-wave a současně zvýšila patch verzi AI Studia právě jednou; duplicitní nebo bezezměnový běh verzi Studia nezvyšuje.
+
+## 0.21.105 — 2026-09-25
+**Bezpečné automatické PATCH povýšení**
+
+- Ověřená PATCH změna aplikace aktualizovala release-wave a současně zvýšila patch verzi AI Studia právě jednou; duplicitní nebo bezezměnový běh verzi Studia nezvyšuje.
+
+## 0.21.103 — 2026-09-24
+**Dokončení registrace Diferenciátoru GARP 2.7**
+
+- Správa AI Studia nyní eviduje Diferenciátor 1.3.49 proti schválené baseline GARP 2.7 r2 / G-02 a release metadata jsou konzistentní s verzí Studia.
+- Produkční QA hotfix doplňuje chybějící položku changelogu; bezpečnostní politika, release identity Diferenciátoru a DEFERRED / NOT_TESTED hranice školního serveru se nemění.
+
+## 0.21.101 — 2026-09-24
+**Bezpečné automatické PATCH povýšení**
+
+- Ověřená PATCH změna aplikace aktualizovala release-wave a současně zvýšila patch verzi AI Studia právě jednou; duplicitní nebo bezezměnový běh verzi Studia nezvyšuje.
+
+## 0.21.100 — 2026-09-24
+**Bezpečné automatické PATCH povýšení**
+
+- Ověřená PATCH změna aplikace aktualizovala release-wave a současně zvýšila patch verzi AI Studia právě jednou; duplicitní nebo bezezměnový běh verzi Studia nezvyšuje.
+
+## 0.21.99 — 2026-09-24
+**Generátor převeden na GARP 2.7**
+
+- Správa AI Studia nyní vyhodnocuje Generátor 7.1.50 proti schválené baseline GARP 2.7.
+- Serverová LIVE validace zůstává pravdivě DEFERRED / NOT_TESTED.
+
+## 0.21.98 — 2026-09-24
+**Finální clean-up přístupu a GARP r2 regresí**
+
+- Centrální access guard už nepřebírá deployment identitu podřízené aplikace, takže rozdílná sharedAccessVersion při postupném GARP rolloutu nezamkne platný centrální bundle.
+- Regrese hlídají kompatibilitu starší GARP aplikace i finální LUDUS r2 baseline 1.16.28 a auditovanou referenci 1.16.29.
+- Výjimka secret scanneru pro runtime permit-token flow byla znovu ověřena a hashově svázána s novým access-control.
+
+## 0.21.97 — 2026-09-24
+**Finální auditní hotfix formátování**
+
+- Zkrácen je pouze dlouhý vysvětlující text LUDUS r2 v release policy, aby produkční format-check prošel; bezpečnostní význam baseline, evidence a DEFERRED/NOT_TESTED hranice se nemění.
+- Zachovává se finální GARP 2.7 r2/G-02 clean-up z 0.21.96, baseline-relative KS a LUDUS Safe Promotion testy i úzce upravený dist budget 2 410 000 B.
+
+## 0.21.96 — 2026-09-24
+**Finální GARP 2.7 r2 clean-up ve Správě**
+
+- Technický detail GARP ve Správě nyní výslovně uvádí konsolidovanou revizi 2.7 r2 / G-02 a její fail-closed policy validaci.
+- LUDUS baseline pro GARP 2.7 je posunuta z historické r1 verze 1.16.27 na první r2/G-02 implementaci 1.16.28; aktuální nasazený LUDUS zůstává 1.16.29.
+- Katalog standardů už neobsahuje natvrdo zastarávající číslo verze AI Studia v souhrnu ekosystému.
+- Nemediální dist budget je úzce upraven z 2 405 000 na 2 410 000 B, protože přesnější r2/G-02 metadata přidala přibližně 1,1 kB; entry, precache, největší soubor i runtime limity zůstávají beze změny.
+- KS Safe Promotion regrese už nepřipíná živý patch na jedno konkrétní číslo; hlídá minimální baseline 5.10.28, stejnou patch řadu 5.10.x a přesnou shodu registru s release-wave, takže ověřený 5.10.29 není falešný blocker.
+- LUDUS Safe Promotion fixture je srovnán s r2 baseline: pozitivní scénář testuje 1.16.28 → 1.16.29 a negativní scénáře dál fail-closed odmítají chybějící nebo poškozenou patch-assurance.
+
+## 0.21.95 — 2026-09-24
+**Bezpečné automatické PATCH povýšení**
+
+- Ověřená PATCH změna aplikace aktualizovala release-wave a současně zvýšila patch verzi AI Studia právě jednou; duplicitní nebo bezezměnový běh verzi Studia nezvyšuje.
+
+## 0.21.94 — 2026-09-23
+**Bezpečné automatické PATCH povýšení**
+
+- Ověřená PATCH změna aplikace aktualizovala release-wave a současně zvýšila patch verzi AI Studia právě jednou; duplicitní nebo bezezměnový běh verzi Studia nezvyšuje.
+
+## 0.21.93 — 2026-09-23
+**Korespondenční asistent · GARP 2.7 ve Správě**
+
+- Správa AI Studia nyní vede Korespondenčního asistenta 5.10.28 pod aktivní baseline GARP 2.7.
+- Regresní kontrola hlídá verzi 5.10.28, GARP 2.7 a release-integrity v2 evidence kontrakt.
+- Auto-patch ingest nově považuje změnu živého registru aplikací za release-worthy změnu i tehdy, když release-wave už byl aktuální.
+
+## 0.21.92 — 2026-09-23
+**LUDUS 1.16.27 a první GARP 2.7 baseline**
+
+- Ověřený LUDUS 1.16.27 byl bezpečným PATCH promotion mechanismem převzat do release-wave AI Studia.
+- Správa nyní pro LUDUS používá jeho vlastní schválenou baseline GARP 2.7; ostatní aplikace zůstávají na svých současných baseline a mohou být migrovány postupně.
+- Celkový nemediální dist budget je úzce zvýšen z 2 400 000 na 2 405 000 B kvůli novým synchronizovaným metadatům; kritický vstup, precache, největší soubor i runtime budgety se nemění.
+
+## 0.21.91 — 2026-09-23
+**Bezpečné automatické PATCH povýšení**
+
+- Ověřená PATCH změna aplikace aktualizovala release-wave a současně zvýšila patch verzi AI Studia právě jednou; duplicitní nebo bezezměnový běh verzi Studia nezvyšuje.
+
+## 0.21.90 — 2026-09-23
+**GARP 2.7 ve Správě a bezpečný postupný rollout**
+
+- Správa vyhodnocuje GARP pro každou aplikaci proti její vlastní schválené baseline; přechod více aplikací na různé verze už nepoužívá chybnou většinovou baseline.
+- Detail GARP je rozšířen na kumulativní bezpečnostní katalog GARP 2.7 včetně 12 AG oblastí, FOUNDATION/SHIELD-LIVE/ASSURANCE/AUTO-PATCH-GUARD, architecture-integrity, RED TEAMu, evidence a pravidel pro režim bez školního serveru.
+
+## 0.21.89 — 2026-09-23
+**Bezpečné automatické PATCH povýšení**
+
+- Ověřená PATCH změna aplikace aktualizovala release-wave a současně zvýšila patch verzi AI Studia právě jednou; duplicitní nebo bezezměnový běh verzi Studia nezvyšuje.
+
+## 0.21.88 — 2026-09-23
+**Bezpečné automatické PATCH povýšení**
+
+- Ověřená PATCH změna aplikace aktualizovala release-wave a současně zvýšila patch verzi AI Studia právě jednou; duplicitní nebo bezezměnový běh verzi Studia nezvyšuje.
+
+## 0.21.87 — 2026-09-23
+**Bezpečné automatické PATCH povýšení**
+
+- Ověřená PATCH změna Generátoru byla svázána s release-wave a patch verzí AI Studia. Auto-patch nyní při skutečné změně zvýší verzi Studia právě jednou; duplicitní a bezezměnové běhy zůstávají NO-OP.
+
+## 0.21.86 — 2026-09-22
+**GARP 2.5.1 pro Studio**
+
+- GARP/N5 je povinně v P5; release váže commit, artefakt, manifest, SBOM, provenance a evidenci v režimu TRANSITIONAL.
+
+## 0.21.85 — 2026-09-22
+**Hotfix nasazení**
+
+- Sjednocena release metadata a changelog pro produkční QA.
+- Funkce Správy z 0.21.84 zůstávají beze změny.
+
+## 0.21.84 — 2026-09-22
+**Úpravy Správy**
+
+- Karta „Dočasně povýšit Adélu“ otevírá předvyplněný Vydavatel s interaktivním manuálem.
+- Stavové karty mají technické detaily a přímý PDF export.
+- Release identita a PWA cache jsou sjednoceny.
+
+## 0.21.80 — 2026-09-22
+**Technické detaily standardů a finální sjednocení Správy**
+
+- Souhrnné karty ve Stavu ekosystému jsou klikací. Každá otevírá technický detail GARP, Safe Promotion, Platformy, AI Core, zdrojů, manuálů nebo celkového stavu včetně autoritativních zdrojů.
+- Detail nabízí čistou PDF/tiskovou verzi vhodnou ke sdílení se správcem sítě; obsah je řízen centrálním standards-catalog.json pro budoucí aktualizace.
+- Manifest, cache a reportovací identita jsou sjednoceny na 0.21.80, aby se neopakovala nekonzistence 0.21.79/0.21.78.
+
+## 0.21.79 — 2026-09-22
+**Přehlednější Správa, jednotné návraty a manuál pro dočasné povýšení**
+
+- Správa má jediný přehled stavu všech devíti aplikací. Samostatné tabulky AI Core a zdrojů byly sloučeny do jednoho přehledu bez duplicit.
+- Nástroje otevřené ze Správy mají jednotný návrat Zpět do Správy; AI Akademie se ze Studia otevírá ve stejném kontextu prohlížeče.
+- Karta Dočasně povýšit Adélu obsahuje nový interaktivní HTML manuál s přesným sedmikrokovým checklistem a návratem přímo na danou kartu.
+- Build automaticky sjednocuje data-ghrab-app-version na aktuální release, aby podstránky nezůstávaly na starém čísle verze.
+
+## 0.21.78 — 2026-09-22
+**Oprava vývojářského přehledu ve Správě**
+
+- Vývojářský přehled Standardy a ochranné vrstvy po aplikacích už za běhu nenačítá interní release policy, která se do veřejného buildu záměrně nepublikuje. Build místo ní vytváří sanitizovaný runtime přehled potřebných údajů.
+- Ze Správy bylo odstraněno zastaralé tlačítko Otevřít integrační návod. Technický integrační dokument zůstává v repozitáři jako vývojářská dokumentace a je aktualizován na devět aplikací.
+- Build nyní při každém release přepisuje i existující parametr ?v= na aktuální verzi, takže staré assetové identity nemohou přežít další verzi PWA.
+
+## 0.21.77 — 2026-09-22
+**Cache-coherence release pro nové funkce Studia**
+
+- Nové správcovské funkce, diagnostický průběh a prezentační opravy dostávají novou identitu 0.21.77, aby service worker a verzované JS/CSS assety nepoužívaly starou cache 0.21.76.
+- GitHub Pages build tak vytváří nový cache namespace a nové ?v=0.21.77 odkazy napříč aktivními stránkami Studia.
+
 ## 0.21.76 — 2026-09-15
 **Fail-closed gate pro zdrojové kandidáty**
 

@@ -1,7 +1,43 @@
 {
   "schema": "ai-studio-changelog-v1",
-  "current": "0.21.110",
+  "current": "0.21.112",
   "items": [
+    {
+      "version": "0.21.112",
+      "date": "2026-09-26",
+      "title": {
+        "cs": "Bezpečné automatické PATCH povýšení",
+        "en": "Safe automatic PATCH promotion"
+      },
+      "changes": [
+        {
+          "cs": "Ověřená PATCH změna aplikace aktualizovala release-wave a současně zvýšila patch verzi AI Studia právě jednou; duplicitní nebo bezezměnový běh verzi Studia nezvyšuje.",
+          "en": "A verified application PATCH update changed the release wave and bumped the AI Studio patch version exactly once; duplicate or no-change runs do not bump the Studio version."
+        }
+      ]
+    },
+    {
+      "version": "0.21.111",
+      "date": "2026-09-26",
+      "title": {
+        "cs": "Karta O aplikaci a přesunutý katalog změn",
+        "en": "About card and relocated change catalogue"
+      },
+      "changes": [
+        {
+          "cs": "Hlavní navigace nově obsahuje společnou záložku O aplikaci pro správce, zástupce správce i proškoleného učitele; samostatná záložka Katalog změn byla z navigace odstraněna.",
+          "en": "The main navigation now includes a shared About page for administrators, deputy administrators and trained teachers; the standalone Change catalogue navigation item has been removed."
+        },
+        {
+          "cs": "Karta O aplikaci shrnuje účel AI Studia, autora a vývojového garanta, školní projekt, přístupový model, technický stav a základní provozní zásady.",
+          "en": "The About card summarises AI Studio purpose, author and development lead, school project, access model, technical status and core operating principles."
+        },
+        {
+          "cs": "Katalog změn je nově rozbalovací částí O aplikaci a načítá se až po otevření; původní adresa /changelog/ zůstává jako kompatibilní přesměrování.",
+          "en": "The change catalogue is now a collapsible section under About and loads only when opened; the former /changelog/ address remains as a compatibility redirect."
+        }
+      ]
+    },
     {
       "version": "0.21.110",
       "date": "2026-09-26",
