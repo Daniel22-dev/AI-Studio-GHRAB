@@ -19,7 +19,7 @@
     },
     {
       "id": "correspondence",
-      "version": "5.10.29"
+      "version": "5.10.31"
     },
     {
       "id": "ludus",
@@ -31,15 +31,15 @@
     },
     {
       "id": "sortio",
-      "version": "1.1.21"
+      "version": "1.1.22"
     },
     {
       "id": "lesson-hub",
-      "version": "1.2.25"
+      "version": "1.2.26"
     },
     {
       "id": "maturita-desk",
-      "version": "1.0.4"
+      "version": "1.0.6"
     }
   ],
   "policy": {
