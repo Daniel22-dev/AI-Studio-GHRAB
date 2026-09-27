@@ -95,6 +95,10 @@ jobs:
           path: qa-results
       - name: Verify GHRAB Platform P3 conformance
         run: npm run qa:platform
+      - name: Run GARP 2.7 FOUNDATION gate
+        env:
+          GHRAB_SOURCE_COMMIT: ${{ github.sha }}
+        run: npm run qa:garp27:foundation
       - name: Enforce P5 R2 release gate
         run: npm run qa:p5:ci
 

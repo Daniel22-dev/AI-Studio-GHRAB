@@ -2,6 +2,40 @@
 
 > Tento soubor se generuje ze `src/config/changelog.json`. Neupravujte jej ručně.
 
+## 0.21.117 — 2026-09-27
+**Migrace AI Studia na GARP 2.7 FOUNDATION**
+
+- Aktivní bezpečnostní autorita AI Studia je převedena na GARP 2.7 r2 / G-02; GARP 2.5.1 zůstává zachován jako regresní baseline.
+- Release pipeline nově vyžaduje sémantickou policy admission, negativní mutační testy, architecture-integrity, auto-patch kontrakt a kumulativní FOUNDATION evidence.
+- FOUNDATION evidence je svázána se stejným 40znakovým source commitem jako release identity, takže PR merge SHA ani cizí nebo starší evidence nemůže potvrdit jiný release.
+- Migrace je rebasována nad produkční Studio 0.21.116 a zachovává dnešní ověřené registry KS 5.10.31, SORTIO 1.1.22, Lesson Hub 1.2.26 a Maturita Desk 1.0.6.
+- Lesson Hub a Maturita Desk jsou v promotion policy převedeny na své již ověřené GARP 2.7 baseline; serverově závislé kontroly zůstávají DEFERRED / NOT_TESTED bez falešného LIVE PASS.
+
+## 0.21.116 — 2026-09-27
+**Bezpečné automatické PATCH povýšení**
+
+- Ověřená PATCH změna aplikace aktualizovala release-wave a současně zvýšila patch verzi AI Studia právě jednou; duplicitní nebo bezezměnový běh verzi Studia nezvyšuje.
+
+## 0.21.115 — 2026-09-27
+**Bezpečné automatické PATCH povýšení**
+
+- Ověřená PATCH změna aplikace aktualizovala release-wave a současně zvýšila patch verzi AI Studia právě jednou; duplicitní nebo bezezměnový běh verzi Studia nezvyšuje.
+
+## 0.21.114 — 2026-09-27
+**Bezpečné automatické PATCH povýšení**
+
+- Ověřená PATCH změna aplikace aktualizovala release-wave a současně zvýšila patch verzi AI Studia právě jednou; duplicitní nebo bezezměnový běh verzi Studia nezvyšuje.
+
+## 0.21.113 — 2026-09-26
+**Bezpečné automatické PATCH povýšení**
+
+- Ověřená PATCH změna aplikace aktualizovala release-wave a současně zvýšila patch verzi AI Studia právě jednou; duplicitní nebo bezezměnový běh verzi Studia nezvyšuje.
+
+## 0.21.112 — 2026-09-26
+**Bezpečné automatické PATCH povýšení**
+
+- Ověřená PATCH změna aplikace aktualizovala release-wave a současně zvýšila patch verzi AI Studia právě jednou; duplicitní nebo bezezměnový běh verzi Studia nezvyšuje.
+
 ## 0.21.111 — 2026-09-26
 **Karta O aplikaci a přesunutý katalog změn**
 

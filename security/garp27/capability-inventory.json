@@ -1,0 +1,79 @@
+{
+  "schema": "garp27-capability-inventory-v1",
+  "garpVersion": "2.7",
+  "appId": "ai-studio",
+  "appVersion": "0.21.117",
+  "dataClass": "Teacher and administrator workflow state, potentially personal application content, signed access material, non-content operational telemetry and cross-application handoff payloads.",
+  "agentic": false,
+  "aiOperations": [],
+  "aiCoreDistribution": {
+    "activeCoreVersion": "1.0.0",
+    "immutableRelease": true,
+    "consumerCopiesMustMatchSha256": true,
+    "role": "AI Studio distributes the versioned AI Core package; the Studio user interface does not originate provider AI requests."
+  },
+  "aiCore": "1.0.0",
+  "platform": "1.1.2",
+  "runtimeProfiles": {
+    "standalone": {
+      "allowedEgress": [
+        "same-origin",
+        "https://daniel22-dev.github.io"
+      ],
+      "aiTransport": "not-applicable",
+      "allowLocalProviderKeys": true,
+      "identity": "signed-permit with signed access configuration and revocation state"
+    },
+    "school": {
+      "allowedEgress": [
+        "same-origin-school-runtime"
+      ],
+      "aiTransport": "not-applicable",
+      "allowLocalProviderKeys": false,
+      "identity": "server-session",
+      "status": "DEFERRED_BY_OWNER_DECISION"
+    }
+  },
+  "localInputClasses": [
+    "signed-access-permit",
+    "signed-access-configuration",
+    "studio-material-envelope",
+    "ludus-content-envelope",
+    "legacy-material-json",
+    "cross-app-handoff",
+    "operator-report-import"
+  ],
+  "storageClasses": [
+    "localStorage",
+    "sessionStorage",
+    "CacheStorage"
+  ],
+  "crossAppInterfaces": [
+    "application registry and launcher",
+    "GHRAB Platform handoff v2",
+    "artifact envelope v1",
+    "suite-session lifecycle",
+    "verified repository dispatch app-updated",
+    "Safe Promotion release-wave ingestion"
+  ],
+  "privilegedBrowserCapabilities": [
+    "Service Worker",
+    "Web Crypto signature verification",
+    "Cache Storage",
+    "Clipboard where explicitly user-triggered"
+  ],
+  "autonomousToolCapabilities": [],
+  "releaseAuthorities": [
+    "GARP-2.7",
+    "GARP-2.5.1-legacy-regression",
+    "P5-R2",
+    "Safe-Promotion"
+  ],
+  "serverCapabilities": {
+    "schoolSession": "DEFERRED",
+    "sameOriginAiGateway": "DEFERRED",
+    "egressNetworkEnforcement": "DEFERRED",
+    "centralMonitoring": "DEFERRED",
+    "liveRecovery": "DEFERRED"
+  }
+}

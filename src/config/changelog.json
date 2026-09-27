@@ -1,7 +1,37 @@
 {
   "schema": "ai-studio-changelog-v1",
-  "current": "0.21.116",
+  "current": "0.21.117",
   "items": [
+    {
+      "version": "0.21.117",
+      "date": "2026-09-27",
+      "title": {
+        "cs": "Migrace AI Studia na GARP 2.7 FOUNDATION",
+        "en": "AI Studio migration to GARP 2.7 FOUNDATION"
+      },
+      "changes": [
+        {
+          "cs": "Aktivní bezpečnostní autorita AI Studia je převedena na GARP 2.7 r2 / G-02; GARP 2.5.1 zůstává zachován jako regresní baseline.",
+          "en": "AI Studio active security authority is migrated to GARP 2.7 r2 / G-02; GARP 2.5.1 remains preserved as a regression baseline."
+        },
+        {
+          "cs": "Release pipeline nově vyžaduje sémantickou policy admission, negativní mutační testy, architecture-integrity, auto-patch kontrakt a kumulativní FOUNDATION evidence.",
+          "en": "The release pipeline now requires semantic policy admission, negative mutation tests, architecture integrity, the auto-patch contract and cumulative FOUNDATION evidence."
+        },
+        {
+          "cs": "FOUNDATION evidence je svázána se stejným 40znakovým source commitem jako release identity, takže PR merge SHA ani cizí nebo starší evidence nemůže potvrdit jiný release.",
+          "en": "FOUNDATION evidence is bound to the same 40-character source commit as the release identity, preventing a PR merge SHA or unrelated/stale evidence from certifying another release."
+        },
+        {
+          "cs": "Migrace je rebasována nad produkční Studio 0.21.116 a zachovává dnešní ověřené registry KS 5.10.31, SORTIO 1.1.22, Lesson Hub 1.2.26 a Maturita Desk 1.0.6.",
+          "en": "The migration is rebased on production Studio 0.21.116 and preserves today’s verified registry for Correspondence Assistant 5.10.31, SORTIO 1.1.22, Lesson Hub 1.2.26 and Maturita Desk 1.0.6."
+        },
+        {
+          "cs": "Lesson Hub a Maturita Desk jsou v promotion policy převedeny na své již ověřené GARP 2.7 baseline; serverově závislé kontroly zůstávají DEFERRED / NOT_TESTED bez falešného LIVE PASS.",
+          "en": "Lesson Hub and Maturita Desk promotion policy now points to their already verified GARP 2.7 baselines; server-dependent controls remain DEFERRED / NOT_TESTED with no false LIVE PASS."
+        }
+      ]
+    },
     {
       "version": "0.21.116",
       "date": "2026-09-27",

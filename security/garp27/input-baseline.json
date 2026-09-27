@@ -1,0 +1,55 @@
+{
+  "schema": "garp27-migration-input-baseline-v1",
+  "appId": "ai-studio",
+  "targetVersion": "0.21.117",
+  "garpVersion": "2.7",
+  "inputApplicationArchive": {
+    "name": "AI-Studio-GHRAB-main(20260927-143152).zip",
+    "sha256": "b65fa87f4c073bc8336d51db8920ac4d35dc019a0ff0ae344990c4b31f960c31",
+    "sourceCommitFromArchiveComment": "16fa01d63f116fdbb512b0ea3fae4626208b3306"
+  },
+  "inputGarpArchive": {
+    "name": "GARP-2.7-KONSOLIDOVANY-FINAL-r2-G02-FIX(7).zip",
+    "sha256": "0c278aefa0581b3ba13dd5725da9d3fc624976c255602ec16b054fc81da6f7c8",
+    "consolidationRevision": "2026-09-23-r2",
+    "g02Fix": true,
+    "packageSelftest": "PASS 19/19",
+    "contractSelftest": "PASS 25/25",
+    "canonicalPackageContractCheckSha256": "ddc64e0f88ff82e4af9440a3e8f5dcabafa83eb7ab45bf7efb2d84b4b34f47e5"
+  },
+  "referenceAuditAcceptance": {
+    "A-01": "ACCEPT_CLOSED_IN_REFERENCE_MASTER",
+    "A-02": "ACCEPT_CLOSED_IN_REFERENCE_MASTER",
+    "A-03": "ACCEPT_CLOSED_IN_REFERENCE_MASTER",
+    "A-04": "ACCEPT_CLOSED_IN_REFERENCE_MASTER",
+    "A-05": "ACCEPT_CLOSED_IN_REFERENCE_MASTER",
+    "A-06": "ACCEPT_CLOSED_IN_REFERENCE_MASTER",
+    "A-07": "ACCEPT_CLOSED_IN_REFERENCE_MASTER"
+  },
+  "applicationBaseline": {
+    "version": "0.21.116",
+    "npmTest": "CURRENT_MAIN_GREEN_IN_GITHUB_P5_AND_DEPLOYMENT; LOCAL_COMPONENT_VALIDATION_REPEATED_AFTER_FINAL_REBASE",
+    "node": "v22.16.0",
+    "releaseModel": "candidate -> P5-R2 -> Safe Promotion -> protected main -> exact release identity -> verified GitHub Pages",
+    "baselineFinding": "No accepted application registry state is intentionally rolled back by the GARP 2.7 migration.",
+    "sourceCommit": "ffe7f712e22a2c0f4630a02741e479efd9b7115a"
+  },
+  "serverPhase": "DEFERRED_BY_OWNER_DECISION",
+  "rebase": {
+    "reason": "Safe Promotion advanced production AI Studio twice while the GARP 2.7 migration was being prepared; the migration is rebased onto the latest verified main without rolling back accepted application releases.",
+    "baseVersion": "0.21.116",
+    "baseCommit": "ffe7f712e22a2c0f4630a02741e479efd9b7115a",
+    "baseState": "GitHub main after successful P5 R2, Safe Promotion and deployment workflows",
+    "preservedAcceptedVersions": {
+      "generator": "7.1.53",
+      "differentiator": "1.3.49",
+      "essay-evaluator": "1.5.29",
+      "correspondence": "5.10.31",
+      "ludus": "1.16.29",
+      "activity-builder": "0.5.30",
+      "sortio": "1.1.22",
+      "lesson-hub": "1.2.26",
+      "maturita-desk": "1.0.6"
+    }
+  }
+}

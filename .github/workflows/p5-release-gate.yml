@@ -88,6 +88,10 @@ jobs:
         run: |
           npx playwright install --with-deps chromium
           node -e "console.log('CHROMIUM_PATH=' + require('playwright').chromium.executablePath())" >> "$GITHUB_ENV"
+      - name: Run GARP 2.7 FOUNDATION gate
+        env:
+          GHRAB_SOURCE_COMMIT: ${{ github.event.pull_request.head.sha || github.sha }}
+        run: npm run qa:garp27:foundation
       - name: Run P5 R2 release gate
         run: npm run qa:p5:ci
       - name: Create Studio GARP release assurance
