@@ -324,7 +324,7 @@
       "cs": "Korespondenční asistent",
       "en": "Correspondence Assistant"
     },
-    "version": "5.10.29",
+    "version": "5.10.31",
     "status": {
       "cs": "Pracovní pilotní verze",
       "en": "Working pilot release"
@@ -365,7 +365,7 @@
       "platformContract": "ghrab-platform-v1",
       "platformRange": ">=1.1.2 <2.0.0"
     },
-    "publishedAt": "2026-09-24T06:50:24.912Z",
+    "publishedAt": "2026-09-27T07:17:35.991Z",
     "aiCore": {
       "schema": "ghrab-ai-app-integration-v1",
       "status": "integrated-p1",
@@ -397,7 +397,7 @@
       "studioBridge": "ghrab-studio-handoff-v2",
       "artifactEnvelope": "ghrab-artifact-envelope-v1",
       "storagePrefix": "ghrab.correspondence.",
-      "cacheName": "ghrab-correspondence-v5.10.29",
+      "cacheName": "ghrab-correspondence-v5.10.31",
       "accessibilityContract": "ghrab-a11y-v1",
       "performanceContract": "ghrab-performance-v1",
       "moduleContract": "ghrab-lazy-modules-v1"
@@ -672,7 +672,7 @@
       "cs": "SORTIO – Výukový panel",
       "en": "SORTIO – Teaching Panel"
     },
-    "version": "1.1.21",
+    "version": "1.1.22",
     "status": {
       "cs": "Připraveno k řízenému pilotu",
       "en": "Ready for controlled pilot"
@@ -794,7 +794,7 @@
       "platformContract": "ghrab-platform-v1",
       "platformRange": ">=1.1.2 <2.0.0"
     },
-    "publishedAt": "2026-09-26T05:18:47.845Z",
+    "publishedAt": "2026-09-27T14:35:56.509Z",
     "aiCore": {
       "schema": "ghrab-ai-app-integration-v1",
       "status": "not-applicable",
@@ -817,7 +817,7 @@
       "studioBridge": "not-applicable",
       "artifactEnvelope": 1,
       "storagePrefix": "ghrab.sortio.",
-      "cacheName": "ghrab-sortio-v1.1.21",
+      "cacheName": "ghrab-sortio-v1.1.22",
       "requiredRange": ">=1.1.2 <2.0.0",
       "storageContract": "ghrab-storage-namespace-v1",
       "bridgeContract": "ghrab-studio-handoff-v2",
@@ -832,12 +832,12 @@
       "url": "./release-integrity.json",
       "assuranceMode": "TRANSITIONAL",
       "appId": "sortio",
-      "version": "1.1.21",
+      "version": "1.1.22",
       "source": {
         "repository": "Daniel22-dev/SORTIO",
-        "commit": "d7bb93e2ac88a715802dbd69ba76e7b9ff6c888c"
+        "commit": "1e7af6bab4f91b8bbdd8a4f6204ba1d8987974bd"
       },
-      "buildId": "github-36220335435-1",
+      "buildId": "github-36326382883-1",
       "evidence": {
         "releaseIntegrity": "release-integrity.json",
         "provenance": "build-provenance.json",
@@ -853,7 +853,7 @@
       "cs": "Lesson Hub",
       "en": "Lesson Hub"
     },
-    "version": "1.2.25",
+    "version": "1.2.26",
     "status": {
       "cs": "Připraveno k řízenému pilotu",
       "en": "Ready for controlled pilot"
@@ -933,7 +933,7 @@
       "platformContract": "ghrab-platform-v1",
       "platformRange": ">=1.1.2 <2.0.0"
     },
-    "publishedAt": "2026-09-26T19:20:46.000Z",
+    "publishedAt": "2026-09-27T06:07:42.000Z",
     "aiCore": {
       "schema": "ghrab-ai-app-integration-v1",
       "status": "not-applicable",
@@ -956,7 +956,7 @@
       "studioBridge": 2,
       "artifactEnvelope": 1,
       "storagePrefix": "ghrab.lesson-hub.",
-      "cacheName": "ghrab-lesson-hub-v1.2.25",
+      "cacheName": "ghrab-lesson-hub-v1.2.26",
       "suiteSessionContract": "ghrab-suite-session-v1",
       "requiredRange": ">=1.1.2 <2.0.0",
       "storageContract": "ghrab-storage-namespace-v1",
@@ -973,12 +973,12 @@
       "url": "./release-integrity.json",
       "assuranceMode": "TRANSITIONAL",
       "appId": "lesson-hub",
-      "version": "1.2.25",
+      "version": "1.2.26",
       "source": {
         "repository": "Daniel22-dev/lesson-hub",
-        "commit": "d697adf83e9f7262b5fa0aa64dd1596e3a87381c"
+        "commit": "7037acb7d304826e17cdc63baf3edefd251f1cde"
       },
-      "buildId": "github-36265818300-1",
+      "buildId": "github-36299256600-1",
       "evidence": {
         "releaseIntegrity": "release-integrity.json",
         "provenance": "build-provenance.json",
@@ -994,7 +994,7 @@
       "cs": "Maturita Desk",
       "en": "Maturita Desk"
     },
-    "version": "1.0.4",
+    "version": "1.0.6",
     "status": {
       "cs": "Řízený pilot · demo obsah",
       "en": "Controlled pilot · demo content"
@@ -1039,7 +1039,7 @@
       "platformContract": "ghrab-platform-v1",
       "platformRange": ">=1.1.2 <2.0.0"
     },
-    "publishedAt": "2026-09-21T13:15:41.000Z",
+    "publishedAt": "2026-09-27T06:43:48.000Z",
     "integration": {
       "launchMode": "external-protected",
       "securityBoundary": "public-demo-only",
@@ -1066,7 +1066,7 @@
       "studioBridge": "ghrab-studio-handoff-v2",
       "artifactEnvelope": "ghrab-artifact-envelope-v1",
       "storagePrefix": "ghrab.maturita-desk.",
-      "cacheName": "ghrab-maturita-desk-v1.0.4",
+      "cacheName": "ghrab-maturita-desk-v1.0.6",
       "accessibilityContract": "ghrab-a11y-v1",
       "performanceContract": "ghrab-performance-v1"
     },
@@ -1079,12 +1079,12 @@
       "contract": "ghrab-release-integrity-v2",
       "url": "./release-integrity.json",
       "appId": "maturita-desk",
-      "version": "1.0.4",
+      "version": "1.0.6",
       "source": {
         "repository": "Daniel22-dev/maturita-desk",
-        "commit": "1cd7ccc7bdd52a8b8783e4b988e2c7edcaf11f51"
+        "commit": "9765149fc3165e44e7e06626c266981d69a8bb25"
       },
-      "buildId": "deploy-35604535159-1"
+      "buildId": "deploy-36300992561-1"
     }
   }
 ]
