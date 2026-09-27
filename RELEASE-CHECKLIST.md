@@ -1,6 +1,6 @@
-# Release checklist AI Studio GHRAB 0.21.116
+# Release checklist AI Studio GHRAB 0.21.117
 
-> Aktuální verze: **0.21.116** · etapa P5
+> Aktuální verze: **0.21.117** · etapa P5
 
 > Toto je aktivní checklist po finálním GARP 2.5.1/N5/Safe Promotion cleanupu. Předchozí historický checklist je zachován v `docs/archive/RELEASE-CHECKLIST-pre-final-0.21.89.md`.
 
@@ -47,7 +47,7 @@
 
 ## Kvalita releasu
 
-- [x] Package, lockfile, consumer, PWA manifest, reporter, QA manifest, changelog a cache identity používají verzi 0.21.111.
+- [x] Package, lockfile, consumer, PWA manifest, reporter, QA manifest, changelog a cache identity používají verzi 0.21.117.
 - [x] Platform 1.1.2 a required range jsou zamčené a kontrolované.
 - [x] Source verification, browser/runtime, XSS, axe, performance, PWA, technical, security a critical gate jsou součástí release cesty.
 - [x] GitHub Actions použité v aktivních workflow jsou připnuté na plný commit SHA.

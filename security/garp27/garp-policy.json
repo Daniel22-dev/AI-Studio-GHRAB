@@ -1,0 +1,53 @@
+{
+  "schema": "garp27-policy-v1",
+  "garpVersion": "2.7",
+  "appId": "ai-studio",
+  "appVersion": "0.21.117",
+  "identity": {
+    "standaloneProfile": "Public GitHub Pages uses cryptographically signed access permits plus signed access configuration and revocation data. Browser state does not create administrator authority by itself.",
+    "schoolProfile": "The prepared school profile uses server-session identity and disables local provider keys. Live school-runtime authorization evidence remains deferred until an approved deployment exists.",
+    "session": "Permit claims, role, application scope, training state, time bounds and revocation are validated fail-closed. Shared-device end-work clears credential/session state and rotates session-generation tombstones."
+  },
+  "requestApiAi": {
+    "registeredOperations": 0,
+    "agentic": false,
+    "controls": "AI Studio does not originate provider AI operations. It distributes a versioned immutable AI Core whose provider-facing behavior is governed by the consuming application and the AI Core contract; adding a Studio AI operation requires inventory, policy and regression updates."
+  },
+  "egress": {
+    "standalone": "Studio network activity is constrained to same-origin resources and the configured GitHub Pages ecosystem origin used for application registry and launch flows.",
+    "school": "The prepared school profile is same-origin oriented. Runtime network enforcement and central gateway evidence remain deferred with the school-server phase.",
+    "crossApp": "Cross-application navigation, registry synchronization and handoff use allowlisted application identities and bounded contracts; arbitrary provider destinations are not a Studio UI capability."
+  },
+  "files": {
+    "currentBoundary": "Material and handoff imports are parsed through bounded application contracts. Artifact envelopes use SHA-256 verification, material fields have size limits, and exports require explicit user action.",
+    "serverBoundary": "Server-side quarantine and host filesystem isolation remain runtime controls to verify only after the school-server phase is approved."
+  },
+  "dataLifecycle": {
+    "classification": "Application content may contain student or teacher material; administrative records and signed access state can contain personal or security-relevant metadata. Telemetry is configured as non-content.",
+    "storage": "Owned data is namespaced across localStorage, sessionStorage and Cache Storage. Cross-application namespaces are explicit exceptions and the suite-session tombstone is reserved shared platform state.",
+    "retention": "Shared-device end-work and explicit deletion execute manifest-driven cleanup with verification; transient handoff state is bounded and access credentials are cleared on session end."
+  },
+  "release": {
+    "activeAuthority": "GARP-2.7",
+    "promotion": "candidate -> cumulative P5 and GARP 2.7 FOUNDATION gates -> canonical pull request -> protected main -> exact release identity -> verified GitHub Pages deployment",
+    "publicAssurance": "GARP 2.7 FOUNDATION is the active security contract. GARP 2.5.1 remains a regression baseline; production signing remains transitional and school-runtime SHIELD-LIVE controls remain NOT_TESTED."
+  },
+  "inventory": {
+    "source": "security/garp27/capability-inventory.json",
+    "architecturePolicy": "security/garp27/architecture-policy.json",
+    "changeRule": "Any new Studio AI operation, egress destination, import class, storage class, privileged capability, cross-application authority or release authority requires inventory update plus positive and negative regression coverage."
+  },
+  "securityHealth": {
+    "localCi": "Reference package and contract selftests, semantic policy admission, architecture-integrity, application boundary mutations, auto-patch contract checks, P5 and retained GARP 2.5.1 regressions form the local release gate.",
+    "live": "School-runtime protection health remains NOT_TESTED until an approved target environment provides trusted runtime evidence.",
+    "failureMode": "Missing, stale, mismatched, parser-error or empty critical evidence never becomes PASS."
+  },
+  "incident": {
+    "current": "Fail-closed access verification, revocation handling, shared-device cleanup, bounded imports, exact release evidence, Safe Promotion and rollback-aware update controls form the current application-side response baseline.",
+    "future": "Central alert delivery, infrastructure containment and school-runtime incident actions require the separately approved server phase."
+  },
+  "recovery": {
+    "current": "Release integrity, protected promotion, service-worker update deferral, last-known-good signed access configuration, shared-device cleanup and rollback-aware release workflows form the current recovery baseline.",
+    "future": "Server restore, trust-root custody, live egress containment and runtime recovery drills remain NOT_TESTED until the school environment is approved."
+  }
+}

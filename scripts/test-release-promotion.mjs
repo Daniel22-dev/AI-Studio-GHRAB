@@ -199,7 +199,8 @@ assert.equal(actualEntries.get("sortio")?.requiredEvidenceContract, "ghrab-relea
 assert.equal(actualEntries.get("sortio")?.expectedStudioBridge, "not-applicable");
 const lessonHubMinimumVersion = actualEntries.get("lesson-hub")?.minimumVersion;
 const lessonHubWaveVersion = actualWaveEntries.get("lesson-hub")?.version;
-assert.equal(lessonHubMinimumVersion, "1.2.23");
+assert.equal(lessonHubMinimumVersion, "1.2.25");
+assert.equal(actualEntries.get("lesson-hub")?.assuranceBaseline, "GARP-2.7");
 assert.equal(actualEntries.get("lesson-hub")?.expectedStudioBridge, "v2");
 assert.equal(actualEntries.get("lesson-hub")?.requiredEvidenceContract, "ghrab-release-integrity-v2");
 const lessonHubBaselineComparison = compareVersions(lessonHubWaveVersion, lessonHubMinimumVersion);
@@ -211,7 +212,8 @@ assert.ok(
 );
 const maturitaDeskMinimumVersion = actualEntries.get("maturita-desk")?.minimumVersion;
 const maturitaDeskWaveVersion = actualWaveEntries.get("maturita-desk")?.version;
-assert.equal(maturitaDeskMinimumVersion, "1.0.3");
+assert.equal(maturitaDeskMinimumVersion, "1.0.6");
+assert.equal(actualEntries.get("maturita-desk")?.assuranceBaseline, "GARP-2.7");
 assert.equal(actualEntries.get("maturita-desk")?.expectedStudioBridge, "v2");
 assert.equal(actualEntries.get("maturita-desk")?.requiredEvidenceContract, "ghrab-release-integrity-v2");
 const maturitaDeskBaselineComparison = compareVersions(maturitaDeskWaveVersion, maturitaDeskMinimumVersion);

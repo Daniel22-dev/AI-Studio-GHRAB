@@ -130,7 +130,7 @@ for (const file of walk(dist).filter((item) => item.toLowerCase().endsWith('.htm
     const configText = JSON.stringify(runtimeConfig).replaceAll('<', '\\u003c');
     const css = relativeAsset(file, 'ghrab/ghrab-platform.css');
     const js = relativeAsset(file, 'ghrab/ghrab-platform.js');
-    const block = `\n    <!-- GHRAB Platform ${consumer.platform.version} · generated -->\n    <link rel="stylesheet" href="${css}" data-ghrab-platform-style>\n    <script id="ghrab-platform-config" type="application/json">${configText}</script>\n    <script defer src="${js}" data-ghrab-platform-loader></script>\n`;
+    const block = `\n    <link rel="stylesheet" href="${css}" data-ghrab-platform-style>\n    <script id="ghrab-platform-config" type="application/json">${configText}</script>\n    <script defer src="${js}" data-ghrab-platform-loader></script>\n`;
     html = html.replace(/<\/head>/i, `${block}  </head>`);
   }
   fs.writeFileSync(file, html);

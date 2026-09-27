@@ -17,5 +17,6 @@
       "X-Frame-Options": "SAMEORIGIN",
       "Strict-Transport-Security": "max-age=31536000"
     }
-  }
+  },
+  "appVersion": "0.21.117"
 }

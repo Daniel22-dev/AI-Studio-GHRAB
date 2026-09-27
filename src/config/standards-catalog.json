@@ -1,6 +1,6 @@
 {
   "schema": "ghrab-standards-catalog-v1",
-  "updatedAt": "2026-09-24",
+  "updatedAt": "2026-09-27",
   "items": {
     "ecosystem": {
       "title": {
@@ -200,10 +200,12 @@
         }
       ],
       "sources": [
-        "src/config/release-promotion-policy.json",
+        "security/garp27/garp-policy.json",
+        "security/garp27/capability-inventory.json",
+        "security/garp27/architecture-policy.json",
+        "vendor/garp-2.7-consolidated-r2/",
         "security/garp25/",
-        "scripts/test-garp-security-regressions.mjs",
-        "GARP 2.7 consolidated r2 / G-02 reference master"
+        "scripts/test-garp-security-regressions.mjs"
       ]
     },
     "safePromotion": {
