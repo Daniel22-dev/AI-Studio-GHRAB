@@ -1,6 +1,6 @@
 {
   "schema": "ghrab-ai-readiness-report-v1",
-  "generatedAt": "2026-09-27T17:34:58.485Z",
+  "generatedAt": "2026-09-28T11:49:30.478Z",
   "activeCoreVersion": "1.0.0",
   "runtime": {
     "defaultMode": "direct-gemini",
@@ -32,7 +32,7 @@
   "applications": [
     {
       "appId": "correspondence",
-      "appVersion": "5.10.31",
+      "appVersion": "5.10.32",
       "classification": "ai-consumer",
       "status": "ready",
       "coreVersion": "1.0.0",
@@ -45,7 +45,7 @@
     },
     {
       "appId": "generator",
-      "appVersion": "7.1.53",
+      "appVersion": "7.1.55",
       "classification": "ai-consumer",
       "status": "ready",
       "coreVersion": "1.0.0",
@@ -58,7 +58,7 @@
     },
     {
       "appId": "differentiator",
-      "appVersion": "1.3.49",
+      "appVersion": "1.3.50",
       "classification": "ai-consumer",
       "status": "ready",
       "coreVersion": "1.0.0",
@@ -71,7 +71,7 @@
     },
     {
       "appId": "essay-evaluator",
-      "appVersion": "1.5.29",
+      "appVersion": "1.5.30",
       "classification": "ai-consumer",
       "status": "ready",
       "coreVersion": "1.0.0",
@@ -84,7 +84,7 @@
     },
     {
       "appId": "ludus",
-      "appVersion": "1.16.29",
+      "appVersion": "1.16.30",
       "classification": "ai-consumer",
       "status": "ready",
       "coreVersion": "1.0.0",
