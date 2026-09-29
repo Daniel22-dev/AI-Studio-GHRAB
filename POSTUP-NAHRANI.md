@@ -1,12 +1,12 @@
-# Přesný postup nahrání AI Studio GHRAB 0.21.131 na GitHub – až po schválení
+# Přesný postup nahrání AI Studio GHRAB 0.21.132 na GitHub – až po schválení
 
-> Aktuální verze: **0.21.131** · etapa P5
+> Aktuální verze: **0.21.132** · etapa P5
 
 > 0.21.82 opravuje falešný ecosystem blocker způsobený novějším repository kandidátem MANUAL aplikace, aniž by jej automaticky přijímala do release-wave.
 
 ## Předpoklady
 
-Nejprve musí být nasazeny KS 5.10.32, SORTIO 1.1.22, Lesson Hub 1.2.26, Diferenciátor 1.3.50, ACTIVA 0.5.30, Hodnotitel 1.5.30, LUDUS 1.16.30 a Generátor 7.1.58. Jejich lokální reportér vypíná centrální instanci přes `errorReporter: false`.
+Nejprve musí být nasazeny KS 5.10.32, SORTIO 1.1.22, Lesson Hub 1.2.26, Diferenciátor 1.3.50, ACTIVA 0.5.30, Hodnotitel 1.5.30, LUDUS 1.16.30 a Generátor 7.1.59. Jejich lokální reportér vypíná centrální instanci přes `errorReporter: false`.
 
 ## Jednorázová migrace `dist-school-server/`
 
