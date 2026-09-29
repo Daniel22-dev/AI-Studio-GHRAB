@@ -741,6 +741,8 @@ if (!safeExportSelfTest())
   fail("Bezpečný export propustil testovací citlivá data.");
 if (manifest?.id !== "/AI-Studio-GHRAB/")
   fail("PWA manifest nemá stabilní id /AI-Studio-GHRAB/.");
+if (manifest?.scope !== "/")
+  fail("PWA manifest musí mít ekosystémový scope /, aby AI Akademie neotevírala out-of-scope browser lištu.");
 const manualsHtml = await readFile(path.join(src, "manualy/index.html"), "utf8");
 const manualsJs = await readFile(path.join(src, "manualy/manualy.js"), "utf8");
 if (!manualsHtml.includes('id="ecosystem-support"')) fail("Centrum manuálů nemá společnou podporu ekosystému.");
