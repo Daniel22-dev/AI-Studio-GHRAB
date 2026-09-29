@@ -5,7 +5,7 @@
   "id": "/AI-Studio-GHRAB/",
   "lang": "cs",
   "start_url": "./",
-  "scope": "./",
+  "scope": "/",
   "display": "standalone",
   "background_color": "#020711",
   "theme_color": "#030915",
@@ -56,7 +56,7 @@
       "purpose": "any maskable"
     }
   ],
-  "version": "0.21.130",
+  "version": "0.21.131",
   "ghrab_platform": {
     "contract": "ghrab-platform-v1",
     "version": "1.1.2",
@@ -64,7 +64,7 @@
     "brand_version": "1.0.0",
     "theme_contract": "ghrab-theme-v1",
     "sw_contract": "ghrab-sw-v1",
-    "cache_name": "ghrab-ai-studio-v0.21.130"
+    "cache_name": "ghrab-ai-studio-v0.21.131"
   },
-  "cache_name": "ghrab-ai-studio-v0.21.130"
+  "cache_name": "ghrab-ai-studio-v0.21.131"
 }
