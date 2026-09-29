@@ -1,6 +1,6 @@
 {
   "schema": "ghrab-ai-readiness-report-v1",
-  "generatedAt": "2026-09-29T05:10:13.313Z",
+  "generatedAt": "2026-09-29T21:16:27.608Z",
   "activeCoreVersion": "1.0.0",
   "runtime": {
     "defaultMode": "direct-gemini",
@@ -45,7 +45,7 @@
     },
     {
       "appId": "generator",
-      "appVersion": "7.1.58",
+      "appVersion": "7.1.59",
       "classification": "ai-consumer",
       "status": "ready",
       "coreVersion": "1.0.0",
