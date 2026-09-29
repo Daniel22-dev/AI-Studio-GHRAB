@@ -1,7 +1,21 @@
 {
   "schema": "ai-studio-changelog-v1",
-  "current": "0.21.130",
+  "current": "0.21.131",
   "items": [
+    {
+      "version": "0.21.131",
+      "date": "2026-09-29",
+      "title": {
+        "cs": "AI Akademie bez bílé lišty",
+        "en": "AI Academy without the white browser bar"
+      },
+      "changes": [
+        {
+          "cs": "PWA rozsah AI Studia byl rozšířen na celý stejnopůvodový ekosystém. Přechod ze Studia do AI Akademie tak zůstává uvnitř nainstalované aplikace a nemá vyvolávat bílou out-of-scope lištu prohlížeče.",
+          "en": "The AI Studio PWA scope now covers the full same-origin ecosystem, so navigation from Studio to AI Academy stays inside the installed app and should not trigger the white out-of-scope browser bar."
+        }
+      ]
+    },
     {
       "version": "0.21.130",
       "date": "2026-09-29",
