@@ -628,3 +628,159 @@ export function createGroupsService({ provider = new LocalGroupsProvider(), idFa
       const store = provider.read();
       const group = findGroupOrThrow(store, groupId);
       if (expectedRevision != null && group.revision !== expectedRevision) throw new Error("GROUP_REVISION_CONFLICT");
+      const metadata = cleanGroupInput({ ...group, ...patch });
+      const nextStatus = patch.status == null ? group.status : patch.status;
+      if (!new Set(["active", "archived"]).has(nextStatus)) throw new Error("GROUP_STATUS_INVALID");
+      const next = { ...group, ...metadata, status: nextStatus };
+      if (!changedMetadata(group, next)) return clone(group);
+      next.revision = group.revision + 1;
+      next.updatedAt = nowIso();
+      const index = store.groups.findIndex((item) => item.groupId === groupId);
+      store.groups[index] = next;
+      writeStore(store, { kind: "updated", groupId, revision: next.revision });
+      return clone(next);
+    },
+
+    archiveGroup(groupId, options = {}) {
+      return api.updateGroup(groupId, { status: "archived" }, options);
+    },
+
+    parseRoster(rawText) {
+      return parseRosterText(rawText);
+    },
+
+    previewRosterImport(groupId, rawText, { replace = true } = {}) {
+      const store = provider.read();
+      const group = findGroupOrThrow(store, groupId);
+      const parsed = parseRosterText(rawText);
+      const plan = buildRosterPlan(group, parsed, { replace, idFactory });
+      return clone({
+        groupId,
+        currentRevision: group.revision,
+        replace,
+        parsed,
+        diff: {
+          added: plan.added,
+          changed: plan.changed,
+          restored: plan.restored,
+          removed: plan.removed,
+          unchangedCount: plan.unchanged.length,
+          hasChanges: plan.hasChanges,
+        },
+      });
+    },
+
+    importRoster({ groupId, rawText, replace = true, expectedRevision = null } = {}) {
+      const store = provider.read();
+      const group = findGroupOrThrow(store, groupId);
+      if (expectedRevision != null && group.revision !== expectedRevision) throw new Error("GROUP_REVISION_CONFLICT");
+      const parsed = parseRosterText(rawText);
+      if (!parsed.entries.length) throw new Error("ROSTER_EMPTY");
+      const plan = buildRosterPlan(group, parsed, { replace, idFactory });
+      if (!plan.hasChanges) {
+        return clone({ group, parsed, diff: { added: [], changed: [], restored: [], removed: [], unchangedCount: plan.unchanged.length, hasChanges: false } });
+      }
+      const next = {
+        ...group,
+        revision: group.revision + 1,
+        updatedAt: nowIso(),
+        members: plan.nextMembers,
+      };
+      const validation = validateTeachingGroup(next);
+      if (!validation.ok) throw new Error(`GROUP_VALIDATION_FAILED:${validation.errors.join(",")}`);
+      const index = store.groups.findIndex((item) => item.groupId === groupId);
+      store.groups[index] = next;
+      writeStore(store, { kind: "roster-imported", groupId, revision: next.revision });
+      return clone({
+        group: next,
+        parsed,
+        diff: {
+          added: plan.added,
+          changed: plan.changed,
+          restored: plan.restored,
+          removed: plan.removed,
+          unchangedCount: plan.unchanged.length,
+          hasChanges: true,
+        },
+      });
+    },
+
+    getRosterProjection(groupId, consumerAppId) {
+      const rule = CONSUMER_RULES[consumerAppId];
+      if (!rule) throw new Error("GROUP_CONSUMER_NOT_ALLOWED");
+      const group = findGroupOrThrow(provider.read(), groupId);
+      const base = { contract: "ghrab-roster-projection-v1", consumerAppId, group: projectionMetadata(group) };
+      if (rule.members === "none") return clone(base);
+      const active = group.members.filter((member) => member.status === "active");
+      const members = active.map((member) => rule.members === "name-email"
+        ? { memberId: member.memberId, name: member.name, schoolEmail: member.schoolEmail || null }
+        : { memberId: member.memberId, name: member.name });
+      return clone({ ...base, members });
+    },
+
+    getRevision(groupId) {
+      return findGroupOrThrow(provider.read(), groupId).revision;
+    },
+
+    subscribe(listener) {
+      if (typeof listener !== "function") throw new TypeError("GROUP_SUBSCRIBER_REQUIRED");
+      listeners.add(listener);
+      return () => listeners.delete(listener);
+    },
+
+    exportBackup() {
+      return clone(provider.exportBackup());
+    },
+
+    importBackup(backup) {
+      const store = provider.importBackup(clone(backup));
+      emit({ kind: "backup-imported", groupId: null, revision: null });
+      return clone(store);
+    },
+
+  };
+
+  if (typeof globalThis.addEventListener === "function" && provider.storageKey) {
+    globalThis.addEventListener("storage", (event) => {
+      if (event?.key !== provider.storageKey) return;
+      emit({ kind: "external-storage-change", groupId: null, revision: null });
+    });
+  }
+
+  return Object.freeze(api);
+}
+
+export function installGlobalGroupsApi(options = {}) {
+  const service = createGroupsService(options);
+  const existing = globalThis.GHRAB_GROUPS;
+  if (existing?.schema === service.schema) return existing;
+  Object.defineProperty(globalThis, "GHRAB_GROUPS", {
+    value: service,
+    configurable: false,
+    enumerable: true,
+    writable: false,
+  });
+  return service;
+}
+
+export function csvSafeCell(value) {
+  const text = String(value ?? "").replace(/\r?\n/g, " ");
+  const guarded = /^[=+\-@\t\r]/.test(text) ? `'${text}` : text;
+  return `"${guarded.replace(/"/g, '""')}"`;
+}
+
+export function rosterProjectionToCsv(projection) {
+  const members = Array.isArray(projection?.members) ? projection.members : [];
+  const rows = [["memberId", "name", "schoolEmail"], ...members.map((member) => [member.memberId || "", member.name || "", member.schoolEmail || ""])];
+  return rows.map((row) => row.map(csvSafeCell).join(",")).join("\r\n");
+}
+
+export const GHRAB_GROUPS_CONSTANTS = Object.freeze({
+  GROUP_SCHEMA,
+  STORE_SCHEMA,
+  BACKUP_SCHEMA,
+  STORAGE_KEY,
+  MAX_GROUPS,
+  MAX_MEMBERS_PER_GROUP,
+  MAX_IMPORT_CHARS,
+});
