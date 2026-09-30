@@ -1,5 +1,10 @@
 # Changelog
 
+## 0.21.139 — 2026-09-30
+**Moje skupiny pro učitele i správu**
+
+- Opravena capability logika navigace: Moje skupiny se nyní zobrazují běžnému učiteli, plnému administrátorovi i zástupci/operátorovi. Ostatní prvky označené jako teacher-only zůstávají omezené na roli učitele.
+
 ## 0.21.136 — 2026-09-30
 **Oprava nasazení Moje skupiny**
 
