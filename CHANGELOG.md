@@ -2,6 +2,98 @@
 
 > Tento soubor se generuje ze `src/config/changelog.json`. Neupravujte jej ručně.
 
+## 0.21.135 — 2026-09-30
+**Centrální Moje skupiny**
+
+- AI Studio nově obsahuje centrální sekci Moje skupiny pro bezpečnou local-first evidenci vyučovacích skupin a jejich seznamů studentů.
+- Import z IS používá náhled změn, deduplikaci, stabilní náhodné identity a archivaci odebraných studentů namísto destruktivního smazání.
+- Nová projekční vrstva omezuje rozsah dat pro budoucí spotřebitelské aplikace a zachovává oddělení od ghrab-material-v1 i GARP 2.7.
+
+## 0.21.134 — 2026-09-30
+**Bezpečné automatické PATCH povýšení**
+
+- Ověřená PATCH změna aplikace aktualizovala release-wave a současně zvýšila patch verzi AI Studia právě jednou; duplicitní nebo bezezměnový běh verzi Studia nezvyšuje.
+
+## 0.21.133 — 2026-09-30
+**Bezpečné automatické PATCH povýšení**
+
+- Ověřená PATCH změna aplikace aktualizovala release-wave a současně zvýšila patch verzi AI Studia právě jednou; duplicitní nebo bezezměnový běh verzi Studia nezvyšuje.
+
+## 0.21.132 — 2026-09-29
+**Bezpečné automatické PATCH povýšení**
+
+- Ověřená PATCH změna aplikace aktualizovala release-wave a současně zvýšila patch verzi AI Studia právě jednou; duplicitní nebo bezezměnový běh verzi Studia nezvyšuje.
+
+## 0.21.131 — 2026-09-29
+**AI Akademie bez bílé lišty**
+
+- PWA rozsah AI Studia byl rozšířen na celý stejnopůvodový ekosystém. Přechod ze Studia do AI Akademie tak zůstává uvnitř nainstalované aplikace a nemá vyvolávat bílou out-of-scope lištu prohlížeče.
+
+## 0.21.130 — 2026-09-29
+**Bezpečné automatické PATCH povýšení**
+
+- Ověřená PATCH změna aplikace aktualizovala release-wave a současně zvýšila patch verzi AI Studia právě jednou; duplicitní nebo bezezměnový běh verzi Studia nezvyšuje.
+
+## 0.21.129 — 2026-09-28
+**Bezpečné automatické PATCH povýšení**
+
+- Ověřená PATCH změna aplikace aktualizovala release-wave a současně zvýšila patch verzi AI Studia právě jednou; duplicitní nebo bezezměnový běh verzi Studia nezvyšuje.
+
+## 0.21.128 — 2026-09-28
+**Bezpečné automatické PATCH povýšení**
+
+- Ověřená PATCH změna aplikace aktualizovala release-wave a současně zvýšila patch verzi AI Studia právě jednou; duplicitní nebo bezezměnový běh verzi Studia nezvyšuje.
+
+## 0.21.127 — 2026-09-28
+**Bezpečné automatické PATCH povýšení**
+
+- Ověřená PATCH změna aplikace aktualizovala release-wave a současně zvýšila patch verzi AI Studia právě jednou; duplicitní nebo bezezměnový běh verzi Studia nezvyšuje.
+
+## 0.21.126 — 2026-09-28
+**Bezpečné automatické PATCH povýšení**
+
+- Ověřená PATCH změna aplikace aktualizovala release-wave a současně zvýšila patch verzi AI Studia právě jednou; duplicitní nebo bezezměnový běh verzi Studia nezvyšuje.
+
+## 0.21.125 — 2026-09-28
+**Bezpečné automatické PATCH povýšení**
+
+- Ověřená PATCH změna aplikace aktualizovala release-wave a současně zvýšila patch verzi AI Studia právě jednou; duplicitní nebo bezezměnový běh verzi Studia nezvyšuje.
+
+## 0.21.124 — 2026-09-28
+**Bezpečné automatické PATCH povýšení**
+
+- Ověřená PATCH změna aplikace aktualizovala release-wave a současně zvýšila patch verzi AI Studia právě jednou; duplicitní nebo bezezměnový běh verzi Studia nezvyšuje.
+
+## 0.21.123 — 2026-09-28
+**Bezpečné automatické PATCH povýšení**
+
+- Ověřená PATCH změna aplikace aktualizovala release-wave a současně zvýšila patch verzi AI Studia právě jednou; duplicitní nebo bezezměnový běh verzi Studia nezvyšuje.
+
+## 0.21.122 — 2026-09-27
+**Bezpečné automatické PATCH povýšení**
+
+- Ověřená PATCH změna aplikace aktualizovala release-wave a současně zvýšila patch verzi AI Studia právě jednou; duplicitní nebo bezezměnový běh verzi Studia nezvyšuje.
+
+## 0.21.121 — 2026-09-27
+**Bezpečné automatické PATCH povýšení**
+
+- Ověřená PATCH změna aplikace aktualizovala release-wave a současně zvýšila patch verzi AI Studia právě jednou; duplicitní nebo bezezměnový běh verzi Studia nezvyšuje.
+
+## 0.21.120 — 2026-09-27
+**Bezpečné automatické PATCH povýšení**
+
+- Ověřená PATCH změna aplikace aktualizovala release-wave a současně zvýšila patch verzi AI Studia právě jednou; duplicitní nebo bezezměnový běh verzi Studia nezvyšuje.
+
+## 0.21.119 — 2026-09-27
+**Bezpečné automatické PATCH povýšení**
+
+- Ověřená PATCH změna aplikace aktualizovala release-wave a současně zvýšila patch verzi AI Studia právě jednou; duplicitní nebo bezezměnový běh verzi Studia nezvyšuje.
+
+## 0.21.118 — 2026-09-27
+**Bezpečné automatické PATCH povýšení**
+
+- Ověřená PATCH změna aplikace aktualizovala release-wave a současně zvýšila patch verzi AI Studia právě jednou; duplicitní nebo bezezměnový běh verzi Studia nezvyšuje.
+
 ## 0.21.117 — 2026-09-27
 **Migrace AI Studia na GARP 2.7 FOUNDATION**
 
