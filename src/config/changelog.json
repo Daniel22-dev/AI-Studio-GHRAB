@@ -1,7 +1,21 @@
 {
   "schema": "ai-studio-changelog-v1",
-  "current": "0.21.135",
+  "current": "0.21.136",
   "items": [
+    {
+      "version": "0.21.136",
+      "date": "2026-09-30",
+      "title": {
+        "cs": "Oprava nasazení Moje skupiny",
+        "en": "My Groups deployment hotfix"
+      },
+      "changes": [
+        {
+          "cs": "Opravena struktura HTML nové sekce Moje skupiny tak, aby prošla projektovým limitem délky řádků a mohla být bezpečně nasazena přes GitHub Pages; funkční chování se nemění.",
+          "en": "The HTML structure of the new My Groups section was reformatted to satisfy the project line-length gate and allow safe GitHub Pages deployment; functional behavior is unchanged."
+        }
+      ]
+    },
     {
       "version": "0.21.135",
       "date": "2026-09-30",

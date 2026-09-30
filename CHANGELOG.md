@@ -1,5 +1,11 @@
 # Changelog
 
+## 0.21.136 — 2026-09-30
+**Oprava nasazení Moje skupiny**
+
+- Opravena struktura HTML nové sekce Moje skupiny tak, aby prošla projektovým limitem délky řádků a mohla být bezpečně nasazena přes GitHub Pages; funkční chování se nemění.
+
+
 > Tento soubor se generuje ze `src/config/changelog.json`. Neupravujte jej ručně.
 
 ## 0.21.135 — 2026-09-30

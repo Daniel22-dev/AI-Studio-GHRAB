@@ -44,7 +44,12 @@
         <p class="breadcrumb"><a href="../">AI Studio</a> / <span data-cs="Moje skupiny" data-en="My groups">Moje skupiny</span></p>
         <p class="eyebrow" data-cs="CENTRÁLNÍ EVIDENCE VÝUKY" data-en="CENTRAL TEACHING ROSTER">CENTRÁLNÍ EVIDENCE VÝUKY</p>
         <h1 data-cs="Moje skupiny" data-en="My groups">Moje skupiny</h1>
-        <p data-cs="Jednou založená skupina může postupně sloužit více školním aplikacím. V této etapě zůstávají data pouze v tomto prohlížeči a do ostatních aplikací se zatím automaticky nepřenášejí." data-en="A group created once can gradually serve multiple school apps. At this stage, data stays only in this browser and is not yet automatically transferred to other apps.">Jednou založená skupina může postupně sloužit více školním aplikacím. V této etapě zůstávají data pouze v tomto prohlížeči a do ostatních aplikací se zatím automaticky nepřenášejí.</p>
+        <p
+          data-cs="Jednou založená skupina může postupně sloužit více školním aplikacím. V této etapě zůstávají data pouze v tomto prohlížeči a do ostatních aplikací se zatím automaticky nepřenášejí."
+          data-en="A group created once can gradually serve multiple school apps. At this stage, data stays only in this browser and is not yet automatically transferred to other apps."
+        >
+          Jednou založená skupina může postupně sloužit více školním aplikacím. V této etapě zůstávají data pouze v tomto prohlížeči a do ostatních aplikací se zatím automaticky nepřenášejí.
+        </p>
         <div class="groups-hero-badges" aria-label="Vlastnosti">
           <span>LOCAL-FIRST</span><span>GARP 2.7</span><span>ghrab-teaching-group-v1</span>
         </div>
@@ -54,7 +59,15 @@
         <div id="groups-diagnostic" class="groups-diagnostic" role="status" hidden></div>
         <aside class="groups-privacy panel" aria-label="Ochrana osobních údajů">
           <div class="groups-privacy-icon" aria-hidden="true">◎</div>
-          <div><strong data-cs="Seznamy obsahují osobní údaje studentů" data-en="Rosters contain student personal data">Seznamy obsahují osobní údaje studentů</strong><p data-cs="Jména a školní e-maily se neodesílají do telemetrie ani do material handoffu. Záloha JSON je lokální soubor a je nutné s ní zacházet jako s osobními údaji." data-en="Names and school emails are not sent to telemetry or material handoff. A JSON backup is a local file and must be handled as personal data.">Jména a školní e-maily se neodesílají do telemetrie ani do material handoffu. Záloha JSON je lokální soubor a je nutné s ní zacházet jako s osobními údaji.</p></div>
+          <div>
+            <strong data-cs="Seznamy obsahují osobní údaje studentů" data-en="Rosters contain student personal data">Seznamy obsahují osobní údaje studentů</strong>
+            <p
+              data-cs="Jména a školní e-maily se neodesílají do telemetrie ani do material handoffu. Záloha JSON je lokální soubor a je nutné s ní zacházet jako s osobními údaji."
+              data-en="Names and school emails are not sent to telemetry or material handoff. A JSON backup is a local file and must be handled as personal data."
+            >
+              Jména a školní e-maily se neodesílají do telemetrie ani do material handoffu. Záloha JSON je lokální soubor a je nutné s ní zacházet jako s osobními údaji.
+            </p>
+          </div>
         </aside>
 
         <div class="groups-toolbar panel">
@@ -101,12 +114,22 @@
     <dialog id="roster-dialog" class="groups-dialog groups-dialog-wide" aria-labelledby="roster-dialog-title">
       <form method="dialog" id="roster-form">
         <div class="groups-dialog-head"><div><p class="eyebrow" data-cs="IMPORT Z IS" data-en="IS IMPORT">IMPORT Z IS</p><h2 id="roster-dialog-title" data-cs="Aktualizovat seznam studentů" data-en="Update student roster">Aktualizovat seznam studentů</h2></div><button type="button" class="groups-icon-button" data-dialog-close aria-label="Zavřít">×</button></div>
-        <p class="groups-help" data-cs="Vložte seznam z IS. Podporované jsou jména, školní e-maily a oddělovače nový řádek, tabulátor, čárka nebo středník. Nejdříve se vždy zobrazí náhled změn." data-en="Paste a roster from the school IS. Names, school emails, and newline, tab, comma or semicolon separators are supported. A change preview is always shown first.">Vložte seznam z IS. Podporované jsou jména, školní e-maily a oddělovače nový řádek, tabulátor, čárka nebo středník. Nejdříve se vždy zobrazí náhled změn.</p>
+        <p
+          class="groups-help"
+          data-cs="Vložte seznam z IS. Podporované jsou jména, školní e-maily a oddělovače nový řádek, tabulátor, čárka nebo středník. Nejdříve se vždy zobrazí náhled změn."
+          data-en="Paste a roster from the school IS. Names, school emails, and newline, tab, comma or semicolon separators are supported. A change preview is always shown first."
+        >
+          Vložte seznam z IS. Podporované jsou jména, školní e-maily a oddělovače nový řádek, tabulátor, čárka nebo středník. Nejdříve se vždy zobrazí náhled změn.
+        </p>
         <label class="groups-roster-field"><span data-cs="Seznam studentů" data-en="Student roster">Seznam studentů</span><textarea id="roster-input" rows="10" maxlength="120000" spellcheck="false" placeholder="Jan Novák; jan.novak@example.edu&#10;Petra Svobodová; petra.svobodova@example.edu"></textarea></label>
         <label class="groups-check"><input type="checkbox" id="roster-replace" checked /><span data-cs="Aktualizovat jako úplný seznam — chybějící studenty archivovat" data-en="Treat as full roster — archive missing students">Aktualizovat jako úplný seznam — chybějící studenty archivovat</span></label>
         <div id="roster-preview" class="groups-preview" aria-live="polite"></div>
         <p class="groups-form-error" id="roster-form-error" role="alert" hidden></p>
-        <div class="groups-dialog-actions"><button type="button" class="groups-button groups-button-secondary" data-dialog-close data-cs="Zrušit" data-en="Cancel">Zrušit</button><button type="button" class="groups-button groups-button-secondary" id="roster-preview-button" data-cs="Zkontrolovat změny" data-en="Preview changes">Zkontrolovat změny</button><button type="submit" class="groups-button groups-button-primary" id="roster-confirm-button" disabled data-cs="Potvrdit import" data-en="Confirm import">Potvrdit import</button></div>
+        <div class="groups-dialog-actions">
+          <button type="button" class="groups-button groups-button-secondary" data-dialog-close data-cs="Zrušit" data-en="Cancel">Zrušit</button>
+          <button type="button" class="groups-button groups-button-secondary" id="roster-preview-button" data-cs="Zkontrolovat změny" data-en="Preview changes">Zkontrolovat změny</button>
+          <button type="submit" class="groups-button groups-button-primary" id="roster-confirm-button" disabled data-cs="Potvrdit import" data-en="Confirm import">Potvrdit import</button>
+        </div>
       </form>
     </dialog>
 
