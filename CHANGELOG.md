@@ -2,6 +2,13 @@
 
 > Tento soubor se generuje ze `src/config/changelog.json`. Neupravujte jej ručně.
 
+## 0.21.135 — 2026-09-30
+**Centrální Moje skupiny**
+
+- AI Studio nově obsahuje centrální sekci Moje skupiny pro bezpečnou local-first evidenci vyučovacích skupin a jejich seznamů studentů.
+- Import z IS používá náhled změn, deduplikaci, stabilní náhodné identity a archivaci odebraných studentů namísto destruktivního smazání.
+- Nová projekční vrstva omezuje rozsah dat pro budoucí spotřebitelské aplikace a zachovává oddělení od ghrab-material-v1 i GARP 2.7.
+
 ## 0.21.117 — 2026-09-27
 **Migrace AI Studia na GARP 2.7 FOUNDATION**
 
