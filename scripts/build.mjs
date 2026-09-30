@@ -382,6 +382,11 @@ for (const file of await walk(dist)) {
   const changelogPath = path.join(dist, "config", "changelog.json");
   const changelog = JSON.parse(await readFile(changelogPath, "utf8"));
   const maxChunkBytes = 120000;
+// Reserve room in the primary runtime chunk for the archives metadata that
+// is appended only after the item chunks are known. Without this headroom,
+// an item payload can fit the 120 kB limit and then exceed it once the
+// `archives` array is serialized into changelog.json.
+const maxItemChunkBytes = maxChunkBytes - 4096;
   const chunks = [];
   let currentItems = [];
   const compact = (items, archives = undefined) => {
@@ -391,7 +396,7 @@ for (const file of await walk(dist)) {
   };
   for (const item of changelog.items || []) {
     const candidate = [...currentItems, item];
-    if (currentItems.length && Buffer.byteLength(compact(candidate), "utf8") > maxChunkBytes) {
+    if (currentItems.length && Buffer.byteLength(compact(candidate), "utf8") > maxItemChunkBytes) {
       chunks.push(currentItems);
       currentItems = [item];
     } else {
