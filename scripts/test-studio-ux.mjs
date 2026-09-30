@@ -71,6 +71,13 @@ check(stylesCss.includes("grid-template-rows: repeat(2, auto)") && stylesCss.inc
 check(!/\.main-nav\s*\{[^}]*flex-wrap:\s*wrap/.test(polishCss), "Hlavni navigace se na desktopu znovu muze zalomit do druheho radku.");
 check(appJs.includes('["about", "changelog"].includes(page)'), "O aplikaci nema garantovany pristup pro vsechny role ani kompatibilitu stareho changelog route.");
 check(appJs.includes('[data-teacher-only]'), "Chybi role teacher-only.");
+check(
+  appJs.includes('link.dataset.groupsAccess = ""') &&
+    appJs.includes("const teachingGroups = Boolean(teacher || admin || operator);") &&
+    appJs.includes('document.querySelectorAll("[data-groups-access]")') &&
+    appJs.includes("node.hidden = !teachingGroups;"),
+  "Moje skupiny nejsou capability-based dostupne uciteli, adminovi a operatorovi.",
+);
 check(appJs.includes('COLLEAGUE_PREVIEW_KEY') && appJs.includes('function isColleaguePreview()') && appJs.includes('function mountColleaguePreviewBanner()'), "Chybi session Pohled kolegy.");
 check(appJs.includes('function ensureReportNavigation()') && appJs.includes('link.dataset.nav = "report"') && appJs.includes('link.href = `${base}report/`'), "Report nema primy vstup v hlavni navigaci Studia.");
 const academyBridgeStart = appJs.indexOf("function academyLaunchUrl(");

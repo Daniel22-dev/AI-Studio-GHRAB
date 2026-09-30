@@ -723,7 +723,7 @@ function ensureGroupsNavigation() {
   const link = document.createElement("a");
   link.href = `${base}groups/`;
   link.dataset.nav = "groups";
-  link.dataset.teacherOnly = "";
+  link.dataset.groupsAccess = "";
   link.dataset.cs = "Moje skupiny";
   link.dataset.en = "My groups";
   link.textContent = t("Moje skupiny", "My groups");
@@ -1171,6 +1171,7 @@ function updateAdminVisibility() {
     (snapshot.valid && snapshot.permit?.role === "teacher" && !preview) ||
       (preview && profile?.role === "teacher"),
   );
+  const teachingGroups = Boolean(teacher || admin || operator);
   root.classList.toggle("access-admin", admin);
   root.classList.toggle("access-operator", operator);
   root.classList.toggle("access-operations", operations);
@@ -1192,6 +1193,9 @@ function updateAdminVisibility() {
   });
   document.querySelectorAll("[data-teacher-only]").forEach((node) => {
     node.hidden = !teacher;
+  });
+  document.querySelectorAll("[data-groups-access]").forEach((node) => {
+    node.hidden = !teachingGroups;
   });
 }
 

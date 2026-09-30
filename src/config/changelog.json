@@ -1,7 +1,21 @@
 {
   "schema": "ai-studio-changelog-v1",
-  "current": "0.21.138",
+  "current": "0.21.139",
   "items": [
+    {
+      "version": "0.21.139",
+      "date": "2026-09-30",
+      "title": {
+        "cs": "Moje skupiny pro učitele i správu",
+        "en": "My Groups for teachers and management"
+      },
+      "changes": [
+        {
+          "cs": "Opravena capability logika navigace: Moje skupiny se nyní zobrazují běžnému učiteli, plnému administrátorovi i zástupci/operátorovi. Ostatní prvky označené jako teacher-only zůstávají omezené na roli učitele.",
+          "en": "Navigation capability logic was fixed: My Groups is now shown to regular teachers, full administrators, and deputy/operator roles. Other teacher-only UI remains restricted to the teacher role."
+        }
+      ]
+    },
     {
       "version": "0.21.138",
       "date": "2026-09-30",

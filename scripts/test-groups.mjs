@@ -185,6 +185,7 @@ assert.equal(hostile.invalid.length, 2);
   const js = await readFile(path.join(root, "src/groups/groups.js"), "utf8");
   const css = await readFile(path.join(root, "src/groups/groups.css"), "utf8");
   const serviceSource = await readFile(path.join(root, "src/groups/group-service.js"), "utf8");
+  const appSource = await readFile(path.join(root, "src/app.js"), "utf8");
   assert.match(html, /name="viewport"/);
   assert.match(html, /aria-live="polite"/);
   assert.match(html, /<dialog[^>]+group-dialog/);
@@ -194,6 +195,8 @@ assert.equal(hostile.invalid.length, 2);
   assert.ok(!serviceSource.includes("ghrab-material-v1"), "group service is separated from material handoff");
   assert.ok(!serviceSource.includes("providerSnapshot"), "public API exposes no raw provider snapshot escape hatch");
   assert.ok(!/recordEvent|telemetry|errorReporter|queryString/i.test(serviceSource), "group service has no telemetry/reporting transport");
+  assert.ok(appSource.includes('link.dataset.groupsAccess = ""'), "My Groups navigation uses a dedicated capability marker");
+  assert.ok(appSource.includes("const teachingGroups = Boolean(teacher || admin || operator);"), "My Groups is available to teacher, admin and operator roles without broadening generic teacher-only UI");
 }
 
 console.log("Moje skupiny v1: all contract, parser, privacy, recovery, projection and UI sanity tests PASS");
