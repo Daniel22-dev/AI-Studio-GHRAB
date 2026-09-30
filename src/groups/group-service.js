@@ -201,3 +201,214 @@ export class LocalGroupsProvider {
 
   importBackup(backup) {
     if (!backup || backup.schema !== BACKUP_SCHEMA || backup.version !== 1 || !isIsoTimestamp(backup.exportedAt)) {
+      throw new Error("GROUP_BACKUP_INVALID");
+    }
+    const validation = validateGroupsStore(backup.store);
+    if (!validation.ok) throw new Error("GROUP_BACKUP_STORE_INVALID");
+    return this.write({ ...clone(backup.store), updatedAt: nowIso() });
+  }
+}
+
+function titleCaseNamePart(value) {
+  const text = safeText(value);
+  return text
+    .split(/([ '\u2019-])/)
+    .map((part) => (/^[ '\u2019-]$/.test(part) ? part : part ? `${part.charAt(0).toLocaleUpperCase("cs-CZ")}${part.slice(1).toLocaleLowerCase("cs-CZ")}` : part))
+    .join("");
+}
+
+function inferNameFromEmail(email) {
+  const local = normalizeEmail(email).split("@")[0] || "";
+  return local
+    .replace(/\+.*$/, "")
+    .split(/[._-]+/)
+    .map((part) => part.replace(/\d+$/g, ""))
+    .filter(Boolean)
+    .map(titleCaseNamePart)
+    .join(" ");
+}
+
+const EMAIL_SOURCE = "[A-Z0-9._%+-]+@[A-Z0-9.-]+\\.[A-Z]{2,}";
+function emailsIn(value) {
+  return String(value ?? "").match(new RegExp(EMAIL_SOURCE, "ig")) || [];
+}
+
+
+function normaliseHeaderToken(value) {
+  return String(value ?? "")
+    .normalize("NFD")
+    .replace(/[\u0300-\u036f]/g, "")
+    .toLocaleLowerCase("cs-CZ")
+    .replace(/[^a-z0-9]+/g, " ")
+    .trim();
+}
+
+function detectRosterHeader(line) {
+  const cells = String(line ?? "")
+    .split(/[\t;|,]+/)
+    .map((item) => normaliseHeaderToken(item));
+  if (cells.length < 2) return null;
+  const find = (...patterns) => cells.findIndex((cell) => patterns.some((pattern) => pattern.test(cell)));
+  const emailIndex = find(/^e ?mail$/, /^email$/, /^mail$/);
+  const lastNameIndex = find(/^prijmeni$/, /^surname$/, /^last name$/, /^family name$/);
+  const firstNameIndex = find(/^jmeno$/, /^first name$/, /^given name$/);
+  const fullNameIndex = find(/^cele jmeno$/, /^full name$/, /^student$/, /^zak$/);
+  if (emailIndex < 0 && firstNameIndex < 0 && lastNameIndex < 0 && fullNameIndex < 0) return null;
+  return { cells: cells.length, emailIndex, firstNameIndex, lastNameIndex, fullNameIndex };
+}
+
+function parseHeaderGuidedLine(acc, line, header) {
+  if (!header) return false;
+  const cells = String(line ?? "").split(/[\t;|,]+/).map((item) => safeText(item, 360));
+  if (cells.length < 2) return false;
+  const email = header.emailIndex >= 0 ? cells[header.emailIndex] || "" : "";
+  let name = "";
+  if (header.fullNameIndex >= 0) name = cells[header.fullNameIndex] || "";
+  else {
+    const first = header.firstNameIndex >= 0 ? cells[header.firstNameIndex] || "" : "";
+    const last = header.lastNameIndex >= 0 ? cells[header.lastNameIndex] || "" : "";
+    name = [first, last].filter(Boolean).join(" ");
+  }
+  if (!name && !email) return false;
+  addRosterEntry(acc, { name, email, source: "header-columns", raw: line });
+  return true;
+}
+
+function looksLikeHeader(line) {
+  const low = String(line ?? "").toLocaleLowerCase("cs-CZ");
+  const hasHeader = /\b(jméno|jmeno|příjmení|prijmeni|name|surname|student|žák|zak|e-?mail|třída|trida|skupina|class|login|uživatel|uzivatel)\b/.test(low);
+  return hasHeader && emailsIn(line).length === 0;
+}
+
+function isNoiseCell(cell) {
+  const value = safeText(cell, 180);
+  if (!value) return true;
+  if (/^\d+$/.test(value)) return true;
+  if (/^\d+\.?[A-Za-z]?$/.test(value)) return true;
+  if (/^(student|žák|zak|aktivní|active|neaktivní|inactive|uživatel|uzivatel)$/i.test(value)) return true;
+  if (/^\d+\.[A-Za-z0-9-]+$/.test(value)) return true;
+  return false;
+}
+
+function cleanNameAroundEmail(line, email) {
+  const without = String(line ?? "").replace(email, " ");
+  return without
+    .split(/[\t;|,]+/)
+    .map((item) => safeText(item))
+    .filter((item) => item && !isNoiseCell(item) && !isValidEmail(item))
+    .join(" ")
+    .replace(/\s+/g, " ")
+    .trim();
+}
+
+function validName(value) {
+  const name = safeText(value);
+  if (!name || name.length > MAX_NAME_LENGTH) return false;
+  if (!/[\p{L}]/u.test(name)) return false;
+  return !/[<>]/.test(name);
+}
+
+function createRosterAccumulator() {
+  return { entries: [], invalid: [], duplicates: [], seen: new Set(), segments: 0 };
+}
+
+function addRosterEntry(acc, { name = "", email = "", source = "pasted", raw = "" } = {}) {
+  acc.segments += 1;
+  const cleanEmail = normalizeEmail(email);
+  let cleanName = safeText(name);
+  if (!cleanName && cleanEmail) cleanName = inferNameFromEmail(cleanEmail);
+  if (cleanEmail && !isValidEmail(cleanEmail)) {
+    acc.invalid.push({ reason: "invalid-email", value: safeText(raw || email, 180) });
+    return;
+  }
+  if (!validName(cleanName)) {
+    acc.invalid.push({ reason: "invalid-name", value: safeText(raw || name || email, 180) });
+    return;
+  }
+  const key = cleanEmail ? `email:${cleanEmail}` : `name:${normalizeName(cleanName)}`;
+  if (acc.seen.has(key)) {
+    acc.duplicates.push({ name: cleanName, schoolEmail: cleanEmail || null });
+    return;
+  }
+  acc.seen.add(key);
+  acc.entries.push({
+    previewId: `row-${acc.entries.length + 1}`,
+    name: cleanName,
+    schoolEmail: cleanEmail || null,
+    source,
+  });
+}
+
+function parseEmailLine(acc, line) {
+  const lineEmails = emailsIn(line);
+  if (!lineEmails.length) return false;
+  const cells = String(line)
+    .split(/[\t;|,]+/)
+    .map((item) => safeText(item, 360))
+    .filter(Boolean);
+  if (lineEmails.length === 1) {
+    const email = lineEmails[0];
+    addRosterEntry(acc, { name: cleanNameAroundEmail(line, email), email, source: "email", raw: line });
+    return true;
+  }
+  if (cells.length <= 1) {
+    for (const email of lineEmails) addRosterEntry(acc, { email, source: "email-inferred", raw: email });
+    return true;
+  }
+  let pending = [];
+  for (const cell of cells) {
+    const cellEmails = emailsIn(cell);
+    if (!cellEmails.length) {
+      if (!isNoiseCell(cell)) pending.push(cell);
+      continue;
+    }
+    if (cellEmails.length === 1) {
+      const email = cellEmails[0];
+      const inlineName = cleanNameAroundEmail(cell, email);
+      addRosterEntry(acc, { name: inlineName || pending.join(" "), email, source: inlineName ? "email-inline" : pending.length ? "is-columns" : "email-inferred", raw: cell });
+    } else {
+      for (const email of cellEmails) addRosterEntry(acc, { email, source: "email-inferred", raw: email });
+    }
+    pending = [];
+  }
+  return true;
+}
+
+function parseNameOnlyLine(acc, line) {
+  const value = safeText(line, 1000);
+  if (!value || looksLikeHeader(value)) return;
+  const invalidEmailLike = value.includes("@") && emailsIn(value).length === 0;
+  if (invalidEmailLike) {
+    acc.invalid.push({ reason: "invalid-email", value: value.slice(0, 180) });
+    return;
+  }
+  if (/[\t;|]/.test(value)) {
+    const cells = value.split(/[\t;|]+/).map((item) => safeText(item)).filter(Boolean);
+    if (cells.length === 2 && cells.every((item) => /^\p{L}+[\p{L}'\u2019-]*$/u.test(item))) {
+      addRosterEntry(acc, { name: `${cells[0]} ${cells[1]}`, source: "name-columns", raw: value });
+      return;
+    }
+    cells.forEach((name) => addRosterEntry(acc, { name, source: "name-list", raw: name }));
+    return;
+  }
+  if (value.includes(",")) {
+    const cells = value.split(/,+/).map((item) => safeText(item)).filter(Boolean);
+    if (cells.length === 2 && cells.every((item) => /^\p{L}+[\p{L}'\u2019-]*$/u.test(item))) {
+      addRosterEntry(acc, { name: `${cells[0]} ${cells[1]}`, source: "surname-firstname", raw: value });
+      return;
+    }
+    cells.forEach((name) => addRosterEntry(acc, { name, source: "name-list", raw: name }));
+    return;
+  }
+  addRosterEntry(acc, { name: value, source: "name-line", raw: value });
+}
+
+export function parseRosterText(raw) {
+  const text = String(raw ?? "").replace(/\u00a0/g, " ").replace(/[\u200b-\u200d\ufeff]/g, "");
+  if (text.length > MAX_IMPORT_CHARS) throw new Error("ROSTER_IMPORT_TOO_LARGE");
+  const acc = createRosterAccumulator();
+  const lines = text.split(/\r?\n/).map((line) => line.trim()).filter(Boolean);
+  let header = null;
+  for (const line of lines) {
+    if (acc.entries.length >= MAX_MEMBERS_PER_GROUP) break;
+    if (looksLikeHeader(line)) {
