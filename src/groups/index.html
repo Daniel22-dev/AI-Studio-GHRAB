@@ -1,4 +1,119 @@
-<!doctype html><html lang="cs"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><meta name="color-scheme" content="dark"><title>Moje skupiny · AI Studio GHRAB</title><link rel="stylesheet" href="./groups.css"></head><body><main class="groups-shell"><header class="groups-topbar"><div><p>AI Studio GHRAB · 0.21.135</p><h1>Moje skupiny</h1><p>Centrální local-first evidence vyučovacích skupin.</p></div><a class="groups-button groups-button-secondary" href="../">← AI Studio</a></header><section class="groups-toolbar"><div class="groups-filter"><button class="is-active" data-group-filter="active">Aktivní</button><button data-group-filter="archived">Archiv</button></div><div class="groups-backup"><button id="groups-export" class="groups-button groups-button-secondary">Export zálohy</button><label class="groups-button groups-button-secondary">Obnovit zálohu<input id="groups-import-file" type="file" accept="application/json" hidden></label><button id="group-create" class="groups-button groups-button-primary">+ Nová skupina</button></div></section><section class="groups-layout"><aside class="groups-panel"><div id="groups-list" class="groups-list"></div></aside><section id="groups-detail" class="groups-detail" aria-live="polite"></section></section></main>
-<dialog id="group-dialog"><div class="dialog-body"><div class="dialog-head"><h2>Skupina</h2><button type="button" data-dialog-close aria-label="Zavřít">×</button></div><form id="group-form" class="groups-form"><input id="group-edit-id" type="hidden"><label>Název<input id="group-name" maxlength="120" required></label><label>Školní rok<input id="group-year" placeholder="2026/27" required></label><label>Předmět<input id="group-subject" maxlength="80"></label><label>Ročník<input id="group-grade" maxlength="40"></label><p id="group-error" class="groups-form-error"></p><div class="groups-dialog-actions"><button type="button" class="groups-button groups-button-secondary" data-dialog-close>Zrušit</button><button class="groups-button groups-button-primary">Uložit</button></div></form></div></dialog>
-<dialog id="roster-dialog"><div class="dialog-body"><div class="dialog-head"><div><p>Import z IS</p><h2 id="roster-group-name"></h2></div><button type="button" data-dialog-close aria-label="Zavřít">×</button></div><form id="roster-form" class="groups-form"><label>Vložte seznam<textarea id="roster-input" maxlength="120000" placeholder="Jméno; e-mail nebo tabulka z IS"></textarea></label><label><span><input id="roster-replace" type="checkbox" checked> Archivovat aktivní členy, kteří v novém seznamu chybí</span></label><button id="roster-preview-button" type="button" class="groups-button groups-button-secondary">Zkontrolovat změny</button><div id="roster-preview" class="groups-preview"></div><p id="roster-error" class="groups-form-error"></p><div class="groups-dialog-actions"><button type="button" class="groups-button groups-button-secondary" data-dialog-close>Zrušit</button><button id="roster-confirm" class="groups-button groups-button-primary" disabled>Potvrdit import</button></div></form></div></dialog>
-<script type="module" src="./groups.js"></script></body></html>
+<!doctype html>
+<html lang="cs" data-theme="dark" data-ghrab-app-id="ai-studio" data-ghrab-app-version="__APP_VERSION__">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width,initial-scale=1" />
+    <meta name="description" content="Moje skupiny v AI Studiu GHRAB — centrální přehled vyučovacích skupin a jejich seznamů studentů." />
+    <meta name="theme-color" content="#14395d" />
+    <meta http-equiv="Content-Security-Policy" content="default-src 'self'; script-src 'self'; style-src 'self'; img-src 'self' data: blob:; connect-src 'self'; object-src 'none'; base-uri 'self'; form-action 'self'" />
+    <title>Moje skupiny · AI Studio GHRAB</title>
+    <link rel="manifest" href="../manifest.webmanifest" />
+    <link rel="icon" href="../assets/brand/icon-32.png" sizes="32x32" />
+    <link rel="stylesheet" href="../styles.css" />
+    <link rel="stylesheet" href="../polish.css" />
+    <link rel="stylesheet" href="./groups.css" />
+  </head>
+  <body data-page="groups" data-title-cs="Moje skupiny · AI Studio GHRAB" data-title-en="My groups · AI Studio GHRAB">
+    <a class="skip-link" href="#main" data-cs="Přejít na obsah" data-en="Skip to content">Přejít na obsah</a>
+    <header class="site-header cosmic-header">
+      <a class="brand" href="../" aria-label="AI Studio GHRAB — domů">
+        <span class="brand-orbit"><img src="../assets/brand/brand-mark.svg" alt="" width="46" height="46" /></span>
+        <span><strong>AI Studio <em>GHRAB</em></strong><small data-cs="Školní ekosystém digitálních a AI nástrojů" data-en="School ecosystem of digital and AI tools">Školní ekosystém digitálních a AI nástrojů</small></span>
+      </a>
+      <button class="nav-toggle" type="button" aria-expanded="false" aria-controls="main-nav" data-cs-aria="Otevřít navigaci" data-en-aria="Open navigation">☰</button>
+      <nav id="main-nav" class="main-nav" aria-label="Hlavní navigace">
+        <a href="../" data-nav="home" data-cs="Aplikace" data-en="Applications">Aplikace</a
+        ><a href="../library/" data-nav="library" data-cs="Materiály" data-en="Resources">Materiály</a
+        ><a href="../manualy/" data-nav="manualy" data-cs="Manuály" data-en="Manuals">Manuály</a
+        ><a href="../safety/" data-nav="safety" data-cs="Bezpečnost" data-en="Safety">Bezpečnost</a
+        ><a href="../access/" data-nav="access" data-cs="Můj přístup" data-en="My access">Můj přístup</a
+        ><a href="../about/" data-nav="about" data-cs="O aplikaci" data-en="About">O aplikaci</a
+        ><a href="../?view=teacher" data-ops-nav hidden data-colleague-preview-link data-nav="colleague-preview" data-cs="Pohled kolegy" data-en="Colleague view">Pohled kolegy</a
+        ><a href="../automation/" data-ops-nav hidden data-nav="automation" data-cs="Správa" data-en="Administration">Správa</a
+        ><a href="../demo/" data-admin-nav hidden data-nav="demo" data-cs="Prezentace" data-en="Presentation">Prezentace</a>
+      </nav>
+      <div class="header-actions">
+        <div class="segmented" aria-label="Jazyk">
+          <button type="button" data-lang="cs" aria-pressed="true">CZ</button><button type="button" data-lang="en" aria-pressed="false">EN</button>
+        </div>
+      </div>
+    </header>
+
+    <main id="main">
+      <section class="page-hero shell groups-hero">
+        <p class="breadcrumb"><a href="../">AI Studio</a> / <span data-cs="Moje skupiny" data-en="My groups">Moje skupiny</span></p>
+        <p class="eyebrow" data-cs="CENTRÁLNÍ EVIDENCE VÝUKY" data-en="CENTRAL TEACHING ROSTER">CENTRÁLNÍ EVIDENCE VÝUKY</p>
+        <h1 data-cs="Moje skupiny" data-en="My groups">Moje skupiny</h1>
+        <p data-cs="Jednou založená skupina může postupně sloužit více školním aplikacím. V této etapě zůstávají data pouze v tomto prohlížeči a do ostatních aplikací se zatím automaticky nepřenášejí." data-en="A group created once can gradually serve multiple school apps. At this stage, data stays only in this browser and is not yet automatically transferred to other apps.">Jednou založená skupina může postupně sloužit více školním aplikacím. V této etapě zůstávají data pouze v tomto prohlížeči a do ostatních aplikací se zatím automaticky nepřenášejí.</p>
+        <div class="groups-hero-badges" aria-label="Vlastnosti">
+          <span>LOCAL-FIRST</span><span>GARP 2.7</span><span>ghrab-teaching-group-v1</span>
+        </div>
+      </section>
+
+      <section class="section shell groups-workspace" aria-labelledby="groups-list-title">
+        <div id="groups-diagnostic" class="groups-diagnostic" role="status" hidden></div>
+        <aside class="groups-privacy panel" aria-label="Ochrana osobních údajů">
+          <div class="groups-privacy-icon" aria-hidden="true">◎</div>
+          <div><strong data-cs="Seznamy obsahují osobní údaje studentů" data-en="Rosters contain student personal data">Seznamy obsahují osobní údaje studentů</strong><p data-cs="Jména a školní e-maily se neodesílají do telemetrie ani do material handoffu. Záloha JSON je lokální soubor a je nutné s ní zacházet jako s osobními údaji." data-en="Names and school emails are not sent to telemetry or material handoff. A JSON backup is a local file and must be handled as personal data.">Jména a školní e-maily se neodesílají do telemetrie ani do material handoffu. Záloha JSON je lokální soubor a je nutné s ní zacházet jako s osobními údaji.</p></div>
+        </aside>
+
+        <div class="groups-toolbar panel">
+          <div>
+            <p class="eyebrow" data-cs="PRACOVNÍ PROSTOR" data-en="WORKSPACE">PRACOVNÍ PROSTOR</p>
+            <h2 id="groups-list-title" data-cs="Vyučovací skupiny" data-en="Teaching groups">Vyučovací skupiny</h2>
+          </div>
+          <div class="groups-toolbar-actions">
+            <div class="groups-filter" role="group" aria-label="Filtr skupin">
+              <button type="button" class="is-active" data-group-filter="active" data-cs="Aktivní" data-en="Active">Aktivní</button>
+              <button type="button" data-group-filter="archived" data-cs="Archiv" data-en="Archive">Archiv</button>
+            </div>
+            <button type="button" class="groups-button groups-button-secondary" id="groups-backup-export" data-cs="Záloha JSON" data-en="JSON backup">Záloha JSON</button>
+            <button type="button" class="groups-button groups-button-secondary" id="groups-backup-import" data-cs="Obnovit zálohu" data-en="Restore backup">Obnovit zálohu</button>
+            <button type="button" class="groups-button groups-button-primary" id="group-create" data-cs="+ Nová skupina" data-en="+ New group">+ Nová skupina</button>
+            <input type="file" id="groups-backup-file" accept="application/json,.json" hidden />
+          </div>
+        </div>
+
+        <div class="groups-layout">
+          <section class="panel groups-list-panel" aria-label="Seznam skupin">
+            <div id="groups-list" class="groups-list" aria-live="polite"></div>
+          </section>
+          <section class="panel groups-detail-panel" id="groups-detail" aria-live="polite" aria-label="Detail skupiny"></section>
+        </div>
+      </section>
+    </main>
+
+    <dialog id="group-dialog" class="groups-dialog" aria-labelledby="group-dialog-title">
+      <form method="dialog" id="group-form">
+        <div class="groups-dialog-head"><div><p class="eyebrow" data-cs="SKUPINA" data-en="GROUP">SKUPINA</p><h2 id="group-dialog-title">Nová skupina</h2></div><button type="button" class="groups-icon-button" data-dialog-close aria-label="Zavřít">×</button></div>
+        <input type="hidden" id="group-edit-id" />
+        <div class="groups-form-grid">
+          <label><span data-cs="Název skupiny" data-en="Group name">Název skupiny</span><input id="group-name" name="displayName" maxlength="120" required autocomplete="off" placeholder="např. 1A4 · AJ" /></label>
+          <label><span data-cs="Školní rok" data-en="School year">Školní rok</span><input id="group-year" name="schoolYear" required inputmode="numeric" pattern="[0-9]{4}/[0-9]{2,4}" placeholder="2026/27" /></label>
+          <label><span data-cs="Předmět" data-en="Subject">Předmět</span><input id="group-subject" name="subject" maxlength="80" autocomplete="off" placeholder="Anglický jazyk" /></label>
+          <label><span data-cs="Ročník" data-en="Grade">Ročník</span><input id="group-grade" name="grade" maxlength="40" autocomplete="off" placeholder="1. ročník" /></label>
+        </div>
+        <p class="groups-form-error" id="group-form-error" role="alert" hidden></p>
+        <div class="groups-dialog-actions"><button type="button" class="groups-button groups-button-secondary" data-dialog-close data-cs="Zrušit" data-en="Cancel">Zrušit</button><button type="submit" class="groups-button groups-button-primary" data-cs="Uložit" data-en="Save">Uložit</button></div>
+      </form>
+    </dialog>
+
+    <dialog id="roster-dialog" class="groups-dialog groups-dialog-wide" aria-labelledby="roster-dialog-title">
+      <form method="dialog" id="roster-form">
+        <div class="groups-dialog-head"><div><p class="eyebrow" data-cs="IMPORT Z IS" data-en="IS IMPORT">IMPORT Z IS</p><h2 id="roster-dialog-title" data-cs="Aktualizovat seznam studentů" data-en="Update student roster">Aktualizovat seznam studentů</h2></div><button type="button" class="groups-icon-button" data-dialog-close aria-label="Zavřít">×</button></div>
+        <p class="groups-help" data-cs="Vložte seznam z IS. Podporované jsou jména, školní e-maily a oddělovače nový řádek, tabulátor, čárka nebo středník. Nejdříve se vždy zobrazí náhled změn." data-en="Paste a roster from the school IS. Names, school emails, and newline, tab, comma or semicolon separators are supported. A change preview is always shown first.">Vložte seznam z IS. Podporované jsou jména, školní e-maily a oddělovače nový řádek, tabulátor, čárka nebo středník. Nejdříve se vždy zobrazí náhled změn.</p>
+        <label class="groups-roster-field"><span data-cs="Seznam studentů" data-en="Student roster">Seznam studentů</span><textarea id="roster-input" rows="10" maxlength="120000" spellcheck="false" placeholder="Jan Novák; jan.novak@example.edu&#10;Petra Svobodová; petra.svobodova@example.edu"></textarea></label>
+        <label class="groups-check"><input type="checkbox" id="roster-replace" checked /><span data-cs="Aktualizovat jako úplný seznam — chybějící studenty archivovat" data-en="Treat as full roster — archive missing students">Aktualizovat jako úplný seznam — chybějící studenty archivovat</span></label>
+        <div id="roster-preview" class="groups-preview" aria-live="polite"></div>
+        <p class="groups-form-error" id="roster-form-error" role="alert" hidden></p>
+        <div class="groups-dialog-actions"><button type="button" class="groups-button groups-button-secondary" data-dialog-close data-cs="Zrušit" data-en="Cancel">Zrušit</button><button type="button" class="groups-button groups-button-secondary" id="roster-preview-button" data-cs="Zkontrolovat změny" data-en="Preview changes">Zkontrolovat změny</button><button type="submit" class="groups-button groups-button-primary" id="roster-confirm-button" disabled data-cs="Potvrdit import" data-en="Confirm import">Potvrdit import</button></div>
+      </form>
+    </dialog>
+
+    <footer class="site-footer">
+      <div class="shell-wide footer-inner"><div><strong>AI Studio GHRAB</strong><p data-cs="Autor a vývojový garant: Daniel Baláž · Školní projekt Gymnázia, Ostrava-Hrabůvka · verze __APP_VERSION__" data-en="Author and development guarantor: Daniel Baláž · School project of Gymnázium, Ostrava-Hrabůvka · version __APP_VERSION__">Autor a vývojový garant: Daniel Baláž · Školní projekt Gymnázia, Ostrava-Hrabůvka · verze __APP_VERSION__</p></div></div>
+    </footer>
+    <script src="../app.js" type="module"></script>
+    <script src="./groups.js" type="module"></script>
+  </body>
+</html>

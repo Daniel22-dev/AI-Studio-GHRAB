@@ -1,134 +1,275 @@
 import { LocalGroupsProvider, installGlobalGroupsApi } from "./group-service.js";
 
-const $ = (s, r=document) => r.querySelector(s);
-const tr = (cs,en) => document.documentElement.lang === "en" ? en : cs;
-const provider = new LocalGroupsProvider({ onDiagnostic: () => {} });
-const api = installGlobalGroupsApi({ provider });
-let selectedId = null;
+const $ = (selector, root = document) => root.querySelector(selector);
+const diagnostics = [];
+let selectedGroupId = null;
 let filter = "active";
-let preview = null;
+let rosterPreview = null;
 
-function schoolYear(){
-  const d=new Date(), y=d.getMonth()>=7?d.getFullYear():d.getFullYear()-1;
-  return `${y}/${String((y+1)%100).padStart(2,"0")}`;
+function language() { return document.documentElement.lang === "en" ? "en" : "cs"; }
+function tr(cs, en) { return language() === "en" ? en : cs; }
+function el(tag, className = "", text = "") {
+  const node = document.createElement(tag);
+  if (className) node.className = className;
+  if (text !== "") node.textContent = text;
+  return node;
 }
-function escText(v){ return String(v??""); }
-function activeCount(g){ return (g.members||[]).filter(m=>m.status==="active").length; }
-function openDialog(d){ typeof d.showModal==="function" ? d.showModal() : d.setAttribute("open",""); }
-function closeDialog(d){ typeof d.close==="function" ? d.close() : d.removeAttribute("open"); }
-function err(e){ return String(e?.message||e||tr("Operace se nepodařila.","Operation failed.")).split(":")[0]; }
+function button(text, className, action) {
+  const node = el("button", className, text);
+  node.type = "button";
+  if (action) node.addEventListener("click", action);
+  return node;
+}
+function activeMembers(group) { return group.members.filter((member) => member.status === "active"); }
+function displayError(error) {
+  const code = String(error?.message || error || "UNKNOWN").split(":")[0];
+  const messages = {
+    GROUP_DISPLAY_NAME_REQUIRED: tr("Zadejte název skupiny.", "Enter a group name."),
+    GROUP_SCHOOL_YEAR_INVALID: tr("Školní rok zadejte např. 2026/27.", "Enter the school year, e.g. 2026/27."),
+    GROUP_REVISION_CONFLICT: tr("Skupina se mezitím změnila. Načtěte nový náhled a potvrďte jej znovu.", "The group changed in the meantime. Refresh the preview and confirm it again."),
+    ROSTER_EMPTY: tr("V seznamu nebyl rozpoznán žádný platný student.", "No valid student was recognized in the roster."),
+    ROSTER_IMPORT_TOO_LARGE: tr("Vložený seznam je příliš velký.", "The pasted roster is too large."),
+    GROUP_STORAGE_WRITE_FAILED: tr("Data se nepodařilo bezpečně uložit v tomto prohlížeči.", "The data could not be safely stored in this browser."),
+  };
+  return messages[code] || tr("Operaci se nepodařilo dokončit.", "The operation could not be completed.");
+}
 
-function renderList(){
-  const root=$("#groups-list"); root.replaceChildren();
-  const list=api.listGroups({status:filter});
-  if(!list.some(g=>g.groupId===selectedId)) selectedId=list[0]?.groupId||null;
-  if(!list.length){
-    const box=document.createElement("div"); box.className="groups-empty";
-    box.textContent=filter==="active"?tr("Zatím nemáte žádné aktivní skupiny.","No active groups yet."):tr("Archiv je prázdný.","Archive is empty.");
-    root.append(box); renderDetail(); return;
+const provider = new LocalGroupsProvider({
+  onDiagnostic(detail) {
+    diagnostics.push(detail?.code || "GROUP_STORAGE_DIAGNOSTIC");
+    renderDiagnostic();
+  },
+});
+const groups = installGlobalGroupsApi({ provider });
+
+function renderDiagnostic() {
+  const box = $("#groups-diagnostic");
+  if (!box) return;
+  if (!diagnostics.length) { box.hidden = true; box.textContent = ""; return; }
+  box.hidden = false;
+  box.textContent = tr("Úložiště skupin hlásí problém. Zkontrolujte, zda prohlížeč neblokuje místní úložiště; osobní údaje nejsou součástí diagnostiky.", "Group storage reports a problem. Check whether the browser blocks local storage; personal data is not included in diagnostics.");
+}
+
+function renderList() {
+  const root = $("#groups-list");
+  root.replaceChildren();
+  const items = groups.listGroups({ status: filter });
+  if (!items.some((group) => group.groupId === selectedGroupId)) selectedGroupId = items[0]?.groupId || null;
+  if (!items.length) {
+    const wrap = el("div", "groups-empty");
+    const inner = el("div");
+    inner.append(el("div", "groups-empty-mark", filter === "active" ? "+" : "↺"));
+    inner.append(el("h3", "", filter === "active" ? tr("Zatím bez skupin", "No groups yet") : tr("Archiv je prázdný", "Archive is empty")));
+    inner.append(el("p", "", filter === "active" ? tr("Vytvořte první skupinu a vložte do ní seznam z IS.", "Create the first group and paste a roster from the school IS.") : tr("Archivované skupiny se zobrazí zde.", "Archived groups will appear here.")));
+    wrap.append(inner); root.append(wrap); renderDetail(); return;
   }
-  for(const g of list){
-    const b=document.createElement("button"); b.type="button";
-    b.className="group-card"+(g.groupId===selectedId?" is-selected":"");
-    const name=document.createElement("strong"); name.textContent=g.displayName;
-    const meta=document.createElement("span"); meta.textContent=`${g.schoolYear} · ${g.subject||"—"} · ${activeCount(g)} ${tr("studentů","students")}`;
-    b.append(name,meta); b.addEventListener("click",()=>{selectedId=g.groupId;render();}); root.append(b);
+  for (const group of items) {
+    const card = button("", `group-card${group.groupId === selectedGroupId ? " is-selected" : ""}`, () => { selectedGroupId = group.groupId; render(); });
+    card.dataset.groupId = group.groupId;
+    card.setAttribute("aria-pressed", String(group.groupId === selectedGroupId));
+    const top = el("div", "group-card-top");
+    top.append(el("strong", "", group.displayName), el("span", "group-card-count", String(activeMembers(group).length)));
+    const meta = el("div", "group-card-meta");
+    meta.append(el("span", "", group.schoolYear));
+    if (group.subject) meta.append(el("span", "", `· ${group.subject}`));
+    if (group.grade) meta.append(el("span", "", `· ${group.grade}`));
+    card.append(top, meta);
+    root.append(card);
   }
   renderDetail();
 }
 
-function renderDetail(){
-  const root=$("#groups-detail"); root.replaceChildren();
-  const g=selectedId?api.getGroup(selectedId):null;
-  if(!g){ root.textContent=tr("Vyberte skupinu nebo vytvořte novou.","Select a group or create a new one."); return; }
-  const head=document.createElement("div"); head.className="groups-detail-head";
-  const title=document.createElement("div");
-  const h=document.createElement("h2"); h.textContent=g.displayName;
-  const meta=document.createElement("p"); meta.textContent=`${g.schoolYear} · ${g.subject||"—"} · ${g.grade||"—"} · rev. ${g.revision}`;
-  title.append(h,meta);
-  const actions=document.createElement("div"); actions.className="groups-actions";
-  const edit=button(tr("Upravit","Edit"),()=>editGroup(g));
-  const roster=button(tr("Import / aktualizace z IS","Import / update from IS"),()=>openRoster(g),"primary");
-  actions.append(edit,roster);
-  if(g.status==="active") actions.append(button(tr("Archivovat","Archive"),()=>archiveGroup(g),"danger"));
-  else actions.append(button(tr("Znovu aktivovat","Reactivate"),()=>reactivate(g)));
-  head.append(title,actions); root.append(head);
+function statusChip(status) {
+  return el("span", `group-status${status === "archived" ? " is-archived" : ""}`, status === "active" ? tr("aktivní", "active") : tr("archiv", "archived"));
+}
 
-  const stat=document.createElement("div"); stat.className="groups-stats";
-  stat.textContent=`${tr("Aktivní studenti","Active students")}: ${activeCount(g)} · ${tr("Archivovaní","Archived")}: ${g.members.length-activeCount(g)}`;
-  root.append(stat);
+function renderDetailEmpty(root) {
+  const wrap = el("div", "groups-empty");
+  const inner = el("div");
+  inner.append(el("div", "groups-empty-mark", "◎"));
+  inner.append(el("h3", "", tr("Vyberte skupinu", "Select a group")));
+  inner.append(el("p", "", tr("Vlevo vyberte skupinu nebo vytvořte novou.", "Select a group on the left or create a new one.")));
+  wrap.append(inner); root.append(wrap);
+}
 
-  const table=document.createElement("table"); table.className="groups-table";
-  const thead=document.createElement("thead"); const headRow=document.createElement("tr"); for(const label of ["Student","E-mail","Status"]){ const th=document.createElement("th"); th.scope="col"; th.textContent=label; headRow.append(th); } thead.append(headRow);
-  const tbody=document.createElement("tbody");
-  for(const m of [...g.members].sort((a,b)=>a.status===b.status?a.name.localeCompare(b.name,"cs"):a.status==="active"?-1:1)){
-    const row=document.createElement("tr");
-    for(const v of [m.name,m.schoolEmail||"—",m.status==="active"?tr("aktivní","active"):tr("archiv","archived")]){
-      const td=document.createElement("td"); td.textContent=v; row.append(td);
-    }
-    tbody.append(row);
+function renderRosterTable(group, root) {
+  const all = [...group.members].sort((a, b) => (a.status === b.status ? a.name.localeCompare(b.name, "cs") : a.status === "active" ? -1 : 1));
+  if (!all.length) {
+    const empty = el("div", "groups-empty");
+    const inner = el("div");
+    inner.append(el("div", "groups-empty-mark", "⇩"), el("h3", "", tr("Seznam je zatím prázdný", "Roster is empty")), el("p", "", tr("Použijte „Import / aktualizace z IS“ a nejdříve zkontrolujte náhled změn.", "Use “Import / update from IS” and review the change preview first.")));
+    empty.append(inner); root.append(empty); return;
   }
-  table.append(thead,tbody); root.append(table);
-}
-
-function button(label,fn,kind="secondary"){
-  const b=document.createElement("button"); b.type="button"; b.className=`groups-button groups-button-${kind}`; b.textContent=label; b.addEventListener("click",fn); return b;
-}
-function render(){ document.querySelectorAll("[data-group-filter]").forEach(b=>b.classList.toggle("is-active",b.dataset.groupFilter===filter)); renderList(); }
-
-function openGroupDialog(g=null){
-  $("#group-edit-id").value=g?.groupId||""; $("#group-name").value=g?.displayName||""; $("#group-year").value=g?.schoolYear||schoolYear();
-  $("#group-subject").value=g?.subject||""; $("#group-grade").value=g?.grade||""; $("#group-error").textContent=""; openDialog($("#group-dialog")); $("#group-name").focus();
-}
-function editGroup(g){ openGroupDialog(g); }
-$("#group-form").addEventListener("submit",e=>{
-  e.preventDefault(); const id=$("#group-edit-id").value;
-  const data={displayName:$("#group-name").value,schoolYear:$("#group-year").value,subject:$("#group-subject").value,grade:$("#group-grade").value};
-  try{
-    const g=id?api.updateGroup(id,data,{expectedRevision:api.getRevision(id)}):api.createGroup(data);
-    selectedId=g.groupId; filter=g.status; closeDialog($("#group-dialog")); render();
-  }catch(ex){ $("#group-error").textContent=err(ex); }
-});
-async function archiveGroup(g){ if(!confirm(tr(`Archivovat skupinu „${g.displayName}“?`,`Archive “${g.displayName}”?`))) return; api.archiveGroup(g.groupId,{expectedRevision:g.revision}); selectedId=null; render(); }
-function reactivate(g){ const n=api.updateGroup(g.groupId,{status:"active"},{expectedRevision:g.revision}); filter="active"; selectedId=n.groupId; render(); }
-
-function openRoster(g){ preview=null; $("#roster-group-name").textContent=g.displayName; $("#roster-dialog").dataset.groupId=g.groupId; $("#roster-input").value=""; $("#roster-preview").replaceChildren(); $("#roster-confirm").disabled=true; $("#roster-error").textContent=""; openDialog($("#roster-dialog")); }
-function showPreview(p){
-  const root=$("#roster-preview"); root.replaceChildren();
-  const s=document.createElement("p"); s.className="groups-preview-summary";
-  s.textContent=`${tr("Rozpoznáno","Parsed")}: ${p.parsed.entries.length} · +${p.diff.added.length} · Δ${p.diff.changed.length} · ↺${p.diff.restored.length} · −${p.diff.removed.length} · ${tr("neplatné","invalid")}: ${p.parsed.invalid.length}`;
-  root.append(s);
-  for(const [kind,items] of [["+",p.diff.added],["Δ",p.diff.changed],["↺",p.diff.restored],["−",p.diff.removed]]){
-    for(const item of items.slice(0,80)){
-      const row=document.createElement("div"); row.className="preview-row";
-      const value=item.name||item.after?.name||item.before?.name||""; row.textContent=`${kind} ${value}`; root.append(row);
-    }
+  const wrap = el("div", "groups-roster-table-wrap");
+  const table = el("table", "groups-roster-table");
+  const thead = document.createElement("thead");
+  const hr = document.createElement("tr");
+  [tr("Student", "Student"), tr("Školní e-mail", "School email"), tr("Stav", "Status")].forEach((label) => { const th = el("th", "", label); th.scope = "col"; hr.append(th); });
+  thead.append(hr);
+  const tbody = document.createElement("tbody");
+  for (const member of all) {
+    const row = document.createElement("tr");
+    row.append(el("td", "", member.name), el("td", "", member.schoolEmail || "—"));
+    const status = document.createElement("td"); status.append(statusChip(member.status)); row.append(status); tbody.append(row);
   }
-  for(const item of p.parsed.invalid.slice(0,20)){ const row=document.createElement("div"); row.className="preview-row invalid"; row.textContent=`! ${item.value}`; root.append(row); }
+  table.append(thead, tbody); wrap.append(table); root.append(wrap);
 }
-$("#roster-preview-button").addEventListener("click",()=>{
-  try{
-    const id=$("#roster-dialog").dataset.groupId; preview=api.previewRosterImport(id,$("#roster-input").value,{replace:$("#roster-replace").checked});
-    showPreview(preview); $("#roster-confirm").disabled=!preview.parsed.entries.length||!preview.diff.hasChanges; $("#roster-error").textContent="";
-  }catch(ex){ preview=null; $("#roster-confirm").disabled=true; $("#roster-error").textContent=err(ex); }
+
+function renderDetail() {
+  const root = $("#groups-detail"); root.replaceChildren();
+  if (!selectedGroupId) { renderDetailEmpty(root); return; }
+  const group = groups.getGroup(selectedGroupId);
+  if (!group) { selectedGroupId = null; renderDetailEmpty(root); return; }
+  const container = el("div", "groups-detail");
+  const head = el("div", "groups-detail-head");
+  const title = el("div");
+  const eyebrow = el("p", "eyebrow", group.status === "active" ? tr("AKTIVNÍ SKUPINA", "ACTIVE GROUP") : tr("ARCHIVOVANÁ SKUPINA", "ARCHIVED GROUP"));
+  const h2 = el("h2", "", group.displayName);
+  const meta = [group.schoolYear, group.subject, group.grade].filter(Boolean).join(" · ");
+  title.append(eyebrow, h2, el("p", "", meta));
+  const actions = el("div", "groups-detail-actions");
+  actions.append(button(tr("Upravit", "Edit"), "groups-button groups-button-secondary", () => openGroupDialog(group)));
+  if (group.status === "active") {
+    actions.append(button(tr("Archivovat", "Archive"), "groups-button groups-button-danger", () => archiveGroup(group)));
+  } else {
+    actions.append(button(tr("Znovu aktivovat", "Reactivate"), "groups-button groups-button-secondary", () => reactivateGroup(group)));
+  }
+  head.append(title, actions); container.append(head);
+  const kpis = el("div", "groups-kpis");
+  const values = [[tr("Aktivní studenti", "Active students"), activeMembers(group).length], [tr("Archivovaní", "Archived"), group.members.length - activeMembers(group).length], [tr("Revize", "Revision"), group.revision]];
+  for (const [label, value] of values) { const card = el("div", "groups-kpi"); card.append(el("span", "", label), el("strong", "", String(value))); kpis.append(card); }
+  container.append(kpis);
+  const rosterHead = el("div", "groups-roster-head");
+  const rosterText = el("div"); rosterText.append(el("h3", "", tr("Seznam studentů", "Student roster")), el("p", "", tr("Odebraný student se archivuje; jeho stabilní identita se nemaže.", "A removed student is archived; their stable identity is preserved.")));
+  rosterHead.append(rosterText, button(tr("Import / aktualizace z IS", "Import / update from IS"), "groups-button groups-button-primary", () => openRosterDialog(group)));
+  container.append(rosterHead); renderRosterTable(group, container); root.append(container);
+}
+
+function render() {
+  document.querySelectorAll("[data-group-filter]").forEach((node) => node.classList.toggle("is-active", node.dataset.groupFilter === filter));
+  renderList(); renderDiagnostic();
+}
+
+function setFormError(selector, message = "") { const box = $(selector); box.textContent = message; box.hidden = !message; }
+function showDialog(dialog) { if (typeof dialog.showModal === "function") dialog.showModal(); else dialog.setAttribute("open", ""); }
+function closeDialog(dialog) { if (typeof dialog.close === "function") dialog.close(); else dialog.removeAttribute("open"); }
+
+function openGroupDialog(group = null) {
+  $("#group-edit-id").value = group?.groupId || "";
+  $("#group-name").value = group?.displayName || "";
+  $("#group-year").value = group?.schoolYear || currentSchoolYear();
+  $("#group-subject").value = group?.subject || "";
+  $("#group-grade").value = group?.grade || "";
+  $("#group-dialog-title").textContent = group ? tr("Upravit skupinu", "Edit group") : tr("Nová skupina", "New group");
+  setFormError("#group-form-error"); showDialog($("#group-dialog")); $("#group-name").focus();
+}
+
+function currentSchoolYear() {
+  const now = new Date();
+  const year = now.getMonth() >= 7 ? now.getFullYear() : now.getFullYear() - 1;
+  return `${year}/${String((year + 1) % 100).padStart(2, "0")}`;
+}
+
+async function archiveGroup(group) {
+  if (!globalThis.confirm(tr(`Archivovat skupinu „${group.displayName}“? Seznam ani stabilní identity studentů se nesmažou.`, `Archive “${group.displayName}”? The roster and stable student identities will not be deleted.`))) return;
+  try { groups.archiveGroup(group.groupId, { expectedRevision: group.revision }); selectedGroupId = groups.listGroups({ status: filter })[0]?.groupId || null; render(); } catch (error) { globalThis.alert(displayError(error)); }
+}
+async function reactivateGroup(group) {
+  try { const next = groups.updateGroup(group.groupId, { status: "active" }, { expectedRevision: group.revision }); filter = "active"; selectedGroupId = next.groupId; render(); } catch (error) { globalThis.alert(displayError(error)); }
+}
+
+function diffRows(preview) {
+  const rows = [];
+  preview.diff.added.forEach((member) => rows.push([tr("Přidat", "Add"), member.name]));
+  preview.diff.restored.forEach((item) => rows.push([tr("Obnovit", "Restore"), item.after.name]));
+  preview.diff.changed.forEach((item) => rows.push([tr("Změnit", "Change"), `${item.before.name} → ${item.after.name}`]));
+  preview.diff.removed.forEach((item) => rows.push([tr("Archivovat", "Archive"), item.before.name]));
+  preview.parsed.invalid.forEach((item) => rows.push([tr("Neplatné", "Invalid"), item.value]));
+  preview.parsed.duplicates.forEach((item) => rows.push([tr("Duplicita", "Duplicate"), item.name]));
+  return rows;
+}
+function renderRosterPreview(preview) {
+  const root = $("#roster-preview"); root.replaceChildren();
+  const summary = el("div", "groups-preview-summary");
+  const stats = [[tr("Přidat", "Add"), preview.diff.added.length], [tr("Změnit", "Change"), preview.diff.changed.length], [tr("Obnovit", "Restore"), preview.diff.restored.length], [tr("Archivovat", "Archive"), preview.diff.removed.length], [tr("Beze změny", "Unchanged"), preview.diff.unchangedCount]];
+  for (const [label, value] of stats) { const card = el("div", "groups-preview-stat"); card.append(el("strong", "", String(value)), el("span", "", label)); summary.append(card); }
+  root.append(summary);
+  const rows = diffRows(preview);
+  if (rows.length) {
+    const box = el("div", "groups-preview-list"); box.append(el("h3", "", tr("Kontrola změn před uložením", "Review changes before saving")));
+    rows.slice(0, 120).forEach(([kind, value]) => { const row = el("div", "groups-preview-row"); row.append(el("span", "groups-preview-kind", kind), el("span", "", value)); box.append(row); });
+    if (rows.length > 120) box.append(el("p", "", tr(`… a dalších ${rows.length - 120} položek.`, `… and ${rows.length - 120} more items.`)));
+    root.append(box);
+  } else root.append(el("p", "groups-help", tr("Vložený seznam nevyvolá žádnou změnu.", "The pasted roster produces no changes.")));
+  if (preview.parsed.truncated) root.append(el("p", "groups-form-error", tr("Seznam dosáhl bezpečnostního limitu 500 studentů.", "The roster reached the safety limit of 500 students.")));
+}
+
+function openRosterDialog(group) {
+  rosterPreview = null;
+  $("#roster-input").value = "";
+  $("#roster-replace").checked = true;
+  $("#roster-confirm-button").disabled = true;
+  $("#roster-preview").replaceChildren();
+  setFormError("#roster-form-error");
+  $("#roster-dialog").dataset.groupId = group.groupId;
+  showDialog($("#roster-dialog")); $("#roster-input").focus();
+}
+
+function previewRoster() {
+  setFormError("#roster-form-error");
+  try {
+    const groupId = $("#roster-dialog").dataset.groupId;
+    rosterPreview = groups.previewRosterImport(groupId, $("#roster-input").value, { replace: $("#roster-replace").checked });
+    renderRosterPreview(rosterPreview);
+    $("#roster-confirm-button").disabled = rosterPreview.parsed.entries.length === 0 || !rosterPreview.diff.hasChanges;
+  } catch (error) {
+    rosterPreview = null; $("#roster-confirm-button").disabled = true; setFormError("#roster-form-error", displayError(error));
+  }
+}
+
+function downloadJson(name, data) {
+  const blob = new Blob([`${JSON.stringify(data, null, 2)}\n`], { type: "application/json;charset=utf-8" });
+  const url = URL.createObjectURL(blob); const link = document.createElement("a"); link.href = url; link.download = name; document.body.append(link); link.click(); link.remove(); setTimeout(() => URL.revokeObjectURL(url), 0);
+}
+
+function exportBackup() {
+  const backup = groups.exportBackup();
+  const date = new Date().toISOString().slice(0, 10);
+  downloadJson(`ai-studio-moje-skupiny-${date}.json`, backup);
+}
+
+async function importBackupFile(file) {
+  if (!file) return;
+  if (!globalThis.confirm(tr("Tato operace nahradí současnou centrální evidenci obsahem zálohy. Pokračovat?", "This operation replaces the current central group data with the backup. Continue?"))) return;
+  try { const parsed = JSON.parse(await file.text()); groups.importBackup(parsed); selectedGroupId = null; filter = "active"; render(); } catch (error) { globalThis.alert(displayError(error)); }
+}
+
+$("#group-create").addEventListener("click", () => openGroupDialog());
+document.querySelectorAll("[data-group-filter]").forEach((node) => node.addEventListener("click", () => { filter = node.dataset.groupFilter; selectedGroupId = null; render(); }));
+document.querySelectorAll("[data-dialog-close]").forEach((node) => node.addEventListener("click", () => closeDialog(node.closest("dialog"))));
+$("#group-form").addEventListener("submit", (event) => {
+  event.preventDefault(); setFormError("#group-form-error");
+  try {
+    const id = $("#group-edit-id").value;
+    const input = { displayName: $("#group-name").value, schoolYear: $("#group-year").value, subject: $("#group-subject").value, grade: $("#group-grade").value };
+    const result = id ? groups.updateGroup(id, input, { expectedRevision: groups.getRevision(id) }) : groups.createGroup(input);
+    filter = result.status; selectedGroupId = result.groupId; closeDialog($("#group-dialog")); render();
+  } catch (error) { setFormError("#group-form-error", displayError(error)); }
 });
-$("#roster-form").addEventListener("submit",e=>{
-  e.preventDefault(); if(!preview) return;
-  try{
-    const result=api.importRoster({groupId:preview.groupId,rawText:$("#roster-input").value,replace:$("#roster-replace").checked,expectedRevision:preview.currentRevision});
-    selectedId=result.group.groupId; closeDialog($("#roster-dialog")); preview=null; render();
-  }catch(ex){ $("#roster-error").textContent=err(ex); $("#roster-confirm").disabled=true; preview=null; }
+$("#roster-preview-button").addEventListener("click", previewRoster);
+$("#roster-input").addEventListener("input", () => { rosterPreview = null; $("#roster-confirm-button").disabled = true; $("#roster-preview").replaceChildren(); });
+$("#roster-replace").addEventListener("change", () => { rosterPreview = null; $("#roster-confirm-button").disabled = true; $("#roster-preview").replaceChildren(); });
+$("#roster-form").addEventListener("submit", (event) => {
+  event.preventDefault(); setFormError("#roster-form-error");
+  if (!rosterPreview) { previewRoster(); return; }
+  try {
+    const result = groups.importRoster({ groupId: rosterPreview.groupId, rawText: $("#roster-input").value, replace: $("#roster-replace").checked, expectedRevision: rosterPreview.currentRevision });
+    selectedGroupId = result.group.groupId; closeDialog($("#roster-dialog")); rosterPreview = null; render();
+  } catch (error) { setFormError("#roster-form-error", displayError(error)); $("#roster-confirm-button").disabled = true; rosterPreview = null; }
 });
-document.querySelectorAll("[data-dialog-close]").forEach(b=>b.addEventListener("click",()=>closeDialog(b.closest("dialog"))));
-document.querySelectorAll("[data-group-filter]").forEach(b=>b.addEventListener("click",()=>{filter=b.dataset.groupFilter;selectedId=null;render();}));
-$("#group-create").addEventListener("click",()=>openGroupDialog());
-$("#groups-export").addEventListener("click",()=>{
-  const blob=new Blob([JSON.stringify(api.exportBackup(),null,2)],{type:"application/json"});
-  const a=document.createElement("a"); a.href=URL.createObjectURL(blob); a.download="ai-studio-moje-skupiny-backup.json"; a.click(); setTimeout(()=>URL.revokeObjectURL(a.href),0);
-});
-$("#groups-import-file").addEventListener("change",async e=>{
-  const f=e.target.files?.[0]; e.target.value=""; if(!f) return;
-  if(!confirm(tr("Obnova přepíše současná data skupin. Pokračovat?","Restore replaces current group data. Continue?"))) return;
-  try{ api.importBackup(JSON.parse(await f.text())); selectedId=null; filter="active"; render(); }catch(ex){ alert(err(ex)); }
-});
+$("#groups-backup-export").addEventListener("click", exportBackup);
+$("#groups-backup-import").addEventListener("click", () => $("#groups-backup-file").click());
+$("#groups-backup-file").addEventListener("change", (event) => { const file = event.target.files?.[0]; event.target.value = ""; void importBackupFile(file); });
+document.querySelectorAll("[data-lang]").forEach((node) => node.addEventListener("click", () => setTimeout(render, 0)));
+
 render();
