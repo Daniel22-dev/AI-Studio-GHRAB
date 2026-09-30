@@ -59,7 +59,7 @@ function renderDetail(){
   root.append(stat);
 
   const table=document.createElement("table"); table.className="groups-table";
-  const thead=document.createElement("thead"); thead.innerHTML="<tr><th>Student</th><th>E-mail</th><th>Status</th></tr>";
+  const thead=document.createElement("thead"); const headRow=document.createElement("tr"); for(const label of ["Student","E-mail","Status"]){ const th=document.createElement("th"); th.scope="col"; th.textContent=label; headRow.append(th); } thead.append(headRow);
   const tbody=document.createElement("tbody");
   for(const m of [...g.members].sort((a,b)=>a.status===b.status?a.name.localeCompare(b.name,"cs"):a.status==="active"?-1:1)){
     const row=document.createElement("tr");
