@@ -717,6 +717,21 @@ function setupFullscreenControl(button) {
   updateFullscreenButton();
 }
 
+function ensureGroupsNavigation() {
+  const nav = document.querySelector(".main-nav");
+  if (!nav || nav.querySelector('[data-nav="groups"]')) return;
+  const link = document.createElement("a");
+  link.href = `${base}groups/`;
+  link.dataset.nav = "groups";
+  link.dataset.teacherOnly = "";
+  link.dataset.cs = "Moje skupiny";
+  link.dataset.en = "My groups";
+  link.textContent = t("Moje skupiny", "My groups");
+  link.hidden = true;
+  const library = nav.querySelector('[data-nav="library"]');
+  nav.insertBefore(link, library || nav.firstChild);
+}
+
 function ensureReportNavigation() {
   const nav = document.querySelector(".main-nav");
   if (!nav || nav.querySelector('[data-nav="report"]')) return;
@@ -800,6 +815,7 @@ async function setupHeaderLivePresence() {
 }
 
 function setupNavigation() {
+  ensureGroupsNavigation();
   ensureReportNavigation();
   ensureAcademyNavigation();
   document.querySelectorAll("[data-colleague-preview-link]").forEach((link) => {
