@@ -1,7 +1,29 @@
 {
   "schema": "ai-studio-changelog-v1",
-  "current": "0.21.134",
+  "current": "0.21.135",
   "items": [
+    {
+      "version": "0.21.135",
+      "date": "2026-09-30",
+      "title": {
+        "cs": "Centrální Moje skupiny",
+        "en": "Central My groups"
+      },
+      "changes": [
+        {
+          "cs": "AI Studio nově obsahuje centrální sekci Moje skupiny pro bezpečnou local-first evidenci vyučovacích skupin a jejich seznamů studentů.",
+          "en": "AI Studio now includes a central My groups section for safe local-first management of teaching groups and student rosters."
+        },
+        {
+          "cs": "Import z IS používá náhled změn, deduplikaci, stabilní náhodné identity a archivaci odebraných studentů namísto destruktivního smazání.",
+          "en": "IS roster import uses change preview, deduplication, stable random identities and archives removed students instead of deleting them."
+        },
+        {
+          "cs": "Nová projekční vrstva omezuje rozsah dat pro budoucí spotřebitelské aplikace a zachovává oddělení od ghrab-material-v1 i GARP 2.7.",
+          "en": "A new projection layer limits data for future consumer apps while remaining separate from ghrab-material-v1 and preserving GARP 2.7."
+        }
+      ]
+    },
     {
       "version": "0.21.134",
       "date": "2026-09-30",
