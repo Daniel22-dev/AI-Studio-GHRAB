@@ -412,3 +412,219 @@ export function parseRosterText(raw) {
   for (const line of lines) {
     if (acc.entries.length >= MAX_MEMBERS_PER_GROUP) break;
     if (looksLikeHeader(line)) {
+      header = detectRosterHeader(line);
+      continue;
+    }
+    if (parseHeaderGuidedLine(acc, line, header)) continue;
+    if (!parseEmailLine(acc, line)) parseNameOnlyLine(acc, line);
+  }
+  if (acc.entries.length > MAX_MEMBERS_PER_GROUP) throw new Error("ROSTER_MEMBER_LIMIT_EXCEEDED");
+  return {
+    entries: acc.entries.slice(0, MAX_MEMBERS_PER_GROUP),
+    invalid: acc.invalid,
+    duplicates: acc.duplicates,
+    totalSegments: acc.segments,
+    truncated: acc.entries.length >= MAX_MEMBERS_PER_GROUP && lines.length > MAX_MEMBERS_PER_GROUP,
+    limits: { maxEntries: MAX_MEMBERS_PER_GROUP, maxChars: MAX_IMPORT_CHARS },
+  };
+}
+
+function uniqueMap(items, keyFn) {
+  const map = new Map();
+  const duplicateKeys = new Set();
+  for (const item of items) {
+    const key = keyFn(item);
+    if (!key) continue;
+    if (map.has(key)) duplicateKeys.add(key);
+    else map.set(key, item);
+  }
+  for (const key of duplicateKeys) map.delete(key);
+  return map;
+}
+
+function comparableMember(member) {
+  return {
+    name: safeText(member.name),
+    schoolEmail: member.schoolEmail ? normalizeEmail(member.schoolEmail) : null,
+    status: member.status,
+  };
+}
+
+function buildRosterPlan(group, parsed, { replace = true, idFactory = secureId } = {}) {
+  const existing = group.members || [];
+  const byEmail = uniqueMap(existing, (member) => member.schoolEmail ? normalizeEmail(member.schoolEmail) : "");
+  const byName = uniqueMap(existing, (member) => normalizeName(member.name));
+  const matched = new Set();
+  const added = [];
+  const changed = [];
+  const restored = [];
+  const unchanged = [];
+  const nextIncoming = [];
+  const timestamp = nowIso();
+
+  for (const row of parsed.entries) {
+    const emailKey = row.schoolEmail ? normalizeEmail(row.schoolEmail) : "";
+    const nameKey = normalizeName(row.name);
+    let match = emailKey ? byEmail.get(emailKey) : null;
+    if (!match && nameKey) match = byName.get(nameKey) || null;
+    if (match && matched.has(match.memberId)) match = null;
+    if (!match) {
+      const member = {
+        memberId: idFactory("mem"),
+        name: safeText(row.name),
+        schoolEmail: row.schoolEmail ? normalizeEmail(row.schoolEmail) : null,
+        status: "active",
+        createdAt: timestamp,
+        updatedAt: timestamp,
+      };
+      added.push(member);
+      nextIncoming.push(member);
+      continue;
+    }
+    matched.add(match.memberId);
+    const previous = comparableMember(match);
+    const next = {
+      ...match,
+      name: safeText(row.name),
+      schoolEmail: row.schoolEmail ? normalizeEmail(row.schoolEmail) : null,
+      status: "active",
+    };
+    const after = comparableMember(next);
+    const changedFields = [];
+    if (previous.name !== after.name) changedFields.push("name");
+    if (previous.schoolEmail !== after.schoolEmail) changedFields.push("schoolEmail");
+    if (previous.status !== after.status) changedFields.push("status");
+    if (changedFields.length) next.updatedAt = timestamp;
+    if (previous.status === "archived") restored.push({ before: clone(match), after: clone(next), fields: changedFields });
+    else if (changedFields.length) changed.push({ before: clone(match), after: clone(next), fields: changedFields });
+    else unchanged.push(clone(next));
+    nextIncoming.push(next);
+  }
+
+  const removed = [];
+  const untouchedArchived = [];
+  const incomingIds = new Set(nextIncoming.map((member) => member.memberId));
+  for (const member of existing) {
+    if (incomingIds.has(member.memberId)) continue;
+    if (member.status === "active" && replace) {
+      const archived = { ...member, status: "archived", updatedAt: timestamp };
+      removed.push({ before: clone(member), after: clone(archived) });
+    } else {
+      untouchedArchived.push(clone(member));
+    }
+  }
+
+  const nextMembers = [
+    ...nextIncoming,
+    ...removed.map((item) => item.after),
+    ...untouchedArchived,
+  ];
+  const hasChanges = added.length > 0 || changed.length > 0 || restored.length > 0 || removed.length > 0;
+  return { added, changed, restored, removed, unchanged, nextMembers, hasChanges };
+}
+
+function cleanGroupInput(input = {}) {
+  const displayName = safeText(input.displayName);
+  const schoolYear = String(input.schoolYear ?? "").trim();
+  const subject = safeText(input.subject || "", 80) || null;
+  const grade = safeText(input.grade || "", 40) || null;
+  if (!displayName) throw new Error("GROUP_DISPLAY_NAME_REQUIRED");
+  if (!/^\d{4}\/\d{2,4}$/.test(schoolYear)) throw new Error("GROUP_SCHOOL_YEAR_INVALID");
+  return { displayName, schoolYear, subject, grade };
+}
+
+function findGroupOrThrow(store, groupId) {
+  const group = store.groups.find((item) => item.groupId === groupId);
+  if (!group) throw new Error("GROUP_NOT_FOUND");
+  return group;
+}
+
+function changedMetadata(group, next) {
+  return ["displayName", "schoolYear", "subject", "grade", "status"].some((key) => (group[key] ?? null) !== (next[key] ?? null));
+}
+
+function projectionMetadata(group) {
+  return {
+    schema: GROUP_SCHEMA,
+    groupId: group.groupId,
+    revision: group.revision,
+    displayName: group.displayName,
+    schoolYear: group.schoolYear,
+    subject: group.subject || null,
+    grade: group.grade || null,
+    status: group.status,
+    updatedAt: group.updatedAt,
+  };
+}
+
+function defaultEventTarget() {
+  return typeof EventTarget === "function" ? new EventTarget() : null;
+}
+
+export function createGroupsService({ provider = new LocalGroupsProvider(), idFactory = secureId, eventTarget = defaultEventTarget() } = {}) {
+  const listeners = new Set();
+  const emit = (detail) => {
+    const safeDetail = {
+      schema: "ghrab-groups-change-v1",
+      kind: String(detail.kind || "changed"),
+      groupId: detail.groupId || null,
+      revision: Number.isInteger(detail.revision) ? detail.revision : null,
+    };
+    for (const listener of listeners) {
+      try { listener(clone(safeDetail)); } catch {}
+    }
+    if (eventTarget && typeof CustomEvent === "function") {
+      try { eventTarget.dispatchEvent(new CustomEvent("ghrab:groups-changed", { detail: safeDetail })); } catch {}
+    }
+  };
+
+  const writeStore = (store, change) => {
+    store.updatedAt = nowIso();
+    const written = provider.write(store);
+    emit(change);
+    return written;
+  };
+
+  const api = {
+    schema: "ghrab-groups-service-v1",
+    contractVersion: 1,
+    groupSchema: GROUP_SCHEMA,
+    providerKind: provider instanceof LocalGroupsProvider ? "local" : "custom",
+    consumerRules: CONSUMER_RULES,
+
+    listGroups({ status = "active" } = {}) {
+      const groups = provider.read().groups;
+      return clone(groups.filter((group) => status === "all" || group.status === status).sort((a, b) => a.displayName.localeCompare(b.displayName, "cs")));
+    },
+
+    getGroup(groupId) {
+      const group = provider.read().groups.find((item) => item.groupId === groupId);
+      return group ? clone(group) : null;
+    },
+
+    createGroup(input) {
+      const store = provider.read();
+      if (store.groups.length >= MAX_GROUPS) throw new Error("GROUP_LIMIT_EXCEEDED");
+      const metadata = cleanGroupInput(input);
+      const timestamp = nowIso();
+      const group = {
+        schema: GROUP_SCHEMA,
+        groupId: idFactory("grp"),
+        revision: 1,
+        ...metadata,
+        status: "active",
+        createdAt: timestamp,
+        updatedAt: timestamp,
+        members: [],
+      };
+      const validation = validateTeachingGroup(group);
+      if (!validation.ok) throw new Error(`GROUP_VALIDATION_FAILED:${validation.errors.join(",")}`);
+      store.groups.push(group);
+      writeStore(store, { kind: "created", groupId: group.groupId, revision: group.revision });
+      return clone(group);
+    },
+
+    updateGroup(groupId, patch = {}, { expectedRevision = null } = {}) {
+      const store = provider.read();
+      const group = findGroupOrThrow(store, groupId);
+      if (expectedRevision != null && group.revision !== expectedRevision) throw new Error("GROUP_REVISION_CONFLICT");
