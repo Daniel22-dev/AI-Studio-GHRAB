@@ -1,6 +1,6 @@
 {
   "name": "ai-studio-ghrab",
-  "version": "0.21.134",
+  "version": "0.21.135",
   "private": true,
   "description": "Profesionální federované PWA devíti chráněných školních aplikací včetně Lesson Hubu, manuálů, řízeného přístupu a jednotné GHRAB QA brány",
   "type": "module",
@@ -8,8 +8,8 @@
     "sync": "node scripts/sync-registry.mjs && node scripts/sync-platform-consumers.mjs && node scripts/generate-ai-readiness.mjs && node scripts/sync-doc-app-versions.mjs",
     "sync:offline": "node scripts/sync-registry.mjs --offline && node scripts/sync-platform-consumers.mjs && node scripts/generate-ai-readiness.mjs && node scripts/sync-doc-app-versions.mjs",
     "build": "npm run generate:changelog && node scripts/verify-ai-core.mjs && node scripts/generate-ai-readiness.mjs && node scripts/build.mjs",
-    "test": "npm run generate:changelog && npm run qa:doc-versions && npm run qa:ecosystem && npm run format:check && npm run build && node scripts/verify-ai-core.mjs && node scripts/generate-ai-readiness.mjs && node scripts/test.mjs && node scripts/test-platform-bootstrap.mjs && npm run test:audit-regressions && npm run test:security-regressions && npm run test:garp-security && npm run qa:garp27:static && npm run test:release-policy && npm run test:release-promotion && npm run test:studio-ux && npm run test:live-presence && npm run test:api-usage && node scripts/test-maturita-external-launcher.mjs && npm run test:task-workflow && npm run test:performance-phase-a && npm run test:performance-phase-b && npm run test:performance-phase-c && npm run test:performance-phase-d",
-    "check": "node scripts/verify-ai-core.mjs && node scripts/generate-ai-readiness.mjs && npm run qa:ecosystem && node scripts/test.mjs",
+    "test": "npm run generate:changelog && npm run qa:doc-versions && npm run qa:ecosystem && npm run format:check && npm run test:groups && npm run build && node scripts/verify-ai-core.mjs && node scripts/generate-ai-readiness.mjs && node scripts/test.mjs && node scripts/test-platform-bootstrap.mjs && npm run test:audit-regressions && npm run test:security-regressions && npm run test:garp-security && npm run qa:garp27:static && npm run test:release-policy && npm run test:release-promotion && npm run test:studio-ux && npm run test:live-presence && npm run test:api-usage && node scripts/test-maturita-external-launcher.mjs && npm run test:task-workflow && npm run test:performance-phase-a && npm run test:performance-phase-b && npm run test:performance-phase-c && npm run test:performance-phase-d",
+    "check": "node scripts/verify-ai-core.mjs && node scripts/generate-ai-readiness.mjs && npm run qa:ecosystem && npm run test:groups && node scripts/test.mjs",
     "generate:changelog": "node scripts/generate-changelog.mjs",
     "format": "node scripts/verify-ai-core.mjs && node scripts/format.mjs --ignore-path .prettierignore",
     "format:check": "node scripts/verify-ai-core.mjs && node scripts/format-check.mjs --ignore-path .prettierignore",
@@ -88,7 +88,8 @@
     "qa:garp27:static": "npm run qa:garp27:contracts && npm run qa:garp27:policy-mutations && npm run qa:garp27:mutations && npm run qa:garp27:auto-patch",
     "qa:garp27:foundation": "node scripts/garp27/foundation-gate.mjs",
     "qa:garp27": "npm run qa:garp27:static && npm run build && npm run prepare:deployment-dist && npm run qa:garp27:architecture",
-    "qa:garp27:regressions": "npm run qa:ecosystem && npm run build && npm run test:audit-regressions && npm run test:security-regressions && npm run test:garp-security && npm run test:release-policy && npm run test:release-promotion && npm run test:auto-patch-idempotence"
+    "qa:garp27:regressions": "npm run qa:ecosystem && npm run build && npm run test:audit-regressions && npm run test:security-regressions && npm run test:garp-security && npm run test:release-policy && npm run test:release-promotion && npm run test:auto-patch-idempotence",
+    "test:groups": "node scripts/test-groups.mjs"
   },
   "engines": {
     "node": ">=18"
