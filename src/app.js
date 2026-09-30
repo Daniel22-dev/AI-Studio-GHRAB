@@ -790,6 +790,13 @@ function ensureAcademyNavigation() {
     );
 }
 
+function ensureAboutNavigationLast() {
+  const nav = document.querySelector(".main-nav");
+  const about = nav?.querySelector('[data-nav="about"]');
+  if (!nav || !about) return;
+  nav.append(about);
+}
+
 let headerLivePresenceMounted = false;
 async function setupHeaderLivePresence() {
   if (headerLivePresenceMounted || !isAdmin() || isColleaguePreview()) return;
@@ -818,6 +825,7 @@ function setupNavigation() {
   ensureGroupsNavigation();
   ensureReportNavigation();
   ensureAcademyNavigation();
+  ensureAboutNavigationLast();
   document.querySelectorAll("[data-colleague-preview-link]").forEach((link) => {
     link.addEventListener("click", (event) => {
       if (!canPreviewColleague()) return;

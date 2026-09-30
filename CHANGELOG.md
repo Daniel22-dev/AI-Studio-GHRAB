@@ -1,5 +1,10 @@
 # Changelog
 
+## 0.21.140 — 2026-09-30
+**O aplikaci vždy poslední v navigaci**
+
+- Záložka **O aplikaci** se po sestavení role-aware navigace přesouvá na úplný pravý konec. V administrátorském pohledu je tedy až za **Prezentací** a zůstává poslední i po doplnění dynamických položek.
+
 ## 0.21.139 — 2026-09-30
 **Moje skupiny pro učitele i správu**
 

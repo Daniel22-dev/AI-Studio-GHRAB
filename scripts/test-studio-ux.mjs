@@ -71,6 +71,20 @@ check(stylesCss.includes("grid-template-rows: repeat(2, auto)") && stylesCss.inc
 check(!/\.main-nav\s*\{[^}]*flex-wrap:\s*wrap/.test(polishCss), "Hlavni navigace se na desktopu znovu muze zalomit do druheho radku.");
 check(appJs.includes('["about", "changelog"].includes(page)'), "O aplikaci nema garantovany pristup pro vsechny role ani kompatibilitu stareho changelog route.");
 check(appJs.includes('[data-teacher-only]'), "Chybi role teacher-only.");
+
+const setupNavigationStart = appJs.indexOf("function setupNavigation()");
+const setupNavigationEnd = appJs.indexOf("function setupChrome()", setupNavigationStart);
+const setupNavigationSource =
+  setupNavigationStart >= 0 && setupNavigationEnd > setupNavigationStart
+    ? appJs.slice(setupNavigationStart, setupNavigationEnd)
+    : "";
+check(
+  appJs.includes("function ensureAboutNavigationLast()") &&
+    appJs.includes("nav.append(about);") &&
+    setupNavigationSource.indexOf("ensureAboutNavigationLast();") >
+      setupNavigationSource.indexOf("ensureAcademyNavigation();"),
+  "O aplikaci neni po dynamickem doplneni navigace presunuto uplne doprava.",
+);
 check(
   appJs.includes('link.dataset.groupsAccess = ""') &&
     appJs.includes("const teachingGroups = Boolean(teacher || admin || operator);") &&

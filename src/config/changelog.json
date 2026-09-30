@@ -1,7 +1,21 @@
 {
   "schema": "ai-studio-changelog-v1",
-  "current": "0.21.139",
+  "current": "0.21.140",
   "items": [
+    {
+      "version": "0.21.140",
+      "date": "2026-09-30",
+      "title": {
+        "cs": "O aplikaci vždy poslední v navigaci",
+        "en": "About tab always last in navigation"
+      },
+      "changes": [
+        {
+          "cs": "Záložka O aplikaci se po sestavení navigace přesouvá na úplný pravý konec. Ve správcovském pohledu je tedy až za Prezentací a zůstává poslední i po doplnění dynamických položek.",
+          "en": "The About tab is moved to the far-right end after navigation is assembled. In the administrator view it therefore sits after Presentation and remains last even when dynamic items are added."
+        }
+      ]
+    },
     {
       "version": "0.21.139",
       "date": "2026-09-30",
