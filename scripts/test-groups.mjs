@@ -1,0 +1,25 @@
+import assert from "node:assert/strict";
+import { LocalGroupsProvider, createGroupsService, parseRosterText, csvSafeCell } from "../src/groups/group-service.js";
+class MemoryStorage{constructor(){this.m=new Map()}getItem(k){return this.m.has(k)?this.m.get(k):null}setItem(k,v){this.m.set(k,String(v))}}
+let seq=0; const idFactory=p=>`${p}_test-${String(++seq).padStart(12,"0")}`;
+const provider=new LocalGroupsProvider({storage:new MemoryStorage()});
+const api=createGroupsService({provider,idFactory,eventTarget:null});
+const g=api.createGroup({displayName:"1A4 AJ",schoolYear:"2026/27",subject:"AJ",grade:"1"});
+assert.equal(g.revision,1); assert.match(g.groupId,/^grp_/);
+const parsed=parseRosterText("Příjmení;Jméno;E-mail\nNovák;Jan;jan.novak@example.test\nSvobodová;Eva;eva.svobodova@example.test");
+assert.equal(parsed.entries.length,2);
+const preview=api.previewRosterImport(g.groupId,"Příjmení;Jméno;E-mail\nNovák;Jan;jan.novak@example.test\nSvobodová;Eva;eva.svobodova@example.test");
+assert.equal(preview.diff.added.length,2);
+const imported=api.importRoster({groupId:g.groupId,rawText:"Příjmení;Jméno;E-mail\nNovák;Jan;jan.novak@example.test\nSvobodová;Eva;eva.svobodova@example.test",expectedRevision:1});
+assert.equal(imported.group.revision,2); assert.equal(imported.group.members.length,2);
+const sortio=api.getRosterProjection(g.groupId,"sortio");
+assert.equal(sortio.members.length,2); assert.ok(!("schoolEmail" in sortio.members[0]));
+const essay=api.getRosterProjection(g.groupId,"essay-evaluator");
+assert.equal(essay.members[0].schoolEmail.endsWith("@example.test"),true);
+const lesson=api.getRosterProjection(g.groupId,"lesson-hub");
+assert.ok(!("members" in lesson));
+const second=api.importRoster({groupId:g.groupId,rawText:"Jan Novák;jan.novak@example.test",expectedRevision:2});
+assert.equal(second.group.members.filter(m=>m.status==="archived").length,1);
+assert.equal(csvSafeCell("=2+2").startsWith("\"'"),true);
+assert.equal(parseRosterText("<img src=x onerror=alert(1)>").entries.length,0);
+console.log("groups: PASS");
