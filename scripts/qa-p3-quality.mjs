@@ -27,11 +27,13 @@ const size = (file) => fs.statSync(file).size;
 const lazyMedia = quality.lazyMedia || {};
 const lazyMediaPrefixes = Array.isArray(lazyMedia.prefixes) ? lazyMedia.prefixes.map((value) => String(value).replace(/^\.\//, "")) : [];
 const isLazyMedia = (file) => lazyMediaPrefixes.some((prefix) => rel(file).startsWith(prefix));
-// Production deployment removes QA-only test pages in prepare-production-dist.mjs.
-// Keep them in the QA corpus below, but do not count bytes that can never reach production.
-const productionPrunedPrefixes = ["tests/"];
-const isProductionPruned = (file) =>
-  productionPrunedPrefixes.some((prefix) => rel(file).startsWith(prefix));
+// Production deployment removes QA-only test pages and integration HTML harnesses
+// in prepare-production-dist.mjs. Keep them in the QA corpus below, but do not
+// count bytes that can never reach production.
+const isProductionPruned = (file) => {
+  const name = rel(file);
+  return name.startsWith("tests/") || /^integration\/[^/]+\.html$/i.test(name);
+};
 const payloadFiles = files.filter((file) => !isLazyMedia(file) && !isProductionPruned(file));
 const lazyMediaFiles = files.filter(isLazyMedia);
 const productionPrunedFiles = files.filter(isProductionPruned);
