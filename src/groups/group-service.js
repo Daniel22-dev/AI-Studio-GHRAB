@@ -9,7 +9,7 @@ const MAX_NAME_LENGTH = 120;
 const MAX_EMAIL_LENGTH = 254;
 
 const CONSUMER_RULES = Object.freeze({
-  sortio: Object.freeze({ members: "name-only" }),
+  sortio: Object.freeze({ members: "name-only", includeArchived: true, includeStatus: true }),
   "essay-evaluator": Object.freeze({ members: "name-email" }),
   "lesson-hub": Object.freeze({ members: "none" }),
   generator: Object.freeze({ members: "none", futureOnly: true }),
@@ -597,6 +597,15 @@ export function createGroupsService({ provider = new LocalGroupsProvider(), idFa
       return clone(groups.filter((group) => status === "all" || group.status === status).sort((a, b) => a.displayName.localeCompare(b.displayName, "cs")));
     },
 
+    listGroupMetadata(consumerAppId, { status = "active" } = {}) {
+      if (!CONSUMER_RULES[consumerAppId]) throw new Error("GROUP_CONSUMER_NOT_ALLOWED");
+      const groups = provider.read().groups;
+      return clone(groups
+        .filter((group) => status === "all" || group.status === status)
+        .sort((a, b) => a.displayName.localeCompare(b.displayName, "cs"))
+        .map(projectionMetadata));
+    },
+
     getGroup(groupId) {
       const group = provider.read().groups.find((item) => item.groupId === groupId);
       return group ? clone(group) : null;
@@ -711,10 +720,16 @@ export function createGroupsService({ provider = new LocalGroupsProvider(), idFa
       const group = findGroupOrThrow(provider.read(), groupId);
       const base = { contract: "ghrab-roster-projection-v1", consumerAppId, group: projectionMetadata(group) };
       if (rule.members === "none") return clone(base);
-      const active = group.members.filter((member) => member.status === "active");
-      const members = active.map((member) => rule.members === "name-email"
-        ? { memberId: member.memberId, name: member.name, schoolEmail: member.schoolEmail || null }
-        : { memberId: member.memberId, name: member.name });
+      const selectedMembers = rule.includeArchived
+        ? group.members
+        : group.members.filter((member) => member.status === "active");
+      const members = selectedMembers.map((member) => {
+        const projected = rule.members === "name-email"
+          ? { memberId: member.memberId, name: member.name, schoolEmail: member.schoolEmail || null }
+          : { memberId: member.memberId, name: member.name };
+        if (rule.includeStatus) projected.status = member.status;
+        return projected;
+      });
       return clone({ ...base, members });
     },
 

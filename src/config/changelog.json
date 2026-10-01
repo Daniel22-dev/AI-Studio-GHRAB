@@ -1,7 +1,25 @@
 {
   "schema": "ai-studio-changelog-v1",
-  "current": "0.21.142",
+  "current": "0.21.143",
   "items": [
+    {
+      "version": "0.21.143",
+      "date": "2026-10-01",
+      "title": {
+        "cs": "Bezpečný consumer kontrakt Moje skupiny",
+        "en": "Safe My Groups consumer contract"
+      },
+      "changes": [
+        {
+          "cs": "Přidán autorizovaný metadata-only výběr skupin pro consumer aplikace; SORTIO při výběru skupiny nedostává členy ani e-maily.",
+          "en": "Added an authorized metadata-only group chooser for consumer apps; SORTIO receives neither members nor emails while choosing a group."
+        },
+        {
+          "cs": "SORTIO projekce nyní bezpečně obsahuje aktivní i archivované členy se stavem, stále bez e-mailu, aby šla provést nedestruktivní synchronizace.",
+          "en": "The SORTIO projection now safely includes active and archived members with status, still without email, enabling non-destructive synchronization."
+        }
+      ]
+    },
     {
       "version": "0.21.142",
       "date": "2026-10-01",
