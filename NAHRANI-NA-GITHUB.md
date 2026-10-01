@@ -1,6 +1,6 @@
-# Nahrání AI Studio GHRAB 0.21.144
+# Nahrání AI Studio GHRAB 0.21.146
 
-> Aktuální verze: **0.21.144** · etapa P5
+> Aktuální verze: **0.21.146** · etapa P5
 
 > 0.21.82 opravuje source-candidate gate: Generátor zůstává ručně přijatý na 7.1.28 a repository kandidát 7.1.30 se bez úspěšného deploymentu nepovýší ani nezablokuje release Studia.
 
@@ -11,10 +11,10 @@
 ## Povinné pořadí
 
 1. Korespondenční asistent 5.10.32
-2. SORTIO 1.1.22
+2. SORTIO 1.1.23
 3. Lesson Hub 1.2.26
 4. Diferenciátor 1.3.50
 5. ACTIVA 0.5.30
 6. Hodnotitel maturitních slohů 1.5.30
 7. LUDUS 1.16.30
-8. Generátor interaktivních testů 7.1.61
+8. Generátor interaktivních testů 7.1.62
