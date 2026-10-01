@@ -262,6 +262,7 @@ const requiredCacheFiles = [
   "./polish.css",
   "./portal-card-hotfix.css",
   "./startup-prepaint.js",
+  "./frame-guard.js",
   "./manifest.webmanifest",
   "./app/index.html",
   "./app/viewer.js",

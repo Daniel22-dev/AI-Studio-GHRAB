@@ -101,6 +101,8 @@ jobs:
         run: npm run qa:garp27:foundation
       - name: Enforce P5 R2 release gate
         run: npm run qa:p5:ci
+      - name: Prepare production deployment artifact
+        run: npm run prepare:deployment-dist
 
       - name: Create LIVE Studio GARP release assurance
         env:

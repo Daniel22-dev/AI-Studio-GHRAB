@@ -1,7 +1,25 @@
 {
   "schema": "ai-studio-changelog-v1",
-  "current": "0.21.143",
+  "current": "0.21.144",
   "items": [
+    {
+      "version": "0.21.144",
+      "date": "2026-10-01",
+      "title": {
+        "cs": "GARP 2.8: ochrana proti clickjackingu a čistý produkční artefakt",
+        "en": "GARP 2.8: clickjacking protection and clean production artifact"
+      },
+      "changes": [
+        {
+          "cs": "Produkční stránky nyní spouštějí samostatný frame guard jako první skript po CSP a blokují vložení do cizího rámu.",
+          "en": "Production pages now run a dedicated frame guard as the first script after CSP and block embedding in a foreign-origin frame."
+        },
+        {
+          "cs": "Produkční příprava odstraňuje testovací stránky a integrační HTML harnessy, zatímco integrační JavaScript zůstává zachován.",
+          "en": "Production preparation removes test pages and integration HTML harnesses while preserving integration JavaScript."
+        }
+      ]
+    },
     {
       "version": "0.21.143",
       "date": "2026-10-01",
