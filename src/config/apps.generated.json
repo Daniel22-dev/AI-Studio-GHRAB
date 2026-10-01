@@ -672,7 +672,7 @@
       "cs": "SORTIO – Výukový panel",
       "en": "SORTIO – Teaching Panel"
     },
-    "version": "1.1.22",
+    "version": "1.1.23",
     "status": {
       "cs": "Připraveno k řízenému pilotu",
       "en": "Ready for controlled pilot"
@@ -794,7 +794,7 @@
       "platformContract": "ghrab-platform-v1",
       "platformRange": ">=1.1.2 <2.0.0"
     },
-    "publishedAt": "2026-09-27T14:35:56.509Z",
+    "publishedAt": "2026-10-01T10:40:43.292Z",
     "aiCore": {
       "schema": "ghrab-ai-app-integration-v1",
       "status": "not-applicable",
@@ -817,7 +817,7 @@
       "studioBridge": "not-applicable",
       "artifactEnvelope": 1,
       "storagePrefix": "ghrab.sortio.",
-      "cacheName": "ghrab-sortio-v1.1.22",
+      "cacheName": "ghrab-sortio-v1.1.23",
       "requiredRange": ">=1.1.2 <2.0.0",
       "storageContract": "ghrab-storage-namespace-v1",
       "bridgeContract": "ghrab-studio-handoff-v2",
@@ -832,12 +832,12 @@
       "url": "./release-integrity.json",
       "assuranceMode": "TRANSITIONAL",
       "appId": "sortio",
-      "version": "1.1.22",
+      "version": "1.1.23",
       "source": {
         "repository": "Daniel22-dev/SORTIO",
-        "commit": "1e7af6bab4f91b8bbdd8a4f6204ba1d8987974bd"
+        "commit": "3d5425143d87c6e7aadeb81ebc865b5c8863b723"
       },
-      "buildId": "github-36326382883-1",
+      "buildId": "github-36850444894-1",
       "evidence": {
         "releaseIntegrity": "release-integrity.json",
         "provenance": "build-provenance.json",
