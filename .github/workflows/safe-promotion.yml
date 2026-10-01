@@ -140,11 +140,37 @@ jobs:
             fi
           done
 
-          checks_json="$(gh api -H 'Accept: application/vnd.github+json' "repos/${REPOSITORY}/commits/${CHECKED_SHA}/check-runs")"
-          if ! jq -e '[.check_runs[] | select(.name == "p5-release-gate" and .conclusion == "success")] | length > 0' <<<"$checks_json" >/dev/null; then
-            echo "::error::Required p5-release-gate is not GREEN."
-            exit 1
-          fi
+          # The same commit can have both push- and PR-triggered P5 checks.
+          # Wait until every p5-release-gate for CHECKED_SHA is completed and GREEN
+          # so GitHub branch protection cannot race this merge with a still-running check.
+          p5_wait_seconds=0
+          p5_wait_limit=420
+          while true; do
+            checks_json="$(gh api -H 'Accept: application/vnd.github+json' "repos/${REPOSITORY}/commits/${CHECKED_SHA}/check-runs?per_page=100")"
+            p5_total="$(jq '[.check_runs[] | select(.name == "p5-release-gate")] | length' <<<"$checks_json")"
+            p5_pending="$(jq '[.check_runs[] | select(.name == "p5-release-gate" and .status != "completed")] | length' <<<"$checks_json")"
+            p5_failed="$(jq '[.check_runs[] | select(.name == "p5-release-gate" and .status == "completed" and .conclusion != "success")] | length' <<<"$checks_json")"
+
+            if [ "$p5_total" -eq 0 ]; then
+              echo "::error::No p5-release-gate check exists for ${CHECKED_SHA}; merge blocked fail-closed."
+              exit 1
+            fi
+            if [ "$p5_failed" -gt 0 ]; then
+              echo "::error::At least one p5-release-gate is not GREEN; merge blocked."
+              exit 1
+            fi
+            if [ "$p5_pending" -eq 0 ]; then
+              echo "All ${p5_total} p5-release-gate checks are completed and GREEN."
+              break
+            fi
+            if [ "$p5_wait_seconds" -ge "$p5_wait_limit" ]; then
+              echo "::error::Timed out waiting for ${p5_pending} p5-release-gate check(s) to complete."
+              exit 1
+            fi
+            echo "Waiting for ${p5_pending}/${p5_total} p5-release-gate check(s) on ${CHECKED_SHA}..."
+            sleep 15
+            p5_wait_seconds=$((p5_wait_seconds + 15))
+          done
 
           result="$(gh api --method PUT "repos/${REPOSITORY}/pulls/${pr_number}/merge" -f sha="$CHECKED_SHA" -f merge_method='merge')"
           if [ "$(jq -r '.merged' <<<"$result")" != "true" ]; then
@@ -159,3 +185,51 @@ jobs:
           fi
           gh api --method PATCH "repos/${REPOSITORY}/git/refs/heads/candidate" -f sha="$merge_sha" -F force=false >/dev/null
           echo "Safe Promotion merged PR #${pr_number} and fast-forwarded candidate to ${merge_sha}."
+
+  reconcile-candidate-after-main:
+    if: >-
+      github.event.workflow_run.conclusion == 'success' &&
+      github.event.workflow_run.event == 'push' &&
+      github.event.workflow_run.head_branch == 'main'
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    steps:
+      - name: Safely reconcile candidate after main promotion
+        shell: bash
+        env:
+          GH_TOKEN: ${{ secrets.SAFE_PROMOTION_TOKEN }}
+          REPOSITORY: ${{ github.repository }}
+          CHECKED_SHA: ${{ github.event.workflow_run.head_sha }}
+        run: |
+          set -euo pipefail
+          if [ -z "${GH_TOKEN:-}" ]; then
+            echo "::error::Missing SAFE_PROMOTION_TOKEN. Candidate reconciliation is fail-closed."
+            exit 1
+          fi
+
+          remote_main="$(gh api "repos/${REPOSITORY}/git/ref/heads/main" --jq '.object.sha')"
+          remote_candidate="$(gh api "repos/${REPOSITORY}/git/ref/heads/candidate" --jq '.object.sha')"
+
+          if [ "$remote_main" != "$CHECKED_SHA" ]; then
+            echo "main advanced after this P5 run; stale reconciliation ignored."
+            exit 0
+          fi
+          if [ "$remote_candidate" = "$remote_main" ]; then
+            echo "candidate already matches main; safe NO-OP."
+            exit 0
+          fi
+
+          comparison="$(gh api "repos/${REPOSITORY}/compare/${remote_candidate}...${remote_main}")"
+          status="$(jq -r '.status' <<<"$comparison")"
+          if [ "$status" = "ahead" ]; then
+            gh api --method PATCH "repos/${REPOSITORY}/git/refs/heads/candidate" -f sha="$remote_main" -F force=false >/dev/null
+            echo "candidate fast-forwarded to verified main ${remote_main}."
+            exit 0
+          fi
+          if [ "$status" = "behind" ] || [ "$status" = "identical" ]; then
+            echo "candidate contains newer work than main; reconciliation leaves it untouched."
+            exit 0
+          fi
+
+          echo "::error::candidate and main diverged (${status}); refusing automatic reconciliation."
+          exit 1
