@@ -106,6 +106,10 @@ assert.equal(hostile.invalid.length, 2);
   const boris = secondImport.group.members.find((m) => m.memberId === borisId);
   assert.equal(alice.memberId, aliceId, "identity remains stable across member update");
   assert.equal(boris.status, "archived", "removed member is archived, not deleted");
+  const sortioWithArchived = service.getRosterProjection(created.groupId, "sortio");
+  const projectedBoris = sortioWithArchived.members.find((m) => m.memberId === borisId);
+  assert.equal(projectedBoris?.status, "archived", "SORTIO projection includes archived members for non-destructive sync");
+  assert.ok(!Object.hasOwn(projectedBoris, "schoolEmail"), "archived SORTIO member still contains no email");
 
   const restorePreview = service.previewRosterImport(created.groupId,
     "Alice Novotna; alice.novak@example.edu\nBoris Svoboda; boris.svoboda@example.edu\nCarla Vesela; carla.vesela@example.edu",
@@ -114,9 +118,16 @@ assert.equal(hostile.invalid.length, 2);
   const restored = service.importRoster({ groupId: created.groupId, rawText: "Alice Novotna; alice.novak@example.edu\nBoris Svoboda; boris.svoboda@example.edu\nCarla Vesela; carla.vesela@example.edu", replace: true, expectedRevision: restorePreview.currentRevision });
   assert.equal(restored.group.members.find((m) => m.memberId === borisId).status, "active");
 
+  const groupMetadata = service.listGroupMetadata("sortio");
+  assert.equal(groupMetadata.length, 1, "SORTIO can enumerate central groups through metadata-only projection");
+  assert.ok(groupMetadata.every((group) => !Object.hasOwn(group, "members")), "group chooser metadata never contains roster members");
+  assert.ok(!JSON.stringify(groupMetadata).includes("example.edu"), "group chooser metadata contains no school email");
+  assert.throws(() => service.listGroupMetadata("unknown-app"), /GROUP_CONSUMER_NOT_ALLOWED/);
+
   const sortio = service.getRosterProjection(created.groupId, "sortio");
   assert.equal(sortio.members.length, 3);
   assert.ok(sortio.members.every((m) => !Object.hasOwn(m, "schoolEmail")), "SORTIO projection has no email");
+  assert.ok(sortio.members.every((m) => m.status === "active"), "SORTIO projection exposes member status");
   const evaluator = service.getRosterProjection(created.groupId, "essay-evaluator");
   assert.ok(evaluator.members.every((m) => Object.hasOwn(m, "schoolEmail")), "evaluator projection contains school email");
   const lessonHub = service.getRosterProjection(created.groupId, "lesson-hub");

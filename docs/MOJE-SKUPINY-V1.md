@@ -18,7 +18,7 @@ JSON Schema je v `src/schemas/ghrab-teaching-group-v1.schema.json`.
 
 ## Service/provider hranice
 
-Veřejný kontrakt `GHRAB_GROUPS` poskytuje CRUD, import rosteru, revize, bezpečné projekce, subscription a backup/restore. UI nečte raw storage klíč. Lokální provider používá `ghrab.ai-studio.groups.v1`, validuje celý store před zápisem a zápis po uložení znovu ověřuje. Poškozená data se nepředávají dál; provider použije poslední známou validní kopii v paměti nebo prázdný validní store.
+Veřejný kontrakt `GHRAB_GROUPS` poskytuje CRUD, import rosteru, revize, bezpečné projekce, metadata-only seznam skupin pro autorizované consumery, subscription a backup/restore. UI nečte raw storage klíč. Lokální provider používá `ghrab.ai-studio.groups.v1`, validuje celý store před zápisem a zápis po uložení znovu ověřuje. Poškozená data se nepředávají dál; provider použije poslední známou validní kopii v paměti nebo prázdný validní store.
 
 Serverová migrace má proběhnout vytvořením provideru se stejnou servisní hranicí. UI a consumer projection contract se tím nemají měnit.
 
@@ -46,12 +46,14 @@ Change notification obsahuje pouze typ změny, náhodné `groupId` a revizi — 
 
 | Consumer ID | Projekce |
 |---|---|
-| `sortio` | metadata + aktivní `memberId`, `name`; bez e-mailu |
+| `sortio` | metadata + `memberId`, `name`, `status` pro aktivní i archivované členy; bez e-mailu |
 | `essay-evaluator` | metadata + aktivní `memberId`, `name`, `schoolEmail` |
 | `lesson-hub` | pouze metadata skupiny |
 | `generator` | pouze metadata; připravený budoucí seam, bez integrace |
 
 Neznámý consumer je odmítnut. `ghrab-material-v1` ani Studio handoff se pro roster nepoužívají.
+
+Pro výběr skupiny používá consumer `listGroupMetadata(consumerAppId)`. Tato metoda vrací pouze metadata skupiny (`groupId`, `revision`, zobrazovaný název, školní rok, předmět/ročník, stav, čas změny) a nikdy členy ani e-maily. Plný roster se načítá až explicitně přes `getRosterProjection(groupId, consumerAppId)`.
 
 ## Threat model a mitigace
 
