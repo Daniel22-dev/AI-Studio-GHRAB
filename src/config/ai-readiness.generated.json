@@ -1,6 +1,6 @@
 {
   "schema": "ghrab-ai-readiness-report-v1",
-  "generatedAt": "2026-10-01T10:41:50.893Z",
+  "generatedAt": "2026-10-01T12:19:45.339Z",
   "activeCoreVersion": "1.0.0",
   "runtime": {
     "defaultMode": "direct-gemini",
