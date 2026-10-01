@@ -48,9 +48,22 @@ jobs:
             echo "Promotion PR #${existing} already exists."
             exit 0
           fi
-          gh pr create --repo "$REPOSITORY" --base main --head candidate \
+          set +e
+          create_output="$(gh pr create --repo "$REPOSITORY" --base main --head candidate \
             --title "chore: safe promotion ${CHECKED_SHA:0:12}" \
-            --body "Automated Safe Promotion from durable candidate after GREEN candidate P5. Candidate SHA: ${CHECKED_SHA}."
+            --body "Automated Safe Promotion from durable candidate after GREEN candidate P5. Candidate SHA: ${CHECKED_SHA}." 2>&1)"
+          create_status=$?
+          set -e
+          if [ "$create_status" -ne 0 ]; then
+            existing="$(gh pr list --repo "$REPOSITORY" --state open --base main --head candidate --json number --jq '.[0].number // empty')"
+            if [ -n "$existing" ]; then
+              echo "Promotion PR #${existing} appeared concurrently; safe reuse."
+              exit 0
+            fi
+            echo "$create_output" >&2
+            exit "$create_status"
+          fi
+          echo "$create_output"
 
   merge-promotion-pr:
     if: >-
