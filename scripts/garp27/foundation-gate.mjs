@@ -26,7 +26,7 @@ const steps=[
   ['deployment-leak-scan',['npm','run','qa:garp25:deployment']],
 ];
 const results=[]; let failed=0;
-for(const [id,cmd] of steps){ const r=spawnSync(cmd[0],cmd.slice(1),{cwd:ROOT,encoding:'utf8',env:process.env,maxBuffer:40*1024*1024}); const file=path.join(OUT,`${id}.log`); fs.writeFileSync(file,`$ ${cmd.join(' ')}\nEXIT=${r.status}\n\n${r.stdout||''}\n${r.stderr||''}`); const pass=r.status===0; results.push({id,actualExit:r.status,pass,evidence:{id,sha256:sha(file)}}); if(!pass) failed+=1; }
+for(const [id,cmd] of steps){ const r=spawnSync(cmd[0],cmd.slice(1),{cwd:ROOT,encoding:'utf8',env:process.env,maxBuffer:40*1024*1024}); const file=path.join(OUT,`${id}.log`); fs.writeFileSync(file,`$ ${cmd.join(' ')}\nEXIT=${r.status}\n\n${r.stdout||''}\n${r.stderr||''}`); const pass=r.status===0; results.push({id,actualExit:r.status,pass,evidence:{id,sha256:sha(file)}}); if(!pass){ failed+=1; console.error(`--- FOUNDATION DIAGNOSTIC ${id} ---`); if(r.stdout) console.error(r.stdout); if(r.stderr) console.error(r.stderr); } }
 const source=sourceCandidate||crypto.createHash('sha1').update(results.map((x)=>x.evidence.sha256).join('')).digest('hex');
 const summary={classification:'GARP27_FOUNDATION_GATE',schema:'garp27-foundation-summary-v1',garpVersion:'2.7',appId:'ai-studio',appVersion:version,status:failed?'FAIL':'FOUNDATION_PASS_LIVE_NOT_TESTED',serverPhase:'DEFERRED_BY_OWNER_DECISION',liveStatus:'NOT_TESTED',sourceIdentity:{value:source,kind:sourceKind},steps:results,summary:{total:results.length,passed:results.filter((x)=>x.pass).length,failed}};
 fs.writeFileSync(path.join(OUT,'foundation-summary.json'),`${JSON.stringify(summary,null,2)}\n`); console.log(JSON.stringify(summary,null,2)); process.exit(failed?1:0);
