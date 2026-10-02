@@ -74,26 +74,34 @@ jobs:
       - name: Apply verified patch promotions
         run: node scripts/apply-auto-promotions.mjs qa-results/release-promotion-report.json src/config/release-wave.json
 
+      - name: Synchronise verified runtime fallback
+        run: npm run sync:fallback
+
       - name: Bind Studio patch version to verified promotion
         shell: bash
         run: |
           set -euo pipefail
           wave_changed=false
           registry_changed=false
+          fallback_changed=false
           if ! git diff --quiet -- src/config/release-wave.json; then
             wave_changed=true
           fi
           if ! git diff --quiet -- src/config/apps.generated.json; then
             registry_changed=true
           fi
-          if [ "$wave_changed" != "true" ] && [ "$registry_changed" != "true" ]; then
+          if ! git diff --quiet -- src/config/apps.fallback.json; then
+            fallback_changed=true
+          fi
+          if [ "$wave_changed" != "true" ] && [ "$registry_changed" != "true" ] && [ "$fallback_changed" != "true" ]; then
             echo "AUTO_PATCH_CHANGED=false" >> "$GITHUB_ENV"
-            echo "No verified release-wave or app-registry delta; Studio version remains unchanged."
+            echo "No verified release-wave, app-registry or runtime-fallback delta; Studio version remains unchanged."
             exit 0
           fi
 
           echo "AUTO_PATCH_WAVE_CHANGED=$wave_changed" >> "$GITHUB_ENV"
           echo "AUTO_PATCH_REGISTRY_CHANGED=$registry_changed" >> "$GITHUB_ENV"
+          echo "AUTO_PATCH_FALLBACK_CHANGED=$fallback_changed" >> "$GITHUB_ENV"
           npm run release:patch -- --auto-patch
           echo "AUTO_PATCH_CHANGED=true" >> "$GITHUB_ENV"
 
@@ -102,7 +110,7 @@ jobs:
         run: |
           set -euo pipefail
           if [ "${AUTO_PATCH_CHANGED:-false}" != "true" ]; then
-            echo "No verified release-wave delta; safe NO-OP."
+            echo "No verified release-wave, registry or runtime-fallback delta; safe NO-OP."
             exit 0
           fi
 
@@ -118,6 +126,7 @@ jobs:
           git add \
             src/config/release-wave.json \
             src/config/apps.generated.json \
+            src/config/apps.fallback.json \
             src/config/sync-report.json \
             src/config/ai-readiness.generated.json \
             package.json \

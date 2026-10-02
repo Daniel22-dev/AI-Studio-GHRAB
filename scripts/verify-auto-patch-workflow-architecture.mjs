@@ -29,7 +29,7 @@ requireText(ingest, 'cron: "17 3 * * *"', 'ingest');
 requireText(ingest, 'ref: candidate', 'ingest');
 requireText(ingest, 'SAFE_PROMOTION_TOKEN', 'ingest');
 requireText(ingest, 'npm run qa:ecosystem:verified', 'ingest');
-requireText(ingest, 'apply-auto-promotions.mjs', 'ingest');
+requireText(ingest, 'apply-auto-promotions.mjs', 'ingest');\nrequireText(ingest, 'npm run sync:fallback', 'ingest');\nrequireText(ingest, 'src/config/apps.fallback.json', 'ingest');
 requireText(ingest, 'git push origin HEAD:candidate', 'ingest');
 rejectText(ingest, 'git push origin HEAD:main', 'ingest');
 
@@ -40,7 +40,7 @@ rejectText(deploy, 'apply-auto-promotions.mjs', 'deploy');
 requireText(deploy, 'verify-safe-promotion-origin.mjs', 'deploy');
 requireText(deploy, 'verify-github-deployment-governance.mjs', 'deploy');
 requireText(deploy, 'qa:ecosystem:verified', 'deploy');
-requireText(deploy, 'qa-ecosystem.mjs --require-source-verification', 'deploy');
+requireText(deploy, 'qa-ecosystem.mjs --require-source-verification', 'deploy');\nrequireText(deploy, 'npm run qa:fallback', 'deploy');\nrequireText(deploy, 'npm run test:runtime-fallback', 'deploy');
 
 // Candidate and PR must both pass the same stable required check.
 if (!/push:\s*[\s\S]*branches:\s*\[candidate, main\]/m.test(p5)) {

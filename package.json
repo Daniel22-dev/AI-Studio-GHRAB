@@ -1,6 +1,6 @@
 {
   "name": "ai-studio-ghrab",
-  "version": "0.21.156",
+  "version": "0.21.157",
   "private": true,
   "description": "Profesionální federované PWA devíti chráněných školních aplikací včetně Lesson Hubu, manuálů, řízeného přístupu a jednotné GHRAB QA brány",
   "type": "module",
@@ -8,8 +8,8 @@
     "sync": "node scripts/sync-registry.mjs && node scripts/sync-platform-consumers.mjs && node scripts/generate-ai-readiness.mjs && node scripts/sync-doc-app-versions.mjs",
     "sync:offline": "node scripts/sync-registry.mjs --offline && node scripts/sync-platform-consumers.mjs && node scripts/generate-ai-readiness.mjs && node scripts/sync-doc-app-versions.mjs",
     "build": "npm run generate:changelog && node scripts/verify-ai-core.mjs && node scripts/generate-ai-readiness.mjs && node scripts/build.mjs",
-    "test": "npm run generate:changelog && npm run qa:doc-versions && npm run qa:ecosystem && npm run format:check && npm run test:groups && npm run build && node scripts/verify-ai-core.mjs && node scripts/generate-ai-readiness.mjs && node scripts/test.mjs && node scripts/test-platform-bootstrap.mjs && npm run test:audit-regressions && npm run test:security-regressions && npm run test:garp-security && npm run qa:garp27:static && npm run test:release-policy && npm run test:release-promotion && npm run test:studio-ux && npm run test:live-presence && npm run test:api-usage && node scripts/test-maturita-external-launcher.mjs && npm run test:task-workflow && npm run test:performance-phase-a && npm run test:performance-phase-b && npm run test:performance-phase-c && npm run test:performance-phase-d && npm run test:production-dist-security",
-    "check": "node scripts/verify-ai-core.mjs && node scripts/generate-ai-readiness.mjs && npm run qa:ecosystem && npm run test:groups && node scripts/test.mjs",
+    "test": "npm run generate:changelog && npm run qa:doc-versions && npm run qa:ecosystem && npm run format:check && npm run test:groups && npm run build && node scripts/verify-ai-core.mjs && node scripts/generate-ai-readiness.mjs && node scripts/test.mjs && node scripts/test-platform-bootstrap.mjs && npm run test:audit-regressions && npm run test:runtime-fallback && npm run test:security-regressions && npm run test:garp-security && npm run qa:garp27:static && npm run test:release-policy && npm run test:release-promotion && npm run test:studio-ux && npm run test:live-presence && npm run test:api-usage && node scripts/test-maturita-external-launcher.mjs && npm run test:task-workflow && npm run test:performance-phase-a && npm run test:performance-phase-b && npm run test:performance-phase-c && npm run test:performance-phase-d && npm run test:production-dist-security",
+    "check": "node scripts/verify-ai-core.mjs && node scripts/generate-ai-readiness.mjs && npm run qa:ecosystem && npm run test:groups && node scripts/test.mjs && npm run qa:fallback && npm run test:runtime-fallback",
     "generate:changelog": "node scripts/generate-changelog.mjs",
     "format": "node scripts/verify-ai-core.mjs && node scripts/format.mjs --ignore-path .prettierignore",
     "format:check": "node scripts/verify-ai-core.mjs && node scripts/format-check.mjs --ignore-path .prettierignore",
@@ -41,8 +41,8 @@
     "qa:a11y": "node scripts/qa-p5-runtime.mjs",
     "qa:p4": "npm run qa:p5",
     "qa:p4:ci": "npm run qa:p5:ci",
-    "qa:p5": "npm run qa:garp27:static && npm run qa:garp25:tooling && npm run qa:garp25:secrets && npm run qa:lock && npm run qa:ecosystem && node scripts/test-maturita-external-launcher.mjs && npm run build && npm run verify:platform && npm run qa:quality && npm run qa:browser && npm run qa:runtime && npm run qa:xss && npm run qa:axe && node scripts/qa-p5-release.mjs && node scripts/qa-p5-acceptance.mjs && npm run test:release-promotion && npm run test:auto-patch-idempotence && npm run prepare:deployment-dist && npm run qa:garp27:architecture && npm run qa:garp25:deployment",
-    "qa:p5:ci": "npm run qa:garp27:static && npm run qa:garp25:tooling && npm run qa:garp25:secrets && npm run access:check:required && npm run qa:lock && npm run qa:ecosystem && node scripts/test-maturita-external-launcher.mjs && npm run build && npm run verify:platform && npm run qa:quality && npm run qa:browser && npm run qa:runtime && npm run qa:xss && npm run qa:axe:required && node scripts/qa-p5-release.mjs --require-axe && node scripts/qa-p5-acceptance.mjs && npm run test:release-promotion && npm run test:auto-patch-idempotence && npm run prepare:deployment-dist && npm run qa:garp27:architecture && npm run qa:garp25:deployment",
+    "qa:p5": "npm run qa:garp27:static && npm run qa:garp25:tooling && npm run qa:garp25:secrets && npm run qa:lock && npm run qa:ecosystem && npm run qa:fallback && npm run test:runtime-fallback && node scripts/test-maturita-external-launcher.mjs && npm run build && npm run verify:platform && npm run qa:quality && npm run qa:browser && npm run qa:runtime && npm run qa:xss && npm run qa:axe && node scripts/qa-p5-release.mjs && node scripts/qa-p5-acceptance.mjs && npm run test:release-promotion && npm run test:auto-patch-idempotence && npm run prepare:deployment-dist && npm run qa:garp27:architecture && npm run qa:garp25:deployment",
+    "qa:p5:ci": "npm run qa:garp27:static && npm run qa:garp25:tooling && npm run qa:garp25:secrets && npm run access:check:required && npm run qa:lock && npm run qa:ecosystem && npm run qa:fallback && npm run test:runtime-fallback && node scripts/test-maturita-external-launcher.mjs && npm run build && npm run verify:platform && npm run qa:quality && npm run qa:browser && npm run qa:runtime && npm run qa:xss && npm run qa:axe:required && node scripts/qa-p5-release.mjs --require-axe && node scripts/qa-p5-acceptance.mjs && npm run test:release-promotion && npm run test:auto-patch-idempotence && npm run prepare:deployment-dist && npm run qa:garp27:architecture && npm run qa:garp25:deployment",
     "test:p5": "npm run qa:p5",
     "qa:runtime": "node scripts/qa-p5-runtime.mjs",
     "qa:xss": "node scripts/qa-p5-xss-sinks.mjs",
@@ -90,7 +90,10 @@
     "qa:garp27:foundation": "node scripts/garp27/foundation-gate.mjs",
     "qa:garp27": "npm run qa:garp27:static && npm run build && npm run prepare:deployment-dist && npm run qa:garp27:architecture",
     "qa:garp27:regressions": "npm run qa:ecosystem && npm run build && npm run test:audit-regressions && npm run test:security-regressions && npm run test:garp-security && npm run test:release-policy && npm run test:release-promotion && npm run test:auto-patch-idempotence",
-    "test:production-dist-security": "node scripts/test-production-dist-security.mjs"
+    "test:production-dist-security": "node scripts/test-production-dist-security.mjs",
+    "sync:fallback": "node scripts/sync-runtime-fallback.mjs",
+    "qa:fallback": "node scripts/sync-runtime-fallback.mjs --check",
+    "test:runtime-fallback": "node scripts/test-runtime-fallback.mjs"
   },
   "engines": {
     "node": ">=18"
