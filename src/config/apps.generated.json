@@ -415,7 +415,7 @@
       "cs": "LUDUS",
       "en": "LUDUS"
     },
-    "version": "1.16.30",
+    "version": "1.16.31",
     "status": {
       "cs": "Ověřováno v pilotu",
       "en": "Being validated in pilot"
@@ -461,7 +461,7 @@
       "platformContract": "ghrab-platform-v1",
       "platformRange": ">=1.1.2 <2.0.0"
     },
-    "publishedAt": "2026-09-28T11:46:49.658Z",
+    "publishedAt": "2026-10-02T09:16:36.289Z",
     "aiCore": {
       "schema": "ghrab-ai-app-integration-v1",
       "status": "integrated-p1",
@@ -493,7 +493,7 @@
       "studioBridge": "ghrab-studio-handoff-v2",
       "artifactEnvelope": "ghrab-artifact-envelope-v1",
       "storagePrefix": "ghrab.ludus.",
-      "cacheName": "ghrab-ludus-v1.16.30",
+      "cacheName": "ghrab-ludus-v1.16.31",
       "requiredRange": ">=1.1.2 <2.0.0",
       "storageContract": "ghrab-storage-namespace-v1",
       "bridgeContract": "ghrab-studio-handoff-v2",
@@ -505,7 +505,7 @@
     "assurance": {
       "schema": "ghrab-patch-assurance-v1",
       "evidenceManifestUrl": "https://daniel22-dev.github.io/Ludus/patch-assurance.json",
-      "evidenceManifestSha256": "bc0f3366cc8fa7b85d1bf1ea6940e25d814d7f7416027f56806dedf18c81374f"
+      "evidenceManifestSha256": "e1f65ce6979ff5e8726c3eca714513494e5dd2f92bae5ecc493eacd34b254fca"
     }
   },
   {

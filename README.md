@@ -1,6 +1,6 @@
 # AI Studio GHRAB
 
-**Aktuální verze:** 0.21.152
+**Aktuální verze:** 0.21.153
 
 0.21.87 dokončuje vlastní GARP 2.5.1/N5 release assurance Studia a opravuje auto-patch tak, aby skutečně přijatý PATCH současně zvýšil patch verzi Studia právě jednou; duplicitní a bezezměnové běhy zůstávají NO-OP.
 
@@ -150,7 +150,7 @@
 - Všechny aplikace používají jeden kanonický školní logotyp bez inline base64 kopií a jednotnou autorskou patičku.
 - Aplikační data mají namespace `ghrab.<appId>.*`; historické klíče se migrují vratně a před změnou vzniká úplná záloha.
 - Studio Bridge v2 zachovává kompatibilitu se starším handoffem v1 a strukturované exporty používají artifact envelope v1 se SHA-256.
-- Registr Studia je synchronizován s verzemi KS 5.10.34, SORTIO 1.1.23, Lesson Hub 1.2.26, Diferenciátor 1.3.50, ACTIVA 0.5.30, Hodnotitel 1.5.30, LUDUS 1.16.30 a Generátor 7.1.71.
+- Registr Studia je synchronizován s verzemi KS 5.10.34, SORTIO 1.1.23, Lesson Hub 1.2.26, Diferenciátor 1.3.50, ACTIVA 0.5.30, Hodnotitel 1.5.30, LUDUS 1.16.31 a Generátor 7.1.71.
 
 ## Serverová vrstva z P1
 

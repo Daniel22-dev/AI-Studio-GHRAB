@@ -1,6 +1,6 @@
-# Nahrání AI Studio GHRAB 0.21.152
+# Nahrání AI Studio GHRAB 0.21.153
 
-> Aktuální verze: **0.21.152** · etapa P5
+> Aktuální verze: **0.21.153** · etapa P5
 
 > 0.21.82 opravuje source-candidate gate: Generátor zůstává ručně přijatý na 7.1.28 a repository kandidát 7.1.30 se bez úspěšného deploymentu nepovýší ani nezablokuje release Studia.
 
@@ -16,5 +16,5 @@
 4. Diferenciátor 1.3.50
 5. ACTIVA 0.5.30
 6. Hodnotitel maturitních slohů 1.5.30
-7. LUDUS 1.16.30
+7. LUDUS 1.16.31
 8. Generátor interaktivních testů 7.1.71
