@@ -34,9 +34,18 @@ const isProductionPruned = (file) => {
   const name = rel(file);
   return name.startsWith("tests/") || /^integration\/[^/]+\.html$/i.test(name);
 };
-const payloadFiles = files.filter((file) => !isLazyMedia(file) && !isProductionPruned(file));
+// Changelog history is deliberately delivered on demand. The build keeps the
+// complete audit trail, but neither the primary changelog nor its archives are
+// precached or part of the startup/runtime payload. Count them in totalDistBytes
+// for full artifact visibility, but exclude them from the bounded payload budget.
+const isOnDemandHistory = (file) =>
+  /^config\/changelog(?:\.archive-\d+)?\.json$/i.test(rel(file));
+const payloadFiles = files.filter(
+  (file) => !isLazyMedia(file) && !isProductionPruned(file) && !isOnDemandHistory(file),
+);
 const lazyMediaFiles = files.filter(isLazyMedia);
 const productionPrunedFiles = files.filter(isProductionPruned);
+const onDemandHistoryFiles = files.filter(isOnDemandHistory);
 const sumExt = (extensions) => payloadFiles.filter((file) => extensions.some((ext) => file.toLowerCase().endsWith(ext))).reduce((sum, file) => sum + size(file), 0);
 const htmlFiles = files.filter((file) => file.toLowerCase().endsWith('.html'));
 const fullHtml = htmlFiles.filter((file) => /<html\b[^>]*>[\s\S]*<\/html>/i.test(fs.readFileSync(file, 'utf8')));
@@ -132,6 +141,8 @@ const metrics = {
   duplicateLargeBytes: duplicate.avoidableBytes,
   productionPrunedBytes: productionPrunedFiles.reduce((sum, file) => sum + size(file), 0),
   productionPrunedFileCount: productionPrunedFiles.length,
+  onDemandHistoryBytes: onDemandHistoryFiles.reduce((sum, file) => sum + size(file), 0),
+  onDemandHistoryFileCount: onDemandHistoryFiles.length,
 };
 
 check(fs.existsSync(dist), 'dist.exists');
@@ -180,6 +191,11 @@ for (const [key, limit] of Object.entries(budget)) {
   check(Number(metrics[key]) <= Number(limit), `budget.${key}`, `${metrics[key]} <= ${limit}`);
 }
 if (quality.requireBudget === true) check(Object.keys(budget).length >= 5, 'budget.minimum-count', Object.keys(budget).length);
+check(
+  !precache.assets.some((asset) => /^config\/changelog(?:\.archive-\d+)?\.json$/i.test(asset)),
+  'on-demand.changelog-not-precache',
+  onDemandHistoryFiles.map(rel).join(', '),
+);
 if (lazyMediaPrefixes.length) {
   check(Number(metrics.lazyMediaBytes) <= Number(lazyMedia.maxBytes || 0), 'lazy-media.total', `${metrics.lazyMediaBytes} <= ${lazyMedia.maxBytes || 0}`);
   check(Number(metrics.largestLazyMediaBytes) <= Number(lazyMedia.maxSingleFileBytes || 0), 'lazy-media.single-file', `${metrics.largestLazyMediaBytes} <= ${lazyMedia.maxSingleFileBytes || 0}`);
