@@ -92,7 +92,7 @@ if (checkOnly) {
   process.exit(0);
 }
 
-const nonDeployment = report.sources.filter((source) => source.verification !== "deployment");
+// Only a fully live-verified registry may replace the durable fallback snapshot.\nconst nonDeployment = report.sources.filter((source) => source.verification !== "deployment");
 if (nonDeployment.length)
   fail(`refusing refresh without live deployment evidence for: ${nonDeployment.map((source) => source.id).join(", ")}`);
 if (report?.counts?.deployment !== generated.length)
