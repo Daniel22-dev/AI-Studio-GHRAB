@@ -1,7 +1,21 @@
 {
   "schema": "ai-studio-changelog-v1",
-  "current": "0.21.156",
+  "current": "0.21.157",
   "items": [
+    {
+      "version": "0.21.157",
+      "date": "2026-10-02",
+      "title": {
+        "cs": "Ověřený runtime fallback registru",
+        "en": "Verified runtime registry fallback"
+      },
+      "changes": [
+        {
+          "cs": "Nouzový registr aplikací se nyní synchronizuje pouze z živě ověřeného a release-wave schváleného registru; deployment a P5 blokují stale fallback a regresní test ověřuje skutečné přepnutí při nedostupnosti apps.generated.",
+          "en": "The emergency app registry is now synchronized only from the live-verified, release-wave-approved registry; deployment and P5 block stale fallback and a regression test verifies the real runtime switch when apps.generated is unavailable."
+        }
+      ]
+    },
     {
       "version": "0.21.156",
       "date": "2026-10-02",
