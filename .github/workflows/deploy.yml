@@ -66,6 +66,11 @@ jobs:
           node scripts/sync-platform-consumers.mjs --check
           node scripts/qa-ecosystem.mjs --require-source-verification
 
+      - name: Verify approved runtime fallback
+        run: |
+          npm run qa:fallback
+          npm run test:runtime-fallback
+
       - name: Verify immutable Core before formatting
         run: npm run verify:ai-core
       - name: Normalize source formatting
