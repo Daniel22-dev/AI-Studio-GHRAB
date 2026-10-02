@@ -461,7 +461,7 @@
       "platformContract": "ghrab-platform-v1",
       "platformRange": ">=1.1.2 <2.0.0"
     },
-    "publishedAt": "2026-10-02T18:53:25.811Z",
+    "publishedAt": "2026-10-02T19:02:16.604Z",
     "aiCore": {
       "schema": "ghrab-ai-app-integration-v1",
       "status": "integrated-p1",
@@ -505,7 +505,7 @@
     "assurance": {
       "schema": "ghrab-patch-assurance-v1",
       "evidenceManifestUrl": "https://daniel22-dev.github.io/Ludus/patch-assurance.json",
-      "evidenceManifestSha256": "8018c78930bed4706bc47cae2b863de718553519950774325b321f5b80916349"
+      "evidenceManifestSha256": "19dd8d9244b03f11fa38da14558cd1a4b78b7a0fccd3129985fca6beecafaeee"
     }
   },
   {
