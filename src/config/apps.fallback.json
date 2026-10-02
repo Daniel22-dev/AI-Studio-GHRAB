@@ -6,7 +6,7 @@
       "cs": "Generátor interaktivních testů",
       "en": "Interactive Test Generator"
     },
-    "version": "7.1.28",
+    "version": "7.1.71",
     "status": {
       "cs": "Připraveno k řízenému pilotu",
       "en": "Ready for controlled pilot"
@@ -43,10 +43,7 @@
       "ghrab-platform-v1",
       "canonical-branding",
       "storage-namespace-v1",
-      "artifact-envelope-v1",
-      "accessibility-v1",
-      "performance-budget-v1",
-      "lazy-modules-v1"
+      "artifact-envelope-v1"
     ],
     "compatibility": {
       "studioMinVersion": "0.5.1",
@@ -55,7 +52,7 @@
       "platformContract": "ghrab-platform-v1",
       "platformRange": ">=1.1.2 <2.0.0"
     },
-    "publishedAt": "2026-08-04T16:40:00.000Z",
+    "publishedAt": "2026-10-02T05:27:12.438Z",
     "aiCore": {
       "schema": "ghrab-ai-app-integration-v1",
       "status": "integrated-p1",
@@ -79,18 +76,27 @@
     "platform": {
       "schema": "ghrab-platform-app-integration-v1",
       "contract": "ghrab-platform-v1",
-      "requiredPlatformRange": ">=1.1.2 <2.0.0",
       "platformVersion": "1.1.2",
+      "requiredPlatformRange": ">=1.1.2 <2.0.0",
+      "requiredRange": ">=1.1.2 <2.0.0",
       "brandVersion": "1.0.0",
-      "themeContract": 1,
+      "themeContract": "ghrab-theme-v1",
       "swContract": 1,
-      "studioBridge": 2,
-      "artifactEnvelope": 1,
+      "studioBridge": "ghrab-studio-handoff-v2",
+      "artifactEnvelope": "ghrab-artifact-envelope-v1",
       "storagePrefix": "ghrab.generator.",
-      "cacheName": "ghrab-generator-v7.1.28",
+      "storageContract": "ghrab-storage-namespace-v1",
+      "bridgeContract": "ghrab-studio-handoff-v2",
+      "artifactContract": "ghrab-artifact-envelope-v1",
       "accessibilityContract": "ghrab-a11y-v1",
       "performanceContract": "ghrab-performance-v1",
-      "moduleContract": "ghrab-lazy-modules-v1"
+      "moduleContract": "ghrab-lazy-modules-v1",
+      "cacheName": "ghrab-generator-v7.1.71"
+    },
+    "releaseIdentity": {
+      "contract": "ghrab-release-integrity-v2",
+      "url": "./release-integrity.json",
+      "assuranceMode": "TRANSITIONAL"
     }
   },
   {
@@ -100,7 +106,7 @@
       "cs": "Diferenciátor",
       "en": "Differentiator"
     },
-    "version": "1.3.46",
+    "version": "1.3.50",
     "status": {
       "cs": "Připraveno k řízenému pilotu",
       "en": "Ready for controlled pilot"
@@ -132,19 +138,16 @@
       "ghrab-platform-v1",
       "canonical-branding",
       "storage-namespace-v1",
-      "artifact-envelope-v1",
-      "accessibility-v1",
-      "performance-budget-v1",
-      "lazy-modules-v1"
+      "artifact-envelope-v1"
     ],
     "compatibility": {
       "studioMinVersion": "0.18.7",
       "materialSchema": "ghrab-material-v1",
       "studioBridge": "2.0",
       "platformContract": "ghrab-platform-v1",
-      "platformRange": ">=1.1.0 <2.0.0"
+      "platformRange": ">=1.1.2 <2.0.0"
     },
-    "publishedAt": "2026-08-04T16:40:00.000Z",
+    "publishedAt": "2026-09-27T18:50:59.399Z",
     "aiCore": {
       "schema": "ghrab-ai-app-integration-v1",
       "status": "integrated-p1",
@@ -157,29 +160,34 @@
       "gatewayContract": "ghrab-ai-request-v1",
       "certificationStatus": "certified-p1",
       "certificationEvidence": "evidence/p1-ai-conformance.json",
-      "certifiedOperations": 6
+      "certifiedOperations": 7
     },
     "slug": "diferenciator",
     "paths": {
       "app": "https://daniel22-dev.github.io/diferenciator/",
       "manual": "https://daniel22-dev.github.io/diferenciator/manual/",
-      "manifest": ""
+      "manifest": "https://daniel22-dev.github.io/diferenciator/studio-manifest.json"
     },
     "platform": {
       "schema": "ghrab-platform-app-integration-v1",
       "contract": "ghrab-platform-v1",
-      "requiredPlatformRange": ">=1.1.0 <2.0.0",
-      "platformVersion": "1.1.0",
+      "requiredPlatformRange": ">=1.1.2 <2.0.0",
+      "platformVersion": "1.1.2",
       "brandVersion": "1.0.0",
       "themeContract": "ghrab-theme-v1",
       "swContract": 1,
-      "studioBridge": "ghrab-studio-handoff-v2",
-      "artifactEnvelope": "ghrab-artifact-envelope-v1",
+      "studioBridge": 2,
+      "artifactEnvelope": 1,
       "storagePrefix": "ghrab.differentiator.",
-      "cacheName": "ghrab-differentiator-v1.3.46",
+      "cacheName": "ghrab-differentiator-v1.3.50",
       "accessibilityContract": "ghrab-a11y-v1",
       "performanceContract": "ghrab-performance-v1",
       "moduleContract": "ghrab-lazy-modules-v1"
+    },
+    "releaseIdentity": {
+      "contract": "ghrab-release-integrity-v2",
+      "url": "./release-integrity.json",
+      "assuranceMode": "TRANSITIONAL"
     }
   },
   {
@@ -189,7 +197,7 @@
       "cs": "Hodnotitel maturitních slohů",
       "en": "Matura Essay Evaluator"
     },
-    "version": "1.5.25",
+    "version": "1.5.30",
     "status": {
       "cs": "Připraveno k řízenému pilotu",
       "en": "Ready for controlled pilot"
@@ -256,9 +264,7 @@
       "canonical-branding",
       "storage-namespace-v1",
       "artifact-envelope-v1",
-      "accessibility-v1",
-      "performance-budget-v1",
-      "lazy-modules-v1"
+      "suite-session-lifecycle-v1"
     ],
     "limits": {
       "typicalSeriesSize": 15,
@@ -269,9 +275,9 @@
       "materialSchema": "ghrab-material-v1",
       "studioBridge": "not-applicable",
       "platformContract": "ghrab-platform-v1",
-      "platformRange": ">=1.1.0 <2.0.0"
+      "platformRange": ">=1.1.2 <2.0.0"
     },
-    "publishedAt": "2026-08-04T16:40:00.000Z",
+    "publishedAt": "2026-09-27T18:01:24.832Z",
     "aiCore": {
       "schema": "ghrab-ai-app-integration-v1",
       "status": "integrated-p1",
@@ -290,23 +296,25 @@
     "paths": {
       "app": "https://daniel22-dev.github.io/Hodnotitel-maturitnich-slohu/",
       "manual": "https://daniel22-dev.github.io/Hodnotitel-maturitnich-slohu/manual/",
-      "manifest": ""
+      "manifest": "https://daniel22-dev.github.io/Hodnotitel-maturitnich-slohu/studio-manifest.json"
     },
     "platform": {
       "schema": "ghrab-platform-app-integration-v1",
       "contract": "ghrab-platform-v1",
-      "requiredPlatformRange": ">=1.1.0 <2.0.0",
-      "platformVersion": "1.1.0",
+      "requiredPlatformRange": ">=1.1.2 <2.0.0",
+      "platformVersion": "1.1.2",
       "brandVersion": "1.0.0",
       "themeContract": "ghrab-theme-v1",
       "swContract": 1,
-      "studioBridge": "ghrab-studio-handoff-v2",
+      "studioBridge": "not-applicable",
       "artifactEnvelope": "ghrab-artifact-envelope-v1",
       "storagePrefix": "ghrab.essay-evaluator.",
-      "cacheName": "ghrab-essay-evaluator-v1.5.25",
-      "accessibilityContract": "ghrab-a11y-v1",
-      "performanceContract": "ghrab-performance-v1",
-      "moduleContract": "ghrab-lazy-modules-v1"
+      "cacheName": "ghrab-essay-evaluator-v1.5.30"
+    },
+    "releaseIdentity": {
+      "contract": "ghrab-release-integrity-v2",
+      "url": "./release-integrity.json",
+      "assuranceMode": "TRANSITIONAL"
     }
   },
   {
@@ -316,7 +324,7 @@
       "cs": "Korespondenční asistent",
       "en": "Correspondence Assistant"
     },
-    "version": "5.10.25",
+    "version": "5.10.34",
     "status": {
       "cs": "Pracovní pilotní verze",
       "en": "Working pilot release"
@@ -348,19 +356,16 @@
       "ghrab-platform-v1",
       "canonical-branding",
       "storage-namespace-v1",
-      "artifact-envelope-v1",
-      "accessibility-v1",
-      "performance-budget-v1",
-      "lazy-modules-v1"
+      "artifact-envelope-v1"
     ],
     "compatibility": {
       "studioMinVersion": "0.18.9",
       "materialSchema": "ghrab-material-v1",
       "studioBridge": "2.0",
       "platformContract": "ghrab-platform-v1",
-      "platformRange": ">=1.1.0 <2.0.0"
+      "platformRange": ">=1.1.2 <2.0.0"
     },
-    "publishedAt": "2026-08-04T16:40:00.000Z",
+    "publishedAt": "2026-10-02T07:37:09.912Z",
     "aiCore": {
       "schema": "ghrab-ai-app-integration-v1",
       "status": "integrated-p1",
@@ -379,23 +384,28 @@
     "paths": {
       "app": "https://daniel22-dev.github.io/korespondencni-asistent/",
       "manual": "https://daniel22-dev.github.io/korespondencni-asistent/manual/",
-      "manifest": ""
+      "manifest": "https://daniel22-dev.github.io/korespondencni-asistent/studio-manifest.json"
     },
     "platform": {
       "schema": "ghrab-platform-app-integration-v1",
       "contract": "ghrab-platform-v1",
-      "requiredPlatformRange": ">=1.1.0 <2.0.0",
-      "platformVersion": "1.1.0",
+      "requiredPlatformRange": ">=1.1.2 <2.0.0",
+      "platformVersion": "1.1.2",
       "brandVersion": "1.0.0",
       "themeContract": "ghrab-theme-v1",
       "swContract": 1,
       "studioBridge": "ghrab-studio-handoff-v2",
       "artifactEnvelope": "ghrab-artifact-envelope-v1",
       "storagePrefix": "ghrab.correspondence.",
-      "cacheName": "ghrab-correspondence-v5.10.25",
+      "cacheName": "ghrab-correspondence-v5.10.34",
       "accessibilityContract": "ghrab-a11y-v1",
       "performanceContract": "ghrab-performance-v1",
       "moduleContract": "ghrab-lazy-modules-v1"
+    },
+    "releaseIdentity": {
+      "contract": "ghrab-release-integrity-v2",
+      "url": "./release-integrity.json",
+      "assuranceMode": "TRANSITIONAL"
     }
   },
   {
@@ -405,7 +415,7 @@
       "cs": "LUDUS",
       "en": "LUDUS"
     },
-    "version": "1.16.23",
+    "version": "1.16.31",
     "status": {
       "cs": "Ověřováno v pilotu",
       "en": "Being validated in pilot"
@@ -442,18 +452,16 @@
       "canonical-branding",
       "storage-namespace-v1",
       "artifact-envelope-v1",
-      "accessibility-v1",
-      "performance-budget-v1",
-      "lazy-modules-v1"
+      "suite-session-lifecycle-v1"
     ],
     "compatibility": {
       "studioMinVersion": "0.5.1",
       "materialSchema": "ghrab-material-v1",
       "studioBridge": "2.0",
       "platformContract": "ghrab-platform-v1",
-      "platformRange": ">=1.1.0 <2.0.0"
+      "platformRange": ">=1.1.2 <2.0.0"
     },
-    "publishedAt": "2026-08-04T16:40:00.000Z",
+    "publishedAt": "2026-10-02T19:02:16.604Z",
     "aiCore": {
       "schema": "ghrab-ai-app-integration-v1",
       "status": "integrated-p1",
@@ -472,23 +480,32 @@
     "paths": {
       "app": "https://daniel22-dev.github.io/Ludus/",
       "manual": "https://daniel22-dev.github.io/Ludus/manual/",
-      "manifest": ""
+      "manifest": "https://daniel22-dev.github.io/Ludus/studio-manifest.json"
     },
     "platform": {
       "schema": "ghrab-platform-app-integration-v1",
       "contract": "ghrab-platform-v1",
-      "requiredPlatformRange": ">=1.1.0 <2.0.0",
-      "platformVersion": "1.1.0",
+      "requiredPlatformRange": ">=1.1.2 <2.0.0",
+      "platformVersion": "1.1.2",
       "brandVersion": "1.0.0",
       "themeContract": "ghrab-theme-v1",
       "swContract": 1,
       "studioBridge": "ghrab-studio-handoff-v2",
       "artifactEnvelope": "ghrab-artifact-envelope-v1",
       "storagePrefix": "ghrab.ludus.",
-      "cacheName": "ghrab-ludus-v1.16.23",
+      "cacheName": "ghrab-ludus-v1.16.31",
+      "requiredRange": ">=1.1.2 <2.0.0",
+      "storageContract": "ghrab-storage-namespace-v1",
+      "bridgeContract": "ghrab-studio-handoff-v2",
+      "artifactContract": "ghrab-artifact-envelope-v1",
       "accessibilityContract": "ghrab-a11y-v1",
       "performanceContract": "ghrab-performance-v1",
       "moduleContract": "ghrab-lazy-modules-v1"
+    },
+    "assurance": {
+      "schema": "ghrab-patch-assurance-v1",
+      "evidenceManifestUrl": "https://daniel22-dev.github.io/Ludus/patch-assurance.json",
+      "evidenceManifestSha256": "19dd8d9244b03f11fa38da14558cd1a4b78b7a0fccd3129985fca6beecafaeee"
     }
   },
   {
@@ -498,7 +515,7 @@
       "cs": "ACTIVA",
       "en": "ACTIVA"
     },
-    "version": "0.5.27",
+    "version": "0.5.30",
     "status": {
       "cs": "Připraveno k řízenému pilotu",
       "en": "Ready for controlled pilot"
@@ -526,8 +543,8 @@
         "en": "Phone-free projection"
       },
       {
-        "cs": "Připraveno na server",
-        "en": "Server-ready"
+        "cs": "Serverový profil připraven",
+        "en": "Server profile prepared"
       }
     ],
     "capabilities": [
@@ -567,10 +584,8 @@
       "standalone-interactive-html",
       "local-session-analytics",
       "complete-in-app-manual",
-      "internal-self-tests",
       "ghrab-qa-1.0.2",
       "storage-provider-adapter",
-      "backend-ready",
       "activity-generation",
       "print",
       "projection",
@@ -579,19 +594,16 @@
       "ghrab-platform-v1",
       "canonical-branding",
       "storage-namespace-v1",
-      "artifact-envelope-v1",
-      "accessibility-v1",
-      "performance-budget-v1",
-      "lazy-modules-v1"
+      "artifact-envelope-v1"
     ],
     "compatibility": {
       "studioMinVersion": "0.18.5",
       "materialSchema": "ghrab-material-v1",
       "studioBridge": "2.0",
       "platformContract": "ghrab-platform-v1",
-      "platformRange": ">=1.1.0 <2.0.0"
+      "platformRange": ">=1.1.2 <2.0.0"
     },
-    "publishedAt": "2026-08-04T16:40:00.000Z",
+    "publishedAt": "2026-09-27T17:53:32+02:00",
     "aiCore": {
       "schema": "ghrab-ai-app-integration-v1",
       "status": "integrated-p1",
@@ -610,23 +622,47 @@
     "paths": {
       "app": "https://daniel22-dev.github.io/ACTIVA/",
       "manual": "https://daniel22-dev.github.io/ACTIVA/manual/",
-      "manifest": ""
+      "manifest": "https://daniel22-dev.github.io/ACTIVA/studio-manifest.json"
     },
     "platform": {
       "schema": "ghrab-platform-app-integration-v1",
       "contract": "ghrab-platform-v1",
-      "requiredPlatformRange": ">=1.1.0 <2.0.0",
-      "platformVersion": "1.1.0",
+      "requiredPlatformRange": ">=1.1.2 <2.0.0",
+      "platformVersion": "1.1.2",
       "brandVersion": "1.0.0",
       "themeContract": "ghrab-theme-v1",
       "swContract": 1,
-      "studioBridge": "ghrab-studio-handoff-v2",
-      "artifactEnvelope": "ghrab-artifact-envelope-v1",
+      "studioBridge": 2,
+      "artifactEnvelope": 1,
       "storagePrefix": "ghrab.activity-builder.",
-      "cacheName": "ghrab-activity-builder-v0.5.27",
+      "cacheName": "ghrab-activity-builder-v0.5.30",
+      "requiredRange": ">=1.1.2 <2.0.0",
+      "storageContract": "ghrab-storage-namespace-v1",
+      "bridgeContract": "ghrab-studio-handoff-v2",
+      "artifactContract": "ghrab-artifact-envelope-v1",
       "accessibilityContract": "ghrab-a11y-v1",
       "performanceContract": "ghrab-performance-v1",
       "moduleContract": "ghrab-lazy-modules-v1"
+    },
+    "deploymentProfile": "github-pages",
+    "releaseIdentity": {
+      "schema": "ghrab-app-release-identity-v1",
+      "contract": "ghrab-release-integrity-v2",
+      "url": "./release-integrity.json",
+      "assuranceMode": "TRANSITIONAL",
+      "appId": "activity-builder",
+      "version": "0.5.30",
+      "source": {
+        "repository": "Daniel22-dev/ACTIVA",
+        "commit": "6a880d52187db8c40af2c1c1bab9e1833df0bb4b"
+      },
+      "buildId": "github-36331291460-1",
+      "evidence": {
+        "releaseIntegrity": "release-integrity.json",
+        "provenance": "build-provenance.json",
+        "sbom": "sbom.cdx.json",
+        "securityEvidenceManifest": "security-evidence-manifest.json"
+      }
     }
   },
   {
@@ -636,7 +672,7 @@
       "cs": "SORTIO – Výukový panel",
       "en": "SORTIO – Teaching Panel"
     },
-    "version": "1.1.17",
+    "version": "1.1.23",
     "status": {
       "cs": "Připraveno k řízenému pilotu",
       "en": "Ready for controlled pilot"
@@ -727,15 +763,28 @@
       "canonical-branding",
       "storage-namespace-v1",
       "artifact-envelope-v1",
-      "accessibility-v1",
-      "performance-budget-v1",
-      "lazy-modules-v1"
+      "suite-session-lifecycle-v1",
+      "lesson-widget-board",
+      "class-bound-lesson-board",
+      "visual-timer",
+      "classroom-clock",
+      "traffic-light",
+      "drawing-board",
+      "advanced-dice",
+      "class-scoreboard",
+      "wikimedia-commons-image-library",
+      "lesson-agenda",
+      "work-mode-symbols",
+      "anonymous-live-poll-ready",
+      "qr-link-ready"
     ],
     "privacy": {
       "storage": "local-only",
       "storesEmailAddresses": false,
       "externalStudentDataTransfer": false,
-      "diagnosticsContainStudentNames": false
+      "diagnosticsContainStudentNames": false,
+      "mediaLibrary": "Wikimedia Commons; only search queries and selected public image requests are external",
+      "livePoll": "anonymous, short-lived server state only when school server is connected"
     },
     "compatibility": {
       "studioMinVersion": "0.18.5",
@@ -743,9 +792,9 @@
       "studioBridge": "not-applicable",
       "dataSchema": "sortio-data-v5",
       "platformContract": "ghrab-platform-v1",
-      "platformRange": ">=1.1.0 <2.0.0"
+      "platformRange": ">=1.1.2 <2.0.0"
     },
-    "publishedAt": "2026-08-04T16:40:00.000Z",
+    "publishedAt": "2026-10-01T10:40:43.292Z",
     "aiCore": {
       "schema": "ghrab-ai-app-integration-v1",
       "status": "not-applicable",
@@ -755,23 +804,46 @@
     "paths": {
       "app": "https://daniel22-dev.github.io/SORTIO/",
       "manual": "https://daniel22-dev.github.io/SORTIO/manual/",
-      "manifest": ""
+      "manifest": "https://daniel22-dev.github.io/SORTIO/studio-manifest.json"
     },
     "platform": {
       "schema": "ghrab-platform-app-integration-v1",
       "contract": "ghrab-platform-v1",
-      "requiredPlatformRange": ">=1.1.0 <2.0.0",
-      "platformVersion": "1.1.0",
+      "requiredPlatformRange": ">=1.1.2 <2.0.0",
+      "platformVersion": "1.1.2",
       "brandVersion": "1.0.0",
-      "themeContract": "ghrab-theme-v1",
+      "themeContract": 1,
       "swContract": 1,
-      "studioBridge": "ghrab-studio-handoff-v2",
-      "artifactEnvelope": "ghrab-artifact-envelope-v1",
+      "studioBridge": "not-applicable",
+      "artifactEnvelope": 1,
       "storagePrefix": "ghrab.sortio.",
-      "cacheName": "ghrab-sortio-v1.1.17",
+      "cacheName": "ghrab-sortio-v1.1.23",
+      "requiredRange": ">=1.1.2 <2.0.0",
+      "storageContract": "ghrab-storage-namespace-v1",
+      "bridgeContract": "ghrab-studio-handoff-v2",
+      "artifactContract": "ghrab-artifact-envelope-v1",
       "accessibilityContract": "ghrab-a11y-v1",
       "performanceContract": "ghrab-performance-v1",
       "moduleContract": "ghrab-lazy-modules-v1"
+    },
+    "releaseIdentity": {
+      "schema": "ghrab-app-release-identity-v1",
+      "contract": "ghrab-release-integrity-v2",
+      "url": "./release-integrity.json",
+      "assuranceMode": "TRANSITIONAL",
+      "appId": "sortio",
+      "version": "1.1.23",
+      "source": {
+        "repository": "Daniel22-dev/SORTIO",
+        "commit": "3d5425143d87c6e7aadeb81ebc865b5c8863b723"
+      },
+      "buildId": "github-36850444894-1",
+      "evidence": {
+        "releaseIntegrity": "release-integrity.json",
+        "provenance": "build-provenance.json",
+        "sbom": "sbom.cdx.json",
+        "securityEvidenceManifest": "security-evidence-manifest.json"
+      }
     }
   },
   {
@@ -781,7 +853,7 @@
       "cs": "Lesson Hub",
       "en": "Lesson Hub"
     },
-    "version": "1.2.22",
+    "version": "1.2.26",
     "status": {
       "cs": "Připraveno k řízenému pilotu",
       "en": "Ready for controlled pilot"
@@ -843,7 +915,6 @@
       "server-attachments",
       "smtp-adapter",
       "operations-snapshots",
-      "internal-self-tests",
       "ghrab-qa-1.0.2",
       "teacher-memory",
       "server-sync",
@@ -852,9 +923,7 @@
       "canonical-branding",
       "storage-namespace-v1",
       "artifact-envelope-v1",
-      "accessibility-v1",
-      "performance-budget-v1",
-      "lazy-modules-v1"
+      "suite-session-v1"
     ],
     "compatibility": {
       "studioMinVersion": "0.19.0",
@@ -862,9 +931,9 @@
       "studioBridge": "2.0",
       "accessGuard": "signed-serverless-permit",
       "platformContract": "ghrab-platform-v1",
-      "platformRange": ">=1.1.0 <2.0.0"
+      "platformRange": ">=1.1.2 <2.0.0"
     },
-    "publishedAt": "2026-08-04T16:40:00.000Z",
+    "publishedAt": "2026-09-27T06:07:42.000Z",
     "aiCore": {
       "schema": "ghrab-ai-app-integration-v1",
       "status": "not-applicable",
@@ -874,23 +943,48 @@
     "paths": {
       "app": "https://daniel22-dev.github.io/lesson-hub/",
       "manual": "https://daniel22-dev.github.io/lesson-hub/manual/",
-      "manifest": ""
+      "manifest": "https://daniel22-dev.github.io/lesson-hub/studio-manifest.json"
     },
     "platform": {
       "schema": "ghrab-platform-app-integration-v1",
       "contract": "ghrab-platform-v1",
-      "requiredPlatformRange": ">=1.1.0 <2.0.0",
-      "platformVersion": "1.1.0",
+      "requiredPlatformRange": ">=1.1.2 <2.0.0",
+      "platformVersion": "1.1.2",
       "brandVersion": "1.0.0",
       "themeContract": "ghrab-theme-v1",
       "swContract": 1,
-      "studioBridge": "ghrab-studio-handoff-v2",
-      "artifactEnvelope": "ghrab-artifact-envelope-v1",
+      "studioBridge": 2,
+      "artifactEnvelope": 1,
       "storagePrefix": "ghrab.lesson-hub.",
-      "cacheName": "ghrab-lesson-hub-v1.2.22",
+      "cacheName": "ghrab-lesson-hub-v1.2.26",
+      "suiteSessionContract": "ghrab-suite-session-v1",
+      "requiredRange": ">=1.1.2 <2.0.0",
+      "storageContract": "ghrab-storage-namespace-v1",
+      "bridgeContract": "ghrab-studio-handoff-v2",
+      "artifactContract": "ghrab-artifact-envelope-v1",
       "accessibilityContract": "ghrab-a11y-v1",
       "performanceContract": "ghrab-performance-v1",
       "moduleContract": "ghrab-lazy-modules-v1"
+    },
+    "deploymentProfile": "github-pages",
+    "releaseIdentity": {
+      "schema": "ghrab-app-release-identity-v1",
+      "contract": "ghrab-release-integrity-v2",
+      "url": "./release-integrity.json",
+      "assuranceMode": "TRANSITIONAL",
+      "appId": "lesson-hub",
+      "version": "1.2.26",
+      "source": {
+        "repository": "Daniel22-dev/lesson-hub",
+        "commit": "7037acb7d304826e17cdc63baf3edefd251f1cde"
+      },
+      "buildId": "github-36299256600-1",
+      "evidence": {
+        "releaseIntegrity": "release-integrity.json",
+        "provenance": "build-provenance.json",
+        "sbom": "sbom.cdx.json",
+        "securityEvidenceManifest": "security-evidence-manifest.json"
+      }
     }
   },
   {
@@ -900,7 +994,7 @@
       "cs": "Maturita Desk",
       "en": "Maturita Desk"
     },
-    "version": "1.0.3",
+    "version": "1.0.6",
     "status": {
       "cs": "Řízený pilot · demo obsah",
       "en": "Controlled pilot · demo content"
@@ -936,14 +1030,16 @@
       "ghrab-platform-v1",
       "artifact-envelope-v1",
       "accessibility-v1",
-      "performance-budget-v1"
+      "performance-budget-v1",
+      "suite-session-lifecycle-v1"
     ],
     "compatibility": {
       "studioMinVersion": "0.21.35",
       "studioBridge": "2.0",
       "platformContract": "ghrab-platform-v1",
-      "platformRange": ">=1.1.0 <2.0.0"
+      "platformRange": ">=1.1.2 <2.0.0"
     },
+    "publishedAt": "2026-09-27T06:43:48.000Z",
     "integration": {
       "launchMode": "external-protected",
       "securityBoundary": "public-demo-only",
@@ -953,20 +1049,42 @@
       "contentMode": "synthetic-demo-only",
       "confidentialExamAllowed": false
     },
+    "slug": "maturita-desk",
+    "paths": {
+      "app": "https://daniel22-dev.github.io/maturita-desk/",
+      "manual": "https://daniel22-dev.github.io/maturita-desk/",
+      "manifest": "https://daniel22-dev.github.io/maturita-desk/studio-manifest.json"
+    },
     "platform": {
       "schema": "ghrab-platform-app-integration-v1",
       "contract": "ghrab-platform-v1",
-      "requiredPlatformRange": ">=1.1.0 <2.0.0",
-      "platformVersion": "1.1.0",
+      "requiredPlatformRange": ">=1.1.2 <2.0.0",
+      "platformVersion": "1.1.2",
       "brandVersion": "1.0.0",
       "themeContract": "ghrab-theme-v1",
       "swContract": 1,
       "studioBridge": "ghrab-studio-handoff-v2",
       "artifactEnvelope": "ghrab-artifact-envelope-v1",
       "storagePrefix": "ghrab.maturita-desk.",
-      "cacheName": "ghrab-maturita-desk-v1.0.3",
+      "cacheName": "ghrab-maturita-desk-v1.0.6",
       "accessibilityContract": "ghrab-a11y-v1",
       "performanceContract": "ghrab-performance-v1"
+    },
+    "suiteSession": {
+      "contract": "ghrab-suite-session-v1",
+      "cleanup": "data-manifest-clearOnEndWork-only",
+      "acknowledgement": "platform-seen-after-successful-cleanup"
+    },
+    "releaseIdentity": {
+      "contract": "ghrab-release-integrity-v2",
+      "url": "./release-integrity.json",
+      "appId": "maturita-desk",
+      "version": "1.0.6",
+      "source": {
+        "repository": "Daniel22-dev/maturita-desk",
+        "commit": "9765149fc3165e44e7e06626c266981d69a8bb25"
+      },
+      "buildId": "deploy-36300992561-1"
     }
   }
 ]
