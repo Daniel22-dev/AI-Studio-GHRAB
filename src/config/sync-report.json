@@ -1,7 +1,7 @@
 {
   "schema": "ai-studio-sync-report-v1",
   "generated": true,
-  "generatedAt": "2026-10-05T22:02:19.145Z",
+  "generatedAt": "2026-10-06T05:41:09.356Z",
   "mode": "live",
   "verificationMode": "deployment",
   "counts": {
@@ -11,8 +11,8 @@
     "snapshot": 0,
     "total": 9
   },
-  "lastFullSourceVerifiedAt": "2026-10-05T22:02:19.145Z",
-  "lastFullLiveVerifiedAt": "2026-10-05T22:02:19.145Z",
+  "lastFullSourceVerifiedAt": "2026-10-06T05:41:09.356Z",
+  "lastFullLiveVerifiedAt": "2026-10-06T05:41:09.356Z",
   "fallbackSnapshotConfirmed": false,
   "sources": [
     {
@@ -21,24 +21,24 @@
       "repository": "daniel22-dev/generator-testu",
       "ok": true,
       "verification": "deployment",
-      "version": "7.1.94",
-      "sourceVersion": "7.1.94",
+      "version": "7.1.95",
+      "sourceVersion": "7.1.95",
       "aiOperations": 12,
       "operationsWarning": null,
-      "lastSourceVerifiedAt": "2026-10-05T22:02:19.145Z",
-      "lastLiveVerifiedAt": "2026-10-05T22:02:19.145Z",
+      "lastSourceVerifiedAt": "2026-10-06T05:41:09.356Z",
+      "lastLiveVerifiedAt": "2026-10-06T05:41:09.356Z",
       "releaseIdentity": {
         "status": "VERIFIED",
         "contract": "ghrab-release-integrity-v2",
         "assuranceMode": "TRANSITIONAL",
         "appId": "generator",
-        "version": "7.1.94",
-        "sourceCommit": "2745197500be7dfa2e582ae555b41b543f6d1854",
-        "artifactDigest": "dafa57c034dfa6cfd2aa4ad42d2a98929fe9a396407435227ff2488a92470e0c",
-        "manifestSha256": "0b365109b7fa15714b2eef4a61d8c9b5bb099725d37149f8fce61adf6a602247",
-        "sbomSha256": "e8355c3f9ab9d49e0a8a8bf15e718d3a48f393d102019d34806bb6fdebaedaf8",
-        "buildProvenanceSha256": "cc80048a872e8a2b4eb48fa95b85d9a4a36f9facffe66e2a2ad7e210b49a5f6e",
-        "evidenceManifestSha256": "7fb9e35125bb4b0a0cc8dfb3ec5ee43b01e5cf7ed156fab8b1f91aedc9e8e32f",
+        "version": "7.1.95",
+        "sourceCommit": "96634352da165baf941515edd7c8d1708f1babf8",
+        "artifactDigest": "3938e7d9cf3f849d3c4fc0532442227ded899dee446b1c89ed4ddfd4c794a96d",
+        "manifestSha256": "407ca584e14abddffd2e9a56cf7415c2e95bc69f44017c651b495e535d7b8a70",
+        "sbomSha256": "1898c906e66619030d6eae8865c7aa5a791ba86dce268bad4484faf13a96d3e3",
+        "buildProvenanceSha256": "81ef812a5e9767c6e756280005c76de952ea52068f077e20f62c418f2218ddbc",
+        "evidenceManifestSha256": "36eea86a6bfb65c98a6ffc0025b4bd75afbef51b96014df0f120de7aa7e20035",
         "signatureStatus": "UNSIGNED_TRANSITIONAL",
         "releaseIdentityUrl": "https://daniel22-dev.github.io/generator-testu/release-integrity.json",
         "verifiedFileCount": 52
@@ -54,8 +54,8 @@
       "sourceVersion": "1.3.50",
       "aiOperations": 7,
       "operationsWarning": null,
-      "lastSourceVerifiedAt": "2026-10-05T22:02:19.145Z",
-      "lastLiveVerifiedAt": "2026-10-05T22:02:19.145Z",
+      "lastSourceVerifiedAt": "2026-10-06T05:41:09.356Z",
+      "lastLiveVerifiedAt": "2026-10-06T05:41:09.356Z",
       "releaseIdentity": {
         "status": "VERIFIED",
         "contract": "ghrab-release-integrity-v2",
@@ -83,8 +83,8 @@
       "sourceVersion": "1.5.30",
       "aiOperations": 4,
       "operationsWarning": null,
-      "lastSourceVerifiedAt": "2026-10-05T22:02:19.145Z",
-      "lastLiveVerifiedAt": "2026-10-05T22:02:19.145Z",
+      "lastSourceVerifiedAt": "2026-10-06T05:41:09.356Z",
+      "lastLiveVerifiedAt": "2026-10-06T05:41:09.356Z",
       "releaseIdentity": {
         "status": "VERIFIED",
         "contract": "ghrab-release-integrity-v2",
@@ -112,8 +112,8 @@
       "sourceVersion": "5.10.34",
       "aiOperations": 8,
       "operationsWarning": null,
-      "lastSourceVerifiedAt": "2026-10-05T22:02:19.145Z",
-      "lastLiveVerifiedAt": "2026-10-05T22:02:19.145Z",
+      "lastSourceVerifiedAt": "2026-10-06T05:41:09.356Z",
+      "lastLiveVerifiedAt": "2026-10-06T05:41:09.356Z",
       "releaseIdentity": {
         "status": "VERIFIED",
         "contract": "ghrab-release-integrity-v2",
@@ -141,8 +141,8 @@
       "sourceVersion": "1.16.31",
       "aiOperations": 2,
       "operationsWarning": null,
-      "lastSourceVerifiedAt": "2026-10-05T22:02:19.145Z",
-      "lastLiveVerifiedAt": "2026-10-05T22:02:19.145Z",
+      "lastSourceVerifiedAt": "2026-10-06T05:41:09.356Z",
+      "lastLiveVerifiedAt": "2026-10-06T05:41:09.356Z",
       "releaseIdentity": {
         "status": "VERIFIED",
         "contract": "ghrab-patch-assurance-v1",
@@ -169,8 +169,8 @@
       "sourceVersion": "0.5.30",
       "aiOperations": 1,
       "operationsWarning": null,
-      "lastSourceVerifiedAt": "2026-10-05T22:02:19.145Z",
-      "lastLiveVerifiedAt": "2026-10-05T22:02:19.145Z",
+      "lastSourceVerifiedAt": "2026-10-06T05:41:09.356Z",
+      "lastLiveVerifiedAt": "2026-10-06T05:41:09.356Z",
       "releaseIdentity": {
         "status": "VERIFIED",
         "contract": "ghrab-release-integrity-v2",
@@ -198,8 +198,8 @@
       "sourceVersion": "1.1.23",
       "aiOperations": null,
       "operationsWarning": null,
-      "lastSourceVerifiedAt": "2026-10-05T22:02:19.145Z",
-      "lastLiveVerifiedAt": "2026-10-05T22:02:19.145Z",
+      "lastSourceVerifiedAt": "2026-10-06T05:41:09.356Z",
+      "lastLiveVerifiedAt": "2026-10-06T05:41:09.356Z",
       "releaseIdentity": {
         "status": "VERIFIED",
         "contract": "ghrab-release-integrity-v2",
@@ -227,8 +227,8 @@
       "sourceVersion": "1.2.26",
       "aiOperations": null,
       "operationsWarning": null,
-      "lastSourceVerifiedAt": "2026-10-05T22:02:19.145Z",
-      "lastLiveVerifiedAt": "2026-10-05T22:02:19.145Z",
+      "lastSourceVerifiedAt": "2026-10-06T05:41:09.356Z",
+      "lastLiveVerifiedAt": "2026-10-06T05:41:09.356Z",
       "releaseIdentity": {
         "status": "VERIFIED",
         "contract": "ghrab-release-integrity-v2",
@@ -256,8 +256,8 @@
       "sourceVersion": "1.0.6",
       "aiOperations": null,
       "operationsWarning": null,
-      "lastSourceVerifiedAt": "2026-10-05T22:02:19.145Z",
-      "lastLiveVerifiedAt": "2026-10-05T22:02:19.145Z",
+      "lastSourceVerifiedAt": "2026-10-06T05:41:09.356Z",
+      "lastLiveVerifiedAt": "2026-10-06T05:41:09.356Z",
       "releaseIdentity": {
         "status": "VERIFIED",
         "contract": "ghrab-release-integrity-v2",
@@ -280,6 +280,6 @@
     "verified": 9,
     "absent": 0,
     "failed": 0,
-    "checkedAt": "2026-10-05T22:03:09.244Z"
+    "checkedAt": "2026-10-06T05:41:39.395Z"
   }
 }

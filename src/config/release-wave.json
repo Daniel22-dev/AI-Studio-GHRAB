@@ -7,7 +7,7 @@
   "applications": [
     {
       "id": "generator",
-      "version": "7.1.94"
+      "version": "7.1.95"
     },
     {
       "id": "differentiator",
