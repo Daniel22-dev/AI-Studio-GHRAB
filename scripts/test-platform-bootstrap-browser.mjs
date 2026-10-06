@@ -25,6 +25,7 @@ setTimeout(()=>{
       return nodes.length;
     }
   };
+  window.__PLATFORM_READY_AT__=performance.now();
   document.dispatchEvent(new CustomEvent('ghrab:platform-ready'));
 },250);
 </script></head><body>
@@ -34,10 +35,13 @@ const started=performance.now();
 try{
   const {protectApp}=await import('/AI-Studio-GHRAB/access/app-guard.js');
   const allowed=await protectApp('correspondence',{errorReporter:false,telemetry:false,platformRuntime:true,platformReadyTimeoutMs:2000});
+  const guardResolvedAt=performance.now();
   if(!allowed) throw new Error('access denied');
   const unlocked=window.GHRAB_PLATFORM?.unlockProtectedScripts?.();
   if(unlocked!==1||window.__SATELLITE_READY__!==true) throw new Error('protected runtime did not unlock');
   document.body.dataset.elapsed=String(Math.round(performance.now()-started));
+  document.body.dataset.platformReadyAt=String(window.__PLATFORM_READY_AT__||0);
+  document.body.dataset.guardResolvedAt=String(guardResolvedAt);
   document.body.dataset.testResult='pass';
 }catch(error){document.body.dataset.testResult='fail';document.body.dataset.error=String(error?.stack||error)}
 <\/script></body></html>`;
@@ -64,10 +68,12 @@ try{
   page.on('console',(msg)=>{if(msg.type()==='error')errors.push(msg.text())});
   await page.goto(`http://127.0.0.1:${port}/harness.html`,{waitUntil:'load'});
   await page.waitForFunction(()=>document.body.dataset.testResult,{timeout:5000});
-  const result=await page.evaluate(()=>({result:document.body.dataset.testResult,error:document.body.dataset.error||'',elapsed:Number(document.body.dataset.elapsed||0),wait:document.documentElement.dataset.ghrabPlatformUnlockWait||''}));
+  const result=await page.evaluate(()=>({result:document.body.dataset.testResult,error:document.body.dataset.error||'',elapsed:Number(document.body.dataset.elapsed||0),platformReadyAt:Number(document.body.dataset.platformReadyAt||0),guardResolvedAt:Number(document.body.dataset.guardResolvedAt||0),wait:document.documentElement.dataset.ghrabPlatformUnlockWait||''}));
   if(result.result!=='pass') throw new Error(result.error||'browser harness failed');
-  if(result.elapsed<180) throw new Error(`guard did not wait for delayed platform (${result.elapsed} ms)`);
   if(result.wait!=='ready') throw new Error(`unexpected wait state ${result.wait}`);
+  if(!Number.isFinite(result.platformReadyAt)||result.platformReadyAt<=0) throw new Error('platform ready timestamp missing');
+  if(!Number.isFinite(result.guardResolvedAt)||result.guardResolvedAt<=0) throw new Error('guard resolved timestamp missing');
+  if(result.guardResolvedAt<result.platformReadyAt) throw new Error(`guard resolved before platform was ready (guard=${result.guardResolvedAt}, platform=${result.platformReadyAt})`);
   if(errors.length) throw new Error(`browser errors: ${errors.join(' | ')}`);
   console.log(`platform bootstrap browser regression: PASS (${result.elapsed} ms)`);
 } finally {
