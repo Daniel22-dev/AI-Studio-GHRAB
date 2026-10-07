@@ -795,7 +795,7 @@
       "platformContract": "ghrab-platform-v1",
       "platformRange": ">=1.1.2 <2.0.0"
     },
-    "publishedAt": "2026-10-01T10:40:43.292Z",
+    "publishedAt": "2026-10-07T11:35:37.333Z",
     "aiCore": {
       "schema": "ghrab-ai-app-integration-v1",
       "status": "not-applicable",
@@ -836,9 +836,9 @@
       "version": "1.1.23",
       "source": {
         "repository": "Daniel22-dev/SORTIO",
-        "commit": "3d5425143d87c6e7aadeb81ebc865b5c8863b723"
+        "commit": "42bc58b1db619e8612aee0d3143dee0e8d07deca"
       },
-      "buildId": "github-36850444894-1",
+      "buildId": "github-37614936518-1",
       "evidence": {
         "releaseIntegrity": "release-integrity.json",
         "provenance": "build-provenance.json",
