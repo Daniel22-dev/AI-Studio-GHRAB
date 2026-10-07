@@ -1,6 +1,6 @@
-# Přesný postup nahrání AI Studio GHRAB 0.21.186 na GitHub – až po schválení
+# Přesný postup nahrání AI Studio GHRAB 0.21.187 na GitHub – až po schválení
 
-> Aktuální verze: **0.21.186** · etapa P5
+> Aktuální verze: **0.21.187** · etapa P5
 
 > 0.21.82 opravuje falešný ecosystem blocker způsobený novějším repository kandidátem MANUAL aplikace, aniž by jej automaticky přijímala do release-wave.
 
