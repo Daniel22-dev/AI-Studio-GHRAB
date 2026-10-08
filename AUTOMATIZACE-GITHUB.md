@@ -1,6 +1,6 @@
-# Automatizace aktualizací AI Studio GHRAB 0.21.192
+# Automatizace aktualizací AI Studio GHRAB 0.21.193
 
-> Aktuální verze: **0.21.192** · etapa P5
+> Aktuální verze: **0.21.193** · etapa P5
 
 > 0.21.82 brání tomu, aby pouhý novější commit v repository `main` zablokoval Studio nebo se vydával za schválenou verzi. Repository kandidát bez deployment evidence zůstává pouze PENDING a runtime registry zůstává připnutá k release-wave baseline.
 
