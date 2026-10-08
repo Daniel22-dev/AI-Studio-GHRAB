@@ -92,8 +92,35 @@ function renderLocked(access) {
   );
 }
 
+function pdfContractEligible() {
+  if (!currentApp || !currentManualUrl || currentManualUrl.origin !== location.origin) return false;
+  if (!G.hasAppAccess(currentApp.id).enabled) return false;
+  try {
+    const doc = frame.contentDocument;
+    if (!doc || doc.documentElement.dataset.ghrabAccess !== "granted") return false;
+    const manual = frame.contentWindow;
+    if (currentApp.id === "generator")
+      return Array.isArray(manual.GHRAB_MANUAL_EXPORT) && manual.GHRAB_MANUAL_EXPORT.length > 0;
+    const info = manual.GHRAB_MANUAL_DOC_INFO;
+    if (!info || info.appId !== currentApp.id ||
+        info.appVersion !== currentApp.version ||
+        info.reviewStatus !== "verified") return false;
+    const contracts = new Set(["map-tour-v1", "static-complete-sections-v1"]);
+    if (!contracts.has(info.pdfContentContract)) return false;
+    if (info.pdfContentContract === "map-tour-v1" &&
+        (!Array.isArray(manual.GHRAB_MANUAL_EXPORT) || !manual.GHRAB_MANUAL_EXPORT.length)) return false;
+    return true;
+  } catch {
+    return false;
+  }
+}
+function refreshPdfAvailability() {
+  pdfButton.hidden = !pdfContractEligible();
+}
+
 function loadFrame() {
   if (!currentManualUrl) return;
+  pdfButton.hidden = true;
   statePanel.className = "viewer-state";
   statePanel.hidden = false;
   frame.hidden = true;
@@ -170,8 +197,8 @@ async function initialise() {
     externalLink.href = currentManualUrl.href;
     externalLink.hidden = false;
     reloadButton.hidden = false;
-    // Only the GIT manual has certified complete dynamic content. Other app PDF exports remain unavailable until reviewed.
-    pdfButton.hidden = currentManualUrl.origin !== location.origin || currentApp.id !== 'generator';
+    // Do not advertise a PDF until the embedded manual has confirmed access and a complete, reviewed content contract.
+    pdfButton.hidden = true;
     loadFrame();
   } catch {
     showState(
@@ -196,10 +223,11 @@ frame.addEventListener("load", () => {
   clearTimeout(loadTimer);
   statePanel.hidden = true;
   frame.hidden = false;
+  refreshPdfAvailability();
 });
 reloadButton.addEventListener("click", () => loadFrame());
 pdfButton.addEventListener("click", async () => {
-  if (!currentApp || !G.hasAppAccess(currentApp.id).enabled || !currentManualUrl) return;
+  if (!pdfContractEligible()) return;
   pdfButton.disabled = true;
   pdfButton.textContent = G.t("Připravuji PDF…", "Preparing PDF…");
   try {
