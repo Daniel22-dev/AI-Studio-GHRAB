@@ -170,7 +170,8 @@ async function initialise() {
     externalLink.href = currentManualUrl.href;
     externalLink.hidden = false;
     reloadButton.hidden = false;
-    pdfButton.hidden = currentManualUrl.origin !== location.origin || currentApp.id === 'maturita-desk';
+    // Only the GIT manual has certified complete dynamic content. Other app PDF exports remain unavailable until reviewed.
+    pdfButton.hidden = currentManualUrl.origin !== location.origin || currentApp.id !== 'generator';
     loadFrame();
   } catch {
     showState(
