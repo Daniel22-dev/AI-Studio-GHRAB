@@ -54,7 +54,7 @@ function linkButton(text, href, className = "button secondary") {
 function updateHeader() {
   if (!currentApp) return;
   titleNode.textContent = G.localised(currentApp.name);
-  metaNode.textContent = `${G.t("interaktivní manuál · verze", "interactive manual · version")} ${currentApp.version || "—"}`;
+  metaNode.textContent = `${G.t("manuál k aplikaci · verze", "manual for app · version")} ${currentApp.version || "—"}`;
   iconNode.src = `../${currentApp.icon}`;
   iconNode.alt = "";
   document.title = `${G.localised(currentApp.name)} · ${G.t("manuál", "manual")} · AI Studio GHRAB`;
