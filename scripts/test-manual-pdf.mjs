@@ -19,6 +19,11 @@ const webPage = String.raw`<!doctype html><html lang="cs" data-ghrab-access="gra
 </main><button id="pdf">Stáhnout PDF</button>
 <script type="module">
 import { downloadManualPdf } from "/manualy/pdf-export.js";
+for (let i=0; i<90; i++) {
+  const paragraph=document.createElement("p");
+  paragraph.textContent="Krok "+(i+1)+": Pečlivě zkontrolujte zadání, výsledky a odevzdání. Podpora češtiny: ěščřžýáíéúůďťň.";
+  document.querySelector("main").append(paragraph);
+}
 document.querySelector("#pdf").addEventListener("click", async () => {
 try{const result = await downloadManualPdf(document,{
  title:"Příručka učitele – česká diakritika",
@@ -59,6 +64,42 @@ try {
   const pages=(pdf.match(/\/Type \/Page \/Parent/g)||[]).length;
   if(!pages)throw Error("No pages");
   if(errors.length)throw Error(errors.join("\n"));
+
+  // Strict built-in Unicode extraction from the actual PDF ToUnicode objects.
+  // CI is therefore meaningful even when poppler-utils is unavailable.
+  const objects=new Map([...pdf.matchAll(/(\d+) 0 obj\n([\s\S]*?)\nendobj/g)].map(m=>[Number(m[1]),m[2]]));
+  const fontResources=new Map([...pdf.matchAll(/\/F(\d+) (\d+) 0 R/g)].map(m=>[m[1],Number(m[2])]));
+  const fontMaps=new Map();
+  for(const [fontId,objectId] of fontResources){
+    const fontObj=objects.get(objectId)||"";
+    const ref=fontObj.match(/\/ToUnicode (\d+) 0 R/);
+    if(!ref)continue;
+    const cmap=objects.get(Number(ref[1]))||"";
+    const map=new Map();
+    for(const entry of cmap.matchAll(/<([0-9A-F]{2})> <([0-9A-F]{4,8})>/gi)){
+      const u=entry[2].match(/.{4}/g)||[];
+      map.set(entry[1].toUpperCase(),String.fromCharCode(...u.map(k=>parseInt(k,16))));
+    }
+    fontMaps.set(fontId,map);
+  }
+  if(!fontMaps.size)throw Error("No registered Unicode maps");
+  const glyphRuns=[...pdf.matchAll(/BT \/F(\d+) [\d.]+ Tf 1 0 0 1 [\d.]+ [\d.]+ Tm <([0-9A-F]+)> Tj ET/g)];
+  if(glyphRuns.length<100)throw Error("Missing text runs in PDF");
+  let unicodeText="";
+  for(const run of glyphRuns){
+    const map=fontMaps.get(run[1]);
+    if(!map)throw Error("Font resource is missing Unicode map");
+    const glyphs=run[2].match(/.{2}/g)||[];
+    for(const glyph of glyphs){
+      const value=map.get(glyph.toUpperCase());
+      if(value===undefined)throw Error("Missing ToUnicode entry: "+glyph);
+      unicodeText+=value;
+    }
+  }
+  for(const word of ["Začínáme","diakritika","ěščřžýáíéúůďťň","Google Forms","Výukový průvodce","uzavřených","Krok 90"]){
+    if(!unicodeText.includes(word))throw Error("PDF ToUnicode failed extraction: "+word+" from "+unicodeText.slice(0,300));
+  }
+  if(pages<2)throw Error("Long manual was not paginated");
   let extracted="";let extraction="skipped";
   try {
     extracted=execFileSync("pdftotext",["-layout",file,"-"],{encoding:"utf8",timeout:30000});
