@@ -29,6 +29,7 @@ function htmlToBlocks(doc, extras = []) {
   const blocks = [];
   const ignore = "nav,footer,script,style,.search-overlay,.mobile-nav,.top-actions,.toc,[hidden],[aria-hidden='true']";
   for (const element of root.querySelectorAll(selector)) {
+    if (element.closest('body[data-ghrab-access="denied"],body[data-ghrab-access="checking"]')) continue;
     if (element.closest(ignore) || element.closest("button")) continue;
     if (element.matches("p,li,dd") && element.closest(".acc .ans,.notice,.mini-step,.stat,.flow-warning,.flow-danger")) continue;
     const text = (element.textContent || "").replace(/\s+/g, " ").trim();
@@ -215,7 +216,8 @@ function createPdf(doc, blocks, title) {
   const set = new Set();
   for (const block of blocks) for (const ch of block.text) set.add(ch);
   for (const ch of title) set.add(ch);
-  set.add("•"); set.add("?"); set.add(" ");
+  for (const char of "AI Studio GHRAB • Strana 0123456789…") set.add(char);
+  set.add("?"); set.add(" ");
   const chars = Array.from(set);
   const fontSpecs = [];
   for (const bold of [false, true]) {
@@ -292,6 +294,7 @@ export async function downloadManualPdf(doc, options = {}) {
   const fileName = String(options.filename || "AI-Studio-manual.pdf").replace(/[^a-zA-Z0-9_.-]/g, "_");
   const blocks = htmlToBlocks(doc, options.extras);
   if (blocks.length < 5) throw new Error("Chybí obsah potřebný k vytvoření PDF.");
+  if (doc.documentElement?.dataset?.ghrabAccess === "denied" || doc.documentElement?.dataset?.ghrabAccess === "checking") throw new Error("Přístup k manuálu nebyl ověřen.");
   const data = createPdf(doc, blocks, title);
   if (data.length > 35 * 1024 * 1024) throw new Error("PDF překročilo bezpečný limit velikosti.");
   const blob = new Blob([data], { type: "application/pdf" });
