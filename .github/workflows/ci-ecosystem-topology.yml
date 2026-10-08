@@ -1,0 +1,42 @@
+name: Ecosystem CI topology audit (P3)
+
+on:
+  pull_request:
+    branches: [candidate]
+  workflow_dispatch:
+  schedule:
+    - cron: '23 4 * * 1'
+
+permissions:
+  contents: read
+
+concurrency:
+  group: ci-topology-p3-${{ github.event_name }}-${{ github.ref }}
+  cancel-in-progress: ${{ github.event_name == 'pull_request' }}
+
+jobs:
+  ecosystem-ci-topology:
+    # Advisory only: never replaces any required independent P5/axe/test check.
+    runs-on: ubuntu-24.04
+    timeout-minutes: 8
+    steps:
+      - uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683 # v4.2.2
+        with:
+          persist-credentials: false
+      - uses: actions/setup-node@49933ea5288caeca8642d1e84afbd3f7d6820020 # v4.4.0
+        with:
+          node-version: 22.22.2
+      - name: Verify read-only policy and negative cases
+        run: node --test scripts/ci-p3-topology.test.mjs
+      - name: Audit nine release-wave apps and AI Studio
+        env:
+          GITHUB_TOKEN: ${{ github.token }}
+        run: node scripts/ci-p3-topology.mjs
+      - name: Retain machine-readable and human-readable evidence
+        if: always()
+        uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02 # v4.6.2
+        with:
+          name: ci-ecosystem-topology-${{ github.sha }}
+          path: qa-results/ci-p3/
+          if-no-files-found: warn
+          retention-days: 30

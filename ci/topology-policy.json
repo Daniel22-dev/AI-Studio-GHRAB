@@ -1,0 +1,113 @@
+{
+  "schema": "ghrab-ecosystem-ci-topology-v1",
+  "owner": "Daniel22-dev",
+  "waveFile": "src/config/release-wave.json",
+  "source": "GitHub repository main branch and active branch rulesets; legacy protection requires branch metadata evidence",
+  "notes": "Baseline required contexts are immutable minimums, not a request to remove extra checks. Do not change P5 or deployment using this read-only policy.",
+  "apps": [
+    {
+      "id": "generator",
+      "repository": "generator-testu",
+      "requiredContexts": [
+        "p5-release-gate",
+        "candidate-gate",
+        "pr-certification",
+        "journey-e2e",
+        "release-admission"
+      ],
+      "promotionVariant": "generator-dispatch",
+      "legacyProtectionAllowed": false
+    },
+    {
+      "id": "differentiator",
+      "repository": "diferenciator",
+      "requiredContexts": [
+        "p5-release-gate"
+      ],
+      "promotionVariant": "workflow-run",
+      "legacyProtectionAllowed": false
+    },
+    {
+      "id": "essay-evaluator",
+      "repository": "Hodnotitel-maturitnich-slohu",
+      "requiredContexts": [
+        "p5-release-gate"
+      ],
+      "promotionVariant": "main-push",
+      "legacyProtectionAllowed": true
+    },
+    {
+      "id": "correspondence",
+      "repository": "korespondencni-asistent",
+      "requiredContexts": [
+        "build-test",
+        "p5-release-gate",
+        "axe"
+      ],
+      "promotionVariant": "workflow-run",
+      "legacyProtectionAllowed": false
+    },
+    {
+      "id": "ludus",
+      "repository": "Ludus",
+      "requiredContexts": [
+        "test",
+        "p5-release-gate",
+        "axe"
+      ],
+      "promotionVariant": "main-push-parallel-qa",
+      "legacyProtectionAllowed": false
+    },
+    {
+      "id": "activity-builder",
+      "repository": "ACTIVA",
+      "requiredContexts": [
+        "candidate-to-main",
+        "p5-release-gate",
+        "axe"
+      ],
+      "promotionVariant": "workflow-run",
+      "legacyProtectionAllowed": false
+    },
+    {
+      "id": "sortio",
+      "repository": "SORTIO",
+      "requiredContexts": [
+        "candidate-to-main",
+        "p5-release-gate",
+        "axe"
+      ],
+      "promotionVariant": "workflow-run",
+      "legacyProtectionAllowed": false
+    },
+    {
+      "id": "lesson-hub",
+      "repository": "lesson-hub",
+      "requiredContexts": [
+        "candidate-to-main",
+        "p5-release-gate",
+        "axe"
+      ],
+      "promotionVariant": "workflow-run",
+      "legacyProtectionAllowed": false
+    },
+    {
+      "id": "maturita-desk",
+      "repository": "maturita-desk",
+      "requiredContexts": [
+        "candidate-to-main",
+        "p5-release-gate"
+      ],
+      "promotionVariant": "workflow-run-specialized-p5",
+      "legacyProtectionAllowed": false
+    }
+  ],
+  "studio": {
+    "repository": "AI-Studio-GHRAB",
+    "requiredContexts": [
+      "p5-release-gate"
+    ],
+    "promotionVariant": "studio-safe-promotion",
+    "legacyProtectionAllowed": false
+  }
+}
