@@ -144,7 +144,7 @@ function makeType3Font(writer, doc, chars, bold) {
     "/CIDSystemInfo << /Registry (Adobe) /Ordering (UCS) /Supplement 0 >> def\n" +
     "/CMapName /GHRABToUnicode def\n/CMapType 2 def\n" +
     "1 begincodespacerange\n<00> <FF>\nendcodespacerange\n" +
-    mapping.length + " beginbfchar\n" + mapping.join("\n") + "\nendbfchar\n" +
+    Array.from({ length: Math.ceil(mapping.length / 100) }, (_, i) => { const slice = mapping.slice(i * 100, i * 100 + 100); return slice.length + " beginbfchar\n" + slice.join("\n") + "\nendbfchar\n"; }).join("") +
     "endcmap\nCMapName currentdict /CMap defineresource pop\nend\nend\n";
   const cmapId = writer.add([b("<< /Length " + b(cmap).length + " >>\nstream\n"), b(cmap), b("endstream")]);
   const font = writer.add([b("<< /Type /Font /Subtype /Type3 /Name /GHRAB /FontBBox [-120 -450 2800 1450] " +
@@ -235,6 +235,8 @@ function createPdf(doc, blocks, title) {
   const catalog = writer.add(null), tree = writer.add(null);
   const refPages = layout.pages.map(() => writer.add(null));
   const fontRefs = fontSpecs.map((f, i) => "/F" + i + " " + f.font.ref + " 0 R").join(" ");
+  const measureContext = doc.createElement("canvas").getContext("2d");
+  if (!measureContext) throw new Error("Prohlížeč nemůže připravit sazbu PDF.");
   for (let i = 0; i < layout.pages.length; i++) {
     const p = layout.pages[i], operations = [];
     operations.push("1 1 1 rg 0 0 " + layout.width + " " + layout.height + " re f");
@@ -247,21 +249,15 @@ function createPdf(doc, blocks, title) {
       for (const char of txt) {
         const code = choose(char, bold);
         const last = runs[runs.length - 1];
-        if (last && last.key === code.key) last.codes.push(code.code);
-        else runs.push({ key: code.key, codes: [code.code] });
+        if (last && last.key === code.key) { last.codes.push(code.code); last.text += char; }
+        else runs.push({ key: code.key, codes: [code.code], text: char });
       }
       let position = x;
       for (const run of runs) {
         const sequence = run.codes.map((v) => hex(v)).join("");
         operations.push("BT /" + run.key + " " + fontSize + " Tf 1 0 0 1 " + position.toFixed(2) + " " + y.toFixed(2) + " Tm <" + sequence + "> Tj ET");
-        const context = doc.createElement("canvas").getContext("2d");
-        context.font = (bold ? "bold " : "") + "100px Arial, sans-serif";
-        const advance = run.codes.reduce((sum, c) => {
-          const font = fontSpecs.find((v, idx) => "F" + idx === run.key).font;
-          const ch = Array.from(font.mapped).find((pair) => pair[1] === c)?.[0] || " ";
-          return sum + context.measureText(ch).width * fontSize / 100;
-        }, 0);
-        position += advance;
+        measureContext.font = (bold ? "bold " : "") + "100px Arial, sans-serif";
+        position += measureContext.measureText(run.text).width * fontSize / 100;
       }
     }
     draw(title.length > 69 ? title.slice(0, 66) + "…" : title, 45, 811, { size: 10, bold: true });
@@ -286,7 +282,7 @@ function createPdf(doc, blocks, title) {
   }
   writer.set(tree, [b("<< /Type /Pages /Count " + refPages.length + " /Kids [" + refPages.map(v => v + " 0 R").join(" ") + "] >>")]);
   writer.set(catalog, [b("<< /Type /Catalog /Pages " + tree + " 0 R >>")]);
-  return writer.finish(catalog);
+  return { data: writer.finish(catalog), pages: layout.pages.length };
 }
 export async function downloadManualPdf(doc, options = {}) {
   if (!doc || !doc.querySelector) throw new Error("Obsah manuálu není dostupný.");
@@ -295,7 +291,7 @@ export async function downloadManualPdf(doc, options = {}) {
   const blocks = htmlToBlocks(doc, options.extras);
   if (blocks.length < 5) throw new Error("Chybí obsah potřebný k vytvoření PDF.");
   if (doc.documentElement?.dataset?.ghrabAccess === "denied" || doc.documentElement?.dataset?.ghrabAccess === "checking") throw new Error("Přístup k manuálu nebyl ověřen.");
-  const data = createPdf(doc, blocks, title);
+  const { data, pages } = createPdf(doc, blocks, title);
   if (data.length > 35 * 1024 * 1024) throw new Error("PDF překročilo bezpečný limit velikosti.");
   const blob = new Blob([data], { type: "application/pdf" });
   const url = URL.createObjectURL(blob), link = doc.createElement("a");
@@ -306,5 +302,5 @@ export async function downloadManualPdf(doc, options = {}) {
   link.click();
   link.remove();
   setTimeout(() => URL.revokeObjectURL(url), 30000);
-  return { pages: (blocks.length > 0 ? "multiple" : 0), bytes: data.length, fileName };
+  return { pages, bytes: data.length, fileName };
 }
