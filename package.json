@@ -1,6 +1,6 @@
 {
   "name": "ai-studio-ghrab",
-  "version": "0.21.194",
+  "version": "0.21.197",
   "private": true,
   "description": "Profesionální federované PWA devíti chráněných školních aplikací včetně Lesson Hubu, manuálů, řízeného přístupu a jednotné GHRAB QA brány",
   "type": "module",
@@ -34,7 +34,7 @@
     "qa:quality": "node scripts/qa-p3-quality.mjs",
     "qa:p3": "npm run verify:platform && npm run qa:quality && npm run qa:browser && npm run qa:reflow && npm run qa:axe",
     "test:p3": "npm run build && npm run qa:p3",
-    "qa:browser": "node scripts/qa-p3-browser.mjs && node scripts/test-offline-start-browser.mjs && node scripts/test-platform-bootstrap-browser.mjs && node scripts/test-shared-device-back-browser.mjs",
+    "qa:browser": "node scripts/qa-p3-browser.mjs && node scripts/test-offline-start-browser.mjs && node scripts/test-platform-bootstrap-browser.mjs && node scripts/test-shared-device-back-browser.mjs && npm run test:manual-pdf",
     "qa:axe": "node scripts/qa-p5-axe-runtime.mjs",
     "qa:reflow": "node scripts/qa-p5-runtime.mjs",
     "qa:p3:ci": "npm run verify:platform && npm run qa:quality && npm run qa:reflow && npm run qa:browser && npm run qa:axe:required",
@@ -93,7 +93,8 @@
     "test:production-dist-security": "node scripts/test-production-dist-security.mjs",
     "sync:fallback": "node scripts/sync-runtime-fallback.mjs",
     "qa:fallback": "node scripts/sync-runtime-fallback.mjs --check",
-    "test:runtime-fallback": "node scripts/test-runtime-fallback.mjs"
+    "test:runtime-fallback": "node scripts/test-runtime-fallback.mjs",
+    "test:manual-pdf": "node scripts/test-manual-pdf.mjs"
   },
   "engines": {
     "node": ">=18"

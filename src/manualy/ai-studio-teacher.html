@@ -31,20 +31,61 @@
   </nav>
  </header>
  <main id="main" class="studio-guide">
-  <div class="top"><a href="./">← Centrum manuálů</a><strong>AI Studio GHRAB · Učitel · běžný provoz · verze 0.21.77</strong></div>
+  <div class="top"><a href="./">← Centrum manuálů</a><button id="studio-guide-pdf" type="button">Stáhnout PDF</button><strong>AI Studio GHRAB · Učitel · první kroky a běžný provoz · obsah revidován 8. 10. 2026</strong></div>
   <section class="hero">
    <span class="role-badge">Učitel · běžný provoz</span>
    <h1>AI Studio GHRAB – manuál učitele</h1>
-   <p>Tento manuál popisuje pouze to, co potřebuje běžný učitel. Správcovské funkce jsou záměrně mimo tento průvodce.</p>
+   <p>Zde najdete první spuštění, bezpečné připojení AI a praktické cesty k aplikacím. Vlastní tvorbu materiálu vysvětluje vždy manuál příslušné aplikace; správcovské části nepotřebujete.</p>
   </section>
-  <div class="quick-path"><div><b>1 · APLIKACE</b><span>Vyberu nástroj, na který jsem školený.</span></div><div><b>2 · PRÁCE</b><span>Výstup vytvářím uvnitř konkrétní aplikace.</span></div><div><b>3 · KONTROLA</b><span>Před použitím zkontroluji obsah a citlivá data.</span></div><div><b>4 · KONEC</b><span>Na sdíleném zařízení bezpečně ukončím práci.</span></div></div>
-  <nav class="toc"><a href="#start">Jak začít</a><a href="#navigation">Záložky</a><a href="#materials">Materiály</a><a href="#safety">Bezpečnost</a><a href="#access-report">Můj přístup</a><a href="#shared-device">Sdílený počítač</a><a href="#support">Chyby</a><a href="#not-needed">Co nemusím řešit</a></nav>
+  <div class="quick-path"><div><b>1 · APLIKACE</b><span>Zkontroluji oprávnění a vyberu nástroj.</span></div><div><b>2 · PRÁCE</b><span>Připojím AI podle nastavení školy a vytvořím výstup.</span></div><div><b>3 · KONTROLA</b><span>Před použitím zkontroluji obsah a citlivá data.</span></div><div><b>4 · KONEC</b><span>Na sdíleném zařízení bezpečně ukončím práci.</span></div></div>
+  <nav class="toc"><a href="#first-time">Jsem tu poprvé</a><a href="#ai-connection">AI a API klíč</a><a href="#choose-app">Vybrat aplikaci</a><a href="#start">Každodenní postup</a><a href="#navigation">Záložky</a><a href="#materials">Materiály</a><a href="#safety">Bezpečnost</a><a href="#access-report">Můj přístup</a><a href="#shared-device">Sdílený počítač</a><a href="#support">Chyby</a><a href="#not-needed">Co nemusím řešit</a></nav>
+
+
+  <section class="section" id="first-time">
+   <h2>Jsem tu poprvé – první spuštění bez technických složitostí</h2>
+   <p>Vezměte to postupně. Před prvním použitím nepotřebujete nastavovat všechny aplikace najednou.</p>
+   <ol class="steps">
+    <li><strong>Otevřete oficiální školní AI Studio.</strong> Používejte odkaz, který jste získali od školy, nikoli náhodnou kopii webu.</li>
+    <li><strong>Otevřete Můj přístup.</strong> Zkontrolujte, zda máte platné oprávnění k aplikaci, kterou chcete používat. Pokud ne, požádejte správce školy o aktivaci po školení. K aplikaci nepomůže API klíč, když nemáte oprávnění.</li>
+    <li><strong>Vyberte Aplikace → požadovaný nástroj.</strong> Například GIT pro testy, Diferenciátor pro varianty pracovních listů nebo SORTIO pro práci se skupinami.</li>
+    <li><strong>Podle potřeby připojte AI.</strong> V některých aplikacích se dnes používá vlastní klíč v aktuální relaci, v jiných může být připravené centrální připojení. Postupujte podle skutečné nabídky aplikace.</li>
+    <li><strong>Vytvořte malý zkušební výstup.</strong> Před použitím ve výuce zkontrolujte obsah, správné odpovědi, jazyk a citlivé údaje.</li>
+    <li><strong>Po práci se bezpečně odhlaste.</strong> Na sdíleném počítači použijte Soukromí a ukončení práce.</li>
+   </ol>
+   <div class="callout"><strong>Pokud se někde zaseknete:</strong> Nemáte přístup? Řešte kartu Můj přístup se správcem. Nejde připojit AI? Otevřete příslušný manuál. Nejde vytvořit správný výstup? Podívejte se na pracovní postup konkrétní aplikace.</div>
+  </section>
+  <section class="section" id="ai-connection">
+   <h2>Jak připojit AI a co je API klíč</h2>
+   <div class="nav-map">
+    <article><h3>Oprávnění AI Studia</h3><p>Určuje, které aplikace můžete používat. Získáte jej od správce školy po potřebném školení. <strong>Nenahrazuje ho API klíč.</strong></p></article>
+    <article><h3>API klíč poskytovatele AI</h3><p>Umožňuje aplikaci posílat požadavky umělé inteligenci. Některé aplikace jej dnes vyžadují; nikdy se nevkládá do testu, dokumentu ani e-mailu.</p></article>
+   </div>
+   <ol class="steps">
+    <li>Otevřete aplikaci, v níž chcete AI používat.</li>
+    <li>Najděte příslušné nastavení připojení. Například GIT má na první stránce <strong>🔑 AI připojení</strong>.</li>
+    <li>Pokud škola vyžaduje vlastní klíč, vložte schválený klíč do oficiálního pole aplikace a zvolte <strong>Připojit pro tuto relaci</strong> (v GIT). Pokud aplikace nabízí centrální školní AI, nepřidávejte zbytečně soukromý klíč.</li>
+    <li>Zkontrolujte stav připojení. Pokud je aplikace bez AI, může místo generování pouze připravit zadání (prompt) ke zkopírování.</li>
+   </ol>
+   <div class="callout"><strong>Bezpečnost:</strong> Klíč nikdy nesdělujte kolegům, nevkládejte jej do materiálů ani do screenshotů. Před AI požadavkem anonymizujte podklady. Nezadávejte zdravotní či jiné citlivé osobní údaje studentů.</div>
+   <p><a href="./ecosystem-guide.html#api">Podrobné společné zásady práce s API a modely →</a></p>
+  </section>
+  <section class="section" id="choose-app">
+   <h2>Co potřebuji udělat právě teď?</h2>
+   <p>Vyberte svůj úkol. Technické nastavení a podrobný postup najdete vždy v manuálu dané aplikace.</p>
+   <div class="nav-map">
+    <article><h3>Chci připravit test</h3><p>Otevřete <strong>GIT</strong>. Jeho průvodce rozlišuje procvičování, běžný a přísný test, včetně Google Forms a Sheets.</p><p><a href="./viewer.html?app=generator">Přejít na manuál GIT →</a></p></article>
+    <article><h3>Chci vytvořit několik verzí materiálu</h3><p>Otevřete <strong>Diferenciátor</strong> a zvolte požadované varianty.</p><p><a href="./viewer.html?app=differentiator">Manuál Diferenciátoru →</a></p></article>
+    <article><h3>Chci organizovat práci ve třídě</h3><p>Pro losování, skupiny a přehled hodiny použijte <strong>SORTIO</strong>.</p><p><a href="./viewer.html?app=sortio">Manuál SORTIO →</a></p></article>
+    <article><h3>Chci najít návod k jiné aplikaci</h3><p>V sekci <strong>Manuály</strong> je katalog všech nástrojů, které škola provozuje. Otevřete ten, na který máte oprávnění.</p><p><a href="./">Otevřít centrum manuálů →</a></p></article>
+   </div>
+   <div class="callout"><strong>Samostatná školení:</strong> AI Akademie slouží školiteli k prezentacím a výkladu s poznámkami, nikoli jako povinné místo pro rychlou pomoc při běžné práci. Po školení se můžete k postupu vrátit právě zde v Manuálech.</div>
+  </section>
 
    <section class="section" id="start">
     <h2>Nejkratší správný postup</h2>
     <ol class="steps">
      <li>Otevřete <strong>Aplikace</strong> a vyberte nástroj, pro který máte školení a platný přístup.</li>
-     <li>Vlastní práci proveďte uvnitř konkrétní aplikace. AI Studio je portál a společná infrastruktura, ne devátý generátor obsahu.</li>
+     <li>Vlastní práci proveďte uvnitř konkrétní aplikace. AI Studio je portál a společná infrastruktura, nikoli další generátor obsahu.</li>
      <li>Pokud si nejste jistí citlivostí vstupu, použijte <strong>Bezpečnost → Nejsem si jistý → rychle posoudit</strong>. Do kontroly se nevkládá text ani dokument.</li>
      <li>Na sdíleném počítači po práci použijte vlevo dole <strong>Soukromí a ukončení práce</strong>.</li>
     </ol>
@@ -94,7 +135,8 @@
    </section>
 
  </main>
- <footer class="site-footer"><div class="shell-wide footer-inner"><div><strong>AI Studio GHRAB</strong><p>Autor a vývojový garant: Daniel Baláž · Školní projekt Gymnázia, Ostrava-Hrabůvka · verze 0.21.77</p></div></div></footer>
+ <footer class="site-footer"><div class="shell-wide footer-inner"><div><strong>AI Studio GHRAB</strong><p>Autor a vývojový garant: Daniel Baláž · Školní projekt Gymnázia, Ostrava-Hrabůvka · aktualizace příručky 8. 10. 2026</p></div></div></footer>
  <script src="../app.js" type="module"></script>
+<script src="./studio-pdf.js" type="module"></script>
 </body>
 </html>
