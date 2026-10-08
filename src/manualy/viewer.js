@@ -8,6 +8,7 @@ const titleNode = document.querySelector("#viewer-title");
 const metaNode = document.querySelector("#viewer-meta");
 const iconNode = document.querySelector("#viewer-icon");
 const reloadButton = document.querySelector("#viewer-reload");
+const pdfButton = document.querySelector("#viewer-pdf");
 const externalLink = document.querySelector("#viewer-external");
 let currentApp = null;
 let currentManualUrl = null;
@@ -59,6 +60,7 @@ function updateHeader() {
   iconNode.alt = "";
   document.title = `${G.localised(currentApp.name)} · ${G.t("manuál", "manual")} · AI Studio GHRAB`;
   reloadButton.textContent = G.t("Obnovit", "Reload");
+  pdfButton.textContent = G.t("Stáhnout PDF", "Download PDF");
   externalLink.textContent = G.t("Otevřít zvlášť", "Open separately");
   frame.title = G.t(
     `Interaktivní manuál: ${G.localised(currentApp.name)}`,
@@ -168,6 +170,7 @@ async function initialise() {
     externalLink.href = currentManualUrl.href;
     externalLink.hidden = false;
     reloadButton.hidden = false;
+    pdfButton.hidden = false;
     loadFrame();
   } catch {
     showState(
@@ -194,6 +197,28 @@ frame.addEventListener("load", () => {
   frame.hidden = false;
 });
 reloadButton.addEventListener("click", () => loadFrame());
+pdfButton.addEventListener("click", async () => {
+  if (!currentApp || !G.hasAppAccess(currentApp.id).enabled || !currentManualUrl) return;
+  pdfButton.disabled = true;
+  pdfButton.textContent = G.t("Připravuji PDF…", "Preparing PDF…");
+  try {
+    const doc = frame.contentDocument;
+    if (!doc || !doc.body || !doc.querySelector("main")) {
+      throw new Error("Manuál je na oddělené doméně. Otevřete jej samostatně a použijte místní export.");
+    }
+    const { downloadManualPdf } = await import("./pdf-export.js");
+    await downloadManualPdf(doc, { title: G.localised(currentApp.name), filename: "GHRAB-" + currentApp.id + "-manual.pdf" });
+  } catch (err) {
+    stateTitle.textContent = G.t("PDF se nepodařilo vytvořit", "PDF export failed");
+    stateCopy.textContent = String(err?.message || err);
+    statePanel.className = "viewer-state error";
+    statePanel.hidden = false;
+    frame.hidden = false;
+  } finally {
+    pdfButton.disabled = false;
+    updateHeader();
+  }
+});
 document.addEventListener("ghrab:language", () => {
   updateHeader();
   if (!currentApp) return;
