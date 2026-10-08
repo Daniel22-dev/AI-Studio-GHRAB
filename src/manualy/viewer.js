@@ -170,7 +170,7 @@ async function initialise() {
     externalLink.href = currentManualUrl.href;
     externalLink.hidden = false;
     reloadButton.hidden = false;
-    pdfButton.hidden = false;
+    pdfButton.hidden = currentManualUrl.origin !== location.origin || currentApp.id === 'maturita-desk';
     loadFrame();
   } catch {
     showState(
