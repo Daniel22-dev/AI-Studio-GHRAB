@@ -13,6 +13,7 @@ const externalLink = document.querySelector("#viewer-external");
 let currentApp = null;
 let currentManualUrl = null;
 let loadTimer = null;
+let manualAccessObserver = null;
 
 function make(tag, className, text) {
   const node = document.createElement(tag);
@@ -120,6 +121,8 @@ function refreshPdfAvailability() {
 
 function loadFrame() {
   if (!currentManualUrl) return;
+  manualAccessObserver?.disconnect();
+  manualAccessObserver = null;
   pdfButton.hidden = true;
   statePanel.className = "viewer-state";
   statePanel.hidden = false;
@@ -224,6 +227,22 @@ frame.addEventListener("load", () => {
   statePanel.hidden = true;
   frame.hidden = false;
   refreshPdfAvailability();
+  // An authorized iframe may complete its guard after the frame load event.
+  // Recheck only when its explicit access state changes; never enable PDF on iframe.load alone.
+  try {
+    manualAccessObserver?.disconnect();
+    const doc = frame.contentDocument;
+    if (doc?.documentElement) {
+      manualAccessObserver = new MutationObserver(() => refreshPdfAvailability());
+      manualAccessObserver.observe(doc.documentElement, {
+        attributes: true,
+        attributeFilter: ["data-ghrab-access"],
+      });
+    }
+  } catch {
+    // Cross-origin or inaccessible manual: PDF remains unavailable.
+    pdfButton.hidden = true;
+  }
 });
 reloadButton.addEventListener("click", () => loadFrame());
 pdfButton.addEventListener("click", async () => {
