@@ -50,6 +50,7 @@
   background: rgba(80, 232, 255, 0.08);
   transform: translateY(-1px);
 }
+.viewer-action:disabled { opacity: .55; cursor: wait; }
 .viewer-action.secondary {
   color: var(--muted);
 }
@@ -228,3 +229,6 @@
     animation-duration: 1.8s;
   }
 }
+
+/* Accessible PDF action on narrow viewport */
+@media (max-width: 620px) { #viewer-pdf { font-size: .7rem; min-height: 38px; padding: 0 8px; white-space: nowrap; } }
