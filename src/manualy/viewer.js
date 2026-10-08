@@ -207,7 +207,9 @@ pdfButton.addEventListener("click", async () => {
       throw new Error("Manuál je na oddělené doméně. Otevřete jej samostatně a použijte místní export.");
     }
     const { downloadManualPdf } = await import("./pdf-export.js");
-    await downloadManualPdf(doc, { title: G.localised(currentApp.name), filename: "GHRAB-" + currentApp.id + "-manual.pdf" });
+    if (doc.documentElement.dataset.ghrabAccess !== "granted") throw new Error("Manuál nemá potvrzený přístup; zkuste to po načtení znovu.");
+    const extras = Array.isArray(frame.contentWindow.GHRAB_MANUAL_EXPORT) ? frame.contentWindow.GHRAB_MANUAL_EXPORT : [];
+    await downloadManualPdf(doc, { title: G.localised(currentApp.name), filename: "GHRAB-" + currentApp.id + "-manual.pdf", extras });
   } catch (err) {
     stateTitle.textContent = G.t("PDF se nepodařilo vytvořit", "PDF export failed");
     stateCopy.textContent = String(err?.message || err);
