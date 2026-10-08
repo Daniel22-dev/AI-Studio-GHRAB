@@ -56,3 +56,34 @@ Při auditu nebyl proveden login na školní účet ani prohlížečová certifi
 - Certifikace a nasazení bez bypassu bezpečnostních bran; úspěšný CI je nutný, nikoliv důkaz reálného pedagogického testování.
 
 **Rozhodnutí:** nepovolovat export PDF u všech aplikací jedním univerzálním přepínačem. Rozšířit ho po obsahových a přístupových důkazech.
+
+## 6. Stav implementace a pull requesty (8. 10. 2026)
+
+Zdrojové návrhy jsou hotové, ale většina záměrně čeká v PR na vlastní QA, aby nebylo z veřejného katalogu možné stáhnout neúplný PDF dokument.
+
+| Součást | PR | Stav z hlediska Etapy D |
+|---|---|---|
+| Diferenciátor – úplná map/tour data | [#35](https://github.com/Daniel22-dev/diferenciator/pull/35) | Kód připraven, CI a PDF akceptace |
+| Hodnotitel – úplná map/tour data | [#25](https://github.com/Daniel22-dev/Hodnotitel-maturitnich-slohu/pull/25) | Kód připraven, automatické základní testy, obsahová revize |
+| Korespondenční asistent – úplná map/tour data | [#13](https://github.com/Daniel22-dev/korespondencni-asistent/pull/13) | Kód připraven, ochrana dat a PDF akceptace |
+| LUDUS – úplná map/tour data | [#25](https://github.com/Daniel22-dev/Ludus/pull/25) | Kód připraven, zdrojová QA, PDF akceptace |
+| ACTIVA – tabulkové přílohy PDF | [#11](https://github.com/Daniel22-dev/ACTIVA/pull/11) | Kód připraven, obsahová QA |
+| Lesson Hub – dynamická upozornění PDF | [#7](https://github.com/Daniel22-dev/lesson-hub/pull/7) | Kód připraven, render a PDF QA |
+| SORTIO | zatím bez PR | Nedokončeno: zápis do chráněného manuálu zablokoval dostupný nástroj; zdrojový audit proběhl |
+| Maturita Desk – samostatný manuál | [#8](https://github.com/Daniel22-dev/maturita-desk/pull/8) | Obsah a chráněná stránka připraveny, nutný runtime test permitu, Pages a dostupnost ve Studiu |
+| AI Studio – dokumentační kontrakt a PDF gate | [#191](https://github.com/Daniel22-dev/AI-Studio-GHRAB/pull/191) | Kód připraven, před nasazením závisí na ověření konkrétních aplikací |
+| AI Akademie – velký kurz GIT 7.1.99 | [#29](https://github.com/Daniel22-dev/AI-Akademie-GHRAB/pull/29) | Sloučeno do candidate 1.5.7, P5 candidate GREEN; vydání main samostatně řízené |
+
+### Release pravidlo
+
+Nesmí se jedním sloučením zapnout PDF na všech osmi aplikacích. Manuál označený `review-required` či `pilot` je obsahově návrh, nikoli publikovaná certifikace. PDF nárok vzniká až při `reviewStatus=verified` spolu s účinným app permit a aktuálním `appVersion`.
+
+### Objektivně zbývající práce
+
+- U sedmi chráněných manuálů ověřit browser + reálný PDF obsah a test nepovoleného přístupu.
+- Dokončit SORTIO, který zatím nemá změnu zdrojů.
+- U Maturita Desk ověřit guard proti oprávnění a správně sestavenou Pages cestu `/manual/`; stále pouze syntetické demo.
+- Ověřit celou posloupnost Studio viewer → aplikace → manuál → PDF a školitele na Win+P Rozšířit.
+- Vydat nezávisle ověřené komponenty přes jejich candidate a protected main. Teprve pak aktualizovat deklarace `verified`.
+
+Vydávací status nesmí předstírat, že výše uvedené QA již proběhlo.
