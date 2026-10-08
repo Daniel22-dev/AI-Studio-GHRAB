@@ -1,171 +1,307 @@
-/*
- * AI Studio GHRAB · Protected-manual PDF export v1
- * No CDN, no network, no stored PDF endpoint and no privileged data transfer.
- * The browser paints complete manual text onto A4 canvases, then assembles a
- * valid PDF with clickable source links. Because pages are rasterised,
- * searchable/selectable text and assistive PDF tags are not provided.
+/**
+ * AI Studio GHRAB: Unicode, searchable, client-only PDF export.
+ *
+ * Uses embedded Type3 glyphs with explicit ToUnicode maps. No external fonts,
+ * network calls, CDN, or public PDF endpoint. The reader can select/search
+ * text; PDFs are not asserted to be PDF/UA tagged documents.
  */
-function manualBlocks(doc, extras) {
+const enc = new TextEncoder();
+const b = (str) => enc.encode(str);
+const escapePdf = (str) => String(str).replace(/\\/g, "\\\\").replace(/\(/g, "\\(").replace(/\)/g, "\\)").replace(/[\r\n]/g, " ");
+function concat(chunks) {
+  let size = 0;
+  for (const chunk of chunks) size += chunk.length;
+  const out = new Uint8Array(size);
+  let pos = 0;
+  for (const chunk of chunks) { out.set(chunk, pos); pos += chunk.length; }
+  return out;
+}
+function hex(value, length = 2) { return value.toString(16).toUpperCase().padStart(length, "0"); }
+function unicodeHex(char) {
+  let out = "";
+  for (let i = 0; i < char.length; i++) out += hex(char.charCodeAt(i), 4);
+  return out;
+}
+function htmlToBlocks(doc, extras = []) {
   const root = doc.querySelector("main") || doc.body;
-  const selector = "h1,h2,h3,h4,p,li,dt,dd,summary,.acc .ans,.mini-step,.stat,.notice";
-  const out = [];
-  for (const el of root.querySelectorAll(selector)) {
-    if (el.closest("nav,footer,script,style,.search-overlay,.mobile-nav,.top-actions,.toc")) continue;
-    if (el.matches("p,li,dt,dd") && el.closest(".acc .ans")) continue;
-    if (el.matches("p,li") && el.closest(".notice")) continue;
-    if (el.matches("summary") && !el.closest("details")) continue;
-    const value = (el.textContent || "").replace(/\s+/g, " ").trim();
-    if (!value || value.length < 2) continue;
-    const tag = el.tagName.toLowerCase();
-    const type = /^h[1-4]$/.test(tag) ? tag : tag === "li" ? "list" : tag === "summary" ? "h3" : "body";
-    out.push({ type, text: value });
+  if (!root) throw new Error("Manuál nemá obsah.");
+  const selector = "h1,h2,h3,h4,p,li,dt,dd,summary,.acc .ans,.mini-step,.stat,.notice,.flow-warning,.flow-danger";
+  const blocks = [];
+  const ignore = "nav,footer,script,style,.search-overlay,.mobile-nav,.top-actions,.toc,[hidden],[aria-hidden='true']";
+  for (const element of root.querySelectorAll(selector)) {
+    if (element.closest(ignore) || element.closest("button")) continue;
+    if (element.matches("p,li,dd") && element.closest(".acc .ans,.notice,.mini-step,.stat,.flow-warning,.flow-danger")) continue;
+    const text = (element.textContent || "").replace(/\s+/g, " ").trim();
+    if (!text || text.length < 2) continue;
+    let type = /^H[1-4]$/.test(element.tagName) ? element.tagName.toLowerCase() :
+      element.matches("summary") ? "h3" : element.matches("li") ? "list" : "body";
+    if (element.matches(".notice,.flow-warning,.flow-danger")) type = "warning";
+    blocks.push({ type, text });
   }
-  for (const item of extras || []) {
-    if (item && typeof item.text === "string") out.push({ type: item.type || "body", text: item.text });
+  for (const extra of extras) {
+    if (extra && typeof extra.text === "string" && extra.text.trim())
+      blocks.push({ type: extra.type || "body", text: extra.text.trim() });
   }
-  const urls = [];
-  const seen = new Set();
-  for (const a of root.querySelectorAll("a[href]")) {
+  const links = new Set();
+  for (const anchor of root.querySelectorAll("a[href]")) {
     try {
-      const url = new URL(a.getAttribute("href"), doc.baseURI);
-      if (!["https:", "http:"].includes(url.protocol) || seen.has(url.href)) continue;
-      seen.add(url.href);
-      urls.push({ type: "link", text: (a.textContent || url.href).trim() || url.href, url: url.href });
-    } catch { /* ignore malformed links */ }
+      const url = new URL(anchor.getAttribute("href"), doc.baseURI);
+      if (!["https:", "http:"].includes(url.protocol)) continue;
+      if (url.username || url.password || links.has(url.href)) continue;
+      links.add(url.href);
+      blocks.push({ type: "link", text: (anchor.textContent || url.href).trim() + ": " + url.href, url: url.href });
+    } catch { /* invalid link */ }
   }
-  if (urls.length) {
-    out.push({ type: "h2", text: "Užitečné odkazy" });
-    out.push(...urls.slice(0, 100));
+  return blocks;
+}
+function makeGlyphCanvas(doc, char, bold) {
+  const sample = doc.createElement("canvas");
+  const sampleCtx = sample.getContext("2d", { willReadFrequently: true });
+  if (!sampleCtx) throw new Error("Prohlížeč neumí vykreslit znaky PDF.");
+  const css = (bold ? "bold " : "") + "100px Arial, sans-serif";
+  sampleCtx.font = css;
+  const m = sampleCtx.measureText(char);
+  const ascent = Math.max(1, Math.ceil(m.actualBoundingBoxAscent || 80));
+  const descent = Math.max(0, Math.ceil(m.actualBoundingBoxDescent || 23));
+  const advance = Math.max(1, m.width);
+  const pxWidth = Math.min(260, Math.max(16, Math.ceil(advance + 18)));
+  const pxHeight = Math.min(190, ascent + descent + 18);
+  sample.width = pxWidth;
+  sample.height = pxHeight;
+  sampleCtx.font = css;
+  sampleCtx.textBaseline = "alphabetic";
+  sampleCtx.fillStyle = "#000";
+  sampleCtx.fillText(char, 8, 8 + ascent);
+  const image = sampleCtx.getImageData(0, 0, pxWidth, pxHeight).data;
+  const bytes = [];
+  let bit = 7, current = 0;
+  for (let row = 0; row < pxHeight; row++) {
+    for (let col = 0; col < pxWidth; col++) {
+      if (image[(row * pxWidth + col) * 4 + 3] >= 90) current |= 1 << bit;
+      if (--bit < 0) { bytes.push(current); bit = 7; current = 0; }
+    }
+    if (bit !== 7) { bytes.push(current); bit = 7; current = 0; }
   }
-  return out;
+  let pixels = "";
+  for (const byte of bytes) pixels += hex(byte);
+  return {
+    width: pxWidth, height: pxHeight, pixels,
+    advance: advance * 10,
+    left: -80, bottom: -(descent + 8) * 10,
+    right: (pxWidth - 8) * 10, top: (ascent + 8) * 10
+  };
 }
-function pdfEscape(s) {
-  return String(s).replace(/\\/g, "\\\\").replace(/\(/g, "\\(").replace(/\)/g, "\\)").replace(/[\r\n]/g, " ");
-}
-function pdfBytes(chunks) {
-  let length = 0;
-  for (const c of chunks) length += c.length;
-  const out = new Uint8Array(length);
-  let offset = 0;
-  for (const c of chunks) { out.set(c, offset); offset += c.length; }
-  return out;
-}
-function createPdf(pages) {
-  const encoder = new TextEncoder();
-  const str = (s) => encoder.encode(s);
+function pdfWriter() {
   const objects = [];
-  const add = () => { objects.push(null); return objects.length; };
-  const put = (id, parts) => { objects[id - 1] = parts; };
-  const catalog = add(), tree = add();
-  const refs = pages.map((p) => ({ page: add(), image: add(), content: add(), annots: p.links.map(() => add()) }));
-  put(catalog, [str("<< /Type /Catalog /Pages " + tree + " 0 R >>")]);
-  put(tree, [str("<< /Type /Pages /Kids [" + refs.map((r) => r.page + " 0 R").join(" ") + "] /Count " + pages.length + " >>")]);
-  pages.forEach((p, i) => {
-    const r = refs[i], W = 595.28, H = 841.89;
-    const image = Uint8Array.from(atob(p.jpeg.split(",")[1]), (c) => c.charCodeAt(0));
-    const content = str("q\n" + W + " 0 0 " + H + " 0 0 cm\n/Im0 Do\nQ\n");
-    put(r.image, [str("<< /Type /XObject /Subtype /Image /Width " + p.width +
-      " /Height " + p.height + " /ColorSpace /DeviceRGB /BitsPerComponent 8 /Filter /DCTDecode /Length " + image.length + " >>\nstream\n"), image, str("\nendstream")]);
-    put(r.content, [str("<< /Length " + content.length + " >>\nstream\n"), content, str("endstream")]);
-    const aRefs = r.annots.map((id) => id + " 0 R").join(" ");
-    put(r.page, [str("<< /Type /Page /Parent " + tree + " 0 R /MediaBox [0 0 " + W + " " + H +
-      "] /Resources << /XObject << /Im0 " + r.image + " 0 R >> >> /Contents " + r.content +
-      " 0 R" + (aRefs ? " /Annots [" + aRefs + "]" : "") + " >>")]);
-    p.links.forEach((a, j) => {
-      const x1 = Math.max(0, a.x1 * W / p.width), x2 = Math.min(W, a.x2 * W / p.width);
-      const y1 = Math.max(0, (p.height - a.y2) * H / p.height), y2 = Math.min(H, (p.height - a.y1) * H / p.height);
-      put(r.annots[j], [str("<< /Type /Annot /Subtype /Link /Rect [" + [x1, y1, x2, y2].map(v => v.toFixed(2)).join(" ") +
-        "] /Border [0 0 0] /A << /S /URI /URI (" + pdfEscape(a.url) + ") >> >>")]);
-    });
-  });
-  const stream = [str("%PDF-1.4\n% GHRAB protected manual export\n")];
-  const offsets = [0]; let size = stream[0].length;
-  for (let i = 0; i < objects.length; i++) {
-    offsets.push(size);
-    const parts = [str((i + 1) + " 0 obj\n"), ...objects[i], str("\nendobj\n")];
-    stream.push(...parts);
-    for (const p of parts) size += p.length;
-  }
-  const xref = size, row = (v) => String(v).padStart(10, "0") + " 00000 n \n";
-  stream.push(str("xref\n0 " + (objects.length + 1) + "\n0000000000 65535 f \n" + offsets.slice(1).map(row).join("") +
-    "trailer\n<< /Size " + (objects.length + 1) + " /Root " + catalog + " 0 R >>\nstartxref\n" + xref + "\n%%EOF"));
-  return pdfBytes(stream);
+  return {
+    add(parts) { objects.push(parts || null); return objects.length; },
+    set(id, parts) { objects[id - 1] = parts; },
+    finish(root) {
+      const out = [b("%PDF-1.4\n% GHRAB unicode PDF\n")], offsets = [0];
+      let position = out[0].length;
+      for (let i = 0; i < objects.length; i++) {
+        const parts = [b((i + 1) + " 0 obj\n"), ...(objects[i] || []), b("\nendobj\n")];
+        offsets.push(position);
+        for (const part of parts) { out.push(part); position += part.length; }
+      }
+      const startxref = position;
+      let table = "xref\n0 " + (objects.length + 1) + "\n0000000000 65535 f \n";
+      for (const offset of offsets.slice(1)) table += String(offset).padStart(10, "0") + " 00000 n \n";
+      table += "trailer\n<< /Size " + (objects.length + 1) + " /Root " + root + " 0 R >>\nstartxref\n" + startxref + "\n%%EOF";
+      out.push(b(table));
+      return concat(out);
+    }
+  };
 }
-export async function downloadManualPdf(doc, options = {}) {
-  if (!doc || !doc.querySelector) throw new Error("Dokument manuálu není dostupný.");
-  const title = String(options.title || doc.title || "Manuál AI Studia").replace(/\s+/g, " ").trim();
-  const name = String(options.filename || "AI-Studio-manual.pdf").replace(/[^a-z0-9_.-]/gi, "_");
-  const blocks = manualBlocks(doc, options.extras);
-  if (blocks.length < 5) throw new Error("Manuál nemá dostatek obsahu k exportu.");
-  const canvas = doc.createElement("canvas"), W = 1240, H = 1754;
-  canvas.width = W; canvas.height = H;
-  const ctx = canvas.getContext("2d", { alpha: false });
-  if (!ctx) throw new Error("Prohlížeč nepodporuje kreslení PDF.");
-  const margin = 86, bottom = H - 108, pages = []; let y = 165, anchors = [];
-  const paintHeader = () => {
-    ctx.fillStyle = "#ffffff"; ctx.fillRect(0, 0, W, H);
-    ctx.fillStyle = "#06779d"; ctx.fillRect(margin, 70, 68, 7);
-    ctx.fillStyle = "#526374"; ctx.font = "18px Arial, sans-serif";
-    ctx.fillText("GYMNÁZIUM OSTRAVA-HRABŮVKA  |  AI STUDIO", margin + 85, 81);
-    ctx.fillStyle = "#14263a"; ctx.font = "bold 22px Arial, sans-serif";
-    const cap = title.length > 70 ? title.slice(0, 67) + "…" : title;
-    ctx.fillText(cap, margin, 120);
-    ctx.strokeStyle = "#d4e3ed"; ctx.beginPath(); ctx.moveTo(margin, 140); ctx.lineTo(W - margin, 140); ctx.stroke();
+function makeType3Font(writer, doc, chars, bold) {
+  const mapped = new Map();
+  const charNames = [], widths = [], refs = [], imageRefs = [], mapping = [];
+  for (let i = 0; i < chars.length; i++) {
+    const ch = chars[i], code = i + 1, name = "g" + code;
+    const g = makeGlyphCanvas(doc, ch, bold);
+    const img = writer.add([b("<< /Type /XObject /Subtype /Image /Width " + g.width +
+      " /Height " + g.height + " /ImageMask true /BitsPerComponent 1 /Decode [0 1] /Filter /ASCIIHexDecode /Length " +
+      (g.pixels.length + 1) + " >>\nstream\n" + g.pixels + ">\nendstream")]);
+    const commands = g.advance.toFixed(2) + " 0 -120 -450 2800 1450 d1\nq\n" +
+      ((g.right - g.left) / 1000).toFixed(4) + " 0 0 " + ((g.top - g.bottom) / 1000).toFixed(4) +
+      " " + (g.left / 1000).toFixed(4) + " " + (g.bottom / 1000).toFixed(4) + " cm\n/I" + code + " Do\nQ\n";
+    // Font units are thousandths of a text unit; CharProcs operate in glyph space.
+    const correct = commands.replace(
+      ((g.right - g.left) / 1000).toFixed(4) + " 0 0 " + ((g.top - g.bottom) / 1000).toFixed(4) +
+      " " + (g.left / 1000).toFixed(4) + " " + (g.bottom / 1000).toFixed(4) + " cm",
+      (g.right - g.left).toFixed(2) + " 0 0 " + (g.top - g.bottom).toFixed(2) +
+      " " + g.left.toFixed(2) + " " + g.bottom.toFixed(2) + " cm"
+    );
+    const proc = writer.add([b("<< /Length " + b(correct).length + " >>\nstream\n"), b(correct), b("endstream")]);
+    mapped.set(ch, code);
+    charNames.push("/" + name); widths.push(g.advance.toFixed(2));
+    refs.push("/" + name + " " + proc + " 0 R");
+    imageRefs.push("/I" + code + " " + img + " 0 R");
+    mapping.push("<" + hex(code) + "> <" + unicodeHex(ch) + ">");
+  }
+  const cmap = "/CIDInit /ProcSet findresource begin\n12 dict begin\nbegincmap\n" +
+    "/CIDSystemInfo << /Registry (Adobe) /Ordering (UCS) /Supplement 0 >> def\n" +
+    "/CMapName /GHRABToUnicode def\n/CMapType 2 def\n" +
+    "1 begincodespacerange\n<00> <FF>\nendcodespacerange\n" +
+    mapping.length + " beginbfchar\n" + mapping.join("\n") + "\nendbfchar\n" +
+    "endcmap\nCMapName currentdict /CMap defineresource pop\nend\nend\n";
+  const cmapId = writer.add([b("<< /Length " + b(cmap).length + " >>\nstream\n"), b(cmap), b("endstream")]);
+  const font = writer.add([b("<< /Type /Font /Subtype /Type3 /Name /GHRAB /FontBBox [-120 -450 2800 1450] " +
+    "/FontMatrix [.001 0 0 .001 0 0] /FirstChar 1 /LastChar " + chars.length + " /Widths [" +
+    widths.join(" ") + "] /CharProcs << " + refs.join(" ") + " >> /Encoding << /Type /Encoding /Differences [1 " +
+    charNames.join(" ") + "] >> /Resources << /XObject << " + imageRefs.join(" ") + " >> >> /ToUnicode " +
+    cmapId + " 0 R >>")]);
+  return { ref: font, mapped };
+}
+function layoutBlocks(doc, blocks, title) {
+  const canvas = doc.createElement("canvas"), ctx = canvas.getContext("2d");
+  if (!ctx) throw new Error("Prohlížeč neumí připravit sazbu PDF.");
+  const width = 595.28, height = 841.89, left = 45, right = width - 45, top = 77, bottom = 786;
+  const specs = {
+    h1: { size: 23, bold: true, line: 28, gap: 16 },
+    h2: { size: 16, bold: true, line: 22, gap: 12 },
+    h3: { size: 12, bold: true, line: 17, gap: 8 },
+    h4: { size: 11, bold: true, line: 15, gap: 6 },
+    list: { size: 10.5, bold: false, line: 15, gap: 7 },
+    warning: { size: 10.5, bold: true, line: 15.5, gap: 10 },
+    link: { size: 9.3, bold: false, line: 13.5, gap: 6 },
+    body: { size: 10.5, bold: false, line: 15.5, gap: 11 }
   };
-  const finish = () => {
-    ctx.strokeStyle = "#d4e3ed"; ctx.beginPath(); ctx.moveTo(margin, H - 81); ctx.lineTo(W - margin, H - 81); ctx.stroke();
-    ctx.fillStyle = "#536477"; ctx.font = "18px Arial, sans-serif";
-    ctx.fillText("AI Studio GHRAB  •  pracovní příručka", margin, H - 52);
-    ctx.fillText("Strana " + (pages.length + 1), W - margin - 100, H - 52);
-    pages.push({ jpeg: canvas.toDataURL("image/jpeg", .90), width: W, height: H, links: anchors });
-    anchors = [];
-  };
-  const next = () => { finish(); y = 165; paintHeader(); };
-  const colors = { h1: "#102b40", h2: "#006f92", h3: "#163a53", list: "#1b3346", body: "#24394b", link: "#006f92" };
-  const fonts = { h1: "bold 40px Arial, sans-serif", h2: "bold 30px Arial, sans-serif", h3: "bold 25px Arial, sans-serif",
-    list: "22px Arial, sans-serif", body: "22px Arial, sans-serif", link: "20px Arial, sans-serif" };
-  const sizes = { h1: 53, h2: 43, h3: 37, list: 33, body: 32, link: 32 };
-  const spaced = { h1: 25, h2: 17, h3: 12, list: 9, body: 15, link: 13 };
-  function wrap(text, limit) {
-    const words = String(text).split(/\s+/).filter(Boolean), lines = []; let line = "";
-    for (const word of words) {
-      if (!line) { line = word; continue; }
-      if (ctx.measureText(line + " " + word).width <= limit) { line += " " + word; continue; }
-      lines.push(line); line = word;
+  const pages = []; let page = { lines: [], headings: [], links: [] }, cursor = top;
+  const advance = () => { pages.push(page); page = { lines: [], headings: [], links: [] }; cursor = top; };
+  function measure(txt, spec) {
+    ctx.font = (spec.bold ? "bold " : "") + "100px Arial, sans-serif";
+    return ctx.measureText(txt).width * spec.size / 100;
+  }
+  function wrap(text, spec) {
+    const max = right - left; const lines = []; let line = "";
+    const words = text.split(/\s+/).filter(Boolean);
+    for (let word of words) {
+      if (!line && measure(word, spec) <= max) { line = word; continue; }
+      if (line && measure(line + " " + word, spec) <= max) { line += " " + word; continue; }
+      if (line) lines.push(line);
+      if (measure(word, spec) <= max) { line = word; continue; }
+      let segment = "";
+      for (const char of word) {
+        if (segment && measure(segment + char, spec) > max) { lines.push(segment); segment = char; }
+        else segment += char;
+      }
+      line = segment;
     }
     if (line) lines.push(line);
-    const result = [];
-    for (const l of lines) {
-      if (ctx.measureText(l).width <= limit) { result.push(l); continue; }
-      let p = "";
-      for (const c of l) {
-        if (p && ctx.measureText(p + c).width > limit) { result.push(p); p = c; } else p += c;
+    return lines;
+  }
+  for (const block of blocks) {
+    const kind = specs[block.type] ? block.type : "body", spec = specs[kind];
+    const text = (kind === "list" ? "• " : "") + block.text;
+    const wrapped = wrap(text, spec);
+    const need = Math.min(2, wrapped.length) * spec.line + spec.gap;
+    if (cursor + need > bottom) advance();
+    const startPage = pages.length;
+    if (["h1", "h2"].includes(kind)) page.headings.push({ title: block.text, y: cursor, level: kind, page: startPage });
+    for (const line of wrapped) {
+      if (cursor + spec.line > bottom) advance();
+      page.lines.push({ text: line, x: left, y: height - cursor, spec, kind });
+      if (block.url) page.links.push({ url: block.url, x1: left, x2: Math.min(right, left + measure(line, spec)), y1: height - cursor - 2, y2: height - cursor + spec.line });
+      cursor += spec.line;
+    }
+    cursor += spec.gap;
+  }
+  pages.push(page);
+  return { pages, width, height, left, right, title };
+}
+function createPdf(doc, blocks, title) {
+  const layout = layoutBlocks(doc, blocks, title), writer = pdfWriter();
+  const set = new Set();
+  for (const block of blocks) for (const ch of block.text) set.add(ch);
+  for (const ch of title) set.add(ch);
+  set.add("•"); set.add("?"); set.add(" ");
+  const chars = Array.from(set);
+  const fontSpecs = [];
+  for (const bold of [false, true]) {
+    for (let k = 0; k < chars.length; k += 200) {
+      const subset = chars.slice(k, k + 200);
+      fontSpecs.push({ bold, font: makeType3Font(writer, doc, subset, bold) });
+    }
+  }
+  const choose = (char, bold) => {
+    const i = fontSpecs.findIndex((f) => f.bold === bold && f.font.mapped.has(char));
+    if (i >= 0) return { key: "F" + i, code: fontSpecs[i].font.mapped.get(char) };
+    const fallback = fontSpecs.findIndex((f) => f.bold === bold);
+    return { key: "F" + fallback, code: fontSpecs[fallback].font.mapped.get("?") || 1 };
+  };
+  const catalog = writer.add(null), tree = writer.add(null);
+  const refPages = layout.pages.map(() => writer.add(null));
+  const fontRefs = fontSpecs.map((f, i) => "/F" + i + " " + f.font.ref + " 0 R").join(" ");
+  for (let i = 0; i < layout.pages.length; i++) {
+    const p = layout.pages[i], operations = [];
+    operations.push("1 1 1 rg 0 0 " + layout.width + " " + layout.height + " re f");
+    operations.push(".07 .19 .30 rg .7 w 45 798 " + (layout.width - 90) + " 0 m " + (layout.width - 45) + " 798 l S");
+    operations.push(".04 .35 .47 rg 45 816 50 3 re f");
+    operations.push(".10 .20 .30 rg");
+    function draw(txt, x, y, spec) {
+      const fontSize = spec.size, bold = spec.bold;
+      const runs = [];
+      for (const char of txt) {
+        const code = choose(char, bold);
+        const last = runs[runs.length - 1];
+        if (last && last.key === code.key) last.codes.push(code.code);
+        else runs.push({ key: code.key, codes: [code.code] });
       }
-      if (p) result.push(p);
+      let position = x;
+      for (const run of runs) {
+        const sequence = run.codes.map((v) => hex(v)).join("");
+        operations.push("BT /" + run.key + " " + fontSize + " Tf 1 0 0 1 " + position.toFixed(2) + " " + y.toFixed(2) + " Tm <" + sequence + "> Tj ET");
+        const context = doc.createElement("canvas").getContext("2d");
+        context.font = (bold ? "bold " : "") + "100px Arial, sans-serif";
+        const advance = run.codes.reduce((sum, c) => {
+          const font = fontSpecs.find((v, idx) => "F" + idx === run.key).font;
+          const ch = Array.from(font.mapped).find((pair) => pair[1] === c)?.[0] || " ";
+          return sum + context.measureText(ch).width * fontSize / 100;
+        }, 0);
+        position += advance;
+      }
     }
-    return result;
-  }
-  paintHeader();
-  for (let i = 0; i < blocks.length; i++) {
-    const b = blocks[i], kind = fonts[b.type] ? b.type : "body";
-    ctx.font = fonts[kind]; const text = b.type === "list" ? "•  " + b.text : b.text;
-    const lines = wrap(text, W - margin * 2);
-    const lineHeight = sizes[kind], required = Math.min(lines.length, 2) * lineHeight + spaced[kind];
-    if (y + required > bottom) next();
-    ctx.fillStyle = colors[kind];
-    for (const line of lines) {
-      if (y + lineHeight > bottom) next();
-      ctx.font = fonts[kind]; ctx.fillStyle = colors[kind]; ctx.fillText(line, margin, y);
-      if (b.type === "link") anchors.push({ x1: margin, y1: y - lineHeight + 4, x2: Math.min(W - margin, margin + ctx.measureText(line).width), y2: y + 5, url: b.url });
-      y += lineHeight;
+    draw(title.length > 69 ? title.slice(0, 66) + "…" : title, 45, 811, { size: 10, bold: true });
+    for (const line of p.lines) {
+      operations.push(line.kind === "h2" || line.kind === "link" ? ".03 .42 .57 rg" :
+        line.kind === "warning" ? ".56 .27 .11 rg" : ".10 .20 .30 rg");
+      draw(line.text, line.x, line.y, line.spec);
     }
-    y += spaced[kind];
-    if (i % 100 === 0) await new Promise((resolve) => setTimeout(resolve, 0));
+    draw("AI Studio GHRAB • Strana " + (i + 1), 45, 34, { size: 9, bold: false });
+    const commands = operations.join("\n") + "\n";
+    const content = writer.add([b("<< /Length " + b(commands).length + " >>\nstream\n"), b(commands), b("endstream")]);
+    const links = [];
+    for (const link of p.links) {
+      const id = writer.add([b("<< /Type /Annot /Subtype /Link /Rect [" +
+        [link.x1, link.y1, link.x2, link.y2].map((v) => v.toFixed(2)).join(" ") +
+        "] /Border [0 0 0] /A << /S /URI /URI (" + escapePdf(link.url) + ") >> >>")]);
+      links.push(id + " 0 R");
+    }
+    writer.set(refPages[i], [b("<< /Type /Page /Parent " + tree + " 0 R /MediaBox [0 0 " + layout.width +
+      " " + layout.height + "] /Resources << /Font << " + fontRefs + " >> >> /Contents " +
+      content + " 0 R" + (links.length ? " /Annots [" + links.join(" ") + "]" : "") + " >>")]);
   }
-  finish();
-  const blob = new Blob([createPdf(pages)], { type: "application/pdf" });
-  const href = URL.createObjectURL(blob), a = doc.createElement("a");
-  a.href = href; a.download = name; a.style.display = "none"; doc.body.append(a); a.click(); a.remove();
-  setTimeout(() => URL.revokeObjectURL(href), 30000);
-  return { pages: pages.length, bytes: blob.size, name };
+  writer.set(tree, [b("<< /Type /Pages /Count " + refPages.length + " /Kids [" + refPages.map(v => v + " 0 R").join(" ") + "] >>")]);
+  writer.set(catalog, [b("<< /Type /Catalog /Pages " + tree + " 0 R >>")]);
+  return writer.finish(catalog);
+}
+export async function downloadManualPdf(doc, options = {}) {
+  if (!doc || !doc.querySelector) throw new Error("Obsah manuálu není dostupný.");
+  const title = String(options.title || doc.title || "Příručka AI Studia").replace(/\s+/g, " ").trim();
+  const fileName = String(options.filename || "AI-Studio-manual.pdf").replace(/[^a-zA-Z0-9_.-]/g, "_");
+  const blocks = htmlToBlocks(doc, options.extras);
+  if (blocks.length < 5) throw new Error("Chybí obsah potřebný k vytvoření PDF.");
+  const data = createPdf(doc, blocks, title);
+  if (data.length > 35 * 1024 * 1024) throw new Error("PDF překročilo bezpečný limit velikosti.");
+  const blob = new Blob([data], { type: "application/pdf" });
+  const url = URL.createObjectURL(blob), link = doc.createElement("a");
+  link.href = url;
+  link.download = fileName;
+  link.hidden = true;
+  doc.body.append(link);
+  link.click();
+  link.remove();
+  setTimeout(() => URL.revokeObjectURL(url), 30000);
+  return { pages: (blocks.length > 0 ? "multiple" : 0), bytes: data.length, fileName };
 }
