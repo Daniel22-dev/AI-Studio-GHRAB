@@ -96,7 +96,7 @@ function manualCard(app) {
   const version = make(
     "div",
     "manual-version",
-    `${G.t("verze", "version")} ${app.version || "—"}`,
+    `${G.t("verze aplikace", "app version")} ${app.version || "—"}`,
   );
   const description = make(
     "p",
@@ -272,8 +272,8 @@ function renderSyncState() {
   const total = syncReport?.sources?.length || apps.length;
   if (live === total && total > 0) {
     syncState.textContent = G.t(
-      `Aktuální verze ověřeny u všech ${total} aplikací.`,
-      `Current versions verified for all ${total} applications.`,
+      `Ověřeny verze ${total} aplikací. Obsah manuálů vyžaduje vlastní revizi.`,
+      `Release versions verified for ${total} applications. Manual content requires separate review.`,
     );
     syncState.className = "manual-sync-state ok";
   } else {

@@ -36,3 +36,8 @@
 .studio-guide .not-needed{padding:16px;border:1px dashed rgba(255,255,255,.18);border-radius:15px;background:rgba(255,255,255,.018)}
 @media(max-width:800px){.studio-guide .quick-path{grid-template-columns:1fr 1fr}.studio-guide .toc{grid-template-columns:1fr 1fr}.studio-guide .nav-map{grid-template-columns:1fr}}
 @media(max-width:520px){.studio-guide{padding:20px 14px 70px}.studio-guide .hero{padding:24px}.studio-guide .quick-path,.studio-guide .toc{grid-template-columns:1fr}.studio-guide .top{align-items:flex-start;flex-direction:column}}
+
+/* PDF action: keyboard accessible and visually aligned with Studio */
+.studio-guide #studio-guide-pdf{border:1px solid var(--cyan);background:rgba(80,232,255,.09);color:var(--text);padding:10px 15px;border-radius:12px;font:inherit;font-size:.84rem;font-weight:800;cursor:pointer;min-height:42px}
+.studio-guide #studio-guide-pdf:focus-visible{outline:3px solid var(--cyan);outline-offset:3px}
+.studio-guide #studio-guide-pdf:disabled{opacity:.6;cursor:wait}
