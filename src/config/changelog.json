@@ -1,7 +1,21 @@
 {
   "schema": "ai-studio-changelog-v1",
-  "current": "0.21.196",
+  "current": "0.21.197",
   "items": [
+    {
+      "version": "0.21.197",
+      "date": "2026-10-08",
+      "title": {
+        "cs": "Bezpečné automatické PATCH povýšení",
+        "en": "Safe automatic PATCH promotion"
+      },
+      "changes": [
+        {
+          "cs": "Ověřená PATCH změna aplikace aktualizovala release-wave a současně zvýšila patch verzi AI Studia právě jednou; duplicitní nebo bezezměnový běh verzi Studia nezvyšuje.",
+          "en": "A verified application PATCH update changed the release wave and bumped the AI Studio patch version exactly once; duplicate or no-change runs do not bump the Studio version."
+        }
+      ]
+    },
     {
       "version": "0.21.196",
       "date": "2026-10-08",
