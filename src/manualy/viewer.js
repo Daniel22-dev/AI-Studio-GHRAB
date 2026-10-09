@@ -105,12 +105,7 @@ function pdfContractEligible() {
     const doc = frame.contentDocument;
     if (!doc || doc.documentElement.dataset.ghrabAccess !== "granted") return false;
     const manual = frame.contentWindow;
-    // Transitional generator compatibility: this manual exposes its complete
-    // guided-tour export but has not migrated to the editorial DOC_INFO contract.
-    // Keep exactly one protected PDF download in the central viewer rather than
-    // disabling the only export after the nested print action is suppressed.
-    if (currentApp.id === "generator")
-      return Array.isArray(manual.GHRAB_MANUAL_EXPORT) && manual.GHRAB_MANUAL_EXPORT.length > 0;
+    // GIT publishes DOC_INFO as well: never bypass reviewStatus for this app.
     const info = manual.GHRAB_MANUAL_DOC_INFO;
     if (!info || info.appId !== currentApp.id ||
         info.appVersion !== currentApp.version ||
