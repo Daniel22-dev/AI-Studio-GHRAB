@@ -24,7 +24,7 @@ function unicodeHex(char) {
 }
 function readableText(element) {
   // textContent omits the visual gap between adjacent inline/flex items,
-  // e.g. "Pro koho" + "Učitelé" or a numbered step "1" + "Zvol".
+  // e.g. "Pro koho" + "Učitelé", "postupu." + "1", or icon "↗" + "Aktuální".
   function visit(node) {
     if (node.nodeType === 3) return node.nodeValue || "";
     if (node.nodeType !== 1 || node.getAttribute("aria-hidden") === "true" ||
@@ -39,7 +39,7 @@ function readableText(element) {
       const piece = visit(child);
       if (!piece) continue;
       if ((previousWasElement || child.nodeType === 1) &&
-          /[\p{L}\p{N}✓✔]$/u.test(output) && /^[\p{L}\p{N}]/u.test(piece))
+          /[\p{L}\p{N}\p{P}\p{S}]$/u.test(output) && /^[\p{L}\p{N}\p{S}]/u.test(piece))
         output += " ";
       output += piece;
       previousWasElement = child.nodeType === 1;
