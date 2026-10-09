@@ -1005,7 +1005,7 @@
       "en": "Helps prepare and run the English oral Matura exam. The Studio currently provides only a demo with sample data."
     },
     "launchUrl": "https://daniel22-dev.github.io/maturita-desk/",
-    "manualUrl": "https://daniel22-dev.github.io/maturita-desk/",
+    "manualUrl": "https://daniel22-dev.github.io/maturita-desk/manual/",
     "repository": "Daniel22-dev/maturita-desk",
     "icon": "assets/apps/maturita-desk.webp",
     "accent": "#4b263d",
@@ -1040,7 +1040,7 @@
       "platformContract": "ghrab-platform-v1",
       "platformRange": ">=1.1.2 <2.0.0"
     },
-    "publishedAt": "2026-09-27T06:43:48.000Z",
+    "publishedAt": "2026-10-09T04:42:49.000Z",
     "integration": {
       "launchMode": "external-protected",
       "securityBoundary": "public-demo-only",
@@ -1083,9 +1083,9 @@
       "version": "1.0.6",
       "source": {
         "repository": "Daniel22-dev/maturita-desk",
-        "commit": "9765149fc3165e44e7e06626c266981d69a8bb25"
+        "commit": "ae1289f6a719bb8dbbb42e48e168b01927c3421a"
       },
-      "buildId": "deploy-36300992561-1"
+      "buildId": "deploy-37885222230-1"
     }
   }
 ]
