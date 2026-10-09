@@ -24,6 +24,7 @@ const webPage = String.raw`<!doctype html><html lang="cs" data-ghrab-access="gra
 <table><thead><tr><th>Úroveň</th><th>Očekávání</th></tr></thead><tbody><tr><td>Standardní</td><td>Vysvětlí význam slov</td></tr></tbody></table>
 <section hidden><h2>Skrytá sekce při vyhledávání</h2><p>Výukové kroky nesmí zmizet po filtrování.</p></section>
 <div data-ghrab-pdf-exclude><p>NEEXPORTOVAT INTERNÍ ÚDAJE</p></div>
+<div class="stat"><b>Veřejný popisek</b><span data-ghrab-pdf-exclude>TAJNY_EXPORT_KLUC</span><span>Bezpečné údaje</span></div>
 <div class="safety-item"><i>✓</i><div>Neodesílejte citlivá data studentů.</div></div>
 <label class="check"><input type="checkbox"><span>Ověřte studentský odkaz.</span></label>
 <div class="acc"><button type="button">Jak vrátit výsledek?<span>＋</span></button><div class="ans">Použijte Verifier.</div></div>
@@ -137,7 +138,7 @@ try {
   }
   if(unicodeText.includes("Jak vrátit výsledek?＋"))
     throw Error("Decorative accordion button glyph leaked into PDF");
-  if(unicodeText.includes("NEEXPORTOVAT PŘÍSTUPOVOU BRÁNU") || unicodeText.includes("NEEXPORTOVAT INTERNÍ ÚDAJE"))
+  if(unicodeText.includes("NEEXPORTOVAT PŘÍSTUPOVOU BRÁNU") || unicodeText.includes("NEEXPORTOVAT INTERNÍ ÚDAJE") || unicodeText.includes("TAJNY_EXPORT_KLUC"))
     throw Error("PDF included access gate or excluded internal data");
   if(pages<2)throw Error("Long manual was not paginated");
   let extracted="";let extraction="skipped";
