@@ -126,6 +126,25 @@ check(!appJs.includes('document.querySelector(".mission-strip")?.before(section)
 const accessHtml = await text("src/access/index.html");
 check(/data-teacher-only[^>]*hidden[\s\S]*?ANONYMN[IÍ]/.test(accessHtml), "Mesicni souhrn v Muj pristup neni teacher-only.");
 const manualsHtml = await text("src/manualy/index.html");
+const viewerHtml = await text("src/manualy/viewer.html");
+const viewerJs = await text("src/manualy/viewer.js");
+const viewerCss = await text("src/manualy/viewer.css");
+const manualCatalogJs = await text("src/manualy/manualy.js");
+check(viewerHtml.includes('class="viewer-back viewer-back-studio"') &&
+  viewerHtml.includes('aria-label="Zpět na přehled manuálů"'),
+  "Viewer must offer both Studio and manual-center return links.");
+check(viewerJs.includes('standaloneUrl.searchParams.set("from", "studio")'),
+  "Standalone manual launch does not preserve Studio origin.");
+check(viewerJs.includes('if (currentApp.id === "generator")') &&
+  viewerJs.includes('doc.documentElement.dataset.ghrabAccess !== "granted"'),
+  "GIT PDF must retain one access-controlled export pending editorial contract.");
+check(viewerJs.includes('function syncEmbeddedManualTheme()') &&
+  viewerJs.includes('syncEmbeddedManualTheme();') &&
+  viewerCss.includes('.viewer-back-studio'),
+  "Manual viewer theme/navigation synchronization is incomplete.");
+check(manualCatalogJs.includes('const integratedHelp = app.id === "maturita-desk" && !available;'),
+  "Maturita Desk has a standalone manual; catalog must not mislabel it as integrated only.");
+
 check(/data-teacher-only[^>]*hidden[\s\S]*?Jak odevzdat m/.test(manualsHtml), "Navod k mesicnimu souhrnu neni teacher-only.");
 check(/data-admin-only[^>]*hidden[\s\S]*?Automatick/.test(manualsHtml), "Navod evidence pristupu neni admin-only.");
 check(/data-teacher-only[^>]*hidden[\s\S]*?ai-studio-teacher\.html/.test(manualsHtml), "Centrum manualu nema roli ucitele pro manual AI Studia.");

@@ -74,7 +74,7 @@ function accessText(access, appId) {
 function manualCard(app) {
   const access = G.hasAppAccess(app.id);
   const available = Boolean(app.manualUrl);
-  const integratedHelp = app.id === "maturita-desk";
+  const integratedHelp = app.id === "maturita-desk" && !available;
   const enabled = access.enabled && available;
   const article = make("article", `manual-card ${enabled ? "open" : "locked"}`);
   article.style.setProperty("--manual-accent", app.accent || "#50e8ff");
