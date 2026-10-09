@@ -39,6 +39,10 @@ jobs:
         run: npm ci --ignore-scripts --no-audit --no-fund --registry=https://registry.npmjs.org
       - name: Install Chromium browser
         run: npx playwright install --with-deps chromium
+      - name: Install Poppler render and text extraction tools
+        run: |
+          sudo apt-get update -qq
+          sudo apt-get install -y --no-install-recommends poppler-utils
       - name: Verify exported PDF accessibility and full content
         env:
           GHRAB_PDF_QA_ARTIFACT_DIR: qa-results/manual-pdf
