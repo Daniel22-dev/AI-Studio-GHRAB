@@ -1040,7 +1040,7 @@
       "platformContract": "ghrab-platform-v1",
       "platformRange": ">=1.1.2 <2.0.0"
     },
-    "publishedAt": "2026-10-09T04:42:49.000Z",
+    "publishedAt": "2026-10-09T17:37:50.000Z",
     "integration": {
       "launchMode": "external-protected",
       "securityBoundary": "public-demo-only",
@@ -1083,9 +1083,9 @@
       "version": "1.0.6",
       "source": {
         "repository": "Daniel22-dev/maturita-desk",
-        "commit": "ae1289f6a719bb8dbbb42e48e168b01927c3421a"
+        "commit": "deac39cfec517810b5a185246a63c9b6b30e2b94"
       },
-      "buildId": "deploy-37885222230-1"
+      "buildId": "deploy-37967716391-1"
     }
   }
 ]
