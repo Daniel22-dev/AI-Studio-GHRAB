@@ -74,10 +74,16 @@
       document.querySelector("main");
     if (!bar) return;
     const embedded = viewerFrame();
-    if (embedded) {
-      const brand = document.querySelector("header.topbar .brand");
-      if (brand) brand.style.display = "none";
+    const topbar = document.querySelector("header.topbar");
+    if (topbar) topbar.style.flexWrap = "wrap";
+    const topActions = document.querySelector("header .top-actions");
+    if (topActions) {
+      topActions.style.flexWrap = "wrap";
+      topActions.style.minWidth = "0";
     }
+    const brand = document.querySelector("header.topbar .brand");
+    if (brand) brand.style.display =
+      embedded || window.matchMedia("(max-width: 680px)").matches ? "none" : "";
     let toolbar = current;
     if (!toolbar) {
       toolbar = document.createElement("div");
@@ -96,6 +102,7 @@
       if (bar !== document.querySelector("header .top-actions"))
         bar.style.flexWrap = "wrap";
     }
+    if (toolbar.parentNode !== bar) bar.prepend(toolbar);
     toolbar.style.display = "flex";
     const nav = toolbar.querySelector("#ghrab-manual-return");
     if (nav) nav.style.display = embedded ? "none" : "flex";
@@ -136,6 +143,7 @@
     new MutationObserver(schedule).observe(document.body, { childList: true, subtree: true });
     schedule();
   }
+  window.addEventListener("resize", schedule, { passive: true });
   if (document.body) startBodyObserver();
   else document.addEventListener("DOMContentLoaded", startBodyObserver, { once: true });
 })();
