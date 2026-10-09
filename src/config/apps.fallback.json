@@ -52,7 +52,7 @@
       "platformContract": "ghrab-platform-v1",
       "platformRange": ">=1.1.2 <2.0.0"
     },
-    "publishedAt": "2026-10-08T16:30:15.254Z",
+    "publishedAt": "2026-10-09T17:50:18.590Z",
     "aiCore": {
       "schema": "ghrab-ai-app-integration-v1",
       "status": "integrated-p1",
@@ -934,7 +934,7 @@
       "platformContract": "ghrab-platform-v1",
       "platformRange": ">=1.1.2 <2.0.0"
     },
-    "publishedAt": "2026-10-09T04:50:30.000Z",
+    "publishedAt": "2026-10-09T17:39:12.000Z",
     "aiCore": {
       "schema": "ghrab-ai-app-integration-v1",
       "status": "not-applicable",
@@ -977,9 +977,9 @@
       "version": "1.2.26",
       "source": {
         "repository": "Daniel22-dev/lesson-hub",
-        "commit": "89e6898e09331f7006388d9de047fe4038578ddf"
+        "commit": "2aa24e6c3309e300374ab6b7a5264c481d03eac1"
       },
-      "buildId": "github-37885854264-1",
+      "buildId": "github-37967980875-1",
       "evidence": {
         "releaseIntegrity": "release-integrity.json",
         "provenance": "build-provenance.json",
