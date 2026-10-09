@@ -27,7 +27,9 @@ function readableText(element) {
   // e.g. "Pro koho" + "Učitelé" or a numbered step "1" + "Zvol".
   function visit(node) {
     if (node.nodeType === 3) return node.nodeValue || "";
-    if (node.nodeType !== 1 || node.getAttribute("aria-hidden") === "true") return "";
+    if (node.nodeType !== 1 || node.getAttribute("aria-hidden") === "true" ||
+        node.hasAttribute("data-ghrab-pdf-exclude") ||
+        node.matches(".ghrab-access-gate,.ghrab-access-bootstrap-fallback,script,style,nav,footer")) return "";
     if (["SVG", "SCRIPT", "STYLE"].includes(node.tagName)) return "";
     // Accordion expansion glyphs are controls, not printable instructions.
     if (node.tagName === "SPAN" && node.parentElement?.matches(".acc > button") &&
