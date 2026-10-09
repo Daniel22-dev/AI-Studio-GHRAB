@@ -116,6 +116,19 @@ function pdfContractEligible() {
 function refreshPdfAvailability() {
   pdfButton.hidden = !pdfContractEligible();
 }
+function syncEmbeddedManualTheme() {
+  // Embedded manuals inherit the Studio theme while remaining independently usable.
+  // Do not read or mutate cross-origin frames.
+  const selected = document.documentElement.dataset.theme;
+  if (selected !== "dark" && selected !== "light") return;
+  try {
+    const target = frame.contentDocument?.documentElement;
+    if (!target || target.dataset.ghrabAccess === "denied") return;
+    target.dataset.theme = selected;
+  } catch {
+    // Cross-origin standalone manuals manage their own theme.
+  }
+}
 
 function loadFrame() {
   if (!currentManualUrl) return;
@@ -227,13 +240,17 @@ frame.addEventListener("load", () => {
   statePanel.hidden = true;
   frame.hidden = false;
   refreshPdfAvailability();
+  syncEmbeddedManualTheme();
   // An authorized iframe may complete its guard after the frame load event.
   // Recheck only when its explicit access state changes; never enable PDF on iframe.load alone.
   try {
     manualAccessObserver?.disconnect();
     const doc = frame.contentDocument;
     if (doc?.documentElement) {
-      manualAccessObserver = new MutationObserver(() => refreshPdfAvailability());
+      manualAccessObserver = new MutationObserver(() => {
+        refreshPdfAvailability();
+        syncEmbeddedManualTheme();
+      });
       manualAccessObserver.observe(doc.documentElement, {
         attributes: true,
         attributeFilter: ["data-ghrab-access"],
@@ -274,6 +291,11 @@ document.addEventListener("ghrab:language", () => {
   if (!currentApp) return;
   const access = G.hasAppAccess(currentApp.id);
   if (!access.enabled) renderLocked(access);
+});
+const studioThemeObserver = new MutationObserver(() => syncEmbeddedManualTheme());
+studioThemeObserver.observe(document.documentElement, {
+  attributes: true,
+  attributeFilter: ["data-theme"],
 });
 document.addEventListener("ghrab:access-changed", () => initialise());
 initialise();
