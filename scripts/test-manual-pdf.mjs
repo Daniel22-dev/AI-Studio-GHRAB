@@ -15,6 +15,9 @@ const webPage = String.raw`<!doctype html><html lang="cs" data-ghrab-access="gra
 <p>Při používání školy ověřte školní účet, českou diakritiku: ěščřžýáíéúůďťň ĚŠČŘŽÝÁÍÉÚŮĎŤŇ.</p>
 <details><summary>Rozbalený postup: Google Forms a START/END</summary><p>Tento text je i v zavřeném detailu.</p></details>
 <ul><li>Připravit osobní kód.</li><li>Odevzdat a zkontrolovat výsledky.</li></ul>
+<div class="steps"><div><span><b>Importujte třídu</b><small>Vložte skupinu z IS.</small></span></div></div>
+<div class="keys"><div><code>Alt + I</code><span>Import z IS</span></div></div>
+<div class="grid"><article><b>Losování</b><p>Náhodný výběr studentů.</p></article></div>
 <a href="https://example.org/help">Otevřít nápovědu</a>
 </main><button id="pdf">Stáhnout PDF</button>
 <script type="module">
@@ -119,7 +122,7 @@ try {
       unicodeText+=value;
     }
   }
-  for(const word of ["Začínáme","diakritika","ěščřžýáíéúůďťň","Google Forms","Výukový průvodce","uzavřených","Krok 90","Pro koho Učitelé","1 Zvol režim"]){
+  for(const word of ["Začínáme","diakritika","ěščřžýáíéúůďťň","Google Forms","Výukový průvodce","uzavřených","Krok 90","Pro koho Učitelé","1 Zvol režim","Importujte třídu Vložte skupinu z IS.","Alt + I Import z IS","Losování"]){
     if(!unicodeText.includes(word))throw Error("PDF ToUnicode failed extraction: "+word+" from "+unicodeText.slice(0,300));
   }
   if(pages<2)throw Error("Long manual was not paginated");
