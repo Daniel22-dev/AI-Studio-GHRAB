@@ -51,6 +51,25 @@ try {
   const page=await browser.newPage({acceptDownloads:true,viewport:{width:390,height:844}});
   const errors=[];page.on("pageerror",e=>errors.push(String(e)));
   await page.goto("http://127.0.0.1:"+server.address().port+"/");
+  // Reject access states before extracting content, even when the metadata is absent.
+  const deniedStates = await page.evaluate(async () => {
+    const { downloadManualPdf } = await import("/manualy/pdf-export.js");
+    const results = [];
+    for (const state of ["missing", "checking", "denied", "empty"]) {
+      const testDoc = document.implementation.createHTMLDocument("Isolated access test");
+      testDoc.body.innerHTML = "<main><h1>Private manual</h1><p>Hidden details must not leave this document</p></main>";
+      if (state !== "missing") testDoc.documentElement.dataset.ghrabAccess = state === "empty" ? "" : state;
+      try {
+        await downloadManualPdf(testDoc, { filename: "MUST_NOT_EXPORT.pdf" });
+        results.push({ state, refused: false });
+      } catch (err) {
+        results.push({ state, refused: String(err?.message || err).includes("Přístup k manuálu nebyl ověřen") });
+      }
+    }
+    return results;
+  });
+  if (deniedStates.some(item => !item.refused))
+    throw Error("PDF access gate did not fail closed: " + JSON.stringify(deniedStates));
   const task=page.waitForEvent("download",{timeout:45000});
   await page.click("#pdf");
   const download=await task;
