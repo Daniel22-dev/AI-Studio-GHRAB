@@ -95,6 +95,7 @@ try {
   const correctlyDecoded=(pdf.match(/\/Decode \[1 0\]/g)||[]).length;
   if(!masks||correctlyDecoded!==masks)throw Error("PDF glyph bitmap mask is inverted: "+correctlyDecoded+"/"+masks);
   if(!pdf.includes(".07 .19 .30 RG .7 w 45 798 m "))throw Error("PDF header stroke is malformed");
+  if(pdf.includes("45 816 50 3 re f"))throw Error("Decorative stripe obscures PDF running header");
   if(!pdf.includes("/Subtype /Link"))throw Error("Clickable link missing");
   const pages=(pdf.match(/\/Type \/Page \/Parent/g)||[]).length;
   if(!pages)throw Error("No pages");
@@ -131,9 +132,11 @@ try {
       unicodeText+=value;
     }
   }
-  for(const word of ["Začínáme","diakritika","ěščřžýáíéúůďťň","Google Forms","Výukový průvodce","uzavřených","Krok 90","Pro koho Učitelé","1 Zvol režim","Importujte třídu Vložte skupinu z IS.","Alt + I Import z IS","Losování","Roster","Neodesílejte citlivá data studentů.","Ověřte studentský odkaz.","Jak vrátit výsledek?","Slovotvorba Vysvětlete tvar a význam.","Úroveň | Očekávání","Standardní | Vysvětlí význam slov","Skrytá sekce při vyhledávání","Výukové kroky nesmí zmizet po filtrování."]){
+  for(const word of ["Začínáme","diakritika","ěščřžýáíéúůďťň","Google Forms","Výukový průvodce","uzavřených","Krok 90","Pro koho Učitelé","1 Zvol režim","Importujte třídu Vložte skupinu z IS.","Alt + I Import z IS","Losování","Roster","✓ Neodesílejte citlivá data studentů.","Ověřte studentský odkaz.","Jak vrátit výsledek?","Slovotvorba Vysvětlete tvar a význam.","Úroveň | Očekávání","Standardní | Vysvětlí význam slov","Skrytá sekce při vyhledávání","Výukové kroky nesmí zmizet po filtrování."]){
     if(!unicodeText.includes(word))throw Error("PDF ToUnicode failed extraction: "+word+" from "+unicodeText.slice(0,300));
   }
+  if(unicodeText.includes("Jak vrátit výsledek?＋"))
+    throw Error("Decorative accordion button glyph leaked into PDF");
   if(unicodeText.includes("NEEXPORTOVAT PŘÍSTUPOVOU BRÁNU") || unicodeText.includes("NEEXPORTOVAT INTERNÍ ÚDAJE"))
     throw Error("PDF included access gate or excluded internal data");
   if(pages<2)throw Error("Long manual was not paginated");
