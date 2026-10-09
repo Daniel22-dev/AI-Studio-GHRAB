@@ -1,0 +1,36 @@
+name: Live manuals anonymous acceptance
+on:
+  workflow_dispatch:
+  pull_request:
+    branches: [candidate]
+    paths:
+      - 'scripts/test-manual-live-anonymous.mjs'
+      - '.github/workflows/manual-live-acceptance.yml'
+permissions:
+  contents: read
+jobs:
+  anonymous-manual-acceptance:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 25
+    steps:
+      - uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683 # v4.2.2
+        with:
+          persist-credentials: false
+      - uses: actions/setup-node@49933ea5288caeca8642d1e84afbd3f7d6820020 # v4.4.0
+        with:
+          node-version: 22.22.2
+          cache: npm
+      - name: Install locked dependencies
+        run: npm ci --ignore-scripts --no-audit --no-fund
+      - name: Install Chromium
+        run: npx playwright install --with-deps chromium
+      - name: Run anonymous live acceptance on nine real deployments
+        run: node scripts/test-manual-live-anonymous.mjs
+      - name: Retain test results and 19 screenshots
+        if: always()
+        uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02 # v4.6.2
+        with:
+          name: live-manual-anonymous-acceptance
+          path: qa-results/manual-live-acceptance/
+          retention-days: 14
+          if-no-files-found: warn
