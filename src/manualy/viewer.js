@@ -100,8 +100,6 @@ function pdfContractEligible() {
     const doc = frame.contentDocument;
     if (!doc || doc.documentElement.dataset.ghrabAccess !== "granted") return false;
     const manual = frame.contentWindow;
-    if (currentApp.id === "generator")
-      return Array.isArray(manual.GHRAB_MANUAL_EXPORT) && manual.GHRAB_MANUAL_EXPORT.length > 0;
     const info = manual.GHRAB_MANUAL_DOC_INFO;
     if (!info || info.appId !== currentApp.id ||
         info.appVersion !== currentApp.version ||
