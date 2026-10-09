@@ -55,7 +55,7 @@ function sampleManual(url) {
     '<section hidden><h2>Skrytý postup</h2><p>Tento krok musí být v PDF.</p></section>',
     '<div class="stat"><b>Veřejné informace</b><span data-ghrab-pdf-exclude>TAJNE_UDAJE_123</span><span>Bezpečný obsah</span></div>',
     '<a href="https://example.org/navod">Podrobnosti</a></main>',
-    '<script>window.GHRAB_MANUAL_DOC_INFO = {appId:"\' + appId + \'",appVersion:"1.0.0",reviewStatus:"' + review + '",pdfContentContract:"static-complete-sections-v1"};',
+    '<script>window.GHRAB_MANUAL_DOC_INFO = {appId:"' + appId + '",appVersion:"1.0.0",reviewStatus:"' + review + '",pdfContentContract:"static-complete-sections-v1"};',
     'window.GHRAB_MANUAL_EXPORT = [{type:"body",text:"Doplňující vysvětlení plného postupu."}];<\/script>',
     '</body></html>'
   ].join("");
