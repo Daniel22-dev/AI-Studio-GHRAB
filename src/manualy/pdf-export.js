@@ -44,21 +44,46 @@ function readableText(element) {
   return visit(element).replace(/\s+/g, " ").trim();
 }
 function htmlToBlocks(doc, extras = []) {
-  const root = doc.querySelector("main") || doc.body;
+  // Some manuals have a separate first <main> for the access-check placeholder.
+  // Prefer the actual manual content and never export an access gate as a guide.
+  const root = doc.querySelector("[data-ghrab-pdf-root],main#manualContent,main.content,.manual-layout main") ||
+    [...doc.querySelectorAll("main")].find(node =>
+      !node.matches(".ghrab-access-bootstrap-fallback,.ghrab-access-gate")) ||
+    doc.body;
   if (!root) throw new Error("Manuál nemá obsah.");
-  const selector = "h1,h2,h3,h4,p,li,dt,dd,summary,.acc .ans,.mini-step,.stat,.notice,.flow-warning,.flow-danger,.steps > div,.keys > div,.grid > article > b,.term > b,.safety-item,.check,.acc > button";
+  // Capture self-contained panels whose important content does not live in <p>.
+  // E.g. SORTIO's "first four steps", ACTIVA activity tiles and lesson notes.
+  const atomic = ".acc .ans,.mini-step,.stat,.notice,.flow-warning,.flow-danger," +
+    ".steps > div,.keys > div,.safety-item,.check,.grid > article,.card.step," +
+    ".activity,.manual-grid article,.manual-note,.manual-warning,.manual-tip," +
+    ".term,.pathcards > a,table tr";
+  const selector = "h1,h2,h3,h4,p,li,dt,dd,summary,.acc > button," + atomic;
   const blocks = [];
-  const ignore = "nav,footer,script,style,.search-overlay,.mobile-nav,.top-actions,.toc,[hidden],[aria-hidden='true']";
+  const ignore = "nav,footer,script,style,.search-overlay,.mobile-nav,.top-actions,.toc," +
+    ".ghrab-access-gate,.ghrab-access-bootstrap-fallback,[aria-hidden='true'],[data-ghrab-pdf-exclude]";
   for (const element of root.querySelectorAll(selector)) {
     if (element.closest('body[data-ghrab-access="denied"],body[data-ghrab-access="checking"]')) continue;
     if (element.closest(ignore) || (element.closest("button") && !element.matches(".acc > button"))) continue;
-    if (element.matches(".steps > div,.keys > div") && element.querySelector("h1,h2,h3,h4,p,li")) continue;
-    if (element.matches("p,li,dd") && element.closest(".acc .ans,.notice,.mini-step,.stat,.flow-warning,.flow-danger,.safety-item,.check")) continue;
-    const text = readableText(element);
+    // Hidden manual sections may be temporarily filtered by a search query.
+    // Keep them in the PDF, but never include separately hidden control widgets.
+    const hiddenAncestor = element.closest("[hidden]");
+    if (hiddenAncestor && hiddenAncestor.tagName !== "SECTION" &&
+        !hiddenAncestor.matches("[data-ghrab-pdf-include]")) continue;
+    // An atomic card already contains all of its labelled descendants.
+    const parentCard = element.parentElement?.closest(atomic);
+    if (parentCard && root.contains(parentCard)) continue;
+    let text = "";
+    if (element.matches("table tr")) {
+      text = [...element.querySelectorAll(":scope > th,:scope > td")]
+        .map(cell => readableText(cell)).filter(Boolean).join(" | ");
+    } else {
+      text = readableText(element);
+    }
     if (!text || text.length < 2) continue;
     let type = /^H[1-4]$/.test(element.tagName) ? element.tagName.toLowerCase() :
-      element.matches("summary,.grid > article > b,.term > b,.acc > button") ? "h3" : element.matches("li") ? "list" : "body";
-    if (element.matches(".notice,.flow-warning,.flow-danger")) type = "warning";
+      element.matches("summary,.acc > button") ? "h3" :
+      element.matches("li,table tr") ? "list" : "body";
+    if (element.matches(".notice,.flow-warning,.flow-danger,.manual-warning")) type = "warning";
     blocks.push({ type, text });
   }
   for (const extra of extras) {
@@ -67,16 +92,18 @@ function htmlToBlocks(doc, extras = []) {
   }
   const links = new Set();
   for (const anchor of root.querySelectorAll("a[href]")) {
+    if (anchor.closest(ignore)) continue;
     try {
       const url = new URL(anchor.getAttribute("href"), doc.baseURI);
       if (!["https:", "http:"].includes(url.protocol)) continue;
       if (url.username || url.password || links.has(url.href)) continue;
       links.add(url.href);
-      blocks.push({ type: "link", text: (anchor.textContent || url.href).trim() + ": " + url.href, url: url.href });
+      blocks.push({ type: "link", text: readableText(anchor) + ": " + url.href, url: url.href });
     } catch { /* invalid link */ }
   }
   return blocks;
 }
+
 function makeGlyphCanvas(doc, char, bold) {
   const sample = doc.createElement("canvas");
   const sampleCtx = sample.getContext("2d", { willReadFrequently: true });
