@@ -288,9 +288,12 @@ export async function downloadManualPdf(doc, options = {}) {
   if (!doc || !doc.querySelector) throw new Error("Obsah manuálu není dostupný.");
   const title = String(options.title || doc.title || "Příručka AI Studia").replace(/\s+/g, " ").trim();
   const fileName = String(options.filename || "AI-Studio-manual.pdf").replace(/[^a-zA-Z0-9_.-]/g, "_");
+  // Fail closed: absent metadata must never count as an authorized manual.
+  // Evaluate the permit before reading dynamic or hidden manual contents.
+  if (doc.documentElement?.dataset?.ghrabAccess !== "granted")
+    throw new Error("Přístup k manuálu nebyl ověřen.");
   const blocks = htmlToBlocks(doc, options.extras);
   if (blocks.length < 5) throw new Error("Chybí obsah potřebný k vytvoření PDF.");
-  if (doc.documentElement?.dataset?.ghrabAccess === "denied" || doc.documentElement?.dataset?.ghrabAccess === "checking") throw new Error("Přístup k manuálu nebyl ověřen.");
   const { data, pages } = createPdf(doc, blocks, title);
   if (data.length > 35 * 1024 * 1024) throw new Error("PDF překročilo bezpečný limit velikosti.");
   const blob = new Blob([data], { type: "application/pdf" });
