@@ -34,30 +34,30 @@ function readableText(element) {
       const piece = visit(child);
       if (!piece) continue;
       if ((previousWasElement || child.nodeType === 1) &&
-          /[\\p{L}\\p{N}]$/u.test(output) && /^[\\p{L}\\p{N}]/u.test(piece))
+          /[\p{L}\p{N}]$/u.test(output) && /^[\p{L}\p{N}]/u.test(piece))
         output += " ";
       output += piece;
       previousWasElement = child.nodeType === 1;
     }
     return output;
   }
-  return visit(element).replace(/\\s+/g, " ").trim();
+  return visit(element).replace(/\s+/g, " ").trim();
 }
 function htmlToBlocks(doc, extras = []) {
   const root = doc.querySelector("main") || doc.body;
   if (!root) throw new Error("Manuál nemá obsah.");
-  const selector = "h1,h2,h3,h4,p,li,dt,dd,summary,.acc .ans,.mini-step,.stat,.notice,.flow-warning,.flow-danger,.steps > div,.keys > div,.grid > article > b";
+  const selector = "h1,h2,h3,h4,p,li,dt,dd,summary,.acc .ans,.mini-step,.stat,.notice,.flow-warning,.flow-danger,.steps > div,.keys > div,.grid > article > b,.term > b,.safety-item,.check,.acc > button";
   const blocks = [];
   const ignore = "nav,footer,script,style,.search-overlay,.mobile-nav,.top-actions,.toc,[hidden],[aria-hidden='true']";
   for (const element of root.querySelectorAll(selector)) {
     if (element.closest('body[data-ghrab-access="denied"],body[data-ghrab-access="checking"]')) continue;
-    if (element.closest(ignore) || element.closest("button")) continue;
+    if (element.closest(ignore) || (element.closest("button") && !element.matches(".acc > button"))) continue;
     if (element.matches(".steps > div,.keys > div") && element.querySelector("h1,h2,h3,h4,p,li")) continue;
-    if (element.matches("p,li,dd") && element.closest(".acc .ans,.notice,.mini-step,.stat,.flow-warning,.flow-danger")) continue;
+    if (element.matches("p,li,dd") && element.closest(".acc .ans,.notice,.mini-step,.stat,.flow-warning,.flow-danger,.safety-item,.check")) continue;
     const text = readableText(element);
     if (!text || text.length < 2) continue;
     let type = /^H[1-4]$/.test(element.tagName) ? element.tagName.toLowerCase() :
-      element.matches("summary,.grid > article > b") ? "h3" : element.matches("li") ? "list" : "body";
+      element.matches("summary,.grid > article > b,.term > b,.acc > button") ? "h3" : element.matches("li") ? "list" : "body";
     if (element.matches(".notice,.flow-warning,.flow-danger")) type = "warning";
     blocks.push({ type, text });
   }
