@@ -89,6 +89,22 @@ function htmlToBlocks(doc, extras = []) {
       element.matches("summary,.acc > button") ? "h3" :
       element.matches("li,table tr") ? "list" : "body";
     if (element.matches(".notice,.flow-warning,.flow-danger,.manual-warning")) type = "warning";
+    // Very long notices must not become a dense, all-bold accent-coloured wall.
+    // Keep the prominent label, then typeset the explanation as normal body copy.
+    // readableText() already removed descendants explicitly excluded from PDFs.
+    if (type === "warning" && text.length > 300) {
+      const label = element.querySelector("strong,b");
+      const caption = label ? readableText(label) : "";
+      const at = caption ? text.indexOf(caption) : -1;
+      if (caption.length >= 3 && caption.length < 160 && at >= 0 && at <= 16) {
+        blocks.push({ type: "warning", text: text.slice(0, at) + caption });
+        const explanation = text.slice(at + caption.length).trim();
+        if (explanation) blocks.push({ type: "body", text: explanation });
+      } else {
+        blocks.push({ type: "body", text });
+      }
+      continue;
+    }
     blocks.push({ type, text });
   }
   for (const extra of extras) {
