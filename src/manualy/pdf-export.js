@@ -29,12 +29,15 @@ function readableText(element) {
     if (node.nodeType === 3) return node.nodeValue || "";
     if (node.nodeType !== 1 || node.getAttribute("aria-hidden") === "true") return "";
     if (["SVG", "SCRIPT", "STYLE"].includes(node.tagName)) return "";
+    // Accordion expansion glyphs are controls, not printable instructions.
+    if (node.tagName === "SPAN" && node.parentElement?.matches(".acc > button") &&
+        /^[＋+−-]$/.test((node.textContent || "").trim())) return "";
     let output = "", previousWasElement = false;
     for (const child of node.childNodes) {
       const piece = visit(child);
       if (!piece) continue;
       if ((previousWasElement || child.nodeType === 1) &&
-          /[\p{L}\p{N}]$/u.test(output) && /^[\p{L}\p{N}]/u.test(piece))
+          /[\p{L}\p{N}✓✔]$/u.test(output) && /^[\p{L}\p{N}]/u.test(piece))
         output += " ";
       output += piece;
       previousWasElement = child.nodeType === 1;
@@ -290,7 +293,7 @@ function createPdf(doc, blocks, title) {
     const p = layout.pages[i], operations = [];
     operations.push("1 1 1 rg 0 0 " + layout.width + " " + layout.height + " re f");
     operations.push(".07 .19 .30 RG .7 w 45 798 m " + (layout.width - 45) + " 798 l S");
-    operations.push(".04 .35 .47 rg 45 816 50 3 re f");
+    // Do not paint a decorative stripe behind the header title (it obscures glyphs).
     operations.push(".10 .20 .30 rg");
     function draw(txt, x, y, spec) {
       const fontSize = spec.size, bold = spec.bold;
