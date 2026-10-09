@@ -1,5 +1,5 @@
 import { createServer } from "node:http";
-import { readFile, mkdtemp, rm } from "node:fs/promises";
+import { readFile, mkdtemp, rm, mkdir, copyFile } from "node:fs/promises";
 import { execFileSync } from "node:child_process";
 import path from "node:path";
 import os from "node:os";
@@ -9,12 +9,24 @@ import { chromium } from "playwright";
 const root = path.resolve(path.dirname(fileURLToPath(import.meta.url)), "..");
 const tmp = await mkdtemp(path.join(os.tmpdir(), "ghrab-pdf-"));
 const webPage = String.raw`<!doctype html><html lang="cs" data-ghrab-access="granted"><meta charset="UTF-8"><title>Test českého manuálu</title>
-<body><main>
+<body><main class="ghrab-access-bootstrap-fallback"><h1>NEEXPORTOVAT PŘÍSTUPOVOU BRÁNU</h1></main><main id="manualContent">
 <h1>Začínáme s AI Studiem</h1>
 <h2>První nastavení API klíče</h2>
+<div class="stat"><b>Pro koho</b><span>Učitelé</span></div><div class="mini-step"><span>1</span><span>Zvol režim</span></div>
 <p>Při používání školy ověřte školní účet, českou diakritiku: ěščřžýáíéúůďťň ĚŠČŘŽÝÁÍÉÚŮĎŤŇ.</p>
 <details><summary>Rozbalený postup: Google Forms a START/END</summary><p>Tento text je i v zavřeném detailu.</p></details>
 <ul><li>Připravit osobní kód.</li><li>Odevzdat a zkontrolovat výsledky.</li></ul>
+<div class="steps"><div><span><b>Importujte třídu</b><small>Vložte skupinu z IS.</small></span></div></div>
+<div class="keys"><div><code>Alt + I</code><span>Import z IS</span></div></div>
+<div class="grid"><article><b>Losování</b><p>Náhodný výběr studentů.</p></article></div>
+<div class="term"><b>Roster</b><p>Bezpečný seznam studentů.</p></div>
+<div class="activity"><b>Slovotvorba</b><small>Vysvětlete tvar a význam.</small></div>
+<table><thead><tr><th>Úroveň</th><th>Očekávání</th></tr></thead><tbody><tr><td>Standardní</td><td>Vysvětlí význam slov</td></tr></tbody></table>
+<section hidden><h2>Skrytá sekce při vyhledávání</h2><p>Výukové kroky nesmí zmizet po filtrování.</p></section>
+<div data-ghrab-pdf-exclude><p>NEEXPORTOVAT INTERNÍ ÚDAJE</p></div>
+<div class="safety-item"><i>✓</i><div>Neodesílejte citlivá data studentů.</div></div>
+<label class="check"><input type="checkbox"><span>Ověřte studentský odkaz.</span></label>
+<div class="acc"><button type="button">Jak vrátit výsledek?<span>＋</span></button><div class="ans">Použijte Verifier.</div></div>
 <a href="https://example.org/help">Otevřít nápovědu</a>
 </main><button id="pdf">Stáhnout PDF</button>
 <script type="module">
@@ -22,7 +34,7 @@ import { downloadManualPdf } from "/manualy/pdf-export.js";
 for (let i=0; i<90; i++) {
   const paragraph=document.createElement("p");
   paragraph.textContent="Krok "+(i+1)+": Pečlivě zkontrolujte zadání, výsledky a odevzdání. Podpora češtiny: ěščřžýáíéúůďťň.";
-  document.querySelector("main").append(paragraph);
+  document.querySelector("#manualContent").append(paragraph);
 }
 document.querySelector("#pdf").addEventListener("click", async () => {
 try{const result = await downloadManualPdf(document,{
@@ -79,6 +91,11 @@ try {
   if(buf.subarray(0,8).toString("latin1").indexOf("%PDF-1.")!==0)throw Error("Output is not PDF");
   const pdf=buf.toString("latin1");
   if(!pdf.includes("/ToUnicode")||!pdf.includes("/Type3"))throw Error("Unicode PDF font missing");
+  const masks=(pdf.match(/\/ImageMask true/g)||[]).length;
+  const correctlyDecoded=(pdf.match(/\/Decode \[1 0\]/g)||[]).length;
+  if(!masks||correctlyDecoded!==masks)throw Error("PDF glyph bitmap mask is inverted: "+correctlyDecoded+"/"+masks);
+  if(!pdf.includes(".07 .19 .30 RG .7 w 45 798 m "))throw Error("PDF header stroke is malformed");
+  if(pdf.includes("45 816 50 3 re f"))throw Error("Decorative stripe obscures PDF running header");
   if(!pdf.includes("/Subtype /Link"))throw Error("Clickable link missing");
   const pages=(pdf.match(/\/Type \/Page \/Parent/g)||[]).length;
   if(!pages)throw Error("No pages");
@@ -115,9 +132,13 @@ try {
       unicodeText+=value;
     }
   }
-  for(const word of ["Začínáme","diakritika","ěščřžýáíéúůďťň","Google Forms","Výukový průvodce","uzavřených","Krok 90"]){
+  for(const word of ["Začínáme","diakritika","ěščřžýáíéúůďťň","Google Forms","Výukový průvodce","uzavřených","Krok 90","Pro koho Učitelé","1 Zvol režim","Importujte třídu Vložte skupinu z IS.","Alt + I Import z IS","Losování","Roster","✓ Neodesílejte citlivá data studentů.","Ověřte studentský odkaz.","Jak vrátit výsledek?","Slovotvorba Vysvětlete tvar a význam.","Úroveň | Očekávání","Standardní | Vysvětlí význam slov","Skrytá sekce při vyhledávání","Výukové kroky nesmí zmizet po filtrování."]){
     if(!unicodeText.includes(word))throw Error("PDF ToUnicode failed extraction: "+word+" from "+unicodeText.slice(0,300));
   }
+  if(unicodeText.includes("Jak vrátit výsledek?＋"))
+    throw Error("Decorative accordion button glyph leaked into PDF");
+  if(unicodeText.includes("NEEXPORTOVAT PŘÍSTUPOVOU BRÁNU") || unicodeText.includes("NEEXPORTOVAT INTERNÍ ÚDAJE"))
+    throw Error("PDF included access gate or excluded internal data");
   if(pages<2)throw Error("Long manual was not paginated");
   let extracted="";let extraction="skipped";
   try {
@@ -127,7 +148,18 @@ try {
       if(!extracted.includes(word))throw Error("PDF text extraction missing: "+word+"\nEXTRACTED="+extracted.slice(0,2000));
     }
   }catch(e){if(e.code!=="ENOENT")throw e;}
-  console.log(JSON.stringify({ok:true,pages,bytes:buf.length,extraction,selected:extracted.slice(0,140)}));
+  const artifactDir = process.env.GHRAB_PDF_QA_ARTIFACT_DIR;
+  if (artifactDir) {
+    const out = path.resolve(artifactDir);
+    await mkdir(out, { recursive: true });
+    await copyFile(file, path.join(out, "manual-pdf-fixture.pdf"));
+    execFileSync("pdftoppm", [
+      "-f","1","-l","1","-r","150","-png","-singlefile",file,
+      path.join(out, "manual-pdf-first-page")
+    ], { timeout: 60000 });
+  }
+  console.log(JSON.stringify({ok:true,pages,bytes:buf.length,extraction,
+    visualArtifact: Boolean(artifactDir), selected:extracted.slice(0,140)}));
 } finally {
   await browser?.close();await new Promise(resolve=>server.close(resolve));await rm(tmp,{recursive:true,force:true});
 }
