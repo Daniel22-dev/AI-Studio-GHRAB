@@ -94,7 +94,7 @@
     "sync:fallback": "node scripts/sync-runtime-fallback.mjs",
     "qa:fallback": "node scripts/sync-runtime-fallback.mjs --check",
     "test:runtime-fallback": "node scripts/test-runtime-fallback.mjs",
-    "test:manual-pdf": "node scripts/test-manual-pdf.mjs"
+    "test:manual-pdf": "node scripts/test-manual-pdf.mjs && node scripts/test-manual-navigation.mjs"
   },
   "engines": {
     "node": ">=18"

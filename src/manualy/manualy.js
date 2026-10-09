@@ -74,7 +74,6 @@ function accessText(access, appId) {
 function manualCard(app) {
   const access = G.hasAppAccess(app.id);
   const available = Boolean(app.manualUrl);
-  const integratedHelp = app.id === "maturita-desk";
   const enabled = access.enabled && available;
   const article = make("article", `manual-card ${enabled ? "open" : "locked"}`);
   article.style.setProperty("--manual-accent", app.accent || "#50e8ff");
@@ -110,17 +109,12 @@ function manualCard(app) {
   const note = make(
     "p",
     "manual-access-note",
-    integratedHelp
-      ? G.t(
-          "Maturita Desk zatím nemá samostatnou stránku manual/. Nápověda a provozní instrukce jsou součástí samotné aplikace; Studio proto otevírá integrovanou nápovědu aplikace.",
-          "Maturita Desk does not yet have a separate manual/ page. Help and operating instructions are integrated into the app itself, so Studio opens the app-integrated help.",
-        )
-      : available
-        ? accessText(access, app.id)
-        : G.t(
-            "Manuál zatím není v manifestu aplikace publikován.",
-            "The manual has not yet been published in the application manifest.",
-          ),
+    available
+      ? accessText(access, app.id)
+      : G.t(
+          "Manuál zatím není v manifestu aplikace publikován.",
+          "The manual has not yet been published in the application manifest.",
+        ),
   );
   const actions = make("div", "manual-actions");
 
@@ -128,9 +122,7 @@ function manualCard(app) {
     const open = make(
       "a",
       "button manual-open",
-      integratedHelp
-        ? G.t("Otevřít integrovanou nápovědu →", "Open integrated help →")
-        : G.t("Otevřít přímo v AI Studiu →", "Open directly in AI Studio →"),
+      G.t("Otevřít manuál v AI Studiu →", "Open manual in AI Studio →"),
     );
     open.href = `./viewer.html?app=${encodeURIComponent(app.id)}`;
     actions.append(open);

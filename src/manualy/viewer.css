@@ -232,3 +232,16 @@
 
 /* Accessible PDF action on narrow viewport */
 @media (max-width: 620px) { #viewer-pdf { font-size: .7rem; min-height: 38px; padding: 0 8px; white-space: nowrap; } }
+
+/* Direct escape path to Studio is available even when the manual was opened from the catalog. */
+#viewer-studio { color: var(--text); border-color: rgba(115, 218, 255, .32); }
+.viewer-back:focus-visible, .viewer-action:focus-visible {
+  outline: 3px solid #66e1ff;
+  outline-offset: 3px;
+}
+@media (max-width: 850px) {
+  #viewer-studio { display: inline-flex; }
+}
+@media (max-width: 620px) {
+  #viewer-studio { min-height: 38px; padding: 0 8px; font-size: .7rem; }
+}
