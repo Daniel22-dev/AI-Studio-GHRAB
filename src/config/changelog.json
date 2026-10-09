@@ -1,7 +1,105 @@
 {
   "schema": "ai-studio-changelog-v1",
-  "current": "0.21.200",
+  "current": "0.21.207",
   "items": [
+    {
+      "version": "0.21.207",
+      "date": "2026-10-09",
+      "title": {
+        "cs": "Bezpečné automatické PATCH povýšení",
+        "en": "Safe automatic PATCH promotion"
+      },
+      "changes": [
+        {
+          "cs": "Ověřená PATCH změna aplikace aktualizovala release-wave a současně zvýšila patch verzi AI Studia právě jednou; duplicitní nebo bezezměnový běh verzi Studia nezvyšuje.",
+          "en": "A verified application PATCH update changed the release wave and bumped the AI Studio patch version exactly once; duplicate or no-change runs do not bump the Studio version."
+        }
+      ]
+    },
+    {
+      "version": "0.21.206",
+      "date": "2026-10-09",
+      "title": {
+        "cs": "Bezpečné automatické PATCH povýšení",
+        "en": "Safe automatic PATCH promotion"
+      },
+      "changes": [
+        {
+          "cs": "Ověřená PATCH změna aplikace aktualizovala release-wave a současně zvýšila patch verzi AI Studia právě jednou; duplicitní nebo bezezměnový běh verzi Studia nezvyšuje.",
+          "en": "A verified application PATCH update changed the release wave and bumped the AI Studio patch version exactly once; duplicate or no-change runs do not bump the Studio version."
+        }
+      ]
+    },
+    {
+      "version": "0.21.205",
+      "date": "2026-10-09",
+      "title": {
+        "cs": "Bezpečné automatické PATCH povýšení",
+        "en": "Safe automatic PATCH promotion"
+      },
+      "changes": [
+        {
+          "cs": "Ověřená PATCH změna aplikace aktualizovala release-wave a současně zvýšila patch verzi AI Studia právě jednou; duplicitní nebo bezezměnový běh verzi Studia nezvyšuje.",
+          "en": "A verified application PATCH update changed the release wave and bumped the AI Studio patch version exactly once; duplicate or no-change runs do not bump the Studio version."
+        }
+      ]
+    },
+    {
+      "version": "0.21.204",
+      "date": "2026-10-09",
+      "title": {
+        "cs": "Bezpečné automatické PATCH povýšení",
+        "en": "Safe automatic PATCH promotion"
+      },
+      "changes": [
+        {
+          "cs": "Ověřená PATCH změna aplikace aktualizovala release-wave a současně zvýšila patch verzi AI Studia právě jednou; duplicitní nebo bezezměnový běh verzi Studia nezvyšuje.",
+          "en": "A verified application PATCH update changed the release wave and bumped the AI Studio patch version exactly once; duplicate or no-change runs do not bump the Studio version."
+        }
+      ]
+    },
+    {
+      "version": "0.21.203",
+      "date": "2026-10-09",
+      "title": {
+        "cs": "Bezpečné automatické PATCH povýšení",
+        "en": "Safe automatic PATCH promotion"
+      },
+      "changes": [
+        {
+          "cs": "Ověřená PATCH změna aplikace aktualizovala release-wave a současně zvýšila patch verzi AI Studia právě jednou; duplicitní nebo bezezměnový běh verzi Studia nezvyšuje.",
+          "en": "A verified application PATCH update changed the release wave and bumped the AI Studio patch version exactly once; duplicate or no-change runs do not bump the Studio version."
+        }
+      ]
+    },
+    {
+      "version": "0.21.202",
+      "date": "2026-10-09",
+      "title": {
+        "cs": "Bezpečné automatické PATCH povýšení",
+        "en": "Safe automatic PATCH promotion"
+      },
+      "changes": [
+        {
+          "cs": "Ověřená PATCH změna aplikace aktualizovala release-wave a současně zvýšila patch verzi AI Studia právě jednou; duplicitní nebo bezezměnový běh verzi Studia nezvyšuje.",
+          "en": "A verified application PATCH update changed the release wave and bumped the AI Studio patch version exactly once; duplicate or no-change runs do not bump the Studio version."
+        }
+      ]
+    },
+    {
+      "version": "0.21.201",
+      "date": "2026-10-09",
+      "title": {
+        "cs": "Modernizace manuálů – Etapa D",
+        "en": "Manual documentation hardening – Stage D"
+      },
+      "changes": [
+        {
+          "cs": "Export manuálů vyžaduje platné oprávnění a ověřený obsahový kontrakt; neúplné příručky zůstávají označené jako náhled.",
+          "en": "Manual PDF export requires an explicit access grant and a verified content contract; incomplete documents remain labelled previews."
+        }
+      ]
+    },
     {
       "version": "0.21.200",
       "date": "2026-10-08",

@@ -1,6 +1,6 @@
 {
   "name": "ai-studio-ghrab",
-  "version": "0.21.200",
+  "version": "0.21.207",
   "private": true,
   "description": "Profesionální federované PWA devíti chráněných školních aplikací včetně Lesson Hubu, manuálů, řízeného přístupu a jednotné GHRAB QA brány",
   "type": "module",
@@ -41,8 +41,8 @@
     "qa:a11y": "node scripts/qa-p5-runtime.mjs",
     "qa:p4": "npm run qa:p5",
     "qa:p4:ci": "npm run qa:p5:ci",
-    "qa:p5": "npm run qa:garp27:static && npm run qa:garp25:tooling && npm run qa:garp25:secrets && npm run qa:lock && npm run qa:ecosystem && npm run qa:fallback && npm run test:runtime-fallback && node scripts/test-maturita-external-launcher.mjs && npm run build && npm run verify:platform && npm run qa:quality && npm run qa:browser && npm run qa:runtime && npm run qa:xss && npm run qa:axe && node scripts/qa-p5-release.mjs && node scripts/qa-p5-acceptance.mjs && npm run test:release-promotion && npm run test:auto-patch-idempotence && npm run prepare:deployment-dist && npm run qa:garp27:architecture && npm run qa:garp25:deployment",
-    "qa:p5:ci": "npm run qa:garp27:static && npm run qa:garp25:tooling && npm run qa:garp25:secrets && npm run access:check:required && npm run qa:lock && npm run qa:ecosystem && npm run qa:fallback && npm run test:runtime-fallback && node scripts/test-maturita-external-launcher.mjs && npm run build && npm run verify:platform && npm run qa:quality && npm run qa:browser && npm run qa:runtime && npm run qa:xss && npm run qa:axe:required && node scripts/qa-p5-release.mjs --require-axe && node scripts/qa-p5-acceptance.mjs && npm run test:release-promotion && npm run test:auto-patch-idempotence && npm run prepare:deployment-dist && npm run qa:garp27:architecture && npm run qa:garp25:deployment",
+    "qa:p5": "npm run qa:garp27:static && npm run qa:garp25:tooling && npm run qa:garp25:secrets && npm run qa:lock && npm run qa:ecosystem && npm run qa:fallback && npm run test:runtime-fallback && node scripts/test-maturita-external-launcher.mjs && npm run build && npm run verify:platform && npm run qa:quality && npm run qa:browser && npm run qa:runtime && npm run qa:xss && npm run qa:axe && node scripts/qa-p5-release.mjs && node scripts/qa-p5-acceptance.mjs && npm run test:release-promotion && npm run test:auto-patch-idempotence && npm run prepare:deployment-dist && npm run qa:garp27:architecture && npm run qa:garp25:deployment && npm run test:manual-pdf",
+    "qa:p5:ci": "npm run qa:garp27:static && npm run qa:garp25:tooling && npm run qa:garp25:secrets && npm run access:check:required && npm run qa:lock && npm run qa:ecosystem && npm run qa:fallback && npm run test:runtime-fallback && node scripts/test-maturita-external-launcher.mjs && npm run build && npm run verify:platform && npm run qa:quality && npm run qa:browser && npm run qa:runtime && npm run qa:xss && npm run qa:axe:required && node scripts/qa-p5-release.mjs --require-axe && node scripts/qa-p5-acceptance.mjs && npm run test:release-promotion && npm run test:auto-patch-idempotence && npm run prepare:deployment-dist && npm run qa:garp27:architecture && npm run qa:garp25:deployment && npm run test:manual-pdf",
     "test:p5": "npm run qa:p5",
     "qa:runtime": "node scripts/qa-p5-runtime.mjs",
     "qa:xss": "node scripts/qa-p5-xss-sinks.mjs",

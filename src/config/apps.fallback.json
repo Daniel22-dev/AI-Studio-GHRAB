@@ -148,7 +148,7 @@
       "platformContract": "ghrab-platform-v1",
       "platformRange": ">=1.1.2 <2.0.0"
     },
-    "publishedAt": "2026-10-08T18:39:42.027Z",
+    "publishedAt": "2026-10-09T04:45:01.897Z",
     "aiCore": {
       "schema": "ghrab-ai-app-integration-v1",
       "status": "integrated-p1",
@@ -278,7 +278,7 @@
       "platformContract": "ghrab-platform-v1",
       "platformRange": ">=1.1.2 <2.0.0"
     },
-    "publishedAt": "2026-09-27T18:01:24.832Z",
+    "publishedAt": "2026-10-09T04:50:36.470Z",
     "aiCore": {
       "schema": "ghrab-ai-app-integration-v1",
       "status": "integrated-p1",
@@ -462,7 +462,7 @@
       "platformContract": "ghrab-platform-v1",
       "platformRange": ">=1.1.2 <2.0.0"
     },
-    "publishedAt": "2026-10-08T20:42:31.310Z",
+    "publishedAt": "2026-10-09T04:47:30.662Z",
     "aiCore": {
       "schema": "ghrab-ai-app-integration-v1",
       "status": "integrated-p1",
@@ -506,7 +506,7 @@
     "assurance": {
       "schema": "ghrab-patch-assurance-v1",
       "evidenceManifestUrl": "https://daniel22-dev.github.io/Ludus/patch-assurance.json",
-      "evidenceManifestSha256": "b8654bef445a4b78b1d6072922621d8944c1a46b98a9e997f842816334c27b9c"
+      "evidenceManifestSha256": "54c12ecc37a9529ea5015fade51da538a81527c991c1898586f30c76867502f7"
     }
   },
   {
@@ -604,7 +604,7 @@
       "platformContract": "ghrab-platform-v1",
       "platformRange": ">=1.1.2 <2.0.0"
     },
-    "publishedAt": "2026-09-27T17:53:32+02:00",
+    "publishedAt": "2026-10-08T21:45:56-07:00",
     "aiCore": {
       "schema": "ghrab-ai-app-integration-v1",
       "status": "integrated-p1",
@@ -655,9 +655,9 @@
       "version": "0.5.30",
       "source": {
         "repository": "Daniel22-dev/ACTIVA",
-        "commit": "6a880d52187db8c40af2c1c1bab9e1833df0bb4b"
+        "commit": "29e15a272e9470afe883783d6b5ca9abc5759897"
       },
-      "buildId": "github-36331291460-1",
+      "buildId": "github-37885509415-1",
       "evidence": {
         "releaseIntegrity": "release-integrity.json",
         "provenance": "build-provenance.json",
@@ -795,7 +795,7 @@
       "platformContract": "ghrab-platform-v1",
       "platformRange": ">=1.1.2 <2.0.0"
     },
-    "publishedAt": "2026-10-07T17:27:24.168Z",
+    "publishedAt": "2026-10-09T04:40:59.857Z",
     "aiCore": {
       "schema": "ghrab-ai-app-integration-v1",
       "status": "not-applicable",
@@ -836,9 +836,9 @@
       "version": "1.1.23",
       "source": {
         "repository": "Daniel22-dev/SORTIO",
-        "commit": "cf248bc511eb3b8b2ff0be3bd80e399e80614ac8"
+        "commit": "d5bbe5542fa300e28d7b5db7a4f158dfcffe8100"
       },
-      "buildId": "github-37659153109-1",
+      "buildId": "github-37885005734-1",
       "evidence": {
         "releaseIntegrity": "release-integrity.json",
         "provenance": "build-provenance.json",
@@ -1005,7 +1005,7 @@
       "en": "Helps prepare and run the English oral Matura exam. The Studio currently provides only a demo with sample data."
     },
     "launchUrl": "https://daniel22-dev.github.io/maturita-desk/",
-    "manualUrl": "https://daniel22-dev.github.io/maturita-desk/",
+    "manualUrl": "https://daniel22-dev.github.io/maturita-desk/manual/",
     "repository": "Daniel22-dev/maturita-desk",
     "icon": "assets/apps/maturita-desk.webp",
     "accent": "#4b263d",
@@ -1040,7 +1040,7 @@
       "platformContract": "ghrab-platform-v1",
       "platformRange": ">=1.1.2 <2.0.0"
     },
-    "publishedAt": "2026-09-27T06:43:48.000Z",
+    "publishedAt": "2026-10-09T04:42:49.000Z",
     "integration": {
       "launchMode": "external-protected",
       "securityBoundary": "public-demo-only",
@@ -1083,9 +1083,9 @@
       "version": "1.0.6",
       "source": {
         "repository": "Daniel22-dev/maturita-desk",
-        "commit": "9765149fc3165e44e7e06626c266981d69a8bb25"
+        "commit": "ae1289f6a719bb8dbbb42e48e168b01927c3421a"
       },
-      "buildId": "deploy-36300992561-1"
+      "buildId": "deploy-37885222230-1"
     }
   }
 ]
