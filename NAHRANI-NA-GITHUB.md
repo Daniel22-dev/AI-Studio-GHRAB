@@ -1,6 +1,6 @@
-# Nahrání AI Studio GHRAB 0.21.228
+# Nahrání AI Studio GHRAB 0.21.229
 
-> Aktuální verze: **0.21.228** · etapa P5
+> Aktuální verze: **0.21.229** · etapa P5
 
 > 0.21.82 opravuje source-candidate gate: Generátor zůstává ručně přijatý na 7.1.28 a repository kandidát 7.1.30 se bez úspěšného deploymentu nepovýší ani nezablokuje release Studia.
 
