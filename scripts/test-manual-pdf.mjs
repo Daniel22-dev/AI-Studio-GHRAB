@@ -1,5 +1,5 @@
 import { createServer } from "node:http";
-import { readFile, mkdtemp, rm } from "node:fs/promises";
+import { readFile, mkdtemp, rm, mkdir, copyFile } from "node:fs/promises";
 import { execFileSync } from "node:child_process";
 import path from "node:path";
 import os from "node:os";
@@ -145,7 +145,18 @@ try {
       if(!extracted.includes(word))throw Error("PDF text extraction missing: "+word+"\nEXTRACTED="+extracted.slice(0,2000));
     }
   }catch(e){if(e.code!=="ENOENT")throw e;}
-  console.log(JSON.stringify({ok:true,pages,bytes:buf.length,extraction,selected:extracted.slice(0,140)}));
+  const artifactDir = process.env.GHRAB_PDF_QA_ARTIFACT_DIR;
+  if (artifactDir) {
+    const out = path.resolve(artifactDir);
+    await mkdir(out, { recursive: true });
+    await copyFile(file, path.join(out, "manual-pdf-fixture.pdf"));
+    execFileSync("pdftoppm", [
+      "-f","1","-l","1","-r","150","-png","-singlefile",file,
+      path.join(out, "manual-pdf-first-page")
+    ], { timeout: 60000 });
+  }
+  console.log(JSON.stringify({ok:true,pages,bytes:buf.length,extraction,
+    visualArtifact: Boolean(artifactDir), selected:extracted.slice(0,140)}));
 } finally {
   await browser?.close();await new Promise(resolve=>server.close(resolve));await rm(tmp,{recursive:true,force:true});
 }
