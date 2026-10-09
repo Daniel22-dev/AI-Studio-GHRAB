@@ -136,7 +136,9 @@ function loadFrame() {
     "The manual will stay open directly inside the installed AI Studio.",
   );
   stateActions.replaceChildren();
-  frame.src = currentManualUrl.href;
+  const embeddedUrl = new URL(currentManualUrl.href);
+  embeddedUrl.searchParams.set("ghrabFrom", "studio");
+  frame.src = embeddedUrl.href;
   loadTimer = setTimeout(() => {
     if (frame.hidden) {
       stateCopy.textContent = G.t(
@@ -197,7 +199,9 @@ async function initialise() {
       );
       return;
     }
-    externalLink.href = currentManualUrl.href;
+    const standaloneUrl = new URL(currentManualUrl.href);
+    standaloneUrl.searchParams.set("ghrabFrom", "manuals");
+    externalLink.href = standaloneUrl.href;
     externalLink.hidden = false;
     reloadButton.hidden = false;
     // Do not advertise a PDF until the embedded manual has confirmed access and a complete, reviewed content contract.
