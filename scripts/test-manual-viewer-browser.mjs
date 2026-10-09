@@ -32,16 +32,17 @@ const appStub = [
   " formatReason: () => 'Přístup nebyl povolen.',",
   " hasAppAccess: () => ({enabled: window.__manualQaAllowed && q.get('role') !== 'denied',reason:'app-not-permitted'}),",
   " loadApps: async () => [{",
-  "  id:'demo-manual',version:'1.0.0',name:{cs:'Zkušební manuál',en:'Test manual'},",
+  "  id:q.get('app')==='generator'?'generator':'demo-manual',version:'1.0.0',name:{cs:'Zkušební manuál',en:'Test manual'},",
   "  icon:'assets/brand/icon-48.png',",
   "  manualUrl: q.get('external') === 'yes' ? 'https://untrusted.example/manual/' :",
   "    location.origin + '/AI-Studio-GHRAB/demo-manual/index.html?review=' +",
-  "    (q.get('review') || 'verified') + '&child=' + (q.get('child') || 'granted')",
+  "    (q.get('review') || 'verified') + '&child=' + (q.get('child') || 'granted') + '&app=' + (q.get('app') || 'demo-manual')",
   " }]",
   "};"
 ].join("\n");
 
 function sampleManual(url) {
+  const appId = url.searchParams.get("app") === "generator" ? "generator" : "demo-manual";
   const review = url.searchParams.get("review") === "pending" ? "review-required" : "verified";
   const access = url.searchParams.get("child") === "denied" ? "denied" : "granted";
   return [
@@ -54,7 +55,7 @@ function sampleManual(url) {
     '<section hidden><h2>Skrytý postup</h2><p>Tento krok musí být v PDF.</p></section>',
     '<div class="stat"><b>Veřejné informace</b><span data-ghrab-pdf-exclude>TAJNE_UDAJE_123</span><span>Bezpečný obsah</span></div>',
     '<a href="https://example.org/navod">Podrobnosti</a></main>',
-    '<script>window.GHRAB_MANUAL_DOC_INFO = {appId:"demo-manual",appVersion:"1.0.0",reviewStatus:"' + review + '",pdfContentContract:"static-complete-sections-v1"};',
+    '<script>window.GHRAB_MANUAL_DOC_INFO = {appId:"\' + appId + \'",appVersion:"1.0.0",reviewStatus:"' + review + '",pdfContentContract:"static-complete-sections-v1"};',
     'window.GHRAB_MANUAL_EXPORT = [{type:"body",text:"Doplňující vysvětlení plného postupu."}];<\/script>',
     '</body></html>'
   ].join("");
@@ -134,6 +135,14 @@ try {
   await page.frameLocator("#manual-frame").locator("html[data-ghrab-access='granted']").waitFor();
   assert.equal(await page.locator("#viewer-pdf").isVisible(), false, "Unreviewed guide must not export");
 
+  // GIT must respect its own pending DOC_INFO, unlike the old compatibility bypass.
+  await page.goto(host + prefix + "manualy/viewer.html?app=generator&review=pending");
+  await page.frameLocator("#manual-frame").locator("html[data-ghrab-access='granted']").waitFor();
+  assert.equal(await page.locator("#viewer-pdf").isVisible(), false,
+    "Generator must not bypass review-required");
+  await page.goto(host + prefix + "manualy/viewer.html?app=generator&review=verified");
+  await page.locator("#viewer-pdf").waitFor({state: "visible"});
+
   await page.goto(base + "&child=denied");
   await page.frameLocator("#manual-frame").locator("html[data-ghrab-access='denied']").waitFor();
   assert.equal(await page.locator("#viewer-pdf").isVisible(), false, "Denied iframe must not export");
@@ -151,7 +160,7 @@ try {
 
   assert.deepEqual(errors, [], "Browser JS errors: " + errors.join(" | "));
   console.log(JSON.stringify({ok: true, viewer: "real Studio viewer.html/js",
-    contexts: ["verified", "revoked", "pending", "child-denied", "role-denied", "bad-origin", "unknown"],
+    contexts: ["verified", "revoked", "pending", "generator-pending", "generator-verified", "child-denied", "role-denied", "bad-origin", "unknown"],
     pdfBytes: pdf.length, overflow}));
 } finally {
   await browser?.close();
