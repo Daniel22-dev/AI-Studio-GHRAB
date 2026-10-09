@@ -197,7 +197,9 @@ async function initialise() {
       );
       return;
     }
-    externalLink.href = currentManualUrl.href;
+    const standaloneUrl = new URL(currentManualUrl.href);
+    standaloneUrl.searchParams.set("from", "studio");
+    externalLink.href = standaloneUrl.href;
     externalLink.hidden = false;
     reloadButton.hidden = false;
     // Do not advertise a PDF until the embedded manual has confirmed access and a complete, reviewed content contract.
