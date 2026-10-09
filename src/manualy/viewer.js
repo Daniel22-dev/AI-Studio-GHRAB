@@ -100,6 +100,10 @@ function pdfContractEligible() {
     const doc = frame.contentDocument;
     if (!doc || doc.documentElement.dataset.ghrabAccess !== "granted") return false;
     const manual = frame.contentWindow;
+    // Transitional generator compatibility: this manual exposes its complete
+    // guided-tour export but has not migrated to the editorial DOC_INFO contract.
+    // Keep exactly one protected PDF download in the central viewer rather than
+    // disabling the only export after the nested print action is suppressed.
     if (currentApp.id === "generator")
       return Array.isArray(manual.GHRAB_MANUAL_EXPORT) && manual.GHRAB_MANUAL_EXPORT.length > 0;
     const info = manual.GHRAB_MANUAL_DOC_INFO;
@@ -117,6 +121,19 @@ function pdfContractEligible() {
 }
 function refreshPdfAvailability() {
   pdfButton.hidden = !pdfContractEligible();
+}
+function syncEmbeddedManualTheme() {
+  // Embedded manuals inherit the Studio theme while remaining independently usable.
+  // Do not read or mutate cross-origin frames.
+  const selected = document.documentElement.dataset.theme;
+  if (selected !== "dark" && selected !== "light") return;
+  try {
+    const target = frame.contentDocument?.documentElement;
+    if (!target || target.dataset.ghrabAccess === "denied") return;
+    target.dataset.theme = selected;
+  } catch {
+    // Cross-origin standalone manuals manage their own theme.
+  }
 }
 
 function loadFrame() {
@@ -197,7 +214,9 @@ async function initialise() {
       );
       return;
     }
-    externalLink.href = currentManualUrl.href;
+    const standaloneUrl = new URL(currentManualUrl.href);
+    standaloneUrl.searchParams.set("from", "studio");
+    externalLink.href = standaloneUrl.href;
     externalLink.hidden = false;
     reloadButton.hidden = false;
     // Do not advertise a PDF until the embedded manual has confirmed access and a complete, reviewed content contract.
@@ -227,13 +246,17 @@ frame.addEventListener("load", () => {
   statePanel.hidden = true;
   frame.hidden = false;
   refreshPdfAvailability();
+  syncEmbeddedManualTheme();
   // An authorized iframe may complete its guard after the frame load event.
   // Recheck only when its explicit access state changes; never enable PDF on iframe.load alone.
   try {
     manualAccessObserver?.disconnect();
     const doc = frame.contentDocument;
     if (doc?.documentElement) {
-      manualAccessObserver = new MutationObserver(() => refreshPdfAvailability());
+      manualAccessObserver = new MutationObserver(() => {
+        refreshPdfAvailability();
+        syncEmbeddedManualTheme();
+      });
       manualAccessObserver.observe(doc.documentElement, {
         attributes: true,
         attributeFilter: ["data-ghrab-access"],
@@ -274,6 +297,11 @@ document.addEventListener("ghrab:language", () => {
   if (!currentApp) return;
   const access = G.hasAppAccess(currentApp.id);
   if (!access.enabled) renderLocked(access);
+});
+const studioThemeObserver = new MutationObserver(() => syncEmbeddedManualTheme());
+studioThemeObserver.observe(document.documentElement, {
+  attributes: true,
+  attributeFilter: ["data-theme"],
 });
 document.addEventListener("ghrab:access-changed", () => initialise());
 initialise();

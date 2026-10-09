@@ -232,3 +232,9 @@
 
 /* Accessible PDF action on narrow viewport */
 @media (max-width: 620px) { #viewer-pdf { font-size: .7rem; min-height: 38px; padding: 0 8px; white-space: nowrap; } }
+
+/* Manual hub and Studio are both accessible from the single viewer header. */
+.viewer-returns{display:flex;align-items:center;gap:8px;min-width:0}
+.viewer-back-studio{font-size:.76rem}
+@media(max-width:850px){.viewer-back-studio{min-width:42px;padding:0 11px}}
+@media(max-width:620px){.viewer-returns{gap:5px}.viewer-back-studio span:last-child{display:none}}
