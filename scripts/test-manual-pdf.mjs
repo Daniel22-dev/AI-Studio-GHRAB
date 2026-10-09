@@ -11,7 +11,7 @@ const tmp = await mkdtemp(path.join(os.tmpdir(), "ghrab-pdf-"));
 const webPage = String.raw`<!doctype html><html lang="cs" data-ghrab-access="granted"><meta charset="UTF-8"><title>Test českého manuálu</title>
 <body><main>
 <h1>Začínáme s AI Studiem</h1>
-<h2>První nastavení API klíče</h2>
+<h2>První nastavení API klíče</h2>\n<div class="stat"><b>Pro koho</b><span>Učitelé</span></div><div class="mini-step"><span>1</span><span>Zvol režim</span></div>
 <p>Při používání školy ověřte školní účet, českou diakritiku: ěščřžýáíéúůďťň ĚŠČŘŽÝÁÍÉÚŮĎŤŇ.</p>
 <details><summary>Rozbalený postup: Google Forms a START/END</summary><p>Tento text je i v zavřeném detailu.</p></details>
 <ul><li>Připravit osobní kód.</li><li>Odevzdat a zkontrolovat výsledky.</li></ul>
@@ -79,6 +79,10 @@ try {
   if(buf.subarray(0,8).toString("latin1").indexOf("%PDF-1.")!==0)throw Error("Output is not PDF");
   const pdf=buf.toString("latin1");
   if(!pdf.includes("/ToUnicode")||!pdf.includes("/Type3"))throw Error("Unicode PDF font missing");
+  const masks=(pdf.match(/\\/ImageMask true/g)||[]).length;
+  const correctlyDecoded=(pdf.match(/\\/Decode \\[1 0\\]/g)||[]).length;
+  if(!masks||correctlyDecoded!==masks)throw Error("PDF glyph bitmap mask is inverted: "+correctlyDecoded+"/"+masks);
+  if(!pdf.includes(".07 .19 .30 RG .7 w 45 798 m "))throw Error("PDF header stroke is malformed");
   if(!pdf.includes("/Subtype /Link"))throw Error("Clickable link missing");
   const pages=(pdf.match(/\/Type \/Page \/Parent/g)||[]).length;
   if(!pages)throw Error("No pages");
@@ -115,7 +119,7 @@ try {
       unicodeText+=value;
     }
   }
-  for(const word of ["Začínáme","diakritika","ěščřžýáíéúůďťň","Google Forms","Výukový průvodce","uzavřených","Krok 90"]){
+  for(const word of ["Začínáme","diakritika","ěščřžýáíéúůďťň","Google Forms","Výukový průvodce","uzavřených","Krok 90","Pro koho Učitelé","1 Zvol režim"]){
     if(!unicodeText.includes(word))throw Error("PDF ToUnicode failed extraction: "+word+" from "+unicodeText.slice(0,300));
   }
   if(pages<2)throw Error("Long manual was not paginated");
