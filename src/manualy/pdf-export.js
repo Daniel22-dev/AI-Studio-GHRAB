@@ -64,6 +64,20 @@ function htmlToBlocks(doc, extras = []) {
     ".term,.pathcards > a,table tr";
   const selector = "h1,h2,h3,h4,p,li,dt,dd,summary,.acc > button," + atomic;
   const blocks = [];
+  // Keep long notices readable in the PDF without dropping text.
+  function addLongBody(text) {
+    let rest = String(text || "").trim();
+    while (rest.length > 420) {
+      let boundary = rest.lastIndexOf(". ", 380);
+      const sentenceBoundary = boundary >= 170;
+      if (!sentenceBoundary) boundary = rest.lastIndexOf(" ", 380);
+      if (boundary < 170) break;
+      const cut = sentenceBoundary ? boundary + 1 : boundary;
+      blocks.push({ type: "body", text: rest.slice(0, cut).trim() });
+      rest = rest.slice(cut).trim();
+    }
+    if (rest) blocks.push({ type: "body", text: rest });
+  }
   const ignore = "nav,footer,script,style,.search-overlay,.mobile-nav,.top-actions,.toc," +
     ".ghrab-access-gate,.ghrab-access-bootstrap-fallback,[aria-hidden='true'],[data-ghrab-pdf-exclude]";
   for (const element of root.querySelectorAll(selector)) {
@@ -74,6 +88,24 @@ function htmlToBlocks(doc, extras = []) {
     const hiddenAncestor = element.closest("[hidden]");
     if (hiddenAncestor && hiddenAncestor.tagName !== "SECTION" &&
         !hiddenAncestor.matches("[data-ghrab-pdf-include]")) continue;
+    // Action route cards are structured directions, not one long prose paragraph.
+    // Preserve each route heading and its numbered steps for legible PDF output.
+    if (element.matches(".route-card")) {
+      const heading = element.querySelector("h3");
+      const label = heading ? readableText(heading) : "";
+      if (label) blocks.push({ type: "h3", text: label });
+      const steps = [...element.querySelectorAll(".mini-step")];
+      if (steps.length) {
+        for (const [index, step] of steps.entries()) {
+          const instruction = readableText(step.querySelector("span:last-child") || step);
+          if (instruction) blocks.push({ type: "step", text: (index + 1) + ". " + instruction });
+        }
+      } else {
+        const description = readableText(element);
+        if (description && description !== label) addLongBody(description);
+      }
+      continue;
+    }
     // An atomic card already contains all of its labelled descendants.
     const parentCard = element.parentElement?.closest(atomic);
     if (parentCard && root.contains(parentCard)) continue;
@@ -99,7 +131,7 @@ function htmlToBlocks(doc, extras = []) {
       if (caption.length >= 3 && caption.length < 160 && at >= 0 && at <= 16) {
         blocks.push({ type: "warning", text: text.slice(0, at) + caption });
         const explanation = text.slice(at + caption.length).trim();
-        if (explanation) blocks.push({ type: "body", text: explanation });
+        if (explanation) addLongBody(explanation);
       } else {
         blocks.push({ type: "body", text });
       }
@@ -234,6 +266,7 @@ function layoutBlocks(doc, blocks, title) {
     h3: { size: 12, bold: true, line: 17, gap: 8 },
     h4: { size: 11, bold: true, line: 15, gap: 6 },
     list: { size: 10.5, bold: false, line: 15, gap: 7 },
+    step: { size: 10.5, bold: false, line: 15, gap: 4 },
     warning: { size: 10.5, bold: true, line: 15.5, gap: 10 },
     link: { size: 9.3, bold: false, line: 13.5, gap: 6 },
     body: { size: 10.5, bold: false, line: 15.5, gap: 11 }

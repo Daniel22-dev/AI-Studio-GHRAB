@@ -22,6 +22,7 @@ const webPage = String.raw`<!doctype html><html lang="cs" data-ghrab-access="gra
 <div class="steps"><div><span><b>Importujte třídu</b><small>Vložte skupinu z IS.</small></span></div></div>
 <div class="keys"><div><code>Alt + I</code><span>Import z IS</span></div></div>
 <div class="grid"><article><b>Losování</b><p>Náhodný výběr studentů.</p></article></div>
+<div class="grid"><article class="card route-card"><h3>Výběr správné cesty</h3><p>Klikni pro zobrazení doporučeného postupu.</p><div class="mini-step"><b>1</b><span>Vlož ukázkový text.</span></div><div class="mini-step"><b>2</b><span>Zkontroluj výsledek.</span></div></article></div>
 <div class="term"><b>Roster</b><p>Bezpečný seznam studentů.</p></div>
 <div class="activity"><b>Slovotvorba</b><small>Vysvětlete tvar a význam.</small></div>
 <table><thead><tr><th>Úroveň</th><th>Očekávání</th></tr></thead><tbody><tr><td>Standardní</td><td>Vysvětlí význam slov</td></tr></tbody></table>
@@ -136,7 +137,7 @@ try {
       unicodeText+=value;
     }
   }
-  for(const word of ["Začínáme","diakritika","ěščřžýáíéúůďťň","Google Forms","Výukový průvodce","uzavřených","Krok 90","Pro koho Učitelé","Vysvětlení postupu. 1 Zvolte úlohu","↗ Aktuální stav","Důležité upozornění k dlouhému textu.","Před exportem ověřte oprávnění, obsah, správnou verzi","1 Zvol režim","Importujte třídu Vložte skupinu z IS.","Alt + I Import z IS","Losování","Roster","✓ Neodesílejte citlivá data studentů.","Ověřte studentský odkaz.","Jak vrátit výsledek?","Slovotvorba Vysvětlete tvar a význam.","Úroveň | Očekávání","Standardní | Vysvětlí význam slov","Skrytá sekce při vyhledávání","Výukové kroky nesmí zmizet po filtrování."]){
+  for(const word of ["Začínáme","diakritika","ěščřžýáíéúůďťň","Google Forms","Výukový průvodce","uzavřených","Krok 90","Pro koho Učitelé","Vysvětlení postupu. 1 Zvolte úlohu","↗ Aktuální stav","Důležité upozornění k dlouhému textu.","Před exportem ověřte oprávnění, obsah, správnou verzi","1 Zvol režim","Importujte třídu Vložte skupinu z IS.","Alt + I Import z IS","Losování","Výběr správné cesty","1. Vlož ukázkový text.","2. Zkontroluj výsledek.","Roster","✓ Neodesílejte citlivá data studentů.","Ověřte studentský odkaz.","Jak vrátit výsledek?","Slovotvorba Vysvětlete tvar a význam.","Úroveň | Očekávání","Standardní | Vysvětlí význam slov","Skrytá sekce při vyhledávání","Výukové kroky nesmí zmizet po filtrování."]){
     if(!unicodeText.includes(word))throw Error("PDF ToUnicode failed extraction: "+word+" from "+unicodeText.slice(0,300));
   }
   if(unicodeText.includes("Jak vrátit výsledek?＋"))
