@@ -42,6 +42,11 @@ function showState(kind, title, copy, actions = []) {
   statePanel.className = `viewer-state ${kind || ""}`.trim();
   statePanel.hidden = false;
   frame.hidden = true;
+  // A revoked or denied role must immediately remove all actionable controls.
+  // Export eligibility is also checked on click; hiding the stale action is essential UX.
+  pdfButton.hidden = true;
+  reloadButton.hidden = true;
+  externalLink.hidden = true;
   stateTitle.textContent = title;
   stateCopy.textContent = copy;
   stateActions.replaceChildren(...actions);
