@@ -6,13 +6,21 @@ on:
     branches: [candidate]
     paths:
       - "src/manualy/pdf-export.js"
+      - "src/manualy/viewer.js"
+      - "src/manualy/viewer.html"
+      - "src/manualy/viewer.css"
       - "scripts/test-manual-pdf.mjs"
+      - "scripts/test-manual-viewer-browser.mjs"
       - ".github/workflows/manual-pdf-qa.yml"
   push:
     branches: [candidate]
     paths:
       - "src/manualy/pdf-export.js"
+      - "src/manualy/viewer.js"
+      - "src/manualy/viewer.html"
+      - "src/manualy/viewer.css"
       - "scripts/test-manual-pdf.mjs"
+      - "scripts/test-manual-viewer-browser.mjs"
       - ".github/workflows/manual-pdf-qa.yml"
 
 permissions:
@@ -47,11 +55,15 @@ jobs:
         env:
           GHRAB_PDF_QA_ARTIFACT_DIR: qa-results/manual-pdf
         run: npm run test:manual-pdf
+      - name: Test actual Studio viewer with browser roles and PDF
+        run: node scripts/test-manual-viewer-browser.mjs
       - name: Retain verified PDF and first-page render
         if: always()
         uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02 # v4.6.2
         with:
           name: manual-pdf-visual-${{ github.sha }}
-          path: qa-results/manual-pdf/
+          path: |
+            qa-results/manual-pdf/
+            qa-results/manual-viewer/
           if-no-files-found: warn
           retention-days: 14
