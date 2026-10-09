@@ -604,7 +604,7 @@
       "platformContract": "ghrab-platform-v1",
       "platformRange": ">=1.1.2 <2.0.0"
     },
-    "publishedAt": "2026-10-08T21:45:56-07:00",
+    "publishedAt": "2026-10-09T10:36:20-07:00",
     "aiCore": {
       "schema": "ghrab-ai-app-integration-v1",
       "status": "integrated-p1",
@@ -655,9 +655,9 @@
       "version": "0.5.30",
       "source": {
         "repository": "Daniel22-dev/ACTIVA",
-        "commit": "29e15a272e9470afe883783d6b5ca9abc5759897"
+        "commit": "80cc04cf86c34ae4545e572a2083e742783ddf1d"
       },
-      "buildId": "github-37885509415-1",
+      "buildId": "github-37967647504-1",
       "evidence": {
         "releaseIntegrity": "release-integrity.json",
         "provenance": "build-provenance.json",
@@ -795,7 +795,7 @@
       "platformContract": "ghrab-platform-v1",
       "platformRange": ">=1.1.2 <2.0.0"
     },
-    "publishedAt": "2026-10-09T04:40:59.857Z",
+    "publishedAt": "2026-10-09T17:39:53.546Z",
     "aiCore": {
       "schema": "ghrab-ai-app-integration-v1",
       "status": "not-applicable",
@@ -836,9 +836,9 @@
       "version": "1.1.23",
       "source": {
         "repository": "Daniel22-dev/SORTIO",
-        "commit": "d5bbe5542fa300e28d7b5db7a4f158dfcffe8100"
+        "commit": "662cdcad6ae1fbc57d985408beabeeb97fc1a38f"
       },
-      "buildId": "github-37885005734-1",
+      "buildId": "github-37967833420-1",
       "evidence": {
         "releaseIntegrity": "release-integrity.json",
         "provenance": "build-provenance.json",
