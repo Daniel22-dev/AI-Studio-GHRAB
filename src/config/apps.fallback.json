@@ -934,7 +934,7 @@
       "platformContract": "ghrab-platform-v1",
       "platformRange": ">=1.1.2 <2.0.0"
     },
-    "publishedAt": "2026-09-27T06:07:42.000Z",
+    "publishedAt": "2026-10-09T04:50:30.000Z",
     "aiCore": {
       "schema": "ghrab-ai-app-integration-v1",
       "status": "not-applicable",
@@ -977,9 +977,9 @@
       "version": "1.2.26",
       "source": {
         "repository": "Daniel22-dev/lesson-hub",
-        "commit": "7037acb7d304826e17cdc63baf3edefd251f1cde"
+        "commit": "89e6898e09331f7006388d9de047fe4038578ddf"
       },
-      "buildId": "github-36299256600-1",
+      "buildId": "github-37885854264-1",
       "evidence": {
         "releaseIntegrity": "release-integrity.json",
         "provenance": "build-provenance.json",
