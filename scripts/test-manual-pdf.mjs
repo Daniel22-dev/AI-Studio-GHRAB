@@ -18,6 +18,10 @@ const webPage = String.raw`<!doctype html><html lang="cs" data-ghrab-access="gra
 <div class="steps"><div><span><b>Importujte třídu</b><small>Vložte skupinu z IS.</small></span></div></div>
 <div class="keys"><div><code>Alt + I</code><span>Import z IS</span></div></div>
 <div class="grid"><article><b>Losování</b><p>Náhodný výběr studentů.</p></article></div>
+<div class="term"><b>Roster</b><p>Bezpečný seznam studentů.</p></div>
+<div class="safety-item"><i>✓</i><div>Neodesílejte citlivá data studentů.</div></div>
+<label class="check"><input type="checkbox"><span>Ověřte studentský odkaz.</span></label>
+<div class="acc"><button type="button">Jak vrátit výsledek?<span>＋</span></button><div class="ans">Použijte Verifier.</div></div>
 <a href="https://example.org/help">Otevřít nápovědu</a>
 </main><button id="pdf">Stáhnout PDF</button>
 <script type="module">
@@ -82,8 +86,8 @@ try {
   if(buf.subarray(0,8).toString("latin1").indexOf("%PDF-1.")!==0)throw Error("Output is not PDF");
   const pdf=buf.toString("latin1");
   if(!pdf.includes("/ToUnicode")||!pdf.includes("/Type3"))throw Error("Unicode PDF font missing");
-  const masks=(pdf.match(/\\/ImageMask true/g)||[]).length;
-  const correctlyDecoded=(pdf.match(/\\/Decode \\[1 0\\]/g)||[]).length;
+  const masks=(pdf.match(/\/ImageMask true/g)||[]).length;
+  const correctlyDecoded=(pdf.match(/\/Decode \[1 0\]/g)||[]).length;
   if(!masks||correctlyDecoded!==masks)throw Error("PDF glyph bitmap mask is inverted: "+correctlyDecoded+"/"+masks);
   if(!pdf.includes(".07 .19 .30 RG .7 w 45 798 m "))throw Error("PDF header stroke is malformed");
   if(!pdf.includes("/Subtype /Link"))throw Error("Clickable link missing");
@@ -122,7 +126,7 @@ try {
       unicodeText+=value;
     }
   }
-  for(const word of ["Začínáme","diakritika","ěščřžýáíéúůďťň","Google Forms","Výukový průvodce","uzavřených","Krok 90","Pro koho Učitelé","1 Zvol režim","Importujte třídu Vložte skupinu z IS.","Alt + I Import z IS","Losování"]){
+  for(const word of ["Začínáme","diakritika","ěščřžýáíéúůďťň","Google Forms","Výukový průvodce","uzavřených","Krok 90","Pro koho Učitelé","1 Zvol režim","Importujte třídu Vložte skupinu z IS.","Alt + I Import z IS","Losování","Roster","Neodesílejte citlivá data studentů.","Ověřte studentský odkaz.","Jak vrátit výsledek?"]){
     if(!unicodeText.includes(word))throw Error("PDF ToUnicode failed extraction: "+word+" from "+unicodeText.slice(0,300));
   }
   if(pages<2)throw Error("Long manual was not paginated");
