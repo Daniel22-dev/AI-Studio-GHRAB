@@ -6,6 +6,9 @@ on:
     branches: [candidate]
     paths:
       - "src/manualy/pdf-export.js"
+      - "src/manualy/viewer.js"
+      - "src/manualy/viewer.html"
+      - "src/manualy/viewer.css"
       - "scripts/test-manual-pdf.mjs"
       - "scripts/test-manual-viewer-browser.mjs"
       - ".github/workflows/manual-pdf-qa.yml"
@@ -13,6 +16,9 @@ on:
     branches: [candidate]
     paths:
       - "src/manualy/pdf-export.js"
+      - "src/manualy/viewer.js"
+      - "src/manualy/viewer.html"
+      - "src/manualy/viewer.css"
       - "scripts/test-manual-pdf.mjs"
       - "scripts/test-manual-viewer-browser.mjs"
       - ".github/workflows/manual-pdf-qa.yml"
