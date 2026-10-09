@@ -22,6 +22,27 @@ function unicodeHex(char) {
   for (let i = 0; i < char.length; i++) out += hex(char.charCodeAt(i), 4);
   return out;
 }
+function readableText(element) {
+  // textContent omits the visual gap between adjacent inline/flex items,
+  // e.g. "Pro koho" + "Učitelé" or a numbered step "1" + "Zvol".
+  function visit(node) {
+    if (node.nodeType === 3) return node.nodeValue || "";
+    if (node.nodeType !== 1 || node.getAttribute("aria-hidden") === "true") return "";
+    if (["SVG", "SCRIPT", "STYLE"].includes(node.tagName)) return "";
+    let output = "", previousWasElement = false;
+    for (const child of node.childNodes) {
+      const piece = visit(child);
+      if (!piece) continue;
+      if ((previousWasElement || child.nodeType === 1) &&
+          /[\\p{L}\\p{N}]$/u.test(output) && /^[\\p{L}\\p{N}]/u.test(piece))
+        output += " ";
+      output += piece;
+      previousWasElement = child.nodeType === 1;
+    }
+    return output;
+  }
+  return visit(element).replace(/\\s+/g, " ").trim();
+}
 function htmlToBlocks(doc, extras = []) {
   const root = doc.querySelector("main") || doc.body;
   if (!root) throw new Error("Manuál nemá obsah.");
@@ -32,7 +53,7 @@ function htmlToBlocks(doc, extras = []) {
     if (element.closest('body[data-ghrab-access="denied"],body[data-ghrab-access="checking"]')) continue;
     if (element.closest(ignore) || element.closest("button")) continue;
     if (element.matches("p,li,dd") && element.closest(".acc .ans,.notice,.mini-step,.stat,.flow-warning,.flow-danger")) continue;
-    const text = (element.textContent || "").replace(/\s+/g, " ").trim();
+    const text = readableText(element);
     if (!text || text.length < 2) continue;
     let type = /^H[1-4]$/.test(element.tagName) ? element.tagName.toLowerCase() :
       element.matches("summary") ? "h3" : element.matches("li") ? "list" : "body";
@@ -121,7 +142,7 @@ function makeType3Font(writer, doc, chars, bold) {
     const ch = chars[i], code = i + 1, name = "g" + code;
     const g = makeGlyphCanvas(doc, ch, bold);
     const img = writer.add([b("<< /Type /XObject /Subtype /Image /Width " + g.width +
-      " /Height " + g.height + " /ImageMask true /BitsPerComponent 1 /Decode [0 1] /Filter /ASCIIHexDecode /Length " +
+      " /Height " + g.height + " /ImageMask true /BitsPerComponent 1 /Decode [1 0] /Filter /ASCIIHexDecode /Length " +
       (g.pixels.length + 1) + " >>\nstream\n" + g.pixels + ">\nendstream")]);
     const commands = g.advance.toFixed(2) + " 0 -120 -450 2800 1450 d1\nq\n" +
       ((g.right - g.left) / 1000).toFixed(4) + " 0 0 " + ((g.top - g.bottom) / 1000).toFixed(4) +
@@ -240,7 +261,7 @@ function createPdf(doc, blocks, title) {
   for (let i = 0; i < layout.pages.length; i++) {
     const p = layout.pages[i], operations = [];
     operations.push("1 1 1 rg 0 0 " + layout.width + " " + layout.height + " re f");
-    operations.push(".07 .19 .30 rg .7 w 45 798 " + (layout.width - 90) + " 0 m " + (layout.width - 45) + " 798 l S");
+    operations.push(".07 .19 .30 RG .7 w 45 798 m " + (layout.width - 45) + " 798 l S");
     operations.push(".04 .35 .47 rg 45 816 50 3 re f");
     operations.push(".10 .20 .30 rg");
     function draw(txt, x, y, spec) {
