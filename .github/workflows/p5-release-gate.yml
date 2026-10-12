@@ -94,6 +94,10 @@ jobs:
         run: npm run qa:garp27:foundation
       - name: Run P5 R2 release gate
         run: npm run qa:p5:ci
+      # Ensure the complete Studio UX / reviewed manual PDF contract is tested before Safe Promotion.
+      # This regression previously ran only inside qa:release on production deploy.
+      - name: Verify Studio UX and manual PDF review contract
+        run: npm run test:studio-ux
       - name: Create Studio GARP release assurance
         env:
           GHRAB_SOURCE_COMMIT: ${{ github.event.pull_request.head.sha || github.sha }}
