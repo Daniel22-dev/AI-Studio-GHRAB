@@ -135,9 +135,85 @@ check(viewerHtml.includes('class="viewer-back viewer-back-studio"') &&
   "Viewer must offer both Studio and manual-center return links.");
 check(viewerJs.includes('standaloneUrl.searchParams.set("from", "studio")'),
   "Standalone manual launch does not preserve Studio origin.");
-check(viewerJs.includes('if (currentApp.id === "generator")') &&
-  viewerJs.includes('doc.documentElement.dataset.ghrabAccess !== "granted"'),
-  "GIT PDF must retain one access-controlled export pending editorial contract.");
+// Exercise the actual universal reviewed-PDF gate instead of a removed GIT-specific syntax.
+// The GIT manual must never bypass the same access, review, version and content contract as other manuals.
+const pdfGuardBegin = viewerJs.indexOf("function pdfContractEligible() {");
+const pdfGuardEnd = viewerJs.indexOf("\nfunction refreshPdfAvailability()", pdfGuardBegin);
+check(pdfGuardBegin >= 0 && pdfGuardEnd > pdfGuardBegin &&
+  viewerJs.includes("if (!pdfContractEligible()) return;"),
+  "Manual PDF must use the reviewed-only, access-controlled gate both for visibility and on click.");
+if (pdfGuardBegin >= 0 && pdfGuardEnd > pdfGuardBegin) {
+  const pdfGuard = new vm.Script(
+    viewerJs.slice(pdfGuardBegin, pdfGuardEnd) + "\npdfContractEligible();",
+    { filename: "manual-pdf-eligibility.js" },
+  );
+  const verifyPdfEligibility = (label, change, expected) => {
+    const context = {
+      currentApp: { id: "generator", version: "7.1.99" },
+      currentManualUrl: new URL("https://daniel22-dev.github.io/GIT/manual/"),
+      location: { origin: "https://daniel22-dev.github.io" },
+      G: { hasAppAccess: () => ({ enabled: true }) },
+      frame: {
+        contentDocument: { documentElement: { dataset: { ghrabAccess: "granted" } } },
+        contentWindow: {
+          GHRAB_MANUAL_DOC_INFO: {
+            appId: "generator", appVersion: "7.1.99",
+            reviewStatus: "verified", pdfContentContract: "static-complete-sections-v1",
+          },
+        },
+      },
+    };
+    change(context);
+    try {
+      check(pdfGuard.runInNewContext(context, { timeout: 1000 }) === expected,
+        "Manual PDF eligibility incorrect for " + label + ".");
+    } catch (error) {
+      check(false, "Manual PDF eligibility failed for " + label + ": " + String(error));
+    }
+  };
+  verifyPdfEligibility("GIT granted verified complete manual", () => {}, true);
+  verifyPdfEligibility("GIT pending editorial review", (c) => {
+    c.frame.contentWindow.GHRAB_MANUAL_DOC_INFO.reviewStatus = "pending";
+  }, false);
+  verifyPdfEligibility("GIT missing review metadata", (c) => {
+    delete c.frame.contentWindow.GHRAB_MANUAL_DOC_INFO;
+  }, false);
+  verifyPdfEligibility("GIT unapproved review", (c) => {
+    c.frame.contentWindow.GHRAB_MANUAL_DOC_INFO.reviewStatus = "rejected";
+  }, false);
+  verifyPdfEligibility("GIT denied iframe access", (c) => {
+    c.frame.contentDocument.documentElement.dataset.ghrabAccess = "denied";
+  }, false);
+  verifyPdfEligibility("GIT unconfirmed iframe access", (c) => {
+    delete c.frame.contentDocument.documentElement.dataset.ghrabAccess;
+  }, false);
+  verifyPdfEligibility("GIT revoked application permit", (c) => {
+    c.G.hasAppAccess = () => ({ enabled: false });
+  }, false);
+  verifyPdfEligibility("GIT mismatched manual app", (c) => {
+    c.frame.contentWindow.GHRAB_MANUAL_DOC_INFO.appId = "differentiator";
+  }, false);
+  verifyPdfEligibility("GIT stale manual version", (c) => {
+    c.frame.contentWindow.GHRAB_MANUAL_DOC_INFO.appVersion = "7.1.98";
+  }, false);
+  verifyPdfEligibility("GIT incomplete editorial PDF contract", (c) => {
+    c.frame.contentWindow.GHRAB_MANUAL_DOC_INFO.pdfContentContract = "draft";
+  }, false);
+  verifyPdfEligibility("GIT wrong manual origin", (c) => {
+    c.currentManualUrl = new URL("https://example.net/GIT/manual/");
+  }, false);
+  verifyPdfEligibility("GIT inaccessible iframe", (c) => {
+    c.frame.contentDocument = null;
+  }, false);
+  verifyPdfEligibility("verified map-tour manual with content", (c) => {
+    c.frame.contentWindow.GHRAB_MANUAL_DOC_INFO.pdfContentContract = "map-tour-v1";
+    c.frame.contentWindow.GHRAB_MANUAL_EXPORT = [{ type: "body", text: "Reviewed content" }];
+  }, true);
+  verifyPdfEligibility("map-tour manual with missing export content", (c) => {
+    c.frame.contentWindow.GHRAB_MANUAL_DOC_INFO.pdfContentContract = "map-tour-v1";
+    c.frame.contentWindow.GHRAB_MANUAL_EXPORT = [];
+  }, false);
+}
 check(viewerJs.includes('function syncEmbeddedManualTheme()') &&
   viewerJs.includes('syncEmbeddedManualTheme();') &&
   viewerCss.includes('.viewer-back-studio'),
