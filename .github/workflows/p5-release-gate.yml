@@ -75,6 +75,10 @@ jobs:
           node -e "const p=require('./node_modules/playwright/package.json'); if(p.version!=='1.61.1') process.exit(1)"
       - name: Enforce release version freshness
         run: npm run verify:release-version
+      - name: Verify committed runtime fallback before live synchronisation
+        run: |
+          npm run qa:fallback
+          npm run test:runtime-fallback
       - name: Synchronise application manifests
         run: npm run sync
       - name: Format generated registry files
@@ -83,6 +87,11 @@ jobs:
         run: node scripts/verify-deployment-release-identities.mjs
       - name: Verify committed release-wave against live sources
         run: node scripts/sync-platform-consumers.mjs --check && node scripts/qa-ecosystem.mjs --require-source-verification
+      - name: Refresh runtime fallback from all live-verified sources
+        run: |
+          npm run sync:fallback
+          npm run qa:fallback
+          npm run test:runtime-fallback
       - name: Install pinned Playwright Chromium
         shell: bash
         run: |
