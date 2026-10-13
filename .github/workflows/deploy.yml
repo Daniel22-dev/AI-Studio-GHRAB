@@ -53,6 +53,10 @@ jobs:
 
       - name: Verify signed access bundle freshness
         run: npm run access:check:required
+      - name: Verify committed runtime fallback before live synchronisation
+        run: |
+          npm run qa:fallback
+          npm run test:runtime-fallback
 
       - name: Synchronise application manifests
         run: npm run sync
@@ -66,8 +70,9 @@ jobs:
           node scripts/sync-platform-consumers.mjs --check
           node scripts/qa-ecosystem.mjs --require-source-verification
 
-      - name: Verify approved runtime fallback
+      - name: Refresh runtime fallback from all live-verified sources
         run: |
+          npm run sync:fallback
           npm run qa:fallback
           npm run test:runtime-fallback
 
