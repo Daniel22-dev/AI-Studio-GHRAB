@@ -1,8 +1,8 @@
 # AI Studio GHRAB – P1 bounded release-identity concurrency
 
-**Date:** 2026-10-15  
-**Scope:** CI-only orchestration, on top of P0 release-identity observability PR #238.  
-**Source base:** `1417ac18fab81e8fe3ac1a3b91a56d05020a4654` (P0 draft).  
+**Date:** 2026-10-15
+**Scope:** CI-only orchestration, on top of P0 release-identity observability PR #238.
+**Source base:** `1417ac18fab81e8fe3ac1a3b91a56d05020a4654` (P0 draft).
 **Status:** Implemented and tested locally; **not** promoted to `candidate`, merged to `main`, or production certified.
 
 ## Exactly what changed
