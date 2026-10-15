@@ -102,6 +102,15 @@ function compactCssWhitespace(content) {
   return `${output.trim()}\n`;
 }
 
+// P2B: observe each QA build; do not change its inputs, output, or build policy.
+// The observer is inactive outside qa:release's explicit child-process scope.
+const p2bObservation = process.env.GHRAB_QA_P2B_TRACE === '1'
+  ? await import('./qa-p2b-build-observer.mjs')
+  : null;
+const p2bStarted = p2bObservation
+  ? await p2bObservation.beginObservedBuild(root, process.env.GHRAB_QA_P2B_PHASE)
+  : null;
+
 await rm(dist, { recursive: true, force: true });
 await mkdir(dist, { recursive: true });
 await cp(src, dist, { recursive: true });
@@ -508,3 +517,6 @@ const rootIndexCompacted = `${rootIndexText
   .join("\n")}\n`;
 if (rootIndexCompacted !== rootIndexText) await writeFile(rootIndex, rootIndexCompacted, "utf8");
 
+
+// P2B: fingerprint the FINAL generated dist after all build post-processing.
+if (p2bObservation) await p2bObservation.finishObservedBuild(root, p2bStarted);
