@@ -83,6 +83,8 @@ jobs:
         run: npm run sync
       - name: Format generated registry files
         run: npm run format:generated-json
+      - name: Verify release identity timing and fail-closed regression tests
+        run: npm run test:release-identity-timing
       - name: Verify declared deployment release identities
         run: node scripts/verify-deployment-release-identities.mjs
       - name: Verify committed release-wave against live sources
@@ -130,3 +132,4 @@ jobs:
             dist/build-provenance.json
             dist/security-evidence-manifest.json
             qa-results/release-current
+            qa-results/release-identity-timing.json
