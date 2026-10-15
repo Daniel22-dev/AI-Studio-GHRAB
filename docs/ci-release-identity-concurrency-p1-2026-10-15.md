@@ -2,8 +2,8 @@
 
 **Date:** 2026-10-15
 **Scope:** CI-only orchestration, on top of P0 release-identity observability PR #238.
-**Source base:** `1417ac18fab81e8fe3ac1a3b91a56d05020a4654` (P0 draft).
-**Status:** Implemented and tested locally; **not** promoted to `candidate`, merged to `main`, or production certified.
+**Original source base:** `1417ac18fab81e8fe3ac1a3b91a56d05020a4654` (historical P0 branch). P0 has since been certified and deployed; P1 PR #239 targets `candidate`.
+**Status at PR review:** P0 production-certified; P1 implementation revalidated locally, retargeted to `candidate`, and awaiting P5 certification. Not yet production-certified.
 
 ## Exactly what changed
 
@@ -30,7 +30,7 @@ No changes to workflow trigger/needs/rulesets, GARP, P5 R2, Safe Promotion, SHA 
 
 The prior 15 P0 cases also cover both release contracts (patch assurance and transitional release integrity), corrupt or missing JSON, incorrect hashes/revisions, 429 exhausted retries, timeouts, missing identities, unregistered sources, and advisory write failures.
 
-**Local verification:** `node --check` on modified modules and `npm run test:release-identity-timing`: **23/23 passed** (Node.js 22.16.0). Local dependency installation `npm ci` was attempted but could not reach `registry.npmjs.org` (`EAI_AGAIN`), so the entire project P5/release suite was **not** run locally. These tests do **not** constitute GitHub CI, live network A/B, or full release certification.
+**Local verification:** `node --check` on modified modules and `npm run test:release-identity-timing`: **23/23 passed** (Node.js 22.16.0). Additional local suites: CI topology **22/22 PASS**, release promotion **PASS**, auto-patch idempotence **PASS**, runtime fallback **PASS** (including admission regressions). Full P5/release suite requires dependency installation in GitHub CI; previous local `npm ci` could not reach `registry.npmjs.org` (`EAI_AGAIN`). These local results do **not** constitute live network A/B or release certification.
 
 ## Evidence and performance expectations
 
@@ -40,7 +40,7 @@ To certify measurable gain: obtain at least **five comparable success runs** of 
 
 ## Rollout, acceptance, and rollback
 
-- PR is intentionally stacked on **P0**, not on `candidate`: test/review P0 first, then rebase/retarget P1 only after P0 is merged.
+- P1 was originally stacked on **P0**. After P0 passed candidate/PR/main P5 gates and deployed successfully, PR #239 was retargeted to the canonical `candidate` branch. Only the three reviewed P1 files differ from the current candidate tree.
 - No required promotion, source-attestation or release gate may be removed or weakened. No production merge until canonical candidate/PR P5 and deploy checks are green and per-app evidence matches.
 - **Emergency serial mode:** `GHRAB_RELEASE_IDENTITY_CONCURRENCY=1 node scripts/verify-deployment-release-identities.mjs` (to apply in CI, set this environment variable explicitly on the identity verification steps). This preserves the P0 serial scheduling.
 - **Code rollback:** revert the P1 commit/PR; P0 continues with serial identity verification. No rollback of P0 telemetry is necessary.
