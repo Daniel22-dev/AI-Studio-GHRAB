@@ -87,16 +87,17 @@ jobs:
         run: |
           npx playwright install --with-deps chromium
           node -e "console.log('CHROMIUM_PATH=' + require('playwright').chromium.executablePath())" >> "$GITHUB_ENV"
-      - name: Build application for reporter regression
-        run: npm run build
-      - name: Run unified error reporter regression
-        run: npm run test:reporter
       - name: Run GHRAB QA release gate
         run: npm run qa:release
         env:
           NPM_CONFIG_REGISTRY: https://registry.npmjs.org
           GHRAB_VISUAL_ATTEMPTS: 3
           GHRAB_VISUAL_SCREENSHOT_ATTEMPTS: 3
+      # The earlier reporter-only build was discarded by qa:release. Keep the
+      # full reporter browser regression, now on the QA-built dist, with a
+      # fail-closed before/after artifact digest and fresh reporter evidence.
+      - name: Verify reporter against QA-certified build (P2)
+        run: node scripts/p2-reporter-build-parity.mjs
       - name: Upload QA evidence
         if: always()
         uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02 # v4.6.2
