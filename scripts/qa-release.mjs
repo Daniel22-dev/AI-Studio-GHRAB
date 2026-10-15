@@ -12,6 +12,7 @@ import {
   saveGate,
   ensureOutput,
 } from "./qa-core.mjs";
+import { finalizeBuildObservations } from "./qa-p2b-build-observer.mjs";
 
 const REQUIRED_GATES = [
   "technical",
@@ -57,7 +58,11 @@ for (const [label, command] of [
     await saveState(state);
     continue;
   }
-  const result = await runCommand(command, label);
+  // Observe both builds inside this QA release only; all commands still run.
+  const trace = label === 'project-tests' || label === 'project-build';
+  const result = await runCommand(command, label, trace ? {
+    env: { GHRAB_QA_P2B_TRACE: '1', GHRAB_QA_P2B_PHASE: label },
+  } : {});
   commands.push(result);
   if (result.code !== 0) {
     projectFindings.push(
@@ -71,6 +76,11 @@ for (const [label, command] of [
     );
   }
 }
+
+// P2B does not accept or reject redundant builds from one sample: it only
+// records exact inputs, raw output, and timestamp-normalized output.
+// Trace omissions/tampering are fatal; observed differences are advisory.
+await finalizeBuildObservations(ROOT);
 
 const auditCommand = manifest.auditCommand || "npm audit --audit-level=high";
 if (auditCommand) {
