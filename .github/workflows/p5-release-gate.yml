@@ -85,6 +85,8 @@ jobs:
         run: npm run format:generated-json
       - name: Verify release identity timing and fail-closed regression tests
         run: npm run test:release-identity-timing
+      - name: Verify P2 reporter build parity and tamper rejection
+        run: node --test scripts/test-p2-reporter-build-parity.mjs
       - name: Verify declared deployment release identities
         run: node scripts/verify-deployment-release-identities.mjs
       - name: Verify committed release-wave against live sources
