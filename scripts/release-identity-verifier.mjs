@@ -18,10 +18,16 @@ const TRANSIENT_HTTP = new Set([408, 425, 429, 500, 502, 503, 504]);
 const retryDelay = (attempt) =>
   new Promise((resolve) => setTimeout(resolve, Math.min(2000, 350 * (2 ** (attempt - 1)))));
 
-async function fetchBytes(url, { timeoutMs = 12000, maxAttempts = 3 } = {}) {
+async function fetchBytes(url, { timeoutMs = 12000, maxAttempts = 3, stats } = {}) {
   let lastError = null;
 
   for (let attempt = 1; attempt <= maxAttempts; attempt += 1) {
+    // Advisory counters only; do not change retries, validation, or error propagation.
+    if (stats) {
+      if (attempt === 1) stats.requests += 1;
+      stats.attempts += 1;
+      if (attempt > 1) stats.retries += 1;
+    }
     const controller = new AbortController();
     const timer = setTimeout(() => controller.abort(), timeoutMs);
     try {
@@ -76,7 +82,7 @@ function normalizeRepository(value) {
   return String(value || '').trim().toLowerCase();
 }
 
-export async function verifyDeploymentReleaseIdentity({ app, source }) {
+export async function verifyDeploymentReleaseIdentity({ app, source, stats }) {
   const releaseContract = app?.releaseIdentity?.contract || null;
   const assuranceContract = app?.assurance?.schema || null;
 
@@ -86,7 +92,7 @@ export async function verifyDeploymentReleaseIdentity({ app, source }) {
     if (!assuranceUrl.startsWith(baseUrl.href)) throw new Error('patch assurance URL opouští povolený deployment prefix');
     assertSha256('assurance.evidenceManifestSha256', app.assurance.evidenceManifestSha256);
 
-    const assuranceBytes = await fetchBytes(assuranceUrl);
+    const assuranceBytes = await fetchBytes(assuranceUrl, { stats });
     if (hex(assuranceBytes) !== app.assurance.evidenceManifestSha256) throw new Error('patch-assurance digest neodpovídá Studio manifestu');
 
     let assurance;
@@ -113,7 +119,7 @@ export async function verifyDeploymentReleaseIdentity({ app, source }) {
       assertSha256(`patch-assurance ${name}.sha256`, ref.sha256);
       const artifactUrl = new URL(ref.url, baseUrl).href;
       if (!artifactUrl.startsWith(baseUrl.href)) throw new Error(`patch-assurance artifact ${name} opouští deployment prefix`);
-      const bytes = await fetchBytes(artifactUrl);
+      const bytes = await fetchBytes(artifactUrl, { stats });
       if (hex(bytes) !== ref.sha256) throw new Error(`patch-assurance artifact digest drift ${name}`);
       let value;
       try {
@@ -144,7 +150,7 @@ export async function verifyDeploymentReleaseIdentity({ app, source }) {
     const repo = source.repository;
     if (!/^[A-Za-z0-9_.-]+\/[A-Za-z0-9_.-]+$/.test(repo || '')) throw new Error('registrovaný repository identifikátor je neplatný');
     const sourcePackageUrl = `https://raw.githubusercontent.com/${repo}/${assurance.sourceRevision}/package.json`;
-    const { value: sourcePackage } = await fetchJson(sourcePackageUrl);
+    const { value: sourcePackage } = await fetchJson(sourcePackageUrl, { stats });
     if (sourcePackage.version !== app.version) throw new Error(`source commit package version ${sourcePackage.version || '?'} != deployment ${app.version}`);
 
     return {
@@ -180,7 +186,7 @@ export async function verifyDeploymentReleaseIdentity({ app, source }) {
   const integrityUrl = new URL(app.releaseIdentity.url || './release-integrity.json', baseUrl).href;
   if (!integrityUrl.startsWith(baseUrl.href)) throw new Error('releaseIdentity URL opouští povolený deployment prefix');
 
-  const { value: integrity } = await fetchJson(integrityUrl);
+  const { value: integrity } = await fetchJson(integrityUrl, { stats });
   if (integrity.schema !== 'ghrab-release-integrity-v2') throw new Error('release-integrity má neplatné schema');
   if (integrity.digestAlgorithmId !== 'ghrab-artifact-digest-v2') throw new Error('release-integrity má neplatný digestAlgorithmId');
   if (integrity.hashAlgorithm !== 'SHA-256') throw new Error('release-integrity nepoužívá SHA-256');
@@ -205,7 +211,7 @@ export async function verifyDeploymentReleaseIdentity({ app, source }) {
     if (!Number.isInteger(file.size) || file.size < 0) throw new Error(`neplatná velikost ${rel}`);
     const fileUrl = new URL(rel.split('/').map(encodeURIComponent).join('/'), baseUrl).href;
     if (!fileUrl.startsWith(baseUrl.href)) throw new Error(`artifact cesta opouští deployment prefix: ${rel}`);
-    const bytes = await fetchBytes(fileUrl);
+    const bytes = await fetchBytes(fileUrl, { stats });
     if (bytes.length !== file.size) throw new Error(`artifact size drift ${rel}`);
     const actualSha = hex(bytes);
     if (actualSha !== file.sha256) throw new Error(`artifact sha256 drift ${rel}`);
@@ -214,7 +220,7 @@ export async function verifyDeploymentReleaseIdentity({ app, source }) {
   const computedArtifactDigest = computeArtifactDigest(verifiedRows);
   if (computedArtifactDigest !== integrity.artifactDigest) throw new Error('artifactDigest neodpovídá skutečně nasazeným souborům');
 
-  const studioManifestBytes = await fetchBytes(source.url);
+  const studioManifestBytes = await fetchBytes(source.url, { stats });
   if (hex(studioManifestBytes) !== integrity.manifestSha256) throw new Error('manifestSha256 neodpovídá nasazenému studio-manifest.json');
 
   const evidenceFiles = [
@@ -223,16 +229,16 @@ export async function verifyDeploymentReleaseIdentity({ app, source }) {
     ['security-evidence-manifest.json', integrity.evidenceManifestSha256],
   ];
   for (const [name, expectedSha] of evidenceFiles) {
-    const bytes = await fetchBytes(new URL(name, baseUrl).href);
+    const bytes = await fetchBytes(new URL(name, baseUrl).href, { stats });
     if (hex(bytes) !== expectedSha) throw new Error(`${name} digest drift`);
   }
 
-  const { value: provenance } = await fetchJson(new URL('build-provenance.json', baseUrl).href);
+  const { value: provenance } = await fetchJson(new URL('build-provenance.json', baseUrl).href, { stats });
   if (provenance.schema !== 'ghrab-build-provenance-v1') throw new Error('build provenance schema drift');
   if (String(provenance.source?.revision || '').toLowerCase() !== String(integrity.sourceCommit).toLowerCase()) throw new Error('build provenance source commit drift');
   if (normalizeRepository(provenance.source?.repository) !== normalizeRepository(source.repository)) throw new Error('build provenance repository drift');
 
-  const { value: evidence } = await fetchJson(new URL('security-evidence-manifest.json', baseUrl).href);
+  const { value: evidence } = await fetchJson(new URL('security-evidence-manifest.json', baseUrl).href, { stats });
   if (evidence.schema !== 'ghrab-security-evidence-manifest-v1') throw new Error('security evidence schema drift');
   if (evidence.appId !== app.id || evidence.version !== app.version) throw new Error('security evidence app/version drift');
   if (String(evidence.sourceRevision || '').toLowerCase() !== String(integrity.sourceCommit).toLowerCase()) throw new Error('security evidence source commit drift');
@@ -240,7 +246,7 @@ export async function verifyDeploymentReleaseIdentity({ app, source }) {
   const repo = source.repository;
   if (!/^[A-Za-z0-9_.-]+\/[A-Za-z0-9_.-]+$/.test(repo || '')) throw new Error('registrovaný repository identifikátor je neplatný');
   const sourcePackageUrl = `https://raw.githubusercontent.com/${repo}/${integrity.sourceCommit}/package.json`;
-  const { value: sourcePackage } = await fetchJson(sourcePackageUrl);
+  const { value: sourcePackage } = await fetchJson(sourcePackageUrl, { stats });
   if (sourcePackage.version !== app.version) throw new Error(`source commit package version ${sourcePackage.version || '?'} != deployment ${app.version}`);
 
   return {

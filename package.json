@@ -50,6 +50,7 @@
     "qa:lock": "node scripts/qa-p5-lock.mjs",
     "qa:axe:required": "node scripts/qa-p5-axe-runtime.mjs --required",
     "test:release-policy": "node scripts/qa-p5-release.mjs --policy-self-test",
+    "test:release-identity-timing": "node --test scripts/test-release-identity-timing.mjs",
     "sync:doc-versions": "node scripts/sync-doc-app-versions.mjs",
     "qa:doc-versions": "node scripts/sync-doc-app-versions.mjs --check",
     "test:audit-regressions": "node scripts/test-audit-regressions.mjs",
