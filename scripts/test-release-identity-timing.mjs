@@ -120,36 +120,58 @@ function fixture(rows, { behavior = null, evidenceWriteError = false } = {}) {
     import fs from 'node:fs';
     const fixture = JSON.parse(fs.readFileSync(new URL('../mock.json', import.meta.url), 'utf8'));
     const counts = new Map();
+    let inFlight = 0;
+    let maxInFlight = 0;
+    const startSequence = [];
+    const endSequence = [];
     globalThis.fetch = async (input) => {
       const url = String(input);
-      const count = (counts.get(url) || 0) + 1;
-      counts.set(url, count);
-      const scenario = fixture.behavior;
-      if (scenario && url.includes(scenario.urlPart)) {
-        if (scenario.type === 'timeout') {
-          const error = new Error('synthetic timeout');
-          error.name = 'TimeoutError';
-          throw error;
+      inFlight += 1;
+      maxInFlight = Math.max(maxInFlight, inFlight);
+      startSequence.push(url);
+      try {
+        const id = url.startsWith('https://example.test/') ? url.split('/')[3] : '';
+        if (url.endsWith('/patch-assurance.json') || url.endsWith('/release-integrity.json')) {
+          const delay = Number(fixture.behavior?.delayByApp?.[id] || 0);
+          if (delay > 0) await new Promise((resolve) => setTimeout(resolve, delay));
         }
-        if (scenario.type === 'http404') return new Response('missing', { status: 404 });
-        if (scenario.type === 'http429') return new Response('limited', { status: 429 });
-        if (scenario.type === 'http429Once' && count === 1)
-          return new Response('limited', { status: 429 });
-        if (scenario.type === 'checksum' && url.includes('patch-assurance.json'))
-          return new Response('modified body', { status: 200 });
+        const count = (counts.get(url) || 0) + 1;
+        counts.set(url, count);
+        const scenario = fixture.behavior;
+        if (scenario && url.includes(scenario.urlPart)) {
+          if (scenario.type === 'timeout') {
+            const error = new Error('synthetic timeout');
+            error.name = 'TimeoutError';
+            throw error;
+          }
+          if (scenario.type === 'http404') return new Response('missing', { status: 404 });
+          if (scenario.type === 'http429') return new Response('limited', { status: 429 });
+          if (scenario.type === 'http429Once' && count === 1)
+            return new Response('limited', { status: 429 });
+          if (scenario.type === 'checksum' && url.includes('patch-assurance.json'))
+            return new Response('modified body', { status: 200 });
+        }
+        const body = fixture.responses[url];
+        return body ? new Response(Buffer.from(body, 'base64'), { status: 200 })
+          : new Response('unexpected URL', { status: 404 });
+      } finally {
+        inFlight -= 1;
+        endSequence.push(url);
+        fs.writeFileSync(new URL('../mock-metrics.json', import.meta.url), JSON.stringify({
+          maxInFlight, inFlight, startSequence, endSequence,
+          requestsByUrl: Object.fromEntries(counts.entries()),
+        }));
       }
-      const body = fixture.responses[url];
-      return body ? new Response(Buffer.from(body, 'base64'), { status: 200 })
-        : new Response('unexpected URL', { status: 404 });
     };
   `);
   if (evidenceWriteError) fs.writeFileSync(path.join(tmp, 'qa-results'), 'must remain a file');
-  const run = () => spawnSync(process.execPath, [
+  const run = (env = {}) => spawnSync(process.execPath, [
     '--import', './scripts/mock-fetch.mjs', './scripts/verify-deployment-release-identities.mjs',
-  ], { cwd: tmp, encoding: 'utf8', timeout: 20000 });
+  ], { cwd: tmp, encoding: 'utf8', timeout: 20000, env: { ...process.env, ...env } });
   const read = (name) => JSON.parse(fs.readFileSync(path.join(dir, name), 'utf8'));
   const telemetry = () => JSON.parse(fs.readFileSync(path.join(tmp, 'qa-results/release-identity-timing.json'), 'utf8'));
-  return { tmp, run, read, telemetry, dispose: () => fs.rmSync(tmp, { recursive: true, force: true }) };
+  const metrics = () => JSON.parse(fs.readFileSync(path.join(tmp, 'mock-metrics.json'), 'utf8'));
+  return { tmp, run, read, telemetry, metrics, dispose: () => fs.rmSync(tmp, { recursive: true, force: true }) };
 }
 
 function runCase(rows, opts, verify) {
@@ -328,4 +350,143 @@ test('advisory write failure cannot downgrade an otherwise successful gate', () 
     assert.match(r.stderr, /Advisory release identity timing evidence not written/);
     assert.equal(f.read('sync-report.json').releaseIdentity.verified, 1);
   });
+});
+
+test('P1: worker pool respects bound 3 and verifies every independent app', () => {
+  const rows = Array.from({ length: 8 }, (_, i) => verified(`pool-${i}`));
+  const delays = Object.fromEntries(rows.map((r) => [r.id, 60]));
+  runCase(rows, { behavior: { delayByApp: delays } }, (f, r) => {
+    assert.equal(r.status, 0, r.stderr);
+    assert.equal(f.metrics().maxInFlight, 3);
+    assert.equal(f.metrics().inFlight, 0);
+    assert.equal(f.telemetry().totals.verified, 8);
+    assert.equal(f.telemetry().totals.fetchRequests, 8 * 6);
+    assert.deepEqual(f.read('sync-report.json').sources.map((s) => s.id), rows.map((row) => row.id));
+    assert.ok(f.read('sync-report.json').sources.every((s) => s.releaseIdentity?.status === 'VERIFIED'));
+  });
+});
+
+test('P1: rollback concurrency 1 yields equivalent fail-closed release decisions and evidence', () => {
+  const rows = [verified('one'), verified('two'), verified('three'), verified('four')];
+  const options = { behavior: { delayByApp: { one: 100, two: 25, three: 65, four: 15 } } };
+  const snapshot = (f) => {
+    const r = f.read('sync-report.json');
+    delete r.releaseIdentity.checkedAt;
+    const t = f.telemetry();
+    return { report: r, statuses: t.applications.map((x) => ({
+      appId: x.appId, status: x.status,
+      fetchRequests: x.fetchRequests, fetchAttempts: x.fetchAttempts, fetchRetries: x.fetchRetries,
+    })), counts: {
+      verified: t.totals.verified, absent: t.totals.absent, failed: t.totals.failed,
+      fetchRequests: t.totals.fetchRequests,
+    } };
+  };
+  const serial = fixture(rows, options);
+  const parallel = fixture(rows, options);
+  try {
+    const s = serial.run({ GHRAB_RELEASE_IDENTITY_CONCURRENCY: '1' });
+    const p = parallel.run({ GHRAB_RELEASE_IDENTITY_CONCURRENCY: '3' });
+    assert.equal(s.status, 0, s.stderr);
+    assert.equal(p.status, 0, p.stderr);
+    assert.equal(serial.metrics().maxInFlight, 1);
+    assert.equal(parallel.metrics().maxInFlight, 3);
+    assert.deepEqual(snapshot(serial), snapshot(parallel));
+    assert.equal(s.stdout, p.stdout, 'log order must not depend on response completion');
+    assert.ok(parallel.telemetry().totals.durationMs < serial.telemetry().totals.durationMs,
+      'concurrent mock with intentionally delayed I/O should beat serial');
+  } finally { serial.dispose(); parallel.dispose(); }
+});
+
+test('P1: out-of-order completions retain input order, and one FAILED identity blocks gate', () => {
+  const absent = verified('absent');
+  delete absent.app.assurance;
+  const rows = [
+    verified('slow'), verified('fail', { badJson: true }), verified('fast'),
+    { ...verified('not-live'), ok: false }, { id: 'not-registered' },
+    absent, verified('last'),
+  ];
+  runCase(rows, { behavior: { delayByApp: { slow: 180, fail: 10, fast: 10, last: 10 } } }, (f, r) => {
+    assert.equal(r.status, 1, r.stdout);
+    assert.equal(f.metrics().maxInFlight, 3);
+    assert.deepEqual(f.telemetry().applications.map((x) => x.appId), rows.map((row) => row.id));
+    assert.deepEqual(f.telemetry().applications.map((x) => x.status),
+      ['VERIFIED', 'FAILED', 'VERIFIED', 'NOT_APPLICABLE', 'SKIPPED_UNREGISTERED', 'ABSENT', 'VERIFIED']);
+    const saved = f.read('sync-report.json');
+    assert.equal(saved.releaseIdentity.failed, 1);
+    assert.equal(saved.sources[1].ok, false);
+    assert.equal(saved.sources[1].identityError.includes('JSON'), true);
+    assert.equal(saved.sources.at(-1).releaseIdentity.status, 'VERIFIED', 'pool must settle after an earlier failure');
+    assert.equal(saved.sources[4].releaseIdentity, undefined, 'unregistered row must remain unchanged');
+    assert.ok(r.stdout.indexOf('Release identity slow:') < r.stdout.indexOf('Release identity fast:'),
+      'stdout successful rows must preserve input order');
+    assert.equal(f.metrics().inFlight, 0);
+  });
+});
+
+test('P1: transient 429 retry remains isolated to one application during parallel checks', () => {
+  runCase([verified('rate-limited'), verified('other'), verified('third')], {
+    behavior: { type: 'http429Once', urlPart: '/rate-limited/patch-assurance.json',
+      delayByApp: { 'rate-limited': 60, other: 80, third: 80 } },
+  }, (f, r) => {
+    assert.equal(r.status, 0, r.stderr);
+    assert.equal(f.telemetry().totals.verified, 3);
+    assert.equal(f.telemetry().totals.fetchRetries, 1);
+    assert.equal(f.telemetry().totals.fetchAttempts, 19);
+    const attempts = f.metrics().requestsByUrl;
+    assert.equal(attempts['https://example.test/rate-limited/patch-assurance.json'], 2);
+    assert.equal(attempts['https://example.test/other/patch-assurance.json'], 1);
+    assert.equal(f.metrics().inFlight, 0);
+  });
+});
+
+test('P1: invalid concurrency never enters verification or writes PASS', () => {
+  for (const invalid of ['0', '4', '-1', 'nan', '1.5']) {
+    const f = fixture([verified('required')]);
+    try {
+      const r = f.run({ GHRAB_RELEASE_IDENTITY_CONCURRENCY: invalid });
+      assert.equal(r.status, 1);
+      assert.match(r.stderr, /GHRAB_RELEASE_IDENTITY_CONCURRENCY/);
+      assert.equal(f.read('sync-report.json').releaseIdentity, undefined);
+      assert.equal(fs.existsSync(path.join(f.tmp, 'mock-metrics.json')), false);
+    } finally { f.dispose(); }
+  }
+});
+
+test('P1: duplicate source rows are not collapsed or skipped', () => {
+  const row = verified('duplicate');
+  runCase([row, { ...row }, { ...row }], {
+    behavior: { delayByApp: { duplicate: 40 } },
+  }, (f, r) => {
+    assert.equal(r.status, 0, r.stderr);
+    assert.equal(f.telemetry().totals.verified, 3);
+    assert.equal(f.telemetry().totals.checked, 3);
+    assert.equal(f.telemetry().totals.fetchRequests, 18);
+    assert.equal(f.metrics().requestsByUrl['https://example.test/duplicate/patch-assurance.json'], 3);
+    assert.equal(f.metrics().maxInFlight, 3);
+  });
+});
+
+test('P1: an isolated HTTP 404 fails closed without dropping parallel successes', () => {
+  runCase([
+    verified('bad-http'), verified('bad-digest'), verified('healthy'), verified('after'),
+  ], { behavior: { type: 'http404', urlPart: '/bad-http/patch-assurance.json',
+    delayByApp: { 'bad-http': 20, 'bad-digest': 30, healthy: 20, after: 10 } } }, (f, r) => {
+    assert.equal(r.status, 1);
+    assert.equal(f.read('sync-report.json').releaseIdentity.failed, 1);
+    assert.equal(f.read('sync-report.json').releaseIdentity.verified, 3);
+    assert.equal(f.read('sync-report.json').sources.at(-1).releaseIdentity.status, 'VERIFIED');
+    assert.equal(f.metrics().inFlight, 0);
+  });
+});
+
+test('P1: concurrency=2 is supported with exactly two in-flight network verifications', () => {
+  const f = fixture([verified('one'), verified('two'), verified('three')], {
+    behavior: { delayByApp: { one: 70, two: 70, three: 70 } },
+  });
+  try {
+    const run = f.run({ GHRAB_RELEASE_IDENTITY_CONCURRENCY: '2' });
+    assert.equal(run.status, 0, run.stderr);
+    assert.equal(f.metrics().maxInFlight, 2);
+    assert.equal(f.telemetry().totals.verified, 3);
+  } finally { f.dispose(); }
 });

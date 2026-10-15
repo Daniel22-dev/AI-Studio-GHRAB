@@ -19,54 +19,96 @@ const timings = [];
 const elapsedMs = (started) => Math.max(0, Math.round(performance.now() - started));
 const appBy = new Map((apps || []).map((app) => [app.id, app]));
 const sourceBy = new Map((sources || []).map((source) => [source.id, source]));
-let verified = 0;
-let absent = 0;
-let failed = 0;
+// P1: overlap independent APPLICATION checks only. Each application's existing
+// fetch/retry/digest/provenance verification remains sequential and unchanged.
+// 1 is the emergency serial rollback; 3 is the reviewed upper bound.
+const requestedConcurrency = process.env.GHRAB_RELEASE_IDENTITY_CONCURRENCY;
+const concurrency = requestedConcurrency === undefined ? 3 : Number(requestedConcurrency);
+if (!Number.isInteger(concurrency) || concurrency < 1 || concurrency > 3) {
+  throw new Error('GHRAB_RELEASE_IDENTITY_CONCURRENCY must be an integer from 1 to 3');
+}
 
-for (const item of report.sources || []) {
+const entries = report.sources || [];
+// Preserve EVERY original source row, including duplicates and unregistered rows.
+// Results are committed to sync-report.json only after ALL checks have settled.
+const outcomes = new Array(entries.length);
+let nextIndex = 0;
+
+async function verifyOne(item) {
   const appStartedAt = performance.now();
   const stats = { requests: 0, attempts: 0, retries: 0 };
-  const recordTiming = (status) => timings.push({
-    appId: item.id,
-    status,
-    durationMs: elapsedMs(appStartedAt),
-    fetchRequests: stats.requests,
-    fetchAttempts: stats.attempts,
-    fetchRetries: stats.retries,
+  const finish = (kind, status, identity, errorMessage, message) => ({
+    kind,
+    identity,
+    errorMessage,
+    message,
+    timing: {
+      appId: item.id,
+      status,
+      durationMs: elapsedMs(appStartedAt),
+      fetchRequests: stats.requests,
+      fetchAttempts: stats.attempts,
+      fetchRetries: stats.retries,
+    },
   });
   const app = appBy.get(item.id);
   const source = sourceBy.get(item.id);
   if (!app || !source) {
-    recordTiming('SKIPPED_UNREGISTERED');
-    continue;
+    return finish('SKIP', 'SKIPPED_UNREGISTERED');
   }
   if (item.verification !== 'deployment' || item.ok !== true) {
-    item.releaseIdentity = { status: 'NOT_APPLICABLE', reason: 'source is not a verified live deployment' };
-    recordTiming('NOT_APPLICABLE');
-    continue;
+    return finish('NOT_APPLICABLE', 'NOT_APPLICABLE', {
+      status: 'NOT_APPLICABLE', reason: 'source is not a verified live deployment',
+    });
   }
+
   try {
     const identity = await verifyDeploymentReleaseIdentity({ app, source, stats });
-    item.releaseIdentity = identity;
     if (identity.status === 'VERIFIED') {
-      verified += 1;
-      console.log(`Release identity ${item.id}: VERIFIED ${identity.version} contract=${identity.contract} commit=${identity.sourceCommit} artifact=${identity.artifactDigest || identity.patchAssuranceSha256}`);
-    } else {
-      absent += 1;
-      console.log(`Release identity ${item.id}: ABSENT (live deployment has no declared exact-release contract yet).`);
+      return finish('VERIFIED', identity.status, identity, undefined,
+        `Release identity ${item.id}: VERIFIED ${identity.version} contract=${identity.contract} commit=${identity.sourceCommit} artifact=${identity.artifactDigest || identity.patchAssuranceSha256}`);
     }
+    return finish('ABSENT', identity.status, identity, undefined,
+      `Release identity ${item.id}: ABSENT (live deployment has no declared exact-release contract yet).`);
   } catch (error) {
-    failed += 1;
-    item.releaseIdentity = {
+    // A failed identity is never ignored, even when another worker succeeds.
+    const errorMessage = error.message;
+    return finish('FAILED', 'FAILED', {
       status: 'FAILED',
       contract: app?.releaseIdentity?.contract || app?.assurance?.schema || null,
-      error: error.message,
-    };
+      error: errorMessage,
+    }, errorMessage, `Release identity ${item.id}: FAILED — ${errorMessage}`);
+  }
+}
+
+async function worker() {
+  while (nextIndex < entries.length) {
+    // JS increments synchronously before awaiting; no app is verified twice.
+    const index = nextIndex++;
+    outcomes[index] = await verifyOne(entries[index]);
+  }
+}
+await Promise.all(Array.from({ length: Math.min(concurrency, entries.length) }, () => worker()));
+
+let verified = 0;
+let absent = 0;
+let failed = 0;
+for (let index = 0; index < entries.length; index += 1) {
+  const item = entries[index];
+  const result = outcomes[index];
+  timings.push(result.timing);
+  if (result.kind !== 'SKIP') item.releaseIdentity = result.identity;
+  if (result.kind === 'VERIFIED') verified += 1;
+  if (result.kind === 'ABSENT') absent += 1;
+  if (result.kind === 'FAILED') {
+    failed += 1;
     item.ok = false;
-    item.identityError = error.message;
-    console.error(`Release identity ${item.id}: FAILED — ${error.message}`);
-  } finally {
-    recordTiming(item.releaseIdentity.status);
+    item.identityError = result.errorMessage;
+  }
+  // Deterministic logs, independent of the network response completion order.
+  if (result.message) {
+    if (result.kind === 'FAILED') console.error(result.message);
+    else console.log(result.message);
   }
 }
 
