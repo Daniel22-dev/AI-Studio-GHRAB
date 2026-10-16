@@ -144,6 +144,10 @@ export async function attestReporterBuildReuse(root, { env = process.env } = {})
   const temp = `${target}.${randomUUID()}.tmp`;
   await writeFile(temp, `${JSON.stringify(evidence, null, 2)}\n`, { flag: 'wx' });
   await rename(temp, target);
+  // Preserve the exact reporter bytes witnessed by the P2C decision. The
+  // later P2A browser regression overwrites test-results/error-reporter.json.
+  const originalReporterPath = path.join(parent, 'p2c-original-error-reporter.json');
+  await writeFile(originalReporterPath, reporterBytes, { flag: 'wx' });
   return evidence;
 }
 
@@ -162,6 +166,10 @@ export async function assertP2CReuseEvidence(root, { env = process.env } = {}) {
     ensure(HEX.test(record[field] || ''), `invalid ${field}`);
   }
   ensure(Number.isInteger(record.distFileCount) && record.distFileCount > 0, 'invalid build file count');
+  const originalReporterBytes = await requirePlainFile(path.join(root, 'qa-results', 'p2c-original-error-reporter.json'));
+  ensure(createHash('sha256').update(originalReporterBytes).digest('hex') === record.reporterReportSha256 &&
+    JSON.parse(originalReporterBytes.toString('utf8'))?.browser?.status === 'passed',
+    'archived P2C original reporter evidence is missing or changed');
   const reporterBytes = await requirePlainFile(reporterPath(root));
   ensure(createHash('sha256').update(reporterBytes).digest('hex') === record.reporterReportSha256 &&
     JSON.parse(reporterBytes.toString('utf8'))?.browser?.status === 'passed',
