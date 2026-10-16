@@ -219,8 +219,8 @@ jobs:
           LIVE_BASE_URL: https://daniel22-dev.github.io/AI-Studio-GHRAB/
         run: |
           node <<'NODE'
-          const fs = require('node:fs');
-          const crypto = require('node:crypto');
+          const fs = await import('node:fs');
+          const crypto = await import('node:crypto');
           const expected = JSON.parse(fs.readFileSync('live-parity-evidence/snapshot.json','utf8'));
           const sha = process.env.EXPECTED_SHA;
           if (!/^[a-f0-9]{40}$/.test(sha) || expected.schema !== 'ghrab-live-byte-parity-v1' ||
