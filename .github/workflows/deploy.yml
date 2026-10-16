@@ -39,6 +39,8 @@ jobs:
         env:
           NPM_CONFIG_REGISTRY: https://registry.npmjs.org
 
+      - name: Verify version and latest release logbook
+        run: node scripts/verify-release-version-freshness.mjs --content-only
       - name: Verify deploy originates from Safe Promotion
         run: node scripts/verify-safe-promotion-origin.mjs
         env:

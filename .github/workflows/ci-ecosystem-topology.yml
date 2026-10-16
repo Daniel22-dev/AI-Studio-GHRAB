@@ -26,6 +26,10 @@ jobs:
       - uses: actions/setup-node@49933ea5288caeca8642d1e84afbd3f7d6820020 # v4.4.0
         with:
           node-version: 22.22.2
+      - name: Validate release logbook and governance regression tests
+        run: |
+          node --test scripts/test-changelog-policy.mjs
+          node scripts/verify-release-version-freshness.mjs
       - name: Verify read-only policy and negative cases
         run: node --test scripts/ci-p3-topology.test.mjs
       - name: Audit nine release-wave apps and AI Studio

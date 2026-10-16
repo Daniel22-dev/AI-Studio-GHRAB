@@ -1,5 +1,6 @@
 import { execFileSync } from "node:child_process";
 import { readFile } from "node:fs/promises";
+import { validateLogbook, validateReleaseChanges } from "./changelog-policy.mjs";
 
 function git(...args) {
   return execFileSync("git", args, { encoding: "utf8" }).trim();
@@ -49,6 +50,13 @@ if (mismatches.length) {
   process.exit(1);
 }
 
+const logbookIssues = validateLogbook(changelog, currentVersion);
+if (logbookIssues.length) throw new Error("Invalid logbook: " + logbookIssues.join("; "));
+if (process.argv.includes("--content-only")) {
+  console.log("Release logbook consistency verified: " + currentVersion);
+  process.exit(0);
+}
+
 let baseVersion = null;
 try {
   git("fetch", "--no-tags", "origin", "main");
@@ -63,6 +71,9 @@ const changed = git("diff", "--name-only", "origin/main..HEAD")
   .split(/\r?\n/)
   .map((item) => item.trim())
   .filter(Boolean);
+
+const releaseIssues = validateReleaseChanges(changed, baseVersion, currentVersion);
+if (releaseIssues.length) throw new Error("Release governance failed: " + releaseIssues.join("; "));
 
 const runtimePatterns = [
   /^src\//,
