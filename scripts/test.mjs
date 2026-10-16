@@ -1593,12 +1593,20 @@ for (const file of directStorageWriters) {
     );
 }
 
+// P2C: reuse only the byte-identical reporter-tested build inside qa:release.
+// Every standalone invocation retains the original, independent build.
 try {
-  execFileSync(process.execPath, [path.join(root, "scripts/build.mjs")], {
-    stdio: "inherit",
-  });
-} catch {
-  fail("Build selhal.");
+  if (process.env.GHRAB_QA_P2C_REUSE === "1") {
+    const { attestReporterBuildReuse } = await import("./qa-p2c-build-reuse-guard.mjs");
+    const evidence = await attestReporterBuildReuse(root);
+    console.log(`P2C VERIFIED_REUSE: build ${evidence.reporterBuildId}; ${evidence.distFileCount} SHA-256-verified files; no rebuild needed.`);
+  } else {
+    execFileSync(process.execPath, [path.join(root, "scripts/build.mjs")], {
+      stdio: "inherit",
+    });
+  }
+} catch (error) {
+  fail(`P2C/build verification failed: ${error.message}`);
 }
 const distFiles = await walk(dist);
 const required = [
