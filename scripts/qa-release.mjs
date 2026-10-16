@@ -41,6 +41,10 @@ await saveState({
   skipped: [],
 });
 
+// Emergency rollback: GHRAB_QA_P2C_REUSE=0 restores the original internal
+// test.mjs build. Invalid settings fail closed; default is one verified reuse.
+const p2cReuse = process.env.GHRAB_QA_P2C_REUSE ?? '1';
+if (!['0', '1'].includes(p2cReuse)) throw new Error('P2C reuse setting must be 0 or 1');
 const commands = [];
 const projectFindings = [];
 for (const [label, command] of [
@@ -61,7 +65,8 @@ for (const [label, command] of [
   // Observe both builds inside this QA release only; all commands still run.
   const trace = label === 'project-tests' || label === 'project-build';
   const result = await runCommand(command, label, trace ? {
-    env: { GHRAB_QA_P2B_TRACE: '1', GHRAB_QA_P2B_PHASE: label },
+    env: { GHRAB_QA_P2B_TRACE: '1', GHRAB_QA_P2B_PHASE: label,
+      GHRAB_QA_P2C_REUSE: label === 'project-tests' ? p2cReuse : '0' },
   } : {});
   commands.push(result);
   if (result.code !== 0) {
@@ -81,6 +86,10 @@ for (const [label, command] of [
 // records exact inputs, raw output, and timestamp-normalized output.
 // Trace omissions/tampering are fatal; observed differences are advisory.
 await finalizeBuildObservations(ROOT);
+if (p2cReuse === '1' && commands.find(c => c.label === 'project-tests')?.code === 0) {
+  const { assertP2CReuseEvidence } = await import('./qa-p2c-build-reuse-guard.mjs');
+  await assertP2CReuseEvidence(ROOT);
+}
 
 const auditCommand = manifest.auditCommand || "npm audit --audit-level=high";
 if (auditCommand) {
