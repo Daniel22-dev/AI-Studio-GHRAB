@@ -66,6 +66,27 @@ test('reuse is granted only for two witnessed builds and PASS reporter', async()
   assert.deepEqual(result,onDisk);
 }));
 
+test('original reporter browser bytes are archived exactly once for the QA artifact',async()=>fixture(async root=>{
+  const original=await readFile(browser(root));
+  await attestReporterBuildReuse(root,{env});
+  const archived=await readFile(path.join(root,'qa-results','p2c-original-reporter.json'));
+  assert.deepEqual(archived,original);
+}));
+
+test('tampered original archive blocks final QA evidence verification',async()=>fixture(async root=>{
+  await attestReporterBuildReuse(root,{env});
+  await buildMore(root);
+  await writeFile(path.join(root,'qa-results','p2c-original-reporter.json'),'modified');
+  await assert.rejects(()=>assertP2CReuseEvidence(root,{env}),/original archived reporter proof/);
+}));
+
+test('missing original archive blocks final QA evidence verification',async()=>fixture(async root=>{
+  await attestReporterBuildReuse(root,{env});
+  await buildMore(root);
+  await rm(path.join(root,'qa-results','p2c-original-reporter.json'));
+  await assert.rejects(()=>assertP2CReuseEvidence(root,{env}),/ENOENT/);
+}));
+
 test('final QA evidence proves exactly two observed test builds and one independent project build',async()=>fixture(async root=>{
   await attestReporterBuildReuse(root,{env});
   await buildMore(root);
