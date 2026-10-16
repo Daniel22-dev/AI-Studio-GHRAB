@@ -1,0 +1,11 @@
+import test from "node:test";
+import assert from "node:assert/strict";
+import {releaseImpact,validateLogbook,validateReleaseChanges} from "./changelog-policy.mjs";
+test("CI-only update without bump and logbook fails",()=>assert.equal(validateReleaseChanges([".github/workflows/deploy.yml"],"0.21.241","0.21.241").length,2));
+test("CI update with bump but no logbook fails",()=>assert.equal(validateReleaseChanges(["scripts/qa-release.mjs","package.json"],"0.21.241","0.21.242").length,1));
+test("CI update with bump and logbook passes",()=>assert.deepEqual(validateReleaseChanges(["scripts/qa-release.mjs","src/config/changelog.json"],"0.21.241","0.21.242"),[]));
+test("documentation alone does not need bump",()=>assert.deepEqual(validateReleaseChanges(["README.md"],"0.21.241","0.21.241"),[]));
+test("runtime and workflow changes are tracked",()=>{assert.equal(releaseImpact("src/app.js"),true);assert.equal(releaseImpact(".github/workflows/p5-release-gate.yml"),true)});
+test("empty logbook fails",()=>assert.ok(validateLogbook({items:[]}, "0.21.242").length));
+test("current bilingual logbook passes",()=>assert.deepEqual(validateLogbook({schema:"ai-studio-changelog-v1",current:"0.21.242",items:[{version:"0.21.242",date:"2026-10-16",title:{cs:"Novinka",en:"New"},changes:[{cs:"Oprava",en:"Fix"}]}]},"0.21.242"),[]));
+test("stale logbook fails",()=>assert.ok(validateLogbook({schema:"ai-studio-changelog-v1",current:"0.21.241",items:[{version:"0.21.241"}]},"0.21.242").length));
