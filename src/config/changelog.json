@@ -1,7 +1,37 @@
 {
   "schema": "ai-studio-changelog-v1",
-  "current": "0.21.241",
+  "current": "0.21.242",
   "items": [
+    {
+      "version": "0.21.242",
+      "date": "2026-10-16",
+      "title": {
+        "cs": "CI/CD Performance a zabezpečení evidence vydání",
+        "en": "CI/CD performance and release-logbook assurance"
+      },
+      "changes": [
+        {
+          "cs": "P0–P1: časové měření a souběžné ověřování nejvýše tří aplikací se zachováním všech kontrol.",
+          "en": "P0–P1: timing evidence and bounded concurrency for up to three applications, with existing checks retained."
+        },
+        {
+          "cs": "P2A–P2C: odstraněna nadbytečná sestavení a bezpečné opětovné použití otestovaného buildu jen při důkazech SHA-256 a úspěšném browser testu.",
+          "en": "P2A–P2C: redundant builds eliminated and tested-build reuse guarded by exact SHA-256 evidence and passing browser tests."
+        },
+        {
+          "cs": "Zavedena nezávislá kontrola bajtové shody tří veřejně nasazených souborů a uchování originálních reportérových důkazů.",
+          "en": "Independent post-deployment byte comparison for three public assets and original reporter evidence retention."
+        },
+        {
+          "cs": "Nová kontrola vydání brání CI/CD aktualizacím bez nové verze a aktuálního českého i anglického záznamu logbooku.",
+          "en": "New release validation blocks CI/CD updates missing a new version and current bilingual logbook entry."
+        },
+        {
+          "cs": "GARP, P5 a Safe Promotion zůstávají zachovány. Celkové zrychlení CI/CD vyžaduje další srovnatelná měření.",
+          "en": "GARP, P5, and Safe Promotion remain intact. Overall CI/CD speedup requires additional comparable measurements."
+        }
+      ]
+    },
     {
       "version": "0.21.241",
       "date": "2026-10-13",
