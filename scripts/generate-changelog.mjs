@@ -1,5 +1,6 @@
 import { readFile, writeFile, readdir } from "node:fs/promises";
 import path from "node:path";
+import { validateLogbook } from "./changelog-policy.mjs";
 import { fileURLToPath } from "node:url";
 
 const here = path.dirname(fileURLToPath(import.meta.url));
@@ -14,6 +15,10 @@ if (
 ) {
   throw new Error("src/config/changelog.json has an unsupported structure.");
 }
+
+const packageVersion = JSON.parse(await readFile(path.join(root, "package.json"), "utf8")).version;
+const issues = validateLogbook(source, packageVersion);
+if (issues.length) throw new Error("Release logbook rejected: " + issues.join("; "));
 
 const changelogVersions = new Set(source.items.map((item) => String(item.version || "")));
 const releaseNoteVersions = new Set(

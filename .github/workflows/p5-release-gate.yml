@@ -73,6 +73,8 @@ jobs:
         run: |
           node -e "const p=require('./node_modules/axe-core/package.json'); if(p.version!=='4.12.1') process.exit(1)"
           node -e "const p=require('./node_modules/playwright/package.json'); if(p.version!=='1.61.1') process.exit(1)"
+      - name: Test release-logbook regression policy
+        run: node --test scripts/test-changelog-policy.mjs
       - name: Enforce release version freshness
         run: npm run verify:release-version
       - name: Verify committed runtime fallback before live synchronisation
