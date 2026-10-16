@@ -1,0 +1,66 @@
+name: P2C preproduction QA evidence (temporary)
+on:
+  pull_request:
+    branches: [candidate]
+    paths:
+      - .github/workflows/p2c-preproduction-proof.yml
+permissions:
+  contents: read
+jobs:
+  qa-proof:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 20
+    steps:
+      - uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683 # v4.2.2
+        with:
+          persist-credentials: false
+          fetch-depth: 0
+      - uses: actions/setup-node@49933ea5288caeca8642d1e84afbd3f7d6820020 # v4.4.0
+        with:
+          node-version: 22
+          cache: npm
+          registry-url: https://registry.npmjs.org
+      - name: Install pinned packages
+        run: npm ci --ignore-scripts --no-audit --no-fund --registry=https://registry.npmjs.org
+      - name: Sync release sources as in production
+        run: |
+          npm run sync
+          npm run format:generated-json
+          node scripts/verify-deployment-release-identities.mjs
+          npm run sync:fallback
+          npm run qa:fallback
+          npm run format
+      - name: Install Chromium as in production
+        run: |
+          npx playwright install --with-deps chromium
+          node -e "console.log('CHROMIUM_PATH=' + require('playwright').chromium.executablePath())" >> "$GITHUB_ENV"
+      - name: Execute full GHRAB QA release
+        env:
+          NPM_CONFIG_REGISTRY: https://registry.npmjs.org
+          GHRAB_VISUAL_ATTEMPTS: 3
+          GHRAB_VISUAL_SCREENSHOT_ATTEMPTS: 3
+        run: npm run qa:release
+      - name: Verify reporter against QA-built dist
+        run: node scripts/p2-reporter-build-parity.mjs
+      - name: Require actual P2C reuse evidence and independent project-build
+        run: |
+          node --input-type=module <<'NODE'
+          import { readFileSync } from 'node:fs';
+          const p2c=JSON.parse(readFileSync('qa-results/p2c-built-artifact-reuse.json','utf8'));
+          const p2b=JSON.parse(readFileSync('qa-results/p2b-build-comparison.json','utf8'));
+          const count=(phase)=>p2b.phases.filter(row=>row.phase===phase).length;
+          if(p2c.status!=='VERIFIED_REUSE'||p2c.skipCount!==1||p2c.distFileCount!==203||
+             p2c.reporterBrowserStatus!=='passed'||p2b.observationCount!==3||
+             count('project-tests')!==2||count('project-build')!==1)
+            throw new Error('P2C preproduction QA proof incomplete or not equivalent');
+          console.log('P2C PREPRODUCTION PASS: 3 builds, 1 guarded skip, full QA and reporter PASS');
+          NODE
+      - name: Upload QA diagnostics
+        if: always()
+        uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02 # v4.6.2
+        with:
+          name: p2c-preproduction-qa-proof
+          path: |
+            qa-results/
+            test-results/error-reporter.json
+          if-no-files-found: warn
