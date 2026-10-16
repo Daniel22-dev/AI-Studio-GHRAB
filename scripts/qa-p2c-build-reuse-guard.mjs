@@ -12,6 +12,7 @@ const HEX = /^[a-f0-9]{64}$/;
 const observationDir = (root) => path.join(root, 'qa-results', 'p2b-build-traces');
 const reportPath = (root) => path.join(root, 'qa-results', 'p2c-built-artifact-reuse.json');
 const reporterPath = (root) => path.join(root, 'test-results', 'error-reporter.json');
+const reporterArchivePath = (root) => path.join(root, 'qa-results', 'p2c-original-reporter.json');
 
 async function requirePlainFile(file) {
   const stat = await lstat(file);
@@ -129,6 +130,15 @@ export async function attestReporterBuildReuse(root, { env = process.env } = {})
     independentProjectBuildPreserved: true,
     explanation: 'Only the third build inside npm test was skipped after exact input and raw dist SHA-256 verification; project-build, GARP and P5 remain mandatory.',
   };
+  // Preserve the exact ORIGINAL browser proof before P2A's later reporter test
+  // overwrites test-results/error-reporter.json. This snapshot is part of the
+  // QA artifact and must match the SHA recorded in the P2C reuse attestation.
+  const original = reporterArchivePath(root);
+  await mkdir(path.dirname(original), { recursive: true });
+  const archivedReport = await requirePlainFile(reporterPath(root));
+  ensure(createHash('sha256').update(archivedReport).digest('hex') === evidence.reporterReportSha256,
+    'original reporter bytes changed before archival');
+  await writeFile(original, archivedReport, { flag: 'wx' });
   const target = reportPath(root);
   const parent = path.dirname(target);
   await mkdir(parent, { recursive: true });
@@ -162,6 +172,10 @@ export async function assertP2CReuseEvidence(root, { env = process.env } = {}) {
     ensure(HEX.test(record[field] || ''), `invalid ${field}`);
   }
   ensure(Number.isInteger(record.distFileCount) && record.distFileCount > 0, 'invalid build file count');
+  const archivedReporterBytes = await requirePlainFile(reporterArchivePath(root));
+  ensure(createHash('sha256').update(archivedReporterBytes).digest('hex') === record.reporterReportSha256 &&
+    JSON.parse(archivedReporterBytes.toString('utf8'))?.browser?.status === 'passed',
+    'original archived reporter proof missing, modified or not PASS');
   const reporterBytes = await requirePlainFile(reporterPath(root));
   ensure(createHash('sha256').update(reporterBytes).digest('hex') === record.reporterReportSha256 &&
     JSON.parse(reporterBytes.toString('utf8'))?.browser?.status === 'passed',
