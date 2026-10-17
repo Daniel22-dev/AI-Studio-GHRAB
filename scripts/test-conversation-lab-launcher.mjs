@@ -1,0 +1,117 @@
+import {test} from 'node:test';
+import assert from 'node:assert/strict';
+import {readFile} from 'node:fs/promises';
+import {resolve} from 'node:path';
+import {fileURLToPath} from 'node:url';
+import {
+  validateClbPreliveControl,
+  validateConversationLabTeacherTarget,
+  checkedConversationLabTarget
+} from '../src/integration/conversation-lab/teacher-launch.js';
+const root=resolve(fileURLToPath(new URL('..',import.meta.url)));
+const read=async path=>JSON.parse(await readFile(root+'/'+path,'utf8'));
+const sha='a'.repeat(64);
+const studio='https://daniel22-dev.github.io';
+const origin='https://clb-example.pages.dev';
+const fakeProd=prelive=>({
+  ...prelive,stage:'PRODUCTION_AUTHORIZED',launchEnabled:true,
+  publicOrigin:origin,releaseId:'cl-first-pilot',
+  approvedDistributionManifestSha256:sha,
+  signedReleaseStatementSha256:'b'.repeat(64),
+  ownerReleaseAuthorization:'SIGNED',hostingOwnership:'VERIFIED',
+  hostingHeaders:'VERIFIED',garpLive:'VERIFIED',
+  publicRelease:'MANUAL_RELEASE_APPROVED',approvedLessons:6,approvedCzechGlosses:222
+});
+const fakeApp=prod=>({
+  id:'conversation-lab',
+  integration:{
+    launchMode:'external-protected',
+    securityBoundary:'isolated-anonymous-read-only',
+    requiresHttps:true,
+    contentMode:'approved-public-only',
+    studioAccessIsLauncherGateOnly:true,
+    teacherTrainingRequired:true,
+    credentialBridgeAllowed:false,
+    autoPromotionAllowed:false,
+    releaseId:prod.releaseId,
+    manifestSha256:prod.approvedDistributionManifestSha256,
+    signedStatementSha256:prod.signedReleaseStatementSha256,
+    externalTargetUrl:prod.publicOrigin+'/'
+  }
+});
+test('checked-in Studio CLB launch control is PRELIVE and BLOCKS all launches',async()=>{
+  const control=await read('src/integration/conversation-lab/launch-control.json');
+  assert.equal(validateClbPreliveControl(control),true);
+  assert.throws(()=>validateConversationLabTeacherTarget(fakeApp(control),control,{studioOrigin:studio}),/CLB_E9_RELEASE_NOT_AUTHORIZED/);
+  assert.equal(control.launchEnabled,false);
+  assert.equal(control.publicOrigin,null);
+  const launcher=await readFile(root+'/src/app/external/launcher.js','utf8');
+  assert.ok(launcher.includes('hasAppAccess(app.id)'));
+  assert.ok(launcher.includes('app.id === "conversation-lab"'));
+  assert.ok(launcher.includes('checkedConversationLabTarget(app, { studioOrigin: location.origin })'));
+  assert.ok(launcher.indexOf('hasAppAccess(app.id)')<launcher.indexOf('checkedConversationLabTarget(app,'));
+});
+test('teacher entry requires Studio permit and the CLB training policy when eventually enabled',async()=>{
+  const policy=await read('src/config/access-policy.json');
+  // Policy is intentionally not yet signed nor deployed; no fake training code.
+  assert.equal(policy.applications['conversation-lab'],undefined);
+  const prelive=await read('security/garp27/conversation-lab-enrollment.json');
+  assert.equal(prelive.teacherStudioGate,'NOT_CONNECTED');
+  assert.equal(prelive.studioLauncher,'DISABLED');
+  const registry=await read('src/config/apps.generated.json');
+  assert.ok(!registry.some(x=>x.id==='conversation-lab'));
+});
+test('even simulated future authorized release still requires exact origin, release hashes and no Studio token bridge',async()=>{
+  const future=fakeProd(await read('src/integration/conversation-lab/launch-control.json'));
+  const app=fakeApp(future);
+  // This is a unit contract proof only, NOT evidence of actual GARP LIVE or
+  // human/rights signatures. Real records must be verified independently.
+  assert.equal(validateConversationLabTeacherTarget(app,future,{studioOrigin:studio}),origin+'/');
+  const bad=[
+    x=>{x.app.integration.externalTargetUrl=origin+'/?permit=secret';},
+    x=>{x.app.integration.externalTargetUrl=studio+'/';},
+    x=>{x.app.integration.externalTargetUrl='http://clb-example.pages.dev/';},
+    x=>{x.app.integration.externalTargetUrl=origin+'/#/lesson';},
+    x=>{x.app.integration.credentialBridgeAllowed=true;},
+    x=>{x.app.integration.releaseId='cl-other';},
+    x=>{x.app.integration.manifestSha256='0'.repeat(64);},
+    x=>{x.c.approvedLessons=0;},
+    x=>{x.c.garpLive='NOT_TESTED';},
+    x=>{x.c.autoPromotion='ENABLED';},
+    x=>{x.c.ownerReleaseAuthorization='NOT_GRANTED';},
+    x=>{x.c.publicOrigin=studio;},
+    x=>{x.c.approvedCzechGlosses=0;}
+  ];
+  for(const mutate of bad){
+    const sample={app:structuredClone(app),c:structuredClone(future)};
+    mutate(sample);
+    assert.throws(()=>validateConversationLabTeacherTarget(sample.app,sample.c,{studioOrigin:studio}),/CLB_E9_/);
+  }
+});
+test('same-origin Studio-only settings fail closed on missing or untrusted response',async()=>{
+  const control=await read('src/integration/conversation-lab/launch-control.json');
+  await assert.rejects(checkedConversationLabTarget(fakeApp(control),{
+    studioOrigin:studio,
+    fetchImpl:async()=>({ok:false,redirected:false})
+  }),/CLB_E9_CONTROL_UNAVAILABLE/);
+  await assert.rejects(checkedConversationLabTarget(fakeApp(control),{
+    studioOrigin:studio,
+    fetchImpl:async()=>({ok:true,redirected:false,json:async()=>control})
+  }),/CLB_E9_RELEASE_NOT_AUTHORIZED/);
+});
+test('a forged PRELIVE status is never accepted',async()=>{
+  const prelive=await read('src/integration/conversation-lab/launch-control.json');
+  for(const mutate of [
+    x=>{x.launchEnabled=true;},
+    x=>{x.stage='PRODUCTION_AUTHORIZED';},
+    x=>{x.garpLive='VERIFIED';},
+    x=>{x.approvedLessons=6;},
+    x=>{x.publicOrigin=origin;},
+    x=>{x.studioCredentialBridge='ALLOWED';},
+    x=>{x.autoPromotion='ENABLED';}
+  ]){
+    const p=structuredClone(prelive);
+    mutate(p);
+    assert.throws(()=>validateClbPreliveControl(p),/CLB_E9_PRELIVE_CONTROL_DRIFT/);
+  }
+});
