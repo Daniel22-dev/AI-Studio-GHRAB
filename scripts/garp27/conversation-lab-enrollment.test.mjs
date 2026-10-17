@@ -25,7 +25,7 @@ const cases = [
   ["public deployment claimed complete", (x) => { x.admission.publicDeployment = "GO"; }, "promotion-deployment-dispatch-disabled"],
   ["Studio teacher access asserted without training gate", (x) => { x.admission.teacherStudioGate = "ENFORCED"; }, "separate-public-studio-access"],
   ["wrong private repository source", (x) => { x.admission.repository = "other/private-repo"; }, "registration-identity"],
-  ["unexpected source policy modification", (x) => { x.policy.identity.session = "A modified policy"; }, "policy-source-blob"],
+  ["unexpected source policy modification", (x) => { x.policyBytes = Buffer.from("modified source policy"); }, "policy-source-blob"],
   ["mismatched source policy digest pin", (x) => { x.admission.sourcePolicyGitBlobSha1 = "0".repeat(40); }, "policy-source-blob"],
   ["source capabilities changed without proof", (x) => { x.capabilities.localStorage = true; }, "no-credentials-storage-ai-or-upload"],
   ["source capability digest pin changed", (x) => { x.admission.sourceCapabilityGitBlobSha1 = "0".repeat(40); }, "capability-source-blob"],
