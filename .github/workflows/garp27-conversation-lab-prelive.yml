@@ -1,0 +1,42 @@
+name: Conversation Lab GARP 2.7 prelive admission
+
+on:
+  push:
+    branches:
+      - garp27/conversation-lab-prelive-enrollment
+  pull_request:
+    branches:
+      - candidate
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+concurrency:
+  group: cl-prelive-garp27
+  cancel-in-progress: true
+
+jobs:
+  prelive-admission:
+    name: garp27-cl-prelive
+    runs-on: ubuntu-latest
+    timeout-minutes: 8
+    steps:
+      - uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683 # v4.2.2
+      - uses: actions/setup-node@49933ea5288caeca8642d1e84afbd3f7d6820020 # v4.4.0
+        with:
+          node-version: 22
+      - name: Validate source-only GARP 2.7 admission
+        run: node scripts/garp27/conversation-lab-enrollment.mjs
+      - name: Run prelive fail-closed mutation suite
+        run: node --test scripts/garp27/conversation-lab-enrollment.test.mjs
+      - name: Verify bundled reference and all Studio GARP contract controls
+        run: node scripts/garp27/contract-gate.mjs
+      - name: Verify no public publishing authority is present
+        run: |
+          node --input-type=module -e "
+            import fs from 'node:fs';
+            const a=JSON.parse(fs.readFileSync('security/garp27/conversation-lab-enrollment.json','utf8'));
+            if(a.publicDeployment!=='NO_GO' || a.autoPromotion!=='DISABLED' || a.studioLauncher!=='DISABLED' || a.garpLive!=='NOT_TESTED') process.exit(1);
+            console.log('PUBLIC_RELEASE_NO_GO / STUDIO_LAUNCH_DISABLED / GARP_LIVE_NOT_TESTED');
+          "
