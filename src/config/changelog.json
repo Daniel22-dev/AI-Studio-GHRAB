@@ -1,7 +1,25 @@
 {
   "schema": "ai-studio-changelog-v1",
-  "current": "0.21.242",
+  "current": "0.21.243",
   "items": [
+    {
+      "version": "0.21.243",
+      "date": "2026-10-17",
+      "title": {
+        "cs": "GARP 2.7: předběžná registrace Conversation Lab",
+        "en": "GARP 2.7: Conversation Lab prelive policy enrollment"
+      },
+      "changes": [
+        {
+          "cs": "Conversation Lab získává samostatnou předběžnou evidenci v GARP 2.7 r2/G-02. Referenční balík a jeho původní inventář zůstávají nezměněny.",
+          "en": "Conversation Lab receives separate PRELIVE GARP 2.7 r2/G-02 policy enrollment. The reference package and immutable canonical inventory remain unchanged."
+        },
+        {
+          "cs": "Přibyly kontrola podpisu zdrojových souborů, normativní validátor politiky a 26 negativních testů. Živý přístup, vydávání materiálů i Auto Promotion zůstávají vypnuté; GARP LIVE je NOT_TESTED.",
+          "en": "Source-file identity checks, normative policy admission, and 26 negative tests were added. Live access, lesson publishing and Auto Promotion remain disabled; GARP LIVE is NOT_TESTED."
+        }
+      ]
+    },
     {
       "version": "0.21.242",
       "date": "2026-10-16",
