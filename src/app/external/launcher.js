@@ -1,3 +1,4 @@
+import { checkedConversationLabTarget } from "../../integration/conversation-lab/teacher-launch.js";
 import {
   initialiseAccess,
   hasAppAccess,
@@ -85,7 +86,12 @@ function validatedExternalTarget(app) {
       throw new Error(formatReason(access.reason, language));
     }
 
-    const target = validatedExternalTarget(app);
+    // Conversation Lab requires separately reviewed E9 release evidence in
+    // addition to the existing Studio teacher permit and training gate.
+    // PRELIVE_HOLD keeps it disabled; no URL or Studio token is ever forwarded.
+    const target = app.id === "conversation-lab"
+      ? new URL(await checkedConversationLabTarget(app, { studioOrigin: location.origin }))
+      : validatedExternalTarget(app);
     title.textContent = t("Oprávnění ověřeno.", "Access verified.");
     copy.textContent = t("Otevírám chráněnou aplikaci…", "Opening the protected application…");
 
