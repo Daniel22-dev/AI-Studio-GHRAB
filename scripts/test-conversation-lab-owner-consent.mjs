@@ -92,7 +92,9 @@ test('E9 RELEASE: live player smoke PASS is not a substituted Studio/GARP/signin
  assert.equal(a.independentSecurityGo,'NOT_GRANTED');
  assert.equal(a.garpLive,'NOT_ATTESTED');
  assert.equal(a.studioP5,'NOT_RUN_FOR_THIS_RELEASE');
- assert.equal(a.signing.accessPolicyBundle,'NOT_SIGNED_WITH_CLB_01');
+ assert.equal(a.signing.accessPolicyBundle,'SIGNED_ON_PRELIVE_BRANCH_NOT_PRODUCTION');
+ assert.equal(a.signing.productionStatement,'NOT_SIGNED');
+ assert.equal(a.signedAccessBundleSignatureVerified,true);
  assert.equal(a.signing.productionStatement,'NOT_SIGNED');
  assert.equal(a.runtimeRegistryModified,false);
  assert.equal(a.studioManifestActuallyPublished,false);
