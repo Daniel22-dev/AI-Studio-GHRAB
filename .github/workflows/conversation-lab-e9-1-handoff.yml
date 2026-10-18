@@ -2,9 +2,14 @@ name: Conversation Lab E9.1 Studio handoff PRELIVE (NO DEPLOY)
 on:
   pull_request:
     paths:
-      - 'src/integration/conversation-lab/hosting-handoff.json'
+      - 'src/integration/conversation-lab/**'
+      - 'src/app/external/launcher.js'
+      - 'src/assets/apps/conversation-lab.svg'
       - 'src/integration/conversation-lab/catalog-proposal.json'
       - 'scripts/test-conversation-lab-hosting-handoff.mjs'
+      - 'scripts/test-conversation-lab-owner-consent.mjs'
+      - 'scripts/test-conversation-lab-launcher.mjs'
+      - 'scripts/test-maturita-external-launcher.mjs'
       - '.github/workflows/conversation-lab-e9-1-handoff.yml'
 permissions:
   contents: read
@@ -17,4 +22,15 @@ jobs:
       - uses: actions/setup-node@v4
         with:
           node-version: '24'
-      - run: node --test scripts/test-conversation-lab-hosting-handoff.mjs
+      - name: Check Studio protected launcher syntax
+        run: node --check src/app/external/launcher.js
+      - name: Verify owner GO and signed policy/manifest fail-closed admission
+        run: node --test scripts/test-conversation-lab-owner-consent.mjs
+      - name: Verify E9 teacher launcher, expired/untrained/forged policies
+        run: node --test scripts/test-conversation-lab-launcher.mjs
+      - name: Check Cloudflare verified pilot handoff evidence
+        run: node --test scripts/test-conversation-lab-hosting-handoff.mjs
+      - name: Protect existing Maturita Desk entry
+        run: node scripts/test-maturita-external-launcher.mjs
+      - name: GARP PRELIVE must remain correctly fail closed
+        run: node scripts/garp27/conversation-lab-enrollment.mjs
