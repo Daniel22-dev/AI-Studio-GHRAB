@@ -1,0 +1,24 @@
+name: CLB E107 exact 0.9.2 unsigned candidate WebKit validation (NO DEPLOY)
+on:
+  pull_request:
+    paths:
+      - 'scripts/test-clb-e107-unsigned-092-webkit.mjs'
+      - '.github/workflows/clb-e107-unsigned-092-webkit.yml'
+permissions:
+  contents: read
+jobs:
+  unsigned-release-webkit-preview:
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    steps:
+      - uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683 # v4.2.2
+      - uses: actions/setup-node@49933ea5288caeca8642d1e84afbd3f7d6820020 # v4.4.0
+        with:
+          node-version: '22'
+          cache: npm
+      - name: Install read-only locked test runner
+        run: npm ci --ignore-scripts --no-audit --no-fund
+      - name: Install ephemeral WebKit only
+        run: npx playwright install --with-deps webkit
+      - name: Validate exact future three-asset v0.9.2 delta on original approved HTTPS origin
+        run: node --test scripts/test-clb-e107-unsigned-092-webkit.mjs
