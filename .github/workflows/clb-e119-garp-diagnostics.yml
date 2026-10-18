@@ -1,0 +1,23 @@
+name: CLB E119 GARP foundation application regressions diagnostics (NO DEPLOY)
+on:
+  pull_request:
+    branches: [candidate]
+    paths:
+      - '.github/workflows/clb-e119-garp-diagnostics.yml'
+      - 'src/config/access-config-bundle.json'
+      - 'src/integration/conversation-lab/**'
+permissions:
+  contents: read
+jobs:
+  reproduce-real-garp-regression:
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    steps:
+      - uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683 # v4.2.2
+      - uses: actions/setup-node@49933ea5288caeca8642d1e84afbd3f7d6820020 # v4.4.0
+        with:
+          node-version: '22'
+          cache: npm
+      - run: npm ci --ignore-scripts --no-audit --no-fund
+      - name: Reproduce real application regressions and print the specific failing test
+        run: npm run qa:garp27:regressions
