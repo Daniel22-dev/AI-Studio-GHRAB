@@ -6,7 +6,8 @@ import {fileURLToPath} from 'node:url';
 import {
   validateClbPreliveControl,
   validateConversationLabTeacherTarget,
-  checkedConversationLabTarget
+  checkedConversationLabTarget,
+  assertClbSignedTrainingPolicy
 } from '../src/integration/conversation-lab/teacher-launch.js';
 const root=resolve(fileURLToPath(new URL('..',import.meta.url)));
 const read=async path=>JSON.parse(await readFile(root+'/'+path,'utf8'));
@@ -114,4 +115,33 @@ test('a forged PRELIVE status is never accepted',async()=>{
     mutate(p);
     assert.throws(()=>validateClbPreliveControl(p),/CLB_E9_PRELIVE_CONTROL_DRIFT/);
   }
+});
+
+test('CLB-01 requires exact training policy from verified Studio access bundle (not from unsigned local policy)',async()=>{
+  const valid={
+    trainingRequired:true,trainingCode:'CLB-01',trainingVersion:'2026-10',
+    label:{cs:'Conversation Lab',en:'Conversation Lab'}
+  };
+  assert.equal(assertClbSignedTrainingPolicy(valid),true);
+  assert.throws(()=>assertClbSignedTrainingPolicy(null),/CLB_E9_SIGNED_TRAINING_POLICY_REQUIRED/);
+  assert.throws(()=>assertClbSignedTrainingPolicy(undefined),/CLB_E9_SIGNED_TRAINING_POLICY_REQUIRED/);
+  for(const mutate of [
+    x => { delete x.trainingRequired; },
+    x => { x.trainingRequired=false; },
+    x => { x.trainingCode='GEN-01'; },
+    x => { x.trainingCode='CLB-1'; },
+    x => { x.trainingVersion='2026-09'; },
+    x => { x.label.cs='Conversation LAB (fake)'; },
+    x => { x.label.en='Another app'; }
+  ]){
+    const entry=structuredClone(valid);
+    mutate(entry);
+    assert.throws(()=>assertClbSignedTrainingPolicy(entry),/CLB_E9_SIGNED_TRAINING_POLICY_REQUIRED/);
+  }
+  const launcher=await readFile(root+'/src/app/external/launcher.js','utf8');
+  assert.match(launcher,/requiredTraining\(app\.id\)/);
+  assert.match(launcher,/assertClbSignedTrainingPolicy\(requiredTraining\(app\.id\)\)/);
+  assert.ok(launcher.indexOf('assertClbSignedTrainingPolicy(requiredTraining(app.id))')<launcher.indexOf('hasAppAccess(app.id)'));
+  const bundle=await read('src/config/access-config-bundle.json');
+  assert.equal(bundle.policy.applications['conversation-lab'],undefined,'unmodified signed config remains NO-GO');
 });
