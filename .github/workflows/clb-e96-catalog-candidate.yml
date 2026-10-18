@@ -11,6 +11,7 @@ on:
       - 'src/config/sync-report.json'
       - 'scripts/test-clb-e96-registry-candidate.mjs'
       - 'scripts/test-clb-e96-scoped-garp.mjs'
+      - 'scripts/test-clb-e103-signed-candidate.mjs'
       - 'security/garp27/conversation-lab-standalone-release-profile.candidate.json'
       - '.github/workflows/clb-e96-catalog-candidate.yml'
 permissions:
@@ -38,6 +39,6 @@ jobs:
         run: |
           node --test scripts/test-clb-e101-owner-content-release.mjs
           node --test scripts/test-clb-e102-runtime-owner-receipt.mjs
-          node --test scripts/test-clb01-signed-access-promotion.mjs
+          node --test scripts/test-clb-e103-signed-candidate.mjs
       - name: Check candidate can launch protected CLB portal without affecting other nine
         run: node --test scripts/test-clb-studio-portal-route.mjs
