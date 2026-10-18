@@ -39,6 +39,8 @@ export const OUTPUT_KINDS = Object.freeze({
   // Maturita Desk is launcher-only in the serverless pilot. No exam/review content
   // may be recorded into AI Studio pilot telemetry.
   "maturita-desk": new Set(),
+  // Conversation Lab is anonymous/read-only: no student, teacher or lesson events in pilot telemetry.
+  "conversation-lab": new Set(),
 });
 
 function language() {
