@@ -123,9 +123,9 @@ test('CLB-01 requires exact training policy from verified Studio access bundle (
     label:{cs:'Conversation Lab',en:'Conversation Lab'}
   };
   assert.equal(assertClbSignedTrainingPolicy(valid),true);
-  for(const change of [
-    () => null,
-    () => undefined,
+  assert.throws(()=>assertClbSignedTrainingPolicy(null),/CLB_E9_SIGNED_TRAINING_POLICY_REQUIRED/);
+  assert.throws(()=>assertClbSignedTrainingPolicy(undefined),/CLB_E9_SIGNED_TRAINING_POLICY_REQUIRED/);
+  for(const mutate of [
     x => { delete x.trainingRequired; },
     x => { x.trainingRequired=false; },
     x => { x.trainingCode='GEN-01'; },
@@ -135,8 +135,8 @@ test('CLB-01 requires exact training policy from verified Studio access bundle (
     x => { x.label.en='Another app'; }
   ]){
     const entry=structuredClone(valid);
-    const bad=change(entry);
-    assert.throws(()=>assertClbSignedTrainingPolicy(bad===null||bad===undefined?bad:entry),/CLB_E9_SIGNED_TRAINING_POLICY_REQUIRED/);
+    mutate(entry);
+    assert.throws(()=>assertClbSignedTrainingPolicy(entry),/CLB_E9_SIGNED_TRAINING_POLICY_REQUIRED/);
   }
   const launcher=await readFile(root+'/src/app/external/launcher.js','utf8');
   assert.match(launcher,/requiredTraining\(app\.id\)/);
