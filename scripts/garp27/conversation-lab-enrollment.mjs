@@ -79,7 +79,7 @@ export function evaluatePrelive(input) {
     expanded.every((x) => typeof x.appId === "string" && typeof x.repository === "string"),
     "overlay-unique-identities"
   );
-  check(p.schema === "garp27-policy-v1" && p.garpVersion === "2.7" && p.appId === APP_ID && p.appVersion === "0.6.0", "mirrored-policy-identity");
+  check(p.schema === "garp27-policy-v1" && p.garpVersion === "2.7" && p.appId === APP_ID && p.appVersion === "0.9.1", "mirrored-policy-identity");
   check(p.requestApiAi?.registeredOperations === 0 && p.requestApiAi?.agentic === false, "no-provider-operations");
   check(p.egress?.defaultDeny === true && JSON.stringify(p.egress?.allowedDestinations) === JSON.stringify(["same-origin"]), "same-origin-egress");
   check(p.release?.activeAuthority === "GARP-2.7", "single-active-garp-authority");
@@ -91,7 +91,7 @@ export function evaluatePrelive(input) {
     c.uploads === false,
     "no-credentials-storage-ai-or-upload"
   );
-  check(c.liveStatus === "NOT_TESTED" && c.futureServiceWorker === "staged-disabled-until-E8", "runtime-unverified");
+  check(c.liveStatus === "NOT_TESTED" && c.futureServiceWorker === "disabled", "runtime-unverified");
   check(a.admission === "REGISTERED_PRELIVE_POLICY_ONLY" && a.garpLive === "NOT_TESTED", "no-live-certification");
   check(a.publicPlayer === "ANONYMOUS_READ_ONLY" && a.teacherStudioGate === "NOT_CONNECTED", "separate-public-studio-access");
   check(a.studioLauncher === "DISABLED" && a.publicOrigin === "NOT_VERIFIED", "launcher-not-active");
