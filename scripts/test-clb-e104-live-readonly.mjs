@@ -42,7 +42,7 @@ test('E104 live public origin rejects unsafe framed session and unpublished path
   const root = await fetchReadOnly('/');
   assert.equal(root.status, 200);
   const csp = root.headers.get('content-security-policy') || '';
-  assert.match(csp, /frame-ancestors\\s+'none'/i, 'public player must reject framing');
+  assert.match(csp, /frame-ancestors\s+'none'/i, 'public player must reject framing');
   assert.equal(root.headers.get('set-cookie'), null, 'public player must stay anonymous');
   assert.match(root.headers.get('x-content-type-options') || '', /nosniff/i);
   await root.arrayBuffer();
