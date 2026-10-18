@@ -1,0 +1,44 @@
+{
+  "schema": "ghrab-conversation-lab-tenant-catalog-activation-candidate-v1",
+  "status": "PRELIVE_DESIGN_ONLY_NO_RUNTIME_REGISTRY_CHANGE",
+  "appId": "conversation-lab",
+  "appVersion": "0.9.2",
+  "publicOrigin": "https://conversation-lab-ghrab.pages.dev",
+  "releaseId": "cl-ai-b1-pilot-20261018-r2",
+  "appManifestPath": "src/integration/conversation-lab/studio-manifest.v0.9.2.proposed.json",
+  "appManifestSha256": "c071bc4af56367458fb4e391019d3476790111f31495718e737bc339ee5cd134",
+  "publishedCatalogSha256": "2ab4cab8e95a8c124f1f8670b1cfe861f3e7557dfe9ece89c768bb2d7121fce6",
+  "publicStaticZipSha256": "eeca610e36ea3f11366297728af39510ee9541f8960de72c444ea6683a8f84c0",
+  "signedOwnerStatementSha256": "6f0588801d7ec4bc5b3314a4e351603cd6993890ef56b2a636ee497d0b3848c5",
+  "unchangedRuntimeAppIds": [
+    "generator",
+    "differentiator",
+    "essay-evaluator",
+    "correspondence",
+    "ludus",
+    "activity-builder",
+    "sortio",
+    "lesson-hub",
+    "maturita-desk"
+  ],
+  "approvedNewAppIds": [
+    "conversation-lab"
+  ],
+  "currentProductionCatalogCount": 9,
+  "requestedFutureProductionCatalogCount": 10,
+  "teacherTrainingPolicy": {
+    "required": true,
+    "code": "CLB-01",
+    "version": "2026-10"
+  },
+  "studentEntry": "ANONYMOUS_READ_ONLY",
+  "studioCredentialBridge": false,
+  "autoPromotion": false,
+  "activeRegistryWriteIncluded": false,
+  "launchControlWriteIncluded": false,
+  "independentRiskAcceptance": "NOT_RECORDED",
+  "cloudflare092LiveExactHashes": "NOT_VERIFIED",
+  "studioP5": "NOT_EXECUTED_FOR_RELEASE",
+  "productionActivation": "NO_GO",
+  "instruction": "This isolated candidate documents the exact signed v0.9.2 tenth tile. It must NOT be loaded by the existing app catalog or used to bypass PRELIVE_HOLD. Actual promotion requires documented risk acceptance, live origin verification, and full canonical P5 with manual release."
+}
