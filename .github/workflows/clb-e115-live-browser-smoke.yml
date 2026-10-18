@@ -1,0 +1,26 @@
+name: CLB E115 LIVE 0.9.2 Safari WebKit + Chromium browser smoke (NO DEPLOY)
+on:
+  pull_request:
+    paths:
+      - 'scripts/test-clb-e115-live-092-browsers.mjs'
+      - '.github/workflows/clb-e115-live-browser-smoke.yml'
+permissions:
+  contents: read
+jobs:
+  live-safari-and-chromium:
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    steps:
+      - uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683 # v4.2.2
+      - uses: actions/setup-node@49933ea5288caeca8642d1e84afbd3f7d6820020 # v4.4.0
+        with:
+          node-version: '22'
+          cache: npm
+      - name: Install locked test dependencies only (no site deployment)
+        run: npm ci --ignore-scripts --no-audit --no-fund
+      - name: Install ephemeral Safari WebKit and Chromium
+        run: npx playwright install --with-deps webkit chromium
+      - name: Test LIVE signed 0.9.2 public player on WebKit and Chromium, including 320px/390px/820px/1280px
+        run: node --test scripts/test-clb-e115-live-092-browsers.mjs
+      - name: Confirm LIVE 0.9.2 exact SHA and negative HTTP routes
+        run: node --test scripts/test-clb-e114-live-092-strict.mjs

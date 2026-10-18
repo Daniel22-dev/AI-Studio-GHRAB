@@ -40,6 +40,13 @@ results.push(run('policy', [
   '--core', core,
   '--inventory', inventory,
 ]));
+// A locally versioned inventory overlay admits policy structure only, NEVER live use.
+results.push(run('conversation-lab-prelive-policy', [
+  path.join(ROOT, 'scripts/garp27/conversation-lab-enrollment.mjs'),
+]));
+results.push(run('conversation-lab-prelive-mutations', [
+  '--test', path.join(ROOT, 'scripts/garp27/conversation-lab-enrollment.test.mjs'),
+]));
 results.push(run('live-deferred', [
   path.join(VENDOR, 'MASTER/TOOLS/validate-live-status.mjs'),
   path.join(ROOT, 'security/garp27/live-status.json'),

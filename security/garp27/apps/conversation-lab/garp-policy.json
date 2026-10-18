@@ -1,0 +1,54 @@
+{
+  "schema": "garp27-policy-v1",
+  "garpVersion": "2.7",
+  "appId": "conversation-lab",
+  "appVersion": "0.9.1",
+  "identity": {
+    "authorization": "The public player has no private privileges and exposes only human-reviewed releases. The Studio teacher training gate is enforced at the Studio origin and is not silently inherited by this public application.",
+    "session": "No student or teacher login, credentials, tokens or local user session are maintained by the public player. Browser memory state is limited to local timer, navigation and the displayed public lesson."
+  },
+  "requestApiAi": {
+    "registeredOperations": 0,
+    "agentic": false,
+    "controls": "No model calls, no provider API, no AI Core invocation, no dynamic translation endpoint and no autonomous actions. Offline contextual glosses are part of approved lesson JSON."
+  },
+  "egress": {
+    "allowedDestinations": [
+      "same-origin"
+    ],
+    "defaultDeny": true,
+    "networkPolicy": "Fetches are limited to a canonical same-origin JSON catalog and hash-pinned lesson bytes; redirected, opaque and mismatched content responses fail closed. No external QR, analytics, translation or CDN calls."
+  },
+  "files": {
+    "imports": "No student upload or source import is supported in the public player. Private editorial materials never enter public source or preview artifacts.",
+    "maxBytes": 1048576,
+    "quarantine": "Content candidates are inspected in the private repository, individually reviewed and SHA-256 allowlisted before a separately authorized clean distribution."
+  },
+  "dataLifecycle": {
+    "classification": "Public lesson material only, no private teacher or student records. Review metadata is private and excluded from distributed artifacts.",
+    "storage": "Local timer is transient RAM. No localStorage, sessionStorage or indexedDB is required. Future service worker may store only explicitly enumerated public shell files under a distinct Conversation Lab cache prefix; lesson JSON and catalog must remain network-only.",
+    "retention": "Public copies can be independently archived by recipients. Withdrawn material cannot be reliably remotely erased after download; no expiry is promised."
+  },
+  "release": {
+    "activeAuthority": "GARP-2.7",
+    "promotion": "The owner-approved AI EN B1 public-only static player v0.9.1 is deployed at isolated Cloudflare Pages and technical client HTTP/Chromium checks have passed. Studio protected teacher admission remains NO_GO until a genuine owner-signed content release, scoped GARP 2.7 FOUNDATION verification, independent security acceptance and protected P5/Safe Promotion. Server GARP LIVE remains DEFERRED.",
+    "rollback": "Halt publication, block affected catalog descriptor in a newly approved release and document that offline copies and old QR links may remain obtainable."
+  },
+  "inventory": {
+    "source": "Daniel22-dev/conversation-lab-source PRIVATE source baseline and public 21-file byte hash inventory; exact Cloudflare release ZIP was assembled separately and is not claimed as a reproducible source-commit build.",
+    "changeRule": "Any appId, origin, Service Worker scope, publish policy, hosting or provider API change requires a new security and editorial review."
+  },
+  "securityHealth": {
+    "localCi": "Private source E2-E8 checks, exact 21-file Cloudflare byte verification and scoped Chromium/HTTP CI have passed for the public pilot; these are technical evidence, not independent GARP/security owner-signed approval.",
+    "live": "Cloudflare Pages public STATIC CLIENT technical verification PASS for 0.9.1 (manifest, 37 offline Czech glosses, exact lesson/catalog/player hashes, restrictive HTTP headers, 404, live Chromium desktop and mobile); school-server runtime SHIELD/egress/session/recovery LIVE explicitly DEFERRED/NOT_TESTED. Safari/iPad native acceptance not claimed.",
+    "failureMode": "Reject invalid origin, framed embedded playback, malformed routes, unsafe network payloads, stale SHA-256 and unapproved catalog items."
+  },
+  "incident": {
+    "response": "Stop promotion, assess source/public history and caches, withdraw affected approved descriptors in a separately authorized release, and notify project owner; change signing material if compromised.",
+    "contacts": "School-appointed owner and future release maintainer, as defined during E8/E9 governance."
+  },
+  "recovery": {
+    "rollback": "Use a last-known-good approved public release after exact-hash verification and re-run negative tests. No automatic rollback, no private key in browser or CI, no deletion guarantee for previously downloaded copies.",
+    "backup": "Source CI and full publicly deployed 21-file SHA-256 manifest retained in the private repo; owner-held Pages deployment history provides possible rollback, subject to owner action. A public URL may have cached/downloaded copies that cannot be removed remotely."
+  }
+}

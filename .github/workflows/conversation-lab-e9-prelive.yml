@@ -1,0 +1,36 @@
+name: Conversation Lab E9 Studio launcher PRELIVE (NO DEPLOY)
+on:
+  push:
+    branches:
+      - e9/conversation-lab-studio-launch-prelive-20261017
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+concurrency:
+  group: conversation-lab-e9-prelive-source
+  cancel-in-progress: true
+
+jobs:
+  prelive-contract:
+    name: e9-clb-prelive-launch-contract
+    runs-on: ubuntu-latest
+    timeout-minutes: 12
+    steps:
+      - uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683 # v4.2.2
+      - uses: actions/setup-node@49933ea5288caeca8642d1e84afbd3f7d6820020 # v4.4.0
+        with:
+          node-version: 22
+      - name: Validate Studio external launcher syntax
+        run: node --check src/app/external/launcher.js
+      - name: Validate E9 isolated player and teacher permit gate
+        run: node --test scripts/test-conversation-lab-launcher.mjs
+      - name: Preserve Maturita Desk launch contract
+        run: node scripts/test-maturita-external-launcher.mjs
+      - name: Preserve GARP 2.7 PRELIVE and 26 mutation negatives
+        run: |
+          node scripts/garp27/conversation-lab-enrollment.mjs
+          node --test scripts/garp27/conversation-lab-enrollment.test.mjs
+      - name: Verify normative GARP contract and no production admission
+        run: node scripts/garp27/contract-gate.mjs

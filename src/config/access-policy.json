@@ -89,6 +89,15 @@
         "cs": "Maturita Desk",
         "en": "Maturita Desk"
       }
+    },
+    "conversation-lab": {
+      "trainingRequired": true,
+      "trainingCode": "CLB-01",
+      "trainingVersion": "2026-10",
+      "label": {
+        "cs": "Conversation Lab",
+        "en": "Conversation Lab"
+      }
     }
   },
   "administratorPages": [
