@@ -44,7 +44,10 @@
       "id": "F-05",
       "severity": "LOW",
       "scope": "UNSIGNED_STUDIO_RELEASE_CONTROL_STRINGS",
-      "branchProtectionEvidence": "NOT_RECORDED"
+      "branchProtectionEvidence": "MAIN_RULESET_23580364_REQUIRES_P5_ZERO_HUMAN_APPROVALS",
+      "observedAt": "2026-10-18",
+      "evidenceUrl": "https://api.github.com/repos/Daniel22-dev/AI-Studio-GHRAB/rulesets/23580364",
+      "candidateBranchProtection": "NOT_VERIFIED_403"
     },
     {
       "id": "F-06",
@@ -71,5 +74,6 @@
   "signatureTrustRoot": "NOT_ESTABLISHED_SEPARATE_INSTITUTIONAL_KEY",
   "policyDocument": "docs/conversation-lab/CLB_GARP_S0_NAVRH_2026-10-18.md",
   "unsignedAcceptanceTemplate": "docs/conversation-lab/CLB_S0_AKCEPTACE_RIZIK_NEPODPISANY_VZOR_2026-10-18.md",
-  "note": "This is merely a proposed governance route. No human/organisational signature exists; do not replace current independent security field or production controls. Any future approved acceptance should use separately authenticated role/key or protected reviewed commit plus exact SHA binding."
+  "note": "This is merely a proposed governance route. No human/organisational signature exists; do not replace current independent security field or production controls. Any future approved acceptance should use separately authenticated role/key or protected reviewed commit plus exact SHA binding.",
+  "branchGovernanceProof": "docs/conversation-lab/CLB_E113_GITHUB_P5_RULESET_A_F05.md"
 }
