@@ -48,6 +48,11 @@ test('E9 POLICY: CLB-01 policy extension is typed and isolated; no unsigned live
  assert.equal(activePolicy.applications['conversation-lab'],undefined);
  assert.equal(bundle.policy.applications['conversation-lab'],undefined);
  assert.deepEqual(Object.keys(activePolicy.applications).sort(),Object.keys(bundle.policy.applications).sort());
+ const planned=await read('src/integration/conversation-lab/access-policy.ready-for-signing.json');
+ const expected=structuredClone(activePolicy);
+ expected.applications['conversation-lab']=x.policyEntry;
+ assert.deepEqual(planned,expected,'new signing payload must change exactly one training-policy entry, no other rules/apps');
+ assert.equal(Object.keys(planned.applications).length,Object.keys(activePolicy.applications).length+1);
 });
 test('E9 MANIFEST: staged proposed Studio tile points only to approved isolated public player and guarded launcher',async()=>{
  const a=await read('src/integration/conversation-lab/studio-manifest.proposed.json');
