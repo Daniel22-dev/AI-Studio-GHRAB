@@ -1,0 +1,20 @@
+name: Conversation Lab E9.1 Studio handoff PRELIVE (NO DEPLOY)
+on:
+  pull_request:
+    paths:
+      - 'src/integration/conversation-lab/hosting-handoff.json'
+      - 'src/integration/conversation-lab/catalog-proposal.json'
+      - 'scripts/test-conversation-lab-hosting-handoff.mjs'
+      - '.github/workflows/conversation-lab-e9-1-handoff.yml'
+permissions:
+  contents: read
+jobs:
+  check-e9-1-handoff:
+    runs-on: ubuntu-latest
+    timeout-minutes: 3
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '24'
+      - run: node --test scripts/test-conversation-lab-hosting-handoff.mjs
