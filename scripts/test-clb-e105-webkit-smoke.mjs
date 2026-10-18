@@ -11,6 +11,7 @@ const VIEWPORTS = [
 ];
 test('E105 isolated public player is usable in WebKit at four viewports without JS errors, overflow or third-party requests', { timeout: 120000 }, async () => {
   const browser = await webkit.launch({ headless: true });
+  const overflows = [];
   try {
     for (const device of VIEWPORTS) {
       const page = await browser.newPage({
@@ -53,8 +54,13 @@ test('E105 isolated public player is usable in WebKit at four viewports without 
       if (metrics.contentWidth > metrics.screenWidth + 3)
         console.error('E105_OVERFLOW_DETAIL ' + JSON.stringify({ device: device.name, metrics }));
       assert.equal(metrics.hasContent, true, device.name + ': no visible lesson/player UI');
-      assert.ok(metrics.contentWidth <= metrics.screenWidth + 3,
-        device.name + ': horizontal overflow ' + JSON.stringify(metrics));
+      console.log('E105_VIEWPORT ' + JSON.stringify({
+        name: device.name, width: metrics.screenWidth, scrollWidth: metrics.contentWidth,
+        hasContent: metrics.hasContent
+      }));
+      if (metrics.contentWidth > metrics.screenWidth + 3) {
+        overflows.push({ viewport: device.name, ...metrics });
+      }
       assert.deepEqual(errors, [], device.name + ': JS console page errors');
       assert.deepEqual(offsite, [], device.name + ': external network traffic forbidden');
       await page.close();
@@ -62,6 +68,7 @@ test('E105 isolated public player is usable in WebKit at four viewports without 
   } finally {
     await browser.close();
   }
+  assert.deepEqual(overflows, [], 'signed public 0.9.1 has WebKit viewport overflow and requires E106 public re-release');
 });
 
 test('E105 PREVIEW: E106 CSS source wrap removes WebKit overflow through stylesheet interception, not CSP bypass', { timeout: 60000 }, async () => {
