@@ -40,22 +40,22 @@
     }
   },
   {
-    "id": "correspondence",
-    "name": "Korespondenční asistent",
-    "version": "5.10.34",
-    "slug": "korespondencni-asistent",
+    "id": "generator",
+    "name": "Generátor interaktivních testů",
+    "version": "7.1.99",
+    "slug": "generator-testu",
     "paths": {
-      "app": "https://daniel22-dev.github.io/korespondencni-asistent/",
-      "manual": "https://daniel22-dev.github.io/korespondencni-asistent/manual/",
-      "schoolApp": "/apps/korespondencni-asistent/",
-      "schoolManual": "/apps/korespondencni-asistent/manual/"
+      "app": "https://daniel22-dev.github.io/generator-testu/",
+      "manual": "https://daniel22-dev.github.io/generator-testu/manual/",
+      "schoolApp": "/apps/generator-testu/",
+      "schoolManual": "/apps/generator-testu/manual/"
     },
     "capabilities": [
-      "communication",
-      "anonymisation",
-      "email-analysis",
-      "templates",
-      "ai"
+      "test-generation",
+      "interactive-tests",
+      "print",
+      "pdf",
+      "multi-step-ai-workflow"
     ],
     "platform": {
       "contract": "ghrab-platform-v1",
@@ -65,21 +65,19 @@
       "swContract": 1,
       "studioBridge": 2,
       "artifactEnvelope": 1,
-      "storagePrefix": "ghrab.correspondence.",
+      "storagePrefix": "ghrab.generator.",
       "platformVersion": "1.1.2",
       "accessibilityContract": "ghrab-a11y-v1",
       "performanceContract": "ghrab-performance-v1",
       "moduleContract": "ghrab-lazy-modules-v1"
     },
-    "cacheName": "ghrab-correspondence-v5.10.34",
+    "cacheName": "ghrab-generator-v7.1.99",
     "theme": {
       "supported": [
         "light",
-        "dark",
-        "system"
+        "dark"
       ],
-      "default": "system",
-      "systemFallback": "light"
+      "default": "dark"
     }
   },
   {
@@ -121,47 +119,6 @@
         "dark"
       ],
       "default": "light"
-    }
-  },
-  {
-    "id": "generator",
-    "name": "Generátor interaktivních testů",
-    "version": "7.1.99",
-    "slug": "generator-testu",
-    "paths": {
-      "app": "https://daniel22-dev.github.io/generator-testu/",
-      "manual": "https://daniel22-dev.github.io/generator-testu/manual/",
-      "schoolApp": "/apps/generator-testu/",
-      "schoolManual": "/apps/generator-testu/manual/"
-    },
-    "capabilities": [
-      "test-generation",
-      "interactive-tests",
-      "print",
-      "pdf",
-      "multi-step-ai-workflow"
-    ],
-    "platform": {
-      "contract": "ghrab-platform-v1",
-      "requiredPlatformRange": ">=1.1.2 <2.0.0",
-      "brandVersion": "1.0.0",
-      "themeContract": "ghrab-theme-v1",
-      "swContract": 1,
-      "studioBridge": 2,
-      "artifactEnvelope": 1,
-      "storagePrefix": "ghrab.generator.",
-      "platformVersion": "1.1.2",
-      "accessibilityContract": "ghrab-a11y-v1",
-      "performanceContract": "ghrab-performance-v1",
-      "moduleContract": "ghrab-lazy-modules-v1"
-    },
-    "cacheName": "ghrab-generator-v7.1.99",
-    "theme": {
-      "supported": [
-        "light",
-        "dark"
-      ],
-      "default": "dark"
     }
   },
   {
@@ -207,21 +164,21 @@
     }
   },
   {
-    "id": "activity-builder",
-    "name": "ACTIVA",
-    "version": "0.5.30",
-    "slug": "activa",
+    "id": "correspondence",
+    "name": "Korespondenční asistent",
+    "version": "5.10.34",
+    "slug": "korespondencni-asistent",
     "paths": {
-      "app": "https://daniel22-dev.github.io/ACTIVA/",
-      "manual": "https://daniel22-dev.github.io/ACTIVA/manual/",
-      "schoolApp": "/apps/activa/",
-      "schoolManual": "/apps/activa/manual/"
+      "app": "https://daniel22-dev.github.io/korespondencni-asistent/",
+      "manual": "https://daniel22-dev.github.io/korespondencni-asistent/manual/",
+      "schoolApp": "/apps/korespondencni-asistent/",
+      "schoolManual": "/apps/korespondencni-asistent/manual/"
     },
     "capabilities": [
-      "activity-generation",
-      "print",
-      "projection",
-      "school-library",
+      "communication",
+      "anonymisation",
+      "email-analysis",
+      "templates",
       "ai"
     ],
     "platform": {
@@ -232,18 +189,21 @@
       "swContract": 1,
       "studioBridge": 2,
       "artifactEnvelope": 1,
-      "storagePrefix": "ghrab.activity-builder.",
+      "storagePrefix": "ghrab.correspondence.",
       "platformVersion": "1.1.2",
       "accessibilityContract": "ghrab-a11y-v1",
       "performanceContract": "ghrab-performance-v1",
       "moduleContract": "ghrab-lazy-modules-v1"
     },
-    "cacheName": "ghrab-activity-builder-v0.5.30",
+    "cacheName": "ghrab-correspondence-v5.10.34",
     "theme": {
       "supported": [
-        "light"
+        "light",
+        "dark",
+        "system"
       ],
-      "default": "light"
+      "default": "system",
+      "systemFallback": "light"
     }
   },
   {
@@ -290,22 +250,22 @@
     }
   },
   {
-    "id": "lesson-hub",
-    "name": "Lesson Hub",
-    "version": "1.2.26",
-    "slug": "lesson-hub",
+    "id": "activity-builder",
+    "name": "ACTIVA",
+    "version": "0.5.30",
+    "slug": "activa",
     "paths": {
-      "app": "https://daniel22-dev.github.io/lesson-hub/",
-      "manual": "https://daniel22-dev.github.io/lesson-hub/manual/",
-      "schoolApp": "/apps/lesson-hub/",
-      "schoolManual": "/apps/lesson-hub/manual/"
+      "app": "https://daniel22-dev.github.io/ACTIVA/",
+      "manual": "https://daniel22-dev.github.io/ACTIVA/manual/",
+      "schoolApp": "/apps/activa/",
+      "schoolManual": "/apps/activa/manual/"
     },
     "capabilities": [
-      "teacher-memory",
-      "lesson-planning",
-      "materials",
-      "server-sync",
-      "attachments"
+      "activity-generation",
+      "print",
+      "projection",
+      "school-library",
+      "ai"
     ],
     "platform": {
       "contract": "ghrab-platform-v1",
@@ -315,21 +275,18 @@
       "swContract": 1,
       "studioBridge": 2,
       "artifactEnvelope": 1,
-      "storagePrefix": "ghrab.lesson-hub.",
+      "storagePrefix": "ghrab.activity-builder.",
       "platformVersion": "1.1.2",
       "accessibilityContract": "ghrab-a11y-v1",
       "performanceContract": "ghrab-performance-v1",
       "moduleContract": "ghrab-lazy-modules-v1"
     },
-    "cacheName": "ghrab-lesson-hub-v1.2.26",
+    "cacheName": "ghrab-activity-builder-v0.5.30",
     "theme": {
       "supported": [
-        "light",
-        "dark",
-        "system"
+        "light"
       ],
-      "default": "light",
-      "systemFallback": "light"
+      "default": "light"
     }
   },
   {
@@ -377,6 +334,49 @@
     }
   },
   {
+    "id": "lesson-hub",
+    "name": "Lesson Hub",
+    "version": "1.2.26",
+    "slug": "lesson-hub",
+    "paths": {
+      "app": "https://daniel22-dev.github.io/lesson-hub/",
+      "manual": "https://daniel22-dev.github.io/lesson-hub/manual/",
+      "schoolApp": "/apps/lesson-hub/",
+      "schoolManual": "/apps/lesson-hub/manual/"
+    },
+    "capabilities": [
+      "teacher-memory",
+      "lesson-planning",
+      "materials",
+      "server-sync",
+      "attachments"
+    ],
+    "platform": {
+      "contract": "ghrab-platform-v1",
+      "requiredPlatformRange": ">=1.1.2 <2.0.0",
+      "brandVersion": "1.0.0",
+      "themeContract": "ghrab-theme-v1",
+      "swContract": 1,
+      "studioBridge": 2,
+      "artifactEnvelope": 1,
+      "storagePrefix": "ghrab.lesson-hub.",
+      "platformVersion": "1.1.2",
+      "accessibilityContract": "ghrab-a11y-v1",
+      "performanceContract": "ghrab-performance-v1",
+      "moduleContract": "ghrab-lazy-modules-v1"
+    },
+    "cacheName": "ghrab-lesson-hub-v1.2.26",
+    "theme": {
+      "supported": [
+        "light",
+        "dark",
+        "system"
+      ],
+      "default": "light",
+      "systemFallback": "light"
+    }
+  },
+  {
     "id": "maturita-desk",
     "name": "Maturita Desk",
     "version": "1.0.6",
@@ -416,6 +416,47 @@
       ],
       "default": "system",
       "systemFallback": "light"
+    }
+  },
+  {
+    "id": "conversation-lab",
+    "name": "Conversation Lab",
+    "version": "0.9.2",
+    "slug": "conversation-lab",
+    "paths": {
+      "app": "https://conversation-lab-ghrab.pages.dev/",
+      "manual": "https://conversation-lab-ghrab.pages.dev/manual/",
+      "schoolApp": "/apps/conversation-lab/",
+      "schoolManual": "/apps/conversation-lab/manual/"
+    },
+    "capabilities": [
+      "conversation-practice",
+      "station-navigation",
+      "offline-translations",
+      "qr-share",
+      "anonymous-student-entry"
+    ],
+    "platform": {
+      "contract": "ghrab-platform-v1",
+      "requiredPlatformRange": ">=1.1.2 <2.0.0",
+      "brandVersion": "1.0.0",
+      "themeContract": "ghrab-theme-v1",
+      "swContract": 1,
+      "studioBridge": 2,
+      "artifactEnvelope": 1,
+      "storagePrefix": "ghrab.conversation-lab.",
+      "platformVersion": "1.1.2",
+      "accessibilityContract": "ghrab-a11y-v1",
+      "performanceContract": "ghrab-performance-v1",
+      "moduleContract": "not-applicable"
+    },
+    "cacheName": "ghrab-conversation-lab-v0.9.2",
+    "theme": {
+      "supported": [
+        "light",
+        "dark"
+      ],
+      "default": "dark"
     }
   }
 ]

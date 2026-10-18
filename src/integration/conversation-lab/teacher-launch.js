@@ -142,7 +142,7 @@ export function validateConversationLabTeacherTarget(app,control,{studioOrigin}=
     control.studentDirectEntry!=='ANONYMOUS_NO_STUDIO_ACCOUNT' ||
     control.studioCredentialBridge!=='FORBIDDEN' ||
     control.publishStudentData!==false ||
-    control.ownerReleaseAuthorization!=='SIGNED' ||
+    control.ownerReleaseAuthorization!=='PROJECT_OWNER_S0_APPROVED' ||
     control.hostingOwnership!=='VERIFIED' ||
     control.hostingHeaders!=='VERIFIED' ||
     // GARP 2.7 FOUNDATION (static standalone) is independent from future
@@ -152,7 +152,10 @@ export function validateConversationLabTeacherTarget(app,control,{studioOrigin}=
     control.garpFoundation!==release.foundation ||
     control.publicClientLive!=='VERIFIED_EXACT_21_FILES' ||
     control.schoolServerLive!=='DEFERRED_NOT_TESTED' ||
-    control.independentSecurityApproval!=='SIGNED_AND_VERIFIED' ||
+    // S0 owner acceptance and Claude technical opposition are NOT an independently signed security certificate.
+    control.independentSecurityApproval!=='OWNER_S0_AI_OPPOSITION_ACCEPTED' ||
+    control.ownerRiskAcceptanceRef!=='../../integration/conversation-lab/governance/project-owner-release.v0.9.2.json' ||
+    control.riskProfile!=='S0_ANONYMOUS_STATIC_PUBLIC_PLAYER_ONLY' ||
     control.publicRelease!=='MANUAL_RELEASE_APPROVED' ||
     !Number.isSafeInteger(control.approvedLessons) || control.approvedLessons<1 ||
     !Number.isSafeInteger(control.approvedCzechGlosses) || control.approvedCzechGlosses<1 ||
@@ -163,6 +166,7 @@ export function validateConversationLabTeacherTarget(app,control,{studioOrigin}=
     !SHA64.test(control.signedReleaseStatementSha256??''))deny('RELEASE_NOT_AUTHORIZED');
   // Both exact, explicitly pinned public releases are accepted in SOURCE
   // only. Neither is authorized while the actual launch-control stays HOLD.
+  if(app.version!=='0.9.2')deny('OWNER_S0_RELEASE_SCOPE');
   if(control.releaseId!==release.releaseId ||
     control.publicOrigin!==release.publicOrigin ||
     control.approvedDistributionManifestSha256!==release.catalogSha ||
@@ -282,6 +286,48 @@ export async function verifyClbOwnerContentReceipt(app,control,receipt,{
   return true;
 }
 
+
+/**
+ * Project owner acceptance is a separate PUBLIC metadata record and is NOT
+ * an independent human security certificate or a digital signature. The
+ * signed ES256 owner content, signed teacher permit, and actual safe-promotion
+ * P5 remain separate required defenses. A modified or missing record fails
+ * closed; no Studio token or identity is transferred to the public player.
+ */
+export function assertClbProjectOwnerS0Acceptance(record,app,control) {
+  const release=PILOT_RELEASES[app?.version];
+  if(!release||release.version!=='0.9.2'||
+    !record||record.schema!=='ghrab-clb-project-owner-release-acceptance-v1'||
+    record.appId!==APP_ID||record.appVersion!==release.version||
+    record.releaseId!==control.releaseId||
+    record.releaseId!==release.releaseId||
+    record.publicOrigin!==release.publicOrigin||
+    record.ownerGitHubLogin!=='Daniel22-dev'||
+    record.ownerGitHubUserId!==287402620||
+    record.ownerAuthority!=='AI_STUDIO_PROJECT_LEAD_SELF_ASSERTED'||
+    record.source!=='DIRECT_PROJECT_OWNER_CHAT_INSTRUCTION'||
+    record.decisionDate!=='2026-10-18'||
+    record.decision!=='PROJECT_OWNER_APPROVES_TECHNICALLY_VALIDATED_LOW_RISK_PILOT_AND_TEACHER_LAUNCH_AFTER_P5'||
+    record.riskAcceptanceByProjectOwner!==true||
+    record.schoolInstitutionalSignoff!=='NOT_ATTESTED'||
+    record.independentSecurityApproval!=='NOT_CLAIMED'||
+    record.publicArtifact?.ownerSignedStatementSha256!==release.statementSha||
+    record.publicArtifact?.zipSha256!==release.staticZipSha||
+    record.publicArtifact?.publicManifestSha256!==release.manifestSha||
+    record.publicArtifact?.publicCatalogSha256!==release.catalogSha||
+    record.technicalReview?.independentHumanSecurityCertification!==false||
+    record.technicalReview?.verdict!=='TECHNICAL_PRE_GO'||
+    record.verification?.liveCloudflare!=='E114_19_OF_19_SHA256_5_OF_5_404'||
+    record.verification?.browser!=='E115_WEBKIT_CHROMIUM_8_OF_8'||
+    record.verification?.signedContent!=='ES256_TRUSTED_STUDIO_ANCHOR'||
+    record.verification?.teacherAccess!=='CLB_01_SIGNED_POLICY'||
+    record.studioTokenForwarding!==false||
+    record.studentIdentityOrStoredAnswers!==false||
+    record.autoPromotion!==false)
+      deny('OWNER_S0_ACCEPTANCE_SCOPE_INVALID');
+  return true;
+}
+
 /** Static teacher launch control is stored within Studio origin only. */
 export async function checkedConversationLabTarget(app,{
   studioOrigin,fetchImpl=globalThis.fetch,cryptoImpl=globalThis.crypto
@@ -304,5 +350,14 @@ export async function checkedConversationLabTarget(app,{
   if(!signed?.ok||signed.redirected)deny('OWNER_CONTENT_UNAVAILABLE');
   let receipt;try{receipt=await signed.json()}catch{deny('OWNER_CONTENT_INVALID_JSON')}
   await verifyClbOwnerContentReceipt(app,control,receipt,{cryptoImpl});
+  let ownerDecision;
+  try {
+    ownerDecision=await fetchImpl(control.ownerRiskAcceptanceRef,{
+      method:'GET',credentials:'same-origin',cache:'no-store',redirect:'error'
+    });
+  }catch{deny('OWNER_S0_ACCEPTANCE_UNAVAILABLE')}
+  if(!ownerDecision?.ok||ownerDecision.redirected)deny('OWNER_S0_ACCEPTANCE_UNAVAILABLE');
+  let decision;try{decision=await ownerDecision.json()}catch{deny('OWNER_S0_ACCEPTANCE_INVALID_JSON')}
+  assertClbProjectOwnerS0Acceptance(decision,app,control);
   return target;
 }
