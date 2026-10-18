@@ -63,3 +63,25 @@ test('E105 isolated public player is usable in WebKit at four viewports without 
     await browser.close();
   }
 });
+
+test('E105 PREVIEW: proposed E106 CSS wrap repairs the 320px WebKit overflow without altering signed public bytes', { timeout: 45000 }, async () => {
+  const browser = await webkit.launch({ headless: true });
+  try {
+    const page = await browser.newPage({ viewport: { width: 320, height: 700 }, isMobile: true, hasTouch: true });
+    const response = await page.goto(ORIGIN + '/', { waitUntil: 'networkidle', timeout: 30000 });
+    assert.equal(response?.status(), 200);
+    const width = () => page.evaluate(() => ({
+      client: document.documentElement.clientWidth,
+      scroll: document.documentElement.scrollWidth
+    }));
+    const before = await width();
+    assert.ok(before.scroll > before.client + 3, 'actual deployed 0.9.1 is expected to exhibit documented E105 issue');
+    await page.addStyleTag({ content: '@media (max-width:370px){.catalog-heading-row{flex-wrap:wrap}.approved-count{max-width:100%;white-space:normal}}' });
+    const after = await width();
+    console.log('E106_SOURCE_FIX_PREVIEW ' + JSON.stringify({ before, after }));
+    assert.ok(after.scroll <= after.client + 3, 'proposed CSS must fully remove root overflow');
+    await page.close();
+  } finally {
+    await browser.close();
+  }
+});
