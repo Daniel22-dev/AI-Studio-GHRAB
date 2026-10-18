@@ -30,6 +30,9 @@ test('E113 institutional S0 proposal is not an independent security approval or 
  assert.deepEqual(risk.residualFindings.map(x=>x.id),['F-01','F-03','F-04','F-05','F-06']);
  assert.equal(risk.residualFindings.find(x=>x.id==='F-01').fixInSigned092,false);
  assert.equal(risk.residualFindings.find(x=>x.id==='F-03').evidence,'NOT_INSPECTED');
+ assert.equal(risk.residualFindings.find(x=>x.id==='F-05').branchProtectionEvidence,'MAIN_RULESET_23580364_REQUIRES_P5_ZERO_HUMAN_APPROVALS');
+ assert.equal(risk.residualFindings.find(x=>x.id==='F-05').candidateBranchProtection,'NOT_VERIFIED_403');
+ assert.equal(risk.branchGovernanceProof,'docs/conversation-lab/CLB_E113_GITHUB_P5_RULESET_A_F05.md');
  assert.equal(risk.notCovered.includes('SERVER_SESSION'),true);
  assert.equal(control.stage,'PRELIVE_HOLD');
  assert.equal(control.launchEnabled,false);
