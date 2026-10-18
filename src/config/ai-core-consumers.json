@@ -73,6 +73,14 @@
       "applicable": false,
       "syncWorkflow": null,
       "delivery": "not-applicable"
+    },
+    {
+      "appId": "conversation-lab",
+      "repository": "Daniel22-dev/conversation-lab-source",
+      "enabled": false,
+      "applicable": false,
+      "syncWorkflow": null,
+      "delivery": "not-applicable"
     }
   ]
 }

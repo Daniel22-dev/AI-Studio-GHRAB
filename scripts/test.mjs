@@ -768,11 +768,19 @@ if (manifest?.version !== pkg.version)
 const sourceFiles = await walk(src);
 const secretPatterns = [
   /AIza[0-9A-Za-z_-]{20,}/g,
-  /sk-[0-9A-Za-z_-]{20,}/g,
+  /(?<![A-Za-z0-9_-])sk-[0-9A-Za-z_-]{20,}/g,
   /github_pat_[0-9A-Za-z_]{20,}/g,
   /-----BEGIN (?:RSA |EC |OPENSSH )?PRIVATE KEY-----/g,
   /"d"\s*:\s*"[A-Za-z0-9_-]{20,}"/g,
 ];
+// Recognise standalone credentials, not the ordinary English 'risk-' substring.
+const openAiSecretPattern = secretPatterns[1];
+openAiSecretPattern.lastIndex = 0;
+if (!openAiSecretPattern.test(`"apiKey":"sk-${"A".repeat(26)}"`))
+  fail("Detekce skutecneho API klice nesmi byt vypnuta.");
+openAiSecretPattern.lastIndex = 0;
+if (openAiSecretPattern.test("ghrab-clb-s0-risk-classification-proposal-v1"))
+  fail("Bezne risk-classification oznaceni nesmi byt oznaceno za klic.");
 for (const file of sourceFiles.filter((f) =>
   /\.(html|js|json|md|css|yml|yaml)$/.test(f),
 )) {
