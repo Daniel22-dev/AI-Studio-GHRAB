@@ -89,13 +89,21 @@ test('E118 reject mutated control, forged project owner decision and tampered si
   c=>{c.ownerRiskAcceptanceRef='https://evil.invalid'},c=>{c.requiredTrainingCode='NONE'},
   c=>{c.hostingHeaders='NOT_VERIFIED'},c=>{c.garpLive='VERIFIED'},
   c=>{c.schoolServerLive='FALSE_LIVE'},c=>{c.releaseId='other'},
-  c=>{c.signedReleaseStatementSha256='f'.repeat(64)},c=>{c.autoPromotion='ENABLED'},
+  c=>{c.autoPromotion='ENABLED'},
   c=>{c.studioCredentialBridge='ALLOWED'}
  ];
  for(let i=0;i<controls.length;i++){
   const v=clone(x.control);controls[i](v);
   assert.throws(()=>validateConversationLabTeacherTarget(x.app,v,{studioOrigin:'https://daniel22-dev.github.io'}),/CLB_E9_/,'bad release control '+i);
  }
+ // A syntactically valid SHA-256 value must fail at the *cryptographic*
+ // receipt binding boundary, not at the earlier URL/control schema gate.
+ const wrongSha=clone(x.control);wrongSha.signedReleaseStatementSha256='f'.repeat(64);
+ assert.equal(validateConversationLabTeacherTarget(x.app,wrongSha,{studioOrigin:'https://daniel22-dev.github.io'}),site);
+ await assert.rejects(
+  ()=>verifyClbOwnerContentReceipt(x.app,wrongSha,x.receipt,{cryptoImpl:webcrypto}),
+  /CLB_E9_OWNER_CONTENT_BINDING_MISMATCH/
+ );
  const owners=[
   r=>{r.ownerGitHubLogin='evil'},r=>{r.ownerGitHubUserId=1},r=>{r.appVersion='0.9.3'},
   r=>{r.riskAcceptanceByProjectOwner=false},r=>{r.independentSecurityApproval='FAKE_CERTIFIED'},
