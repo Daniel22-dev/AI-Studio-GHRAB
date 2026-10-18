@@ -10,6 +10,8 @@ on:
       - 'src/config/release-wave.json'
       - 'src/config/sync-report.json'
       - 'scripts/test-clb-e96-registry-candidate.mjs'
+      - 'scripts/test-clb-e96-scoped-garp.mjs'
+      - 'security/garp27/conversation-lab-standalone-release-profile.candidate.json'
       - '.github/workflows/clb-e96-catalog-candidate.yml'
 permissions:
   contents: read
@@ -30,5 +32,7 @@ jobs:
           node scripts/sync-platform-consumers.mjs --check
       - name: Verify source and GHRAB platform policies for ten-app candidate
         run: node scripts/qa-ecosystem.mjs --require-source-verification
+      - name: Verify scoped GARP FOUNDATION vs deliberately deferred school-server LIVE is not falsified
+        run: node --test scripts/test-clb-e96-scoped-garp.mjs
       - name: Check candidate can launch protected CLB portal without affecting other nine
         run: node --test scripts/test-clb-studio-portal-route.mjs
