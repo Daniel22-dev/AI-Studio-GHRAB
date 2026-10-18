@@ -1,0 +1,33 @@
+import test from 'node:test';
+import assert from 'node:assert/strict';
+import {readFile} from 'node:fs/promises';
+import {gitBlobSha1,evaluatePrelive,readSnapshot} from './garp27/conversation-lab-enrollment.mjs';
+const read=async p=>JSON.parse(await readFile(new URL('../'+p,import.meta.url),'utf8'));
+test('GARP 2.7 source policy/capability pins match verified v0.9.1 private source main',async()=>{
+ const x=readSnapshot();
+ const p=x.policy,c=x.capabilities,a=x.admission;
+ assert.equal(p.appVersion,'0.9.1');
+ assert.equal(c.appVersion,'0.9.1');
+ assert.equal(a.sourceRevision,'fc2e63504274d4dccb51db028040dac45a10b346');
+ assert.equal(a.sourcePolicyGitBlobSha1,'1a956c64c09ae43c3e6d5a03499c301fc1e651c2');
+ assert.equal(a.sourceCapabilityGitBlobSha1,'558e7e984b439eb964e575acca8dd5e63a065684');
+ assert.equal(a.sourcePolicyGitBlobSha1,gitBlobSha1(x.policyBytes));
+ assert.equal(a.sourceCapabilityGitBlobSha1,gitBlobSha1(x.capabilityBytes));
+ assert.equal(a.sourceAppVersion,p.appVersion);
+ assert.equal(a.sourceMirrorStatus,'PRIVATE_SOURCE_MAIN_VERIFIED_NO_PRODUCTION_ADMISSION');
+ assert.deepEqual(evaluatePrelive(x),[]);
+});
+test('Cloudflare LIVE evidence is scoped client proof, never a fake GARP school-server LIVE',async()=>{
+ const [a,c,live]=await Promise.all(['security/garp27/conversation-lab-enrollment.json','security/garp27/apps/conversation-lab/capability-inventory.json','security/garp27/live-status.json'].map(read));
+ assert.equal(a.publicClientEvidence.status,'LIVE_HTTP_CHROMIUM_TECHNICAL_VERIFIED');
+ assert.equal(a.publicClientEvidence.manifestSha256,'e139a829fadc59e1563632aae9995334c87e0b23f991dcf5e6b41dc9c1b51464');
+ assert.equal(a.publicClientEvidence.lessonSha256,'4a163857dc2b90e3b9a3a60e8e4440f7c45c2a1f2530f970a99543925fe390b9');
+ assert.equal(a.schoolRuntime,'DEFERRED_NOT_TESTED');
+ assert.equal(a.garpLive,'NOT_TESTED');
+ assert.equal(c.liveStatus,'NOT_TESTED');
+ assert.equal(live.overall,'NOT_TESTED');
+ assert.equal(a.admission,'REGISTERED_PRELIVE_POLICY_ONLY');
+ assert.equal(a.publicDeployment,'NO_GO');
+ assert.equal(a.studioLauncher,'DISABLED');
+ assert.equal(a.autoPromotion,'DISABLED');
+});

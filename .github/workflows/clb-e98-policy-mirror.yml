@@ -1,0 +1,24 @@
+name: Conversation Lab GARP 2.7 source 0.9.1 mirror audit (NO DEPLOY)
+on:
+  pull_request:
+    paths:
+      - 'security/garp27/apps/conversation-lab/**'
+      - 'security/garp27/conversation-lab-enrollment.json'
+      - 'scripts/garp27/conversation-lab-enrollment.mjs'
+      - 'scripts/test-clb-e98-source-mirror.mjs'
+      - '.github/workflows/clb-e98-policy-mirror.yml'
+permissions:
+  contents: read
+jobs:
+  source-v091-policy-mirror:
+    runs-on: ubuntu-latest
+    timeout-minutes: 9
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+      - run: node --test scripts/test-clb-e98-source-mirror.mjs
+      - run: node scripts/garp27/conversation-lab-enrollment.mjs
+      - run: node --test scripts/garp27/conversation-lab-enrollment.test.mjs
+      - run: node scripts/garp27/contract-gate.mjs

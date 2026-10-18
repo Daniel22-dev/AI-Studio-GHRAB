@@ -1,0 +1,33 @@
+name: CLB E109 pinned v0.9.2 future protected teacher launcher PRELIVE (NO DEPLOY)
+on:
+  pull_request:
+    paths:
+      - 'src/integration/conversation-lab/teacher-launch.js'
+      - 'src/integration/conversation-lab/studio-manifest.v0.9.2.proposed.json'
+      - 'scripts/test-clb-e109-future-092-teacher-gate.mjs'
+      - 'scripts/test-clb-e108-owner-signed-092.mjs'
+      - '.github/workflows/clb-e109-v092-teacher-launch-prelive.yml'
+permissions:
+  contents: read
+jobs:
+  exact-future-release-fail-closed:
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+    steps:
+      - uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683 # v4.2.2
+      - uses: actions/setup-node@49933ea5288caeca8642d1e84afbd3f7d6820020 # v4.4.0
+        with:
+          node-version: '24'
+      - name: Syntax check of Studio launcher
+        run: node --check src/integration/conversation-lab/teacher-launch.js
+      - name: Verify actual ES256 v0.9.2 signed receipt with real Studio trust anchor
+        run: node --test scripts/test-clb-e108-owner-signed-092.mjs
+      - name: Verify future exact v0.9.2 scoped protected Studio path, WebCrypto and fail-closed production HOLD
+        run: node --test scripts/test-clb-e109-future-092-teacher-gate.mjs
+      - name: Preserve original production-staged v0.9.1 owner signature and live hold
+        run: |
+          node --test scripts/test-clb-e101-owner-content-release.mjs
+          node --test scripts/test-clb-e102-runtime-owner-receipt.mjs
+          node --test scripts/test-conversation-lab-launcher.mjs
+      - name: Preserve scoped GARP 2.7 PRELIVE admission
+        run: node scripts/garp27/conversation-lab-enrollment.mjs
