@@ -54,8 +54,8 @@ test('checked-in Studio CLB launch control is PRELIVE and BLOCKS all launches',a
 });
 test('teacher entry requires Studio permit and the CLB training policy when eventually enabled',async()=>{
   const policy=await read('src/config/access-policy.json');
-  // Policy is intentionally not yet signed nor deployed; no fake training code.
-  assert.equal(policy.applications['conversation-lab'],undefined);
+  // CLB-01 is now legitimately signed in PRELIVE; no Studio tile/release authorization is present.
+  assert.equal(policy.applications['conversation-lab'].trainingCode,'CLB-01');
   const prelive=await read('security/garp27/conversation-lab-enrollment.json');
   assert.equal(prelive.teacherStudioGate,'NOT_CONNECTED');
   assert.equal(prelive.studioLauncher,'DISABLED');
@@ -143,5 +143,7 @@ test('CLB-01 requires exact training policy from verified Studio access bundle (
   assert.match(launcher,/assertClbSignedTrainingPolicy\(requiredTraining\(app\.id\)\)/);
   assert.ok(launcher.indexOf('assertClbSignedTrainingPolicy(requiredTraining(app.id))')<launcher.indexOf('hasAppAccess(app.id)'));
   const bundle=await read('src/config/access-config-bundle.json');
-  assert.equal(bundle.policy.applications['conversation-lab'],undefined,'unmodified signed config remains NO-GO');
+  assert.equal(bundle.policy.applications['conversation-lab'].trainingCode,'CLB-01','signed CLB-01 PRELIVE exists without production tile');
+  const control=await read('src/integration/conversation-lab/launch-control.json');
+  assert.equal(control.launchEnabled,false);
 });

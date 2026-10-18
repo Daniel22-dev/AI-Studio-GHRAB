@@ -34,7 +34,7 @@ test('E9 POLICY: CLB-01 policy extension is typed and isolated; no unsigned live
  const x=await read('src/integration/conversation-lab/access-policy-extension.proposed.json');
  assert.equal(x.schema,'ghrab-clb-studio-access-policy-extension-proposal-v1');
  assert.equal(x.appId,'conversation-lab');
- assert.equal(x.status,'NOT_IN_SIGNED_ACCESS_BUNDLE');
+ assert.equal(x.status,'SIGNED_ON_PRELIVE_BRANCH_PENDING_PRODUCTION');
  assert.equal(x.bundleSignatureRequired,true);
  assert.equal(x.policyEntry.trainingRequired,true);
  assert.equal(x.policyEntry.trainingCode,'CLB-01');
@@ -45,14 +45,12 @@ test('E9 POLICY: CLB-01 policy extension is typed and isolated; no unsigned live
  assert.equal(x.publishPrivateSigningKey,false);
  const activePolicy=await read('src/config/access-policy.json');
  const bundle=await read('src/config/access-config-bundle.json');
- assert.equal(activePolicy.applications['conversation-lab'],undefined);
- assert.equal(bundle.policy.applications['conversation-lab'],undefined);
+ assert.deepEqual(activePolicy.applications['conversation-lab'],x.policyEntry);
+ assert.deepEqual(bundle.policy,activePolicy);
  assert.deepEqual(Object.keys(activePolicy.applications).sort(),Object.keys(bundle.policy.applications).sort());
  const planned=await read('src/integration/conversation-lab/access-policy.ready-for-signing.json');
- const expected=structuredClone(activePolicy);
- expected.applications['conversation-lab']=x.policyEntry;
- assert.deepEqual(planned,expected,'new signing payload must change exactly one training-policy entry, no other rules/apps');
- assert.equal(Object.keys(planned.applications).length,Object.keys(activePolicy.applications).length+1);
+ assert.deepEqual(planned,activePolicy,'signed policy must match exact owner-reviewed 10-app version');
+ assert.equal(Object.keys(planned.applications).length,10);
 });
 test('E9 MANIFEST: staged proposed Studio tile points only to approved isolated public player and guarded launcher',async()=>{
  const a=await read('src/integration/conversation-lab/studio-manifest.proposed.json');
@@ -94,7 +92,9 @@ test('E9 RELEASE: live player smoke PASS is not a substituted Studio/GARP/signin
  assert.equal(a.independentSecurityGo,'NOT_GRANTED');
  assert.equal(a.garpLive,'NOT_ATTESTED');
  assert.equal(a.studioP5,'NOT_RUN_FOR_THIS_RELEASE');
- assert.equal(a.signing.accessPolicyBundle,'NOT_SIGNED_WITH_CLB_01');
+ assert.equal(a.signing.accessPolicyBundle,'SIGNED_ON_PRELIVE_BRANCH_NOT_PRODUCTION');
+ assert.equal(a.signing.productionStatement,'NOT_SIGNED');
+ assert.equal(a.signedAccessBundleSignatureVerified,true);
  assert.equal(a.signing.productionStatement,'NOT_SIGNED');
  assert.equal(a.runtimeRegistryModified,false);
  assert.equal(a.studioManifestActuallyPublished,false);

@@ -17,7 +17,7 @@
   "garpLive": "NOT_ATTESTED",
   "studioP5": "NOT_RUN_FOR_THIS_RELEASE",
   "signing": {
-    "accessPolicyBundle": "NOT_SIGNED_WITH_CLB_01",
+    "accessPolicyBundle": "SIGNED_ON_PRELIVE_BRANCH_NOT_PRODUCTION",
     "productionStatement": "NOT_SIGNED"
   },
   "studioManifestActuallyPublished": false,
@@ -27,5 +27,9 @@
   "sourceVerification": "LIVE_PLAYER_VERIFIED_BUT_STUDIO_MANIFEST_NOT_PUBLISHED",
   "stage": "PRELIVE_HOLD",
   "ownerReleaseDeploymentGo": "PENDING_SEPARATE_SIGNED_DECISION",
-  "note": "Owner explicitly authorised Studio connection. This template must never automatically mutate active registries or bypass signed permit, GARP LIVE, P5 or protected Safe Promotion."
+  "note": "Owner explicitly authorised Studio connection. This template must never automatically mutate active registries or bypass signed permit, GARP LIVE, P5 or protected Safe Promotion.",
+  "signedAccessBundleVersion": "access-p1-20261018062951Z",
+  "signedAccessBundleSignatureVerified": true,
+  "signedAccessBundleTrustAnchor": "ghrab-access-bundle-20260822195407Z-fxjS8DK9",
+  "signedAccessBundleScope": "EXACTLY_ONE_NEW_POLICY_ENTRY_CLB_01"
 }

@@ -1,7 +1,7 @@
 {
   "schema": "ghrab-clb-studio-access-policy-extension-proposal-v1",
   "appId": "conversation-lab",
-  "status": "NOT_IN_SIGNED_ACCESS_BUNDLE",
+  "status": "SIGNED_ON_PRELIVE_BRANCH_PENDING_PRODUCTION",
   "bundleSignatureRequired": true,
   "issuerAction": "SIGNED_ACCESS_POLICY_UPDATE_REQUIRED",
   "issuerTrustAnchor": "USE_EXISTING_GHRAB_ACCESS_BUNDLE_VERIFY_KEY_NOT_NEW_UNTRUSTED_KEY",
@@ -18,5 +18,8 @@
   "signWithoutPrivateKey": false,
   "preserveOtherAppPermissions": true,
   "rollback": "remove CLB access grant by a newly signed policy, never modify signed data in place",
-  "publishPrivateSigningKey": false
+  "publishPrivateSigningKey": false,
+  "signedPolicyVersion": "access-p1-20261018062951Z",
+  "signedPolicySignaturePresent": true,
+  "studioProductionDeployment": false
 }
