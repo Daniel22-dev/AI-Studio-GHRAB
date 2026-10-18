@@ -5,11 +5,11 @@
   "mode": "live",
   "verificationMode": "deployment",
   "counts": {
-    "verified": 9,
-    "deployment": 9,
+    "verified": 10,
+    "deployment": 10,
     "repository": 0,
     "snapshot": 0,
-    "total": 9
+    "total": 10
   },
   "lastFullSourceVerifiedAt": "2026-10-13T07:09:54.488Z",
   "lastFullLiveVerifiedAt": "2026-10-13T07:09:54.488Z",
@@ -274,11 +274,29 @@
         "releaseIdentityUrl": "https://daniel22-dev.github.io/maturita-desk/release-integrity.json",
         "verifiedFileCount": 63
       }
+    },
+    {
+      "id": "conversation-lab",
+      "url": "https://conversation-lab-ghrab.pages.dev/studio-manifest.json",
+      "repository": "Daniel22-dev/conversation-lab-source",
+      "ok": true,
+      "verification": "deployment",
+      "version": "0.9.2",
+      "sourceVersion": "0.9.2",
+      "aiOperations": null,
+      "operationsWarning": null,
+      "lastSourceVerifiedAt": "2026-10-18T17:22:54.956Z",
+      "lastLiveVerifiedAt": "2026-10-18T17:27:05.516Z",
+      "releaseIdentity": {
+        "status": "ABSENT",
+        "contract": null,
+        "assuranceMode": null
+      }
     }
   ],
   "releaseIdentity": {
     "verified": 9,
-    "absent": 0,
+    "absent": 1,
     "failed": 0,
     "checkedAt": "2026-10-13T07:10:43.477Z"
   }
