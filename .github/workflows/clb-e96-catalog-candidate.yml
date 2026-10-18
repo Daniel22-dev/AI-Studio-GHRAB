@@ -13,6 +13,7 @@ on:
       - 'scripts/test-clb-e96-scoped-garp.mjs'
       - 'scripts/test-clb-e103-signed-candidate.mjs'
       - 'scripts/test-clb-e104-live-readonly.mjs'
+      - 'scripts/test-clb-e105-webkit-smoke.mjs'
       - 'security/garp27/conversation-lab-standalone-release-profile.candidate.json'
       - '.github/workflows/clb-e96-catalog-candidate.yml'
 permissions:
@@ -22,8 +23,8 @@ jobs:
     runs-on: ubuntu-latest
     timeout-minutes: 12
     steps:
-      - uses: actions/checkout@v4
-      - uses: actions/setup-node@v4
+      - uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683
+      - uses: actions/setup-node@49933ea5288caeca8642d1e84afbd3f7d6820020
         with:
           node-version: '22'
       - name: Check full ten-app config, CLB-01 policy and explicit PRELIVE hold
@@ -45,3 +46,19 @@ jobs:
         run: node --test scripts/test-clb-e104-live-readonly.mjs
       - name: Check candidate can launch protected CLB portal without affecting other nine
         run: node --test scripts/test-clb-studio-portal-route.mjs
+
+  webkit-safari-layout-smoke:
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    steps:
+      - uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683 # v4.2.2
+      - uses: actions/setup-node@49933ea5288caeca8642d1e84afbd3f7d6820020 # v4.4.0
+        with:
+          node-version: '22'
+          cache: npm
+      - name: Install locked application test dependencies (NO DEPLOY)
+        run: npm ci --ignore-scripts --no-audit --no-fund
+      - name: Install throwaway WebKit runtime in CI only
+        run: npx playwright install --with-deps webkit
+      - name: Test standalone public CLB on iPad/phone/desktop WebKit sizes
+        run: node --test scripts/test-clb-e105-webkit-smoke.mjs
