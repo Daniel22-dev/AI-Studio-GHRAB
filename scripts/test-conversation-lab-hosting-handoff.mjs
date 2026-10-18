@@ -2,14 +2,18 @@ import test from 'node:test';
 import assert from 'node:assert/strict';
 import {readFile} from 'node:fs/promises';
 const read=async p=>JSON.parse(await readFile(new URL('../'+p,import.meta.url),'utf8'));
-test('E9.1 Pages verified only sterile placeholder, never claim LIVE app launch',async()=>{
+test('E9.4 Pages actual approved AI B1 pilot is live and browser tested, Studio still gated',async()=>{
  const e=await read('src/integration/conversation-lab/hosting-handoff.json');
- assert.equal(e.schema,'ghrab-cl-e9-cloudflare-live-placeholder-handoff-v1');
+ assert.equal(e.schema,'ghrab-cl-e9-cloudflare-live-player-handoff-v1');
  assert.equal(e.siteOrigin,'https://conversation-lab-ghrab.pages.dev');
  assert.equal(e.httpRootStatus,200);
  assert.equal(e.negative404Checks,6);
  assert.equal(e.httpCspFrameAncestors,'none');
- assert.equal(e.approvedPublicPlayerDeployed,false);
+ assert.equal(e.approvedPublicPlayerDeployed,true);
+ assert.match(e.playerBundleSha256,/^[a-f0-9]{64}$/);
+ assert.equal(e.livePlayerAppJsSha256,'dabcaced97ca6ec21890a43eb43cf5da3600d106d0164fd5de570ebc7855c03a');
+ assert.equal(e.liveBrowserAssertions,87);
+ assert.equal(e.liveChromiumRunId,39101830957);
  assert.equal(e.playerReleaseSha256,null);
  assert.equal(e.garpLive,'NOT_TESTED_FOR_PLAYER');
  assert.equal(e.officialSecurityGo,false);
@@ -23,7 +27,11 @@ test('E9.1 Studio catalog proposal must stay staged, never invent access permits
  assert.equal(a.publicOrigin,'https://conversation-lab-ghrab.pages.dev');
  assert.match(a.releaseCandidateLessonSha256,/^[a-f0-9]{64}$/);
  assert.equal(a.cryptographicallySignedRelease,false);
- assert.equal(a.publicPlayerDeployed,false);
+ assert.equal(a.publicPlayerDeployed,true);
+ assert.equal(a.httpSecurityAndContentVerified,true);
+ assert.equal(a.liveBrowserVerified,true);
+ assert.equal(a.liveBrowserAssertions,87);
+ assert.equal(a.publicCloudflareZipSha256,'f11b0823e5ce0225f01cfbc24a11b367cf163bb2823ee3c96f1e62bc644260cb');
  assert.equal(a.securityGo,false);
  assert.equal(a.studioP5,false);
  assert.equal(a.studioRegistryActive,false);
