@@ -28,10 +28,10 @@ test('GARP scoped standalone admission stays HOLD until full 0.9.1 source policy
   j('security/garp27/apps/conversation-lab/garp-policy.json'),
   j('src/integration/conversation-lab/launch-control.json')
  ]);
- assert.equal(mirror.appVersion,'0.6.0');
+ assert.equal(mirror.appVersion,'0.9.1');
  assert.equal(p.garp27Foundation.studioPolicyMirrorAppVersion,mirror.appVersion);
- assert.notEqual(p.garp27Foundation.actualPublicAppVersion,mirror.appVersion);
- assert.equal(p.garp27Foundation.policyMirrorAligned,false);
+ assert.equal(p.garp27Foundation.actualPublicAppVersion,mirror.appVersion);
+ assert.equal(p.garp27Foundation.policyMirrorAligned,true);
  assert.equal(p.garp27Foundation.signedReleaseStatement,false);
  assert.equal(p.garp27Foundation.independentSecurityApproval,false);
  assert.equal(p.releaseState,'HOLD_PENDING_RECONCILIATION');
