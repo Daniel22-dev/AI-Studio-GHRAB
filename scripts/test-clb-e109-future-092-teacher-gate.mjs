@@ -95,7 +95,6 @@ test('E109 negative gates: forged future-release approval, version/host/hash sub
     ['fake school server LIVE',c=>{c.schoolServerLive='VERIFIED'}],
     ['catalog digest',c=>{c.approvedDistributionManifestSha256='0'.repeat(64)}],
     ['manifest digest',c=>{c.publicStudioManifestSha256='0'.repeat(64)}],
-    ['owner receipt hash',c=>{c.signedReleaseStatementSha256='0'.repeat(64)}],
     ['hosting headers',c=>{c.hostingHeaders='NOT_VERIFIED'}],
     ['owner authorization',c=>{c.ownerReleaseAuthorization='NOT_GRANTED'}],
     ['public LIVE',c=>{c.publicClientLive='NOT_TESTED'}],
@@ -110,6 +109,15 @@ test('E109 negative gates: forged future-release approval, version/host/hash sub
     const changed=clone(simulated);mutate(changed);
     assert.throws(()=>validateConversationLabTeacherTarget(app,changed,{studioOrigin:studio}),/CLB_E9_/,'control tamper '+name);
   }
+  // The raw 64-hex owner digest passes syntax validation but MUST be rejected
+  // at the cryptographic receipt-binding boundary, not by URL control parsing.
+  const wrongOwnerSha=clone(simulated);
+  wrongOwnerSha.signedReleaseStatementSha256='0'.repeat(64);
+  assert.equal(validateConversationLabTeacherTarget(app,wrongOwnerSha,{studioOrigin:studio}),origin+'/');
+  await assert.rejects(
+    ()=>verifyClbOwnerContentReceipt(app,wrongOwnerSha,receipt,{cryptoImpl:webcrypto}),
+    /CLB_E9_OWNER_CONTENT_BINDING_MISMATCH/
+  );
   const corrupt=[
     r=>{r.signature.signature='0'.repeat(86)},
     r=>{r.verifyKey.publicKey.x='0'.repeat(43)},
