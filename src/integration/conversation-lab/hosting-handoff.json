@@ -1,17 +1,17 @@
 {
-  "schema": "ghrab-cl-e9-cloudflare-live-placeholder-handoff-v1",
+  "schema": "ghrab-cl-e9-cloudflare-live-player-handoff-v1",
   "appId": "conversation-lab",
   "siteOrigin": "https://conversation-lab-ghrab.pages.dev",
   "ownerAccountType": "PERSONAL",
-  "verification": "GITHUB_RUNNER_READ_ONLY_PLACEHOLDER_PASS",
+  "verification": "GITHUB_RUNNER_LIVE_HTTP_AND_CHROMIUM_PASSED",
   "verificationDate": "2026-10-18",
-  "githubRunId": 39100071692,
-  "githubRunUrl": "https://github.com/Daniel22-dev/conversation-lab-source/actions/runs/39100071692",
+  "githubRunId": 39101830980,
+  "githubRunUrl": "https://github.com/Daniel22-dev/conversation-lab-source/actions/runs/39101830980",
   "httpRootStatus": 200,
   "placeholderSha256": "6906f5392718ff320b0f1805dc440844a1824025a537124bbdbb303accb8dfdf",
   "httpCspFrameAncestors": "none",
   "negative404Checks": 6,
-  "approvedPublicPlayerDeployed": false,
+  "approvedPublicPlayerDeployed": true,
   "playerReleaseSha256": null,
   "garpLive": "NOT_TESTED_FOR_PLAYER",
   "officialSecurityGo": false,
@@ -19,5 +19,17 @@
   "intendedTeacherTrainingCode": "CLB-01",
   "studentDirectAccess": "ANONYMOUS_READ_ONLY",
   "credentialsForwarded": false,
-  "description": "Owner-reported Pages URL independently probed on GitHub runner with real HTTP, security headers and six 404 routes; only zero-lesson placeholder was online. Does not verify the future player."
+  "description": "Independent GitHub runner verified the hotfixed public player using real HTTPS asset byte parity, restrictive headers and 6 negative 404 routes (run 39101830980), and Chromium functional checks 87/87 on desktop, 390 px, 320 px (run 39101830957). Public pilot is LIVE. These checks are not GARP LIVE, security/owner release signatures, or Studio P5. Studio launcher remains disabled.",
+  "liveChromiumRunId": 39101830957,
+  "liveChromiumRunUrl": "https://github.com/Daniel22-dev/conversation-lab-source/actions/runs/39101830957",
+  "liveBrowserAssertions": 87,
+  "browserViewports": [
+    1280,
+    390,
+    320
+  ],
+  "playerBundleSha256": "f11b0823e5ce0225f01cfbc24a11b367cf163bb2823ee3c96f1e62bc644260cb",
+  "livePlayerAppJsSha256": "dabcaced97ca6ec21890a43eb43cf5da3600d106d0164fd5de570ebc7855c03a",
+  "liveLessonSha256": "4a163857dc2b90e3b9a3a60e8e4440f7c45c2a1f2530f970a99543925fe390b9",
+  "liveCatalogSha256": "93813482fabf53fe3ff5c0657b4f6b9c362f912aa496dd44c5b2c38de5ee7b4f"
 }
