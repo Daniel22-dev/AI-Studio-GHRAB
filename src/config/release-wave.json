@@ -40,6 +40,10 @@
     {
       "id": "maturita-desk",
       "version": "1.0.6"
+    },
+    {
+      "id": "conversation-lab",
+      "version": "0.9.2"
     }
   ],
   "policy": {
