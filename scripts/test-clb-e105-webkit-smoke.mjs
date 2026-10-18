@@ -64,23 +64,35 @@ test('E105 isolated public player is usable in WebKit at four viewports without 
   }
 });
 
-test('E105 PREVIEW: proposed E106 CSS wrap repairs the 320px WebKit overflow without altering signed public bytes', { timeout: 45000 }, async () => {
+test('E105 PREVIEW: E106 CSS source wrap removes WebKit overflow through stylesheet interception, not CSP bypass', { timeout: 60000 }, async () => {
   const browser = await webkit.launch({ headless: true });
   try {
-    const page = await browser.newPage({ viewport: { width: 320, height: 700 }, isMobile: true, hasTouch: true });
-    const response = await page.goto(ORIGIN + '/', { waitUntil: 'networkidle', timeout: 30000 });
-    assert.equal(response?.status(), 200);
-    const width = () => page.evaluate(() => ({
+    const opts = { viewport: { width: 320, height: 700 }, isMobile: true, hasTouch: true };
+    const beforePage = await browser.newPage(opts);
+    assert.equal((await beforePage.goto(ORIGIN + '/', { waitUntil: 'networkidle', timeout: 30000 }))?.status(), 200);
+    const readWidth = page => page.evaluate(() => ({
       client: document.documentElement.clientWidth,
       scroll: document.documentElement.scrollWidth
     }));
-    const before = await width();
-    assert.ok(before.scroll > before.client + 3, 'actual deployed 0.9.1 is expected to exhibit documented E105 issue');
-    await page.addStyleTag({ content: '@media (max-width:370px){.catalog-heading-row{flex-wrap:wrap}.approved-count{max-width:100%;white-space:normal}}' });
-    const after = await width();
-    console.log('E106_SOURCE_FIX_PREVIEW ' + JSON.stringify({ before, after }));
-    assert.ok(after.scroll <= after.client + 3, 'proposed CSS must fully remove root overflow');
-    await page.close();
+    const before = await readWidth(beforePage);
+    await beforePage.close();
+    assert.ok(before.scroll > before.client + 3, 'current signed 0.9.1 has the documented 320px defect');
+    const patchedPage = await browser.newPage(opts);
+    let intercepted = 0;
+    await patchedPage.route('**/assets/styles.css', async route => {
+      const original = await route.fetch();
+      assert.equal(original.status(), 200);
+      const css = await original.text();
+      const patch = '\\n@media (max-width:370px){.catalog-heading-row{flex-wrap:wrap}.approved-count{max-width:100%;white-space:normal}}\\n';
+      intercepted++;
+      await route.fulfill({ response: original, body: css + patch });
+    });
+    assert.equal((await patchedPage.goto(ORIGIN + '/', { waitUntil: 'networkidle', timeout: 30000 }))?.status(), 200);
+    const after = await readWidth(patchedPage);
+    console.log('E106_SOURCE_FIX_PREVIEW ' + JSON.stringify({ before, after, stylesheetIntercepts: intercepted }));
+    assert.equal(intercepted, 1, 'only the approved same-origin stylesheet may be intercepted for this test');
+    assert.ok(after.scroll <= after.client + 3, 'source CSS patch must remove the WebKit page overflow');
+    await patchedPage.close();
   } finally {
     await browser.close();
   }
