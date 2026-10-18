@@ -11,7 +11,35 @@ const APP_ID='conversation-lab';
 const SHA64=/^[a-f0-9]{64}$/;
 const RELEASE_ID=/^cl-[a-z0-9]+(?:-[a-z0-9]+)*$/;
 const OWNER_RECEIPT_DOMAIN='GHRAB-CLB-OWNER-CONTENT-RELEASE-v1\n';
-const OWNER_RECEIPT_SHA='77549c561032c35e6c78bb52885ddcc0022d64a7115bb230c8997286e61e8d0a';
+const PILOT_RELEASES=Object.freeze({
+  '0.9.1':Object.freeze({
+    version:'0.9.1',releaseId:'cl-ai-b1-pilot-20261018',
+    publicOrigin:'https://conversation-lab-ghrab.pages.dev',
+    staticZipSha:'4c37353e88a64512a112b7ed2912dddf3d73955c5fe4a493f1a6c89533d76d4d',
+    manifestSha:'e139a829fadc59e1563632aae9995334c87e0b23f991dcf5e6b41dc9c1b51464',
+    catalogSha:'93813482fabf53fe3ff5c0657b4f6b9c362f912aa496dd44c5b2c38de5ee7b4f',
+    lessonSha:'4a163857dc2b90e3b9a3a60e8e4440f7c45c2a1f2530f970a99543925fe390b9',
+    appJsSha:'dabcaced97ca6ec21890a43eb43cf5da3600d106d0164fd5de570ebc7855c03a',
+    statementSha:'77549c561032c35e6c78bb52885ddcc0022d64a7115bb230c8997286e61e8d0a',
+    foundation:'VERIFIED_STATIC_GARP27_0_9_1',
+    receiptPath:'../../integration/conversation-lab/owner-content-release.signed.json'
+  }),
+  '0.9.2':Object.freeze({
+    version:'0.9.2',releaseId:'cl-ai-b1-pilot-20261018-r2',
+    publicOrigin:'https://conversation-lab-ghrab.pages.dev',
+    staticZipSha:'eeca610e36ea3f11366297728af39510ee9541f8960de72c444ea6683a8f84c0',
+    manifestSha:'c071bc4af56367458fb4e391019d3476790111f31495718e737bc339ee5cd134',
+    catalogSha:'2ab4cab8e95a8c124f1f8670b1cfe861f3e7557dfe9ece89c768bb2d7121fce6',
+    lessonSha:'4a163857dc2b90e3b9a3a60e8e4440f7c45c2a1f2530f970a99543925fe390b9',
+    appJsSha:'dabcaced97ca6ec21890a43eb43cf5da3600d106d0164fd5de570ebc7855c03a',
+    statementSha:'6f0588801d7ec4bc5b3314a4e351603cd6993890ef56b2a636ee497d0b3848c5',
+    foundation:'VERIFIED_STATIC_GARP27_0_9_2',
+    receiptPath:'../../integration/conversation-lab/owner-content-release.v0.9.2.signed.json'
+  })
+});
+// Strictly scoped release pins are code-reviewed. Merely listing a signed owner
+// receipt DOES NOT authorize any release: launch-control remains PRELIVE_HOLD,
+// and independent security, exact live deployment and P5 remain mandatory.
 const OWNER_TRUST_KEY_ID='ghrab-access-bundle-20260822195407Z-fxjS8DK9';
 // Pinned public key, not extracted from the receipt itself. Rotating signing
 // authority must be independently reviewed and requires this code to change.
@@ -103,6 +131,8 @@ export function validateConversationLabTeacherTarget(app,control,{studioOrigin}=
   if(!app || app.id!==APP_ID || !control ||
     control.schema!=='ghrab-cl-studio-e9-teacher-launch-control-v1' ||
     control.appId!==APP_ID)deny('APP_OR_CONTROL_IDENTITY');
+  const release=PILOT_RELEASES[app.version];
+  if(!release)deny('PILOT_SCOPE_MISMATCH');
   if(control.stage!=='PRODUCTION_AUTHORIZED' || control.launchEnabled!==true ||
     control.teacherTrainingRequired!==true ||
     control.requiredTrainingCode!=='CLB-01' ||
@@ -119,7 +149,7 @@ export function validateConversationLabTeacherTarget(app,control,{studioOrigin}=
     // school-server LIVE. A published B1 on Cloudflare cannot honestly certify
     // a server which has not been deployed; it must remain NOT_TESTED.
     control.garpLive!=='NOT_TESTED' ||
-    control.garpFoundation!=='VERIFIED_STATIC_GARP27_0_9_1' ||
+    control.garpFoundation!==release.foundation ||
     control.publicClientLive!=='VERIFIED_EXACT_21_FILES' ||
     control.schoolServerLive!=='DEFERRED_NOT_TESTED' ||
     control.independentSecurityApproval!=='SIGNED_AND_VERIFIED' ||
@@ -131,14 +161,12 @@ export function validateConversationLabTeacherTarget(app,control,{studioOrigin}=
     !RELEASE_ID.test(control.releaseId??'') ||
     !SHA64.test(control.approvedDistributionManifestSha256??'') ||
     !SHA64.test(control.signedReleaseStatementSha256??''))deny('RELEASE_NOT_AUTHORIZED');
-  // First pilot is exact scoped release v0.9.1, not blanket permission for
-  // later unpublished lessons or a new origin. A new release must change
-  // this source-level trust policy and pass review again.
-  if(app.version!=='0.9.1' ||
-    control.releaseId!=='cl-ai-b1-pilot-20261018' ||
-    control.publicOrigin!=='https://conversation-lab-ghrab.pages.dev' ||
-    control.approvedDistributionManifestSha256!=='93813482fabf53fe3ff5c0657b4f6b9c362f912aa496dd44c5b2c38de5ee7b4f' ||
-    control.publicStudioManifestSha256!=='e139a829fadc59e1563632aae9995334c87e0b23f991dcf5e6b41dc9c1b51464' ||
+  // Both exact, explicitly pinned public releases are accepted in SOURCE
+  // only. Neither is authorized while the actual launch-control stays HOLD.
+  if(control.releaseId!==release.releaseId ||
+    control.publicOrigin!==release.publicOrigin ||
+    control.approvedDistributionManifestSha256!==release.catalogSha ||
+    control.publicStudioManifestSha256!==release.manifestSha ||
     control.approvedLessons!==1 || control.approvedCzechGlosses!==37)
     deny('PILOT_SCOPE_MISMATCH');
   const studio=canonicalOrigin(studioOrigin);
@@ -182,6 +210,8 @@ export function validateConversationLabTeacherTarget(app,control,{studioOrigin}=
 export async function verifyClbOwnerContentReceipt(app,control,receipt,{
   cryptoImpl=globalThis.crypto
 }={}) {
+  const release=PILOT_RELEASES[app?.version];
+  if(!release)deny('OWNER_CONTENT_SCOPE_MISMATCH');
   if(!receipt||receipt.schema!=='ghrab-clb-owner-signed-public-release-handoff-v1'||
     receipt.purpose!=='OWNER_CONTENT_RELEASE_ONLY_NOT_INDEPENDENT_SECURITY_GO'||
     receipt.publicOnly!==true||receipt.secretIncluded!==false||
@@ -197,14 +227,14 @@ export async function verifyClbOwnerContentReceipt(app,control,receipt,{
   const statement=receipt.statement;
   if(!statement||statement.schema!=='ghrab-clb-owner-content-release-statement-v1'||
     statement.purpose!=='OWNER_AUTHORISES_EXACT_AI_B1_PUBLIC_PILOT_AND_STUDIO_INTEGRATION_NOT_SECURITY_GO'||
-    statement.appId!==APP_ID||statement.appVersion!=='0.9.1'||
-    statement.releaseId!=='cl-ai-b1-pilot-20261018'||
-    statement.publicOrigin!=='https://conversation-lab-ghrab.pages.dev'||
-    statement.publicStudioManifestSha256!=='e139a829fadc59e1563632aae9995334c87e0b23f991dcf5e6b41dc9c1b51464'||
-    statement.publicStaticZipSha256!=='4c37353e88a64512a112b7ed2912dddf3d73955c5fe4a493f1a6c89533d76d4d'||
-    statement.publicCatalogSha256!=='93813482fabf53fe3ff5c0657b4f6b9c362f912aa496dd44c5b2c38de5ee7b4f'||
-    statement.publicLessonSha256!=='4a163857dc2b90e3b9a3a60e8e4440f7c45c2a1f2530f970a99543925fe390b9'||
-    statement.publicAppJsSha256!=='dabcaced97ca6ec21890a43eb43cf5da3600d106d0164fd5de570ebc7855c03a'||
+    statement.appId!==APP_ID||statement.appVersion!==release.version||
+    statement.releaseId!==release.releaseId||
+    statement.publicOrigin!==release.publicOrigin||
+    statement.publicStudioManifestSha256!==release.manifestSha||
+    statement.publicStaticZipSha256!==release.staticZipSha||
+    statement.publicCatalogSha256!==release.catalogSha||
+    statement.publicLessonSha256!==release.lessonSha||
+    statement.publicAppJsSha256!==release.appJsSha||
     JSON.stringify(statement.approvedLessonIds)!=='["artificial-intelligence/en/B1"]'||
     statement.approvedLessonCount!==1||
     statement.contextualOfflineCzechGlosses!==37||
@@ -229,7 +259,7 @@ export async function verifyClbOwnerContentReceipt(app,control,receipt,{
     statement.appVersion!==app.version||
     statement.publicCatalogSha256!==app.integration?.manifestSha256||
     receipt.statementSha256!==control.signedReleaseStatementSha256||
-    receipt.statementSha256!==OWNER_RECEIPT_SHA)
+    receipt.statementSha256!==release.statementSha)
     deny('OWNER_CONTENT_BINDING_MISMATCH');
   const subtle=cryptoImpl?.subtle;
   if(!subtle||typeof TextEncoder==='undefined')deny('CONTENT_CRYPTO_UNAVAILABLE');
@@ -238,7 +268,7 @@ export async function verifyClbOwnerContentReceipt(app,control,receipt,{
   try{
     const digest=new Uint8Array(await subtle.digest('SHA-256',bytes));
     const digestHex=Array.from(digest,x=>x.toString(16).padStart(2,'0')).join('');
-    if(digestHex!==OWNER_RECEIPT_SHA)deny('OWNER_CONTENT_HASH_INVALID');
+    if(digestHex!==release.statementSha)deny('OWNER_CONTENT_HASH_INVALID');
     const pub=await subtle.importKey('jwk',OWNER_TRUST_PUBLIC_JWK,{
       name:'ECDSA',namedCurve:'P-256'
     },false,['verify']);
@@ -267,7 +297,7 @@ export async function checkedConversationLabTarget(app,{
   const target=validateConversationLabTeacherTarget(app,control,{studioOrigin});
   let signed;
   try {
-    signed=await fetchImpl('../../integration/conversation-lab/owner-content-release.signed.json',{
+    signed=await fetchImpl(PILOT_RELEASES[app.version].receiptPath,{
       method:'GET',credentials:'same-origin',cache:'no-store',redirect:'error'
     });
   }catch{deny('OWNER_CONTENT_UNAVAILABLE')}
