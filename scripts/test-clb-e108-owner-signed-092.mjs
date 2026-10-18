@@ -121,7 +121,7 @@ test('E108 valid owner content signature must not override PRELIVE_HOLD or authe
   }};
   await assert.rejects(
     ()=>verifyClbOwnerContentReceipt(attempted,control,r,{cryptoImpl:webcrypto}),
-    /CLB_E9_OWNER_CONTENT_SCOPE_MISMATCH/,
-    'old launcher hard-pins 0.9.1; separate v0.9.2 security/P5 release integration is mandatory'
+    /CLB_E9_OWNER_CONTENT_BINDING_MISMATCH/,
+    'new source-level 0.9.2 support still requires exact signed runtime control and real security/P5 authority'
   );
 });
