@@ -12,9 +12,11 @@ test('E9.6 release candidate includes exactly 10 apps with the same first nine e
  const [sources,generated,fallback,consumers,readiness,wave,report,bundle,policy]=await Promise.all([
   ...['src/config/sources.json',...manifests,'src/config/platform-consumers.json','src/config/ai-readiness.generated.json','src/config/release-wave.json','src/config/sync-report.json','src/config/access-config-bundle.json','src/config/access-policy.json'].map(json)
  ]);
- for(const [kind,items,key] of [['sources',sources,'id'],['generated',generated,'id'],['fallback',fallback,'id'],['ready',readiness.applications,'appId'],['wave',wave.applications,'id'],['report',report.sources,'id']]){
+ for(const [kind,items,key] of [['sources',sources,'id'],['generated',generated,'id'],['fallback',fallback,'id'],['wave',wave.applications,'id'],['report',report.sources,'id']]){
   assert.deepEqual(items.map(x=>x[key]),expectedIds,kind+' must add CLB only once, last');
  }
+ assert.deepEqual(readiness.applications.map(x=>x.appId).slice(0,-1).sort(),[...legacyIds].sort(),'all prior readiness entries survive in their existing list ordering');
+ assert.equal(readiness.applications.at(-1).appId,'conversation-lab');
  assert.equal(consumers.length,11);
  assert.deepEqual(consumers.filter(x=>x.id!=='ai-studio').map(x=>x.id).sort(),[...expectedIds].sort());
  for(const index of legacyIds.keys())assert.deepEqual(generated[index],fallback[index],'older apps must not diverge between fallback and live snapshot');
