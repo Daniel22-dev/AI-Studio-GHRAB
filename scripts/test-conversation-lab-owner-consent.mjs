@@ -67,7 +67,7 @@ test('E9 MANIFEST: staged proposed Studio tile points only to approved isolated 
  assert.equal(a.integration.teacherTrainingRequired,true);
  assert.equal(a.integration.credentialBridgeAllowed,false);
  assert.equal(a.integration.autoPromotionAllowed,false);
- assert.equal(a.integration.manifestSha256,null);
+ assert.equal(a.integration.manifestSha256,'93813482fabf53fe3ff5c0657b4f6b9c362f912aa496dd44c5b2c38de5ee7b4f');
  assert.equal(a.integration.signedStatementSha256,null);
  assert.equal(a.aiCore.status,'not-applicable');
  assert.equal(a.platform.storagePrefix,'ghrab.conversation-lab.');
