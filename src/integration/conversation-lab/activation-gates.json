@@ -18,7 +18,11 @@
   "studioP5": "NOT_RUN_FOR_THIS_RELEASE",
   "signing": {
     "accessPolicyBundle": "SIGNED_ON_PRELIVE_BRANCH_NOT_PRODUCTION",
-    "productionStatement": "NOT_SIGNED"
+    "productionStatement": "OWNER_CONTENT_ES256_SIGNED_NO_INDEPENDENT_SECURITY_GO",
+    "ownerContentStatementSha256": "77549c561032c35e6c78bb52885ddcc0022d64a7115bb230c8997286e61e8d0a",
+    "ownerContentSignatureVerified": true,
+    "ownerContentTrustedKeyId": "ghrab-access-bundle-20260822195407Z-fxjS8DK9",
+    "ownerContentSignedRef": "src/integration/conversation-lab/owner-content-release.signed.json"
   },
   "studioManifestActuallyPublished": false,
   "signedTeacherPermitProvisioned": false,
@@ -26,7 +30,7 @@
   "launcherEnabled": false,
   "sourceVerification": "LIVE_PLAYER_VERIFIED_BUT_STUDIO_MANIFEST_NOT_PUBLISHED",
   "stage": "PRELIVE_HOLD",
-  "ownerReleaseDeploymentGo": "PENDING_SEPARATE_SIGNED_DECISION",
+  "ownerReleaseDeploymentGo": "OWNER_SIGNED_EXACT_B1_SECURITY_AND_P5_PENDING",
   "note": "Owner explicitly authorised Studio connection. This template must never automatically mutate active registries or bypass signed permit, GARP LIVE, P5 or protected Safe Promotion.",
   "signedAccessBundleVersion": "access-p1-20261018062951Z",
   "signedAccessBundleSignatureVerified": true,
@@ -36,5 +40,12 @@
   "studioManifestLiveStatus": "WAITING_FOR_OWNER_UPLOAD",
   "studioManifestExpectedUrl": "https://conversation-lab-ghrab.pages.dev/studio-manifest.json",
   "manualExpectedUrl": "https://conversation-lab-ghrab.pages.dev/manual/",
-  "hostingManifestBundleSha256": "4c37353e88a64512a112b7ed2912dddf3d73955c5fe4a493f1a6c89533d76d4d"
+  "hostingManifestBundleSha256": "4c37353e88a64512a112b7ed2912dddf3d73955c5fe4a493f1a6c89533d76d4d",
+  "ownerSignedPublicPilotContent": true,
+  "ownerSignedPublicPilotScope": {
+    "appVersion": "0.9.1",
+    "releaseId": "cl-ai-b1-pilot-20261018",
+    "approvedLessonCount": 1,
+    "approvedCzechGlosses": 37
+  }
 }
