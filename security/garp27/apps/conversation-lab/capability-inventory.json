@@ -1,0 +1,23 @@
+{
+  "schema": "garp27-clb-capability-draft-v1",
+  "appId": "conversation-lab",
+  "appVersion": "0.9.1",
+  "publicPlayerIdentity": "anonymous-direct-open",
+  "studioLaunchIdentity": "teacher-permit-checked-at-studio-only",
+  "dataClass": "public-reviewed-lesson-only",
+  "network": [
+    "same-origin-approved-catalog",
+    "same-origin-approved-content"
+  ],
+  "aiOperations": [],
+  "agentic": false,
+  "localStorage": false,
+  "sessionStorage": false,
+  "indexedDB": false,
+  "futureServiceWorker": "disabled",
+  "cacheStorageScope": "none in v0.9.1",
+  "cachedData": "none by service-worker",
+  "uploads": false,
+  "qrTransport": "locally-generated-SVG-only",
+  "liveStatus": "NOT_TESTED"
+}

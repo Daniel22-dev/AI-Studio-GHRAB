@@ -267,6 +267,10 @@ const requiredCacheFiles = [
   "./",
   "./index.html",
   "./app.js",
+  // Static ES module imported by the portal on every online AND offline launch.
+  // Without it the service worker can serve index/app.js offline but the whole
+  // JS import graph fails and no application cards render after reload.
+  "./integration/conversation-lab/portal-route.js",
   "./styles.css",
   "./polish.css",
   "./portal-card-hotfix.css",

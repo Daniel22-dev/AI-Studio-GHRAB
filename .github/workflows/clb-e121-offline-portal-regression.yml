@@ -1,0 +1,30 @@
+name: CLB E121 real PWA offline startup regression (NO DEPLOY)
+on:
+  pull_request:
+    branches: [candidate]
+    paths:
+      - 'scripts/build.mjs'
+      - 'scripts/test-clb-e121-offline-static-module.mjs'
+      - '.github/workflows/clb-e121-offline-portal-regression.yml'
+permissions:
+  contents: read
+jobs:
+  offline-cold-reload-chromium:
+    runs-on: ubuntu-latest
+    timeout-minutes: 14
+    steps:
+      - uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683 # v4.2.2
+      - uses: actions/setup-node@49933ea5288caeca8642d1e84afbd3f7d6820020 # v4.4.0
+        with:
+          node-version: '22'
+          cache: npm
+      - name: Verify the full portal import graph has its mandatory static module precached
+        run: node --test scripts/test-clb-e121-offline-static-module.mjs
+      - name: Install exact locked build dependencies
+        run: npm ci --ignore-scripts --no-audit --no-fund
+      - name: Build exactly the P5 source artifacts
+        run: npm run build
+      - name: Install Chromium for PWA Service Worker real offline test
+        run: npx playwright install --with-deps chromium
+      - name: Reproduce and fix the actual P5 online and offline application cards regression
+        run: node scripts/test-offline-start-browser.mjs

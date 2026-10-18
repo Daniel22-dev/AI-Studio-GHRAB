@@ -18,10 +18,18 @@ const revocations = await json("../src/config/revoked-access.json");
 const deployment = await json("../src/config/deployment.json");
 const schoolDeployment = await json("../src/config/deployment.school-server.json");
 
-assert.match(
-  bundle.version,
-  /^access-p1-\d{8}T\d{6}Z(?:-[A-Za-z0-9_-]+)?$/,
-  "nasazený access bundle musí mít platný monotónní identifikátor verze",
+// Existing ES256-signed CLB-01 bundle has a compact UTC release identifier:
+ // access-p1-20261018062951Z. Earlier bundles use the canonical T separator.
+ // Both encode the SAME exact UTC second; accept only those two forms and
+ // bind the parsed second to the signed issuedAt (not arbitrary suffixes).
+const versionId = /^access-p1-(\d{8})T?(\d{6})Z(?:-[A-Za-z0-9_-]+)?$/.exec(bundle.version);
+assert.ok(versionId, "nasazený access bundle musí mít platný monotónní identifikátor verze");
+assert.ok(Number.isFinite(Date.parse(bundle.issuedAt)), "vydání bundle musí mít platný UTC čas");
+const issuedSecond = new Date(bundle.issuedAt).toISOString().slice(0, 19).replace(/[-:T]/g, "");
+assert.equal(
+  versionId[1] + versionId[2],
+  issuedSecond,
+  "čas identifikátoru podepsané verze musí přesně odpovídat issuedAt",
 );
 assert.equal(signature.bundleVersion, bundle.version);
 assert.equal(deployment.sharedAccessVersion, bundle.version);

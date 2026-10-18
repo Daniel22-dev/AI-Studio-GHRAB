@@ -1,0 +1,26 @@
+{
+  "schema": "ghrab-clb-owner-release-instruction-v1",
+  "appId": "conversation-lab",
+  "appVersion": "0.9.2",
+  "releaseId": "cl-ai-b1-pilot-20261018-r2",
+  "publicOrigin": "https://conversation-lab-ghrab.pages.dev",
+  "publicZipSha256": "eeca610e36ea3f11366297728af39510ee9541f8960de72c444ea6683a8f84c0",
+  "ownerEs256ContentStatementSha256": "6f0588801d7ec4bc5b3314a4e351603cd6993890ef56b2a636ee497d0b3848c5",
+  "source": "Explicit instruction in current owner ChatGPT conversation, 2026-10-18: 'já jsem strůjce té aplikace a já řídím celé AI Studio. Vykonej' following the request 'dokonči' and earlier confirmation that Cloudflare was uploaded and remaining matters confirmed.",
+  "ownerCapacityClaim": "Owner and project lead of AI Studio GHRAB",
+  "ownerRequestsStudioRelease": true,
+  "scope": "Exact owner-signed public 0.9.2; protected teacher Studio card CLB-01; anonymous independent student origin",
+  "keepOriginalNine": true,
+  "autoPromotion": false,
+  "credentialsToPublicOrigin": false,
+  "technicalEvidence": {
+    "cloudflareLive": "E114_PASS_19_OF_19",
+    "webkitChromium": "E115_PASS_8_VIEWPORTS",
+    "catalogRehearsal": "E116_PASS_10_APPS"
+  },
+  "isCryptographicSignature": false,
+  "isIndependentSecurityAudit": false,
+  "isInstitutionalThirdPartyApproval": false,
+  "sourceHumanIdentityAttestedByGitHub": false,
+  "request": "Prepare authorized release via ordinary review and P5 without falsifying technical checks; this receipt is evidence of owner instruction, not a substitute for signed access permits or repository release controls."
+}

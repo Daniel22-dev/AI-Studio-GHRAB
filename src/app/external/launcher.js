@@ -1,6 +1,8 @@
+import { checkedConversationLabTarget, assertClbSignedTrainingPolicy } from "../../integration/conversation-lab/teacher-launch.js";
 import {
   initialiseAccess,
   hasAppAccess,
+  requiredTraining,
   formatReason,
 } from "../../access/access-control.js";
 import {
@@ -80,12 +82,24 @@ function validatedExternalTarget(app) {
     const app = apps.find((item) => item.id === appId);
     if (!app) throw new Error(t("Aplikace není v registru AI Studia.", "The application is not in the AI Studio registry."));
 
+    // The CLB teacher gate must come from a *verified signed* policy.
+    // An administrator permit or broad '*' grant must not silently skip
+    // CLB-01 just because the old bundle lacks a policy entry.
+    if (app.id === "conversation-lab") {
+      assertClbSignedTrainingPolicy(requiredTraining(app.id));
+    }
+
     const access = hasAppAccess(app.id);
     if (!access.enabled) {
       throw new Error(formatReason(access.reason, language));
     }
 
-    const target = validatedExternalTarget(app);
+    // Conversation Lab requires separately reviewed E9 release evidence in
+    // addition to the existing Studio teacher permit and training gate.
+    // PRELIVE_HOLD keeps it disabled; no URL or Studio token is ever forwarded.
+    const target = app.id === "conversation-lab"
+      ? new URL(await checkedConversationLabTarget(app, { studioOrigin: location.origin }))
+      : validatedExternalTarget(app);
     title.textContent = t("Oprávnění ověřeno.", "Access verified.");
     copy.textContent = t("Otevírám chráněnou aplikaci…", "Opening the protected application…");
 

@@ -1,0 +1,19 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 256 256" role="img" aria-labelledby="title desc">
+  <title id="title">Conversation Lab</title>
+  <desc id="desc">Two overlapping conversation bubbles with language quotation marks.</desc>
+  <defs>
+    <linearGradient id="background" x1="0" y1="0" x2="1" y2="1">
+      <stop offset="0" stop-color="#10283b"/>
+      <stop offset="1" stop-color="#173f58"/>
+    </linearGradient>
+    <linearGradient id="bubble" x1="0" y1="0" x2="1" y2="1">
+      <stop offset="0" stop-color="#60e1e0"/>
+      <stop offset="1" stop-color="#5aa7ef"/>
+    </linearGradient>
+  </defs>
+  <rect width="256" height="256" rx="60" fill="url(#background)"/>
+  <path d="M52 69C52 51 67 36 85 36h97c19 0 34 15 34 34v63c0 19-15 34-34 34h-52l-38 25v-25h-7c-18 0-33-15-33-34Z" fill="url(#bubble)"/>
+  <path d="M74 112h25l-15 29H66Zm56 0h25l-15 29h-18Z" fill="#10283b" opacity=".83"/>
+  <path d="M156 180h43c10 0 18-8 18-18v-16c0-4-1-8-3-11-7 19-20 23-32 23h-35v13Z" fill="#98d8f9" opacity=".85"/>
+  <circle cx="57" cy="205" r="10" fill="#61dfdf"/>
+</svg>

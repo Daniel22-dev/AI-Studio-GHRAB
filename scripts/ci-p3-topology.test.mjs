@@ -22,6 +22,19 @@ function snapshotFor(item=app){
 }
 function codes(result){return result.findings.map(f=>f.code)}
 test("Policy covers nine wave apps", ()=>{assert.deepEqual(verifyPolicy(policy,wave),[])});
+test("Owner-signed 0.9.2 static S0 tenth app is permitted without lowering nine original repository P5 requirements",()=>{
+ const wave10={...wave,applications:[...wave.applications,{id:"conversation-lab",version:"0.9.2"}]};
+ assert.deepEqual(verifyPolicy(policy,wave10),[]);
+ const wrongVersion={...wave,applications:[...wave.applications,{id:"conversation-lab",version:"0.9.3"}]};
+ assert.match(verifyPolicy(policy,wrongVersion).join(" "),/nine protected wave apps/);
+ const wrongId={...wave,applications:[...wave.applications,{id:"unreviewed-tenth",version:"0.9.2"}]};
+ assert.match(verifyPolicy(policy,wrongId).join(" "),/nine protected wave apps/);
+ const tampered=structuredClone(policy);tampered.standalonePublicS0Pilots[0].publicCatalogSha256="f".repeat(64);
+ assert.match(verifyPolicy(tampered,wave10).join(" "),/Unreviewed or modified static S0/);
+ const missing=structuredClone(policy);delete missing.standalonePublicS0Pilots;
+ assert.match(verifyPolicy(missing,wave10).join(" "),/nine protected wave apps/);
+});
+
 test("Missing wave app fails", ()=>{assert.match(verifyPolicy(policy,{...wave,applications:wave.applications.slice(1)}).join(" "),/exactly cover/)});
 test("Duplicate wave ID fails", ()=>{assert.match(verifyPolicy(policy,{...wave,applications:[...wave.applications.slice(0,-1),wave.applications[0]]}).join(" "),/Duplicate/)});
 test("P5 cannot be removed from policy", ()=>{const b=structuredClone(policy);b.apps[0].requiredContexts=[];assert.match(verifyPolicy(b,wave).join(" "),/P5 baseline/)});

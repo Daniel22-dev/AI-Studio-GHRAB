@@ -14,7 +14,31 @@ export function verifyPolicy(policy,wave) {
   const waveIds=(wave.applications||[]).map(x=>x.id);
   const policyIds=(policy.apps||[]).map(x=>x.id);
   if(new Set(waveIds).size!==waveIds.length||new Set(policyIds).size!==policyIds.length) findings.push("Duplicate application IDs");
-  if(waveIds.length!==9||policyIds.length!==9||waveIds.some(x=>!policyIds.includes(x))||policyIds.some(x=>!waveIds.includes(x))) findings.push("CI policy must exactly cover the nine current release-wave applications");
+  // Nine historically protected GitHub repositories keep ALL their P5 rules.
+  // One separately reviewed static S0 public pilot is allowed only by exact
+  // owner ES256/Cloudflare pin and signed Studio CLB-01 gate. Arbitrary tenth
+  // repositories or altered versions remain hard-blocked.
+  const s0Expected={
+    id:"conversation-lab",version:"0.9.2",repository:"conversation-lab-source",
+    publicOrigin:"https://conversation-lab-ghrab.pages.dev",
+    publicCatalogSha256:"2ab4cab8e95a8c124f1f8670b1cfe861f3e7557dfe9ece89c768bb2d7121fce6",
+    ownerSignedStatementSha256:"6f0588801d7ec4bc5b3314a4e351603cd6993890ef56b2a636ee497d0b3848c5",
+    classification:"S0_ANONYMOUS_STATIC_PUBLIC_PLAYER_ONLY",
+    studioTeacherGate:"SIGNED_CLB_01_AND_E118",
+    evidence:"E114_LIVE_HASH_E115_REAL_BROWSER_E118_P5",autoPromotion:false
+  };
+  const standalone=policy.standalonePublicS0Pilots||[];
+  const exactS0=standalone.length===1 &&
+    Object.keys(s0Expected).length===Object.keys(standalone[0]||{}).length &&
+    Object.entries(s0Expected).every(([k,v])=>standalone[0][k]===v);
+  if(standalone.length&&!exactS0) findings.push("Unreviewed or modified static S0 pilot exception");
+  const expectedNine=policyIds.length===9 && new Set(policyIds).size===9;
+  const exactNine=waveIds.length===9 && policyIds.every(id=>waveIds.includes(id));
+  const exactTen=waveIds.length===10 && exactS0 && policyIds.every(id=>waveIds.includes(id)) &&
+    wave.applications.filter(a=>a.id==="conversation-lab").length===1 &&
+    wave.applications.find(a=>a.id==="conversation-lab")?.version===s0Expected.version;
+  if(!expectedNine||!(exactNine||exactTen))
+    findings.push("CI policy must exactly cover nine protected wave apps and only explicitly pinned signed S0 Conversation Lab as tenth");
   const apps=[...(policy.apps||[]),policy.studio||{}];
   if(new Set(apps.map(x=>x.repository)).size!==apps.length) findings.push("Duplicate repository mapping");
   for(const a of apps){
