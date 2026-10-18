@@ -60,7 +60,9 @@ test('CLB-01 both deployment profiles refer to the exact signed bundle without l
  assert.equal(activation.studioManifestActuallyPublished,false);
  assert.equal(activation.launcherEnabled,false);
  assert.equal(activation.signing.accessPolicyBundle,'SIGNED_ON_PRELIVE_BRANCH_NOT_PRODUCTION');
- assert.equal(activation.signing.productionStatement,'NOT_SIGNED');
+ assert.equal(activation.signing.productionStatement,'OWNER_CONTENT_ES256_SIGNED_NO_INDEPENDENT_SECURITY_GO');
+ assert.equal(activation.signing.ownerContentStatementSha256,'77549c561032c35e6c78bb52885ddcc0022d64a7115bb230c8997286e61e8d0a');
+ assert.equal(activation.signing.ownerContentSignatureVerified,true);
  assert.equal(activation.garpLive,'NOT_ATTESTED');
  assert.equal(activation.studioP5,'NOT_RUN_FOR_THIS_RELEASE');
  const privateKey=JSON.stringify({bundle,github,school});
