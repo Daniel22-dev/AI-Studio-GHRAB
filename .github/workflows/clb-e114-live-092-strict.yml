@@ -1,0 +1,27 @@
+name: CLB E114 strict actual 0.9.2 LIVE Cloudflare acceptance (NO DEPLOY)
+on:
+  pull_request:
+    paths:
+      - 'scripts/test-clb-e114-live-092-strict.mjs'
+      - '.github/workflows/clb-e114-live-092-strict.yml'
+      - 'src/integration/conversation-lab/live-audit-pins.v091-v092.json'
+  workflow_dispatch:
+permissions:
+  contents: read
+jobs:
+  actual-live-v092-hashes:
+    runs-on: ubuntu-latest
+    timeout-minutes: 7
+    steps:
+      - uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683 # v4.2.2
+      - uses: actions/setup-node@49933ea5288caeca8642d1e84afbd3f7d6820020 # v4.4.0
+        with:
+          node-version: '22'
+      - name: Exact LIVE 0.9.2 full 19 served assets, secure headers, 5 private routes
+        run: node --test scripts/test-clb-e114-live-092-strict.mjs
+      - name: Verify old and new owner signatures separately without live Studio activation
+        run: |
+          node --test scripts/test-clb-e108-owner-signed-092.mjs
+          node --test scripts/test-clb-e109-future-092-teacher-gate.mjs
+      - name: Preserve nine live apps and PRELIVE_HOLD
+        run: node --test scripts/test-clb-e113-risk-governance-s0-proposed.mjs
