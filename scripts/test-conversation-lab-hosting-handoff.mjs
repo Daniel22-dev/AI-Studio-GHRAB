@@ -42,5 +42,5 @@ test('E9.1 Studio catalog proposal must stay staged, never invent access permits
  const reg=await read('src/config/apps.generated.json');
  assert.ok(!reg.some(x=>x.id==='conversation-lab'));
  const policy=await read('src/config/access-policy.json');
- assert.equal(policy.applications['conversation-lab'],undefined);
+ assert.equal(policy.applications['conversation-lab'].trainingCode,'CLB-01');
 });
