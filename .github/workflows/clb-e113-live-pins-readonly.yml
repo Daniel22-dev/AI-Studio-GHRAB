@@ -4,6 +4,9 @@ on:
     paths:
       - 'scripts/test-clb-e113-live-pins-readonly.mjs'
       - 'src/integration/conversation-lab/live-audit-pins.v091-v092.json'
+      - 'src/integration/conversation-lab/governance/s0-risk-proposal.v0.9.2.json'
+      - 'scripts/test-clb-e113-risk-governance-s0-proposed.mjs'
+      - 'docs/conversation-lab/**'
       - '.github/workflows/clb-e113-live-pins-readonly.yml'
   workflow_dispatch:
 permissions:
@@ -21,3 +24,14 @@ jobs:
         run: node --test scripts/test-clb-e113-live-pins-readonly.mjs
       - name: Confirm Studio production release remains blocked
         run: node scripts/garp27/conversation-lab-enrollment.mjs
+
+  s0-governance-hold:
+    runs-on: ubuntu-latest
+    timeout-minutes: 4
+    steps:
+      - uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683 # v4.2.2
+      - uses: actions/setup-node@49933ea5288caeca8642d1e84afbd3f7d6820020 # v4.4.0
+        with:
+          node-version: '22'
+      - name: Verify S0 is only a proposal and all LIVE/CLB controls remain NO GO
+        run: node --test scripts/test-clb-e113-risk-governance-s0-proposed.mjs
