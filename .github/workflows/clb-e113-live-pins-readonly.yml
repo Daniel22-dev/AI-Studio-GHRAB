@@ -1,0 +1,23 @@
+name: CLB E113 actual Cloudflare signed release LIVE proof (READ ONLY)
+on:
+  pull_request:
+    paths:
+      - 'scripts/test-clb-e113-live-pins-readonly.mjs'
+      - 'src/integration/conversation-lab/live-audit-pins.v091-v092.json'
+      - '.github/workflows/clb-e113-live-pins-readonly.yml'
+  workflow_dispatch:
+permissions:
+  contents: read
+jobs:
+  live-readonly-evidence:
+    runs-on: ubuntu-latest
+    timeout-minutes: 7
+    steps:
+      - uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683 # v4.2.2
+      - uses: actions/setup-node@49933ea5288caeca8642d1e84afbd3f7d6820020 # v4.4.0
+        with:
+          node-version: '22'
+      - name: Verify LIVE exact 21-file signed release identity read-only (19 served, config and 404 special)
+        run: node --test scripts/test-clb-e113-live-pins-readonly.mjs
+      - name: Confirm Studio production release remains blocked
+        run: node scripts/garp27/conversation-lab-enrollment.mjs
