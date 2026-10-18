@@ -1,0 +1,38 @@
+import test from 'node:test';
+import assert from 'node:assert/strict';
+import {readFile} from 'node:fs/promises';
+const read=async p=>JSON.parse(await readFile(new URL('../'+p,import.meta.url),'utf8'));
+test('E9.1 Pages verified only sterile placeholder, never claim LIVE app launch',async()=>{
+ const e=await read('src/integration/conversation-lab/hosting-handoff.json');
+ assert.equal(e.schema,'ghrab-cl-e9-cloudflare-live-placeholder-handoff-v1');
+ assert.equal(e.siteOrigin,'https://conversation-lab-ghrab.pages.dev');
+ assert.equal(e.httpRootStatus,200);
+ assert.equal(e.negative404Checks,6);
+ assert.equal(e.httpCspFrameAncestors,'none');
+ assert.equal(e.approvedPublicPlayerDeployed,false);
+ assert.equal(e.playerReleaseSha256,null);
+ assert.equal(e.garpLive,'NOT_TESTED_FOR_PLAYER');
+ assert.equal(e.officialSecurityGo,false);
+ assert.equal(e.studioLaunchEnabled,false);
+ assert.equal(e.credentialsForwarded,false);
+});
+test('E9.1 Studio catalog proposal must stay staged, never invent access permits or release signature',async()=>{
+ const a=await read('src/integration/conversation-lab/catalog-proposal.json');
+ assert.equal(a.schema,'ghrab-cl-e9-1-studio-catalog-handoff-v1');
+ assert.equal(a.appId,'conversation-lab');
+ assert.equal(a.publicOrigin,'https://conversation-lab-ghrab.pages.dev');
+ assert.match(a.releaseCandidateLessonSha256,/^[a-f0-9]{64}$/);
+ assert.equal(a.cryptographicallySignedRelease,false);
+ assert.equal(a.publicPlayerDeployed,false);
+ assert.equal(a.securityGo,false);
+ assert.equal(a.studioP5,false);
+ assert.equal(a.studioRegistryActive,false);
+ assert.equal(a.teacherTraining,'CLB-01');
+ const control=await read('src/integration/conversation-lab/launch-control.json');
+ assert.equal(control.stage,'PRELIVE_HOLD');
+ assert.equal(control.launchEnabled,false);
+ const reg=await read('src/config/apps.generated.json');
+ assert.ok(!reg.some(x=>x.id==='conversation-lab'));
+ const policy=await read('src/config/access-policy.json');
+ assert.equal(policy.applications['conversation-lab'],undefined);
+});
