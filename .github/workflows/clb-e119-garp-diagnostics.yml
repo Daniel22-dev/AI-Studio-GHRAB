@@ -4,6 +4,7 @@ on:
     branches: [candidate]
     paths:
       - '.github/workflows/clb-e119-garp-diagnostics.yml'
+      - 'scripts/test-deployed-revocation.mjs'
       - 'src/config/access-config-bundle.json'
       - 'src/integration/conversation-lab/**'
 permissions:
