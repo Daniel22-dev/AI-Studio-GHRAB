@@ -30,11 +30,28 @@ test('E105 isolated public player is usable in WebKit at four viewports without 
       const response = await page.goto(ORIGIN + '/', { waitUntil: 'networkidle', timeout: 30000 });
       assert.equal(response?.status(), 200, device.name + ': public page unavailable');
       assert.match(await page.title(), /conversation lab/i, device.name + ': wrong public player');
-      const metrics = await page.evaluate(() => ({
-        screenWidth: document.documentElement.clientWidth,
-        contentWidth: document.documentElement.scrollWidth,
-        hasContent: (document.body?.innerText || '').length > 100
-      }));
+      const metrics = await page.evaluate(() => {
+        const width = document.documentElement.clientWidth;
+        const offenders = Array.from(document.body.querySelectorAll('*'))
+          .map(el => {
+            const box = el.getBoundingClientRect();
+            const css = getComputedStyle(el);
+            return { name: el.tagName.toLowerCase(), id: el.id, className: String(el.className || '').slice(0, 100),
+              left: Math.round(box.left), right: Math.round(box.right), width: Math.round(box.width),
+              position: css.position, overflowX: css.overflowX };
+          })
+          .filter(x => x.width > 0 && x.right > width + 3)
+          .sort((a, b) => b.right - a.right)
+          .slice(0, 18);
+        return {
+          screenWidth: width,
+          contentWidth: document.documentElement.scrollWidth,
+          hasContent: (document.body?.innerText || '').length > 100,
+          offenders
+        };
+      });
+      if (metrics.contentWidth > metrics.screenWidth + 3)
+        console.error('E105_OVERFLOW_DETAIL ' + JSON.stringify({ device: device.name, metrics }));
       assert.equal(metrics.hasContent, true, device.name + ': no visible lesson/player UI');
       assert.ok(metrics.contentWidth <= metrics.screenWidth + 3,
         device.name + ': horizontal overflow ' + JSON.stringify(metrics));
