@@ -16,6 +16,7 @@ on:
       - 'scripts/test-conversation-lab-owner-consent.mjs'
       - 'scripts/test-clb01-signed-access-promotion.mjs'
       - 'scripts/test-clb-studio-portal-route.mjs'
+      - 'scripts/test-clb-e95-manifest-candidate.mjs'
       - 'scripts/test-conversation-lab-launcher.mjs'
       - 'scripts/test-maturita-external-launcher.mjs'
       - '.github/workflows/conversation-lab-e9-1-handoff.yml'
@@ -40,6 +41,8 @@ jobs:
         run: node --test scripts/test-conversation-lab-owner-consent.mjs
       - name: Verify E9 teacher launcher, expired/untrained/forged policies
         run: node --test scripts/test-conversation-lab-launcher.mjs
+      - name: Verify exact public manifest candidate and zero unauthorized Studio release
+        run: node --test scripts/test-clb-e95-manifest-candidate.mjs
       - name: Verify signed CLB-01 ES256 bundle and nine unchanged apps
         run: node --test scripts/test-clb01-signed-access-promotion.mjs
       - name: Verify bundle freshness and deployment references
