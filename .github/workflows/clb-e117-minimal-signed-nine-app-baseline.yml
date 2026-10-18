@@ -12,6 +12,9 @@ permissions:
   contents: read
 jobs:
   signed-nine-app-hold:
+    # E117 is the PRELIVE nine-app baseline only. E118 has separate 10-app
+    # production QA and must never rewrite the historic baseline expectation.
+    if: github.head_ref == 'e117/clb-minimal-092-integration-hold-20261018'
     runs-on: ubuntu-latest
     timeout-minutes: 10
     steps:
