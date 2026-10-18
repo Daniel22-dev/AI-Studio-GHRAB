@@ -1,0 +1,23 @@
+{
+  "schema": "ghrab-cl-e9-cloudflare-live-placeholder-handoff-v1",
+  "appId": "conversation-lab",
+  "siteOrigin": "https://conversation-lab-ghrab.pages.dev",
+  "ownerAccountType": "PERSONAL",
+  "verification": "GITHUB_RUNNER_READ_ONLY_PLACEHOLDER_PASS",
+  "verificationDate": "2026-10-18",
+  "githubRunId": 39100071692,
+  "githubRunUrl": "https://github.com/Daniel22-dev/conversation-lab-source/actions/runs/39100071692",
+  "httpRootStatus": 200,
+  "placeholderSha256": "6906f5392718ff320b0f1805dc440844a1824025a537124bbdbb303accb8dfdf",
+  "httpCspFrameAncestors": "none",
+  "negative404Checks": 6,
+  "approvedPublicPlayerDeployed": false,
+  "playerReleaseSha256": null,
+  "garpLive": "NOT_TESTED_FOR_PLAYER",
+  "officialSecurityGo": false,
+  "studioLaunchEnabled": false,
+  "intendedTeacherTrainingCode": "CLB-01",
+  "studentDirectAccess": "ANONYMOUS_READ_ONLY",
+  "credentialsForwarded": false,
+  "description": "Owner-reported Pages URL independently probed on GitHub runner with real HTTP, security headers and six 404 routes; only zero-lesson placeholder was online. Does not verify the future player."
+}
