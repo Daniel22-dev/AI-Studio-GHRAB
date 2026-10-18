@@ -9,11 +9,13 @@ on:
       - 'src/config/deployment.json'
       - 'src/config/deployment.school-server.json'
       - 'src/app/external/launcher.js'
+      - 'src/app.js'
       - 'src/assets/apps/conversation-lab.svg'
       - 'src/integration/conversation-lab/catalog-proposal.json'
       - 'scripts/test-conversation-lab-hosting-handoff.mjs'
       - 'scripts/test-conversation-lab-owner-consent.mjs'
       - 'scripts/test-clb01-signed-access-promotion.mjs'
+      - 'scripts/test-clb-studio-portal-route.mjs'
       - 'scripts/test-conversation-lab-launcher.mjs'
       - 'scripts/test-maturita-external-launcher.mjs'
       - '.github/workflows/conversation-lab-e9-1-handoff.yml'
@@ -28,6 +30,10 @@ jobs:
       - uses: actions/setup-node@v4
         with:
           node-version: '24'
+      - name: Enforce CLB portal protected teacher path and preserve the nine original routes
+        run: node --test scripts/test-clb-studio-portal-route.mjs
+      - name: Check Studio portal syntax
+        run: node --check src/app.js
       - name: Check Studio protected launcher syntax
         run: node --check src/app/external/launcher.js
       - name: Verify owner GO and signed policy/manifest fail-closed admission

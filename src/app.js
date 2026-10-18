@@ -1,3 +1,4 @@
+import { studioPortalDestination } from "./integration/conversation-lab/portal-route.js";
 import { sanitizePilotEvent, sanitizePilotEventList } from "./privacy/pilot-event.js";
 import { validateMaterialPackage } from "./shared/material-validator.js";
 import { buildPilotSummary } from "./shared/safe-export.js";
@@ -1960,8 +1961,7 @@ function portalLaunchOverlay(app, delay, onCancel = () => {}) {
   return { skip, setPhase: applyPhase, finish };
 }
 function embeddedApplicationUrl(app) {
-  const params = new URLSearchParams({ app: app.id });
-  return `${base}app/?${params.toString()}`;
+  return studioPortalDestination(app, base);
 }
 function portalGatewayScrollTarget(zone) {
   const rect = zone.getBoundingClientRect();
