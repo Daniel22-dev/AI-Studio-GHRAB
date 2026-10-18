@@ -3,11 +3,17 @@ on:
   pull_request:
     paths:
       - 'src/integration/conversation-lab/**'
+      - 'src/config/access-policy.json'
+      - 'src/config/access-config-bundle.json'
+      - 'src/config/access-config-bundle.sig.json'
+      - 'src/config/deployment.json'
+      - 'src/config/deployment.school-server.json'
       - 'src/app/external/launcher.js'
       - 'src/assets/apps/conversation-lab.svg'
       - 'src/integration/conversation-lab/catalog-proposal.json'
       - 'scripts/test-conversation-lab-hosting-handoff.mjs'
       - 'scripts/test-conversation-lab-owner-consent.mjs'
+      - 'scripts/test-clb01-signed-access-promotion.mjs'
       - 'scripts/test-conversation-lab-launcher.mjs'
       - 'scripts/test-maturita-external-launcher.mjs'
       - '.github/workflows/conversation-lab-e9-1-handoff.yml'
@@ -28,6 +34,10 @@ jobs:
         run: node --test scripts/test-conversation-lab-owner-consent.mjs
       - name: Verify E9 teacher launcher, expired/untrained/forged policies
         run: node --test scripts/test-conversation-lab-launcher.mjs
+      - name: Verify signed CLB-01 ES256 bundle and nine unchanged apps
+        run: node --test scripts/test-clb01-signed-access-promotion.mjs
+      - name: Verify bundle freshness and deployment references
+        run: node scripts/check-access-bundle-freshness.mjs --required
       - name: Check Cloudflare verified pilot handoff evidence
         run: node --test scripts/test-conversation-lab-hosting-handoff.mjs
       - name: Protect existing Maturita Desk entry
