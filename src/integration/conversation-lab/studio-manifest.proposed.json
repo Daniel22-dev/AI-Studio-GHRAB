@@ -1,0 +1,92 @@
+{
+  "schema": "ai-studio-app-manifest-v1",
+  "id": "conversation-lab",
+  "name": {
+    "cs": "Conversation Lab",
+    "en": "Conversation Lab"
+  },
+  "version": "0.9.1",
+  "status": {
+    "cs": "Řízený pilot · první schválená lekce",
+    "en": "Controlled pilot · first approved lesson"
+  },
+  "description": {
+    "cs": "Konverzační laboratoř pro výuku jazyků. Pracuje se stanovišti, českými offline překlady a odkazy/QR pro studenty.",
+    "en": "Language conversation laboratory with discussion stations, offline Czech translations and QR/links for students."
+  },
+  "launchUrl": "https://conversation-lab-ghrab.pages.dev/",
+  "manualUrl": "https://conversation-lab-ghrab.pages.dev/",
+  "repository": "Daniel22-dev/conversation-lab-source",
+  "icon": "assets/apps/conversation-lab.svg",
+  "accent": "#397D9E",
+  "tags": [
+    {
+      "cs": "AJ · konverzace",
+      "en": "EN · speaking"
+    },
+    {
+      "cs": "8 stanovišť",
+      "en": "8 stations"
+    },
+    {
+      "cs": "Offline překlady",
+      "en": "Offline translations"
+    }
+  ],
+  "capabilities": [
+    "conversation-practice",
+    "station-navigation",
+    "offline-translations",
+    "qr-share",
+    "anonymous-student-entry",
+    "ghrab-platform-v1",
+    "accessibility-v1"
+  ],
+  "compatibility": {
+    "studioMinVersion": "0.21.243",
+    "studioBridge": "2.0",
+    "platformContract": "ghrab-platform-v1",
+    "platformRange": ">=1.1.2 <2.0.0"
+  },
+  "publishedAt": null,
+  "integration": {
+    "launchMode": "external-protected",
+    "securityBoundary": "isolated-anonymous-read-only",
+    "requiresHttps": true,
+    "externalTargetUrl": "https://conversation-lab-ghrab.pages.dev/",
+    "contentMode": "approved-public-only",
+    "studioAccessIsLauncherGateOnly": true,
+    "teacherTrainingRequired": true,
+    "credentialBridgeAllowed": false,
+    "autoPromotionAllowed": false,
+    "releaseId": "cl-ai-b1-pilot-20261018",
+    "manifestSha256": null,
+    "signedStatementSha256": null
+  },
+  "slug": "conversation-lab",
+  "paths": {
+    "app": "https://conversation-lab-ghrab.pages.dev/",
+    "manual": "https://conversation-lab-ghrab.pages.dev/",
+    "manifest": "https://conversation-lab-ghrab.pages.dev/studio-manifest.json"
+  },
+  "aiCore": {
+    "schema": "ghrab-ai-app-integration-v1",
+    "status": "not-applicable",
+    "reason": "Read-only public conversation player; no AI provider, teacher/student identifiers or remote translation API"
+  },
+  "platform": {
+    "schema": "ghrab-platform-app-integration-v1",
+    "contract": "ghrab-platform-v1",
+    "requiredPlatformRange": ">=1.1.2 <2.0.0",
+    "platformVersion": "1.1.2",
+    "brandVersion": "1.0.0",
+    "themeContract": "ghrab-theme-v1",
+    "swContract": 1,
+    "studioBridge": "ghrab-studio-handoff-v2",
+    "artifactEnvelope": "ghrab-artifact-envelope-v1",
+    "storagePrefix": "ghrab.conversation-lab.",
+    "cacheName": "ghrab-conversation-lab-v0.9.1",
+    "accessibilityContract": "ghrab-a11y-v1",
+    "performanceContract": "ghrab-performance-v1"
+  }
+}
