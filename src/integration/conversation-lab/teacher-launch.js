@@ -12,6 +12,26 @@ const SHA64=/^[a-f0-9]{64}$/;
 const RELEASE_ID=/^cl-[a-z0-9]+(?:-[a-z0-9]+)*$/;
 const deny=code=>{throw Error('CLB_E9_'+code);};
 
+/**
+ * The Studio's requiredTraining() is sourced from the verified access bundle,
+ * NOT a local unsigned JSON file. This check precedes hasAppAccess() so even
+ * administrator overrides cannot accidentally use an absent/incorrect CLB
+ * policy. Signed permit issuance and any admin override remain managed by
+ * Studio, not by the public anonymous player.
+ */
+export function assertClbSignedTrainingPolicy(policy) {
+  if(!policy || typeof policy!=='object' ||
+    policy.trainingRequired!==true ||
+    policy.trainingCode!=='CLB-01' ||
+    policy.trainingVersion!=='2026-10' ||
+    typeof policy.label?.cs!=='string' ||
+    policy.label.cs!=='Conversation Lab' ||
+    typeof policy.label?.en!=='string' ||
+    policy.label.en!=='Conversation Lab')
+    deny('SIGNED_TRAINING_POLICY_REQUIRED');
+  return true;
+}
+
 export function validateClbPreliveControl(control) {
   if(!control || control.schema!=='ghrab-cl-studio-e9-teacher-launch-control-v1' ||
     control.appId!==APP_ID || control.stage!=='PRELIVE_HOLD' ||
