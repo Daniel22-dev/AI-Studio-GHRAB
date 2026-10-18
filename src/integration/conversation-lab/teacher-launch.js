@@ -88,7 +88,14 @@ export function validateConversationLabTeacherTarget(app,control,{studioOrigin}=
     control.ownerReleaseAuthorization!=='SIGNED' ||
     control.hostingOwnership!=='VERIFIED' ||
     control.hostingHeaders!=='VERIFIED' ||
-    control.garpLive!=='VERIFIED' ||
+    // GARP 2.7 FOUNDATION (static standalone) is independent from future
+    // school-server LIVE. A published B1 on Cloudflare cannot honestly certify
+    // a server which has not been deployed; it must remain NOT_TESTED.
+    control.garpLive!=='NOT_TESTED' ||
+    control.garpFoundation!=='VERIFIED_STATIC_GARP27_0_9_1' ||
+    control.publicClientLive!=='VERIFIED_EXACT_21_FILES' ||
+    control.schoolServerLive!=='DEFERRED_NOT_TESTED' ||
+    control.independentSecurityApproval!=='SIGNED_AND_VERIFIED' ||
     control.publicRelease!=='MANUAL_RELEASE_APPROVED' ||
     !Number.isSafeInteger(control.approvedLessons) || control.approvedLessons<1 ||
     !Number.isSafeInteger(control.approvedCzechGlosses) || control.approvedCzechGlosses<1 ||
@@ -97,6 +104,16 @@ export function validateConversationLabTeacherTarget(app,control,{studioOrigin}=
     !RELEASE_ID.test(control.releaseId??'') ||
     !SHA64.test(control.approvedDistributionManifestSha256??'') ||
     !SHA64.test(control.signedReleaseStatementSha256??''))deny('RELEASE_NOT_AUTHORIZED');
+  // First pilot is exact scoped release v0.9.1, not blanket permission for
+  // later unpublished lessons or a new origin. A new release must change
+  // this source-level trust policy and pass review again.
+  if(app.version!=='0.9.1' ||
+    control.releaseId!=='cl-ai-b1-pilot-20261018' ||
+    control.publicOrigin!=='https://conversation-lab-ghrab.pages.dev' ||
+    control.approvedDistributionManifestSha256!=='93813482fabf53fe3ff5c0657b4f6b9c362f912aa496dd44c5b2c38de5ee7b4f' ||
+    control.publicStudioManifestSha256!=='e139a829fadc59e1563632aae9995334c87e0b23f991dcf5e6b41dc9c1b51464' ||
+    control.approvedLessons!==1 || control.approvedCzechGlosses!==37)
+    deny('PILOT_SCOPE_MISMATCH');
   const studio=canonicalOrigin(studioOrigin);
   const publicOrigin=canonicalOrigin(control.publicOrigin);
   if(studio===publicOrigin)deny('ORIGIN_MUST_BE_ISOLATED');
@@ -110,7 +127,11 @@ export function validateConversationLabTeacherTarget(app,control,{studioOrigin}=
     app.integration?.autoPromotionAllowed!==false ||
     app.integration?.releaseId!==control.releaseId ||
     app.integration?.manifestSha256!==control.approvedDistributionManifestSha256 ||
-    app.integration?.signedStatementSha256!==control.signedReleaseStatementSha256)
+    // The externally published Studio manifest is intentionally stable and
+    // declares no production signature. A separately verified ES256 owner
+    // content release lives on the trusted Studio origin, referenced by the
+    // exact digest in launch-control; no third Cloudflare upload is required.
+    app.integration?.signedStatementSha256!==null)
     deny('MANIFEST_RELEASE_BINDING');
   const raw=app.integration.externalTargetUrl;
   if(typeof raw!=='string')deny('TARGET_UNTRUSTED');
