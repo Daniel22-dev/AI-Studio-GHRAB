@@ -1,7 +1,29 @@
 {
   "schema": "ai-studio-changelog-v1",
-  "current": "0.21.244",
+  "current": "0.21.245",
   "items": [
+    {
+      "version": "0.21.245",
+      "date": "2026-10-18",
+      "title": {
+        "cs": "Conversation Lab – oprava produkční QA desáté aplikace",
+        "en": "Conversation Lab – tenth-app production QA fixes"
+      },
+      "changes": [
+        {
+          "cs": "Conversation Lab 0.9.2 je správně evidována jako neaktivní spotřebitel AI Core; nepoužívá generativní AI ani API klíče.",
+          "en": "Conversation Lab 0.9.2 is now correctly recorded as an inactive AI Core consumer; no generative AI or API keys are used."
+        },
+        {
+          "cs": "Odstraněn falešný nález bezpečnostního testu ve slově risk-classification při zachování detekce skutečných sk- klíčů.",
+          "en": "Removed a false-positive security test in risk-classification while retaining detection of actual sk- credentials."
+        },
+        {
+          "cs": "Podepsaná lekce B1, školení CLB-01 a stávající bezpečnostní pravidla GARP zůstávají beze změny.",
+          "en": "Signed B1 lesson, CLB-01 training and existing GARP security policies remain unchanged."
+        }
+      ]
+    },
     {
       "version": "0.21.244",
       "date": "2026-10-18",
