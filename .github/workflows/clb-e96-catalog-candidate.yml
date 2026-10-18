@@ -24,8 +24,10 @@ jobs:
           node-version: '22'
       - name: Check full ten-app config, CLB-01 policy and explicit PRELIVE hold
         run: node --test scripts/test-clb-e96-registry-candidate.mjs
-      - name: Verify app/consumer consistency without deployment
-        run: node scripts/sync-platform-consumers.mjs --check
+      - name: Dry-run normal P5 platform-consumer sync inside temporary CI checkout (no commit or deploy)
+        run: |
+          node scripts/sync-platform-consumers.mjs
+          node scripts/sync-platform-consumers.mjs --check
       - name: Verify source and GHRAB platform policies for ten-app candidate
         run: node scripts/qa-ecosystem.mjs --require-source-verification
       - name: Check candidate can launch protected CLB portal without affecting other nine
