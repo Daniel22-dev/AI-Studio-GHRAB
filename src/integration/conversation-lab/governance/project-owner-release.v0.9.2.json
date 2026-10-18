@@ -1,0 +1,57 @@
+{
+  "schema": "ghrab-clb-project-owner-release-acceptance-v1",
+  "appId": "conversation-lab",
+  "appVersion": "0.9.2",
+  "releaseId": "cl-ai-b1-pilot-20261018-r2",
+  "publicOrigin": "https://conversation-lab-ghrab.pages.dev",
+  "ownerGitHubLogin": "Daniel22-dev",
+  "ownerGitHubUserId": 287402620,
+  "decisionDate": "2026-10-18",
+  "source": "DIRECT_PROJECT_OWNER_CHAT_INSTRUCTION",
+  "ownerAuthority": "AI_STUDIO_PROJECT_LEAD_SELF_ASSERTED",
+  "decision": "PROJECT_OWNER_APPROVES_TECHNICALLY_VALIDATED_LOW_RISK_PILOT_AND_TEACHER_LAUNCH_AFTER_P5",
+  "technicalReview": {
+    "reviewer": "Claude Opus AI technical opponent",
+    "independentHumanSecurityCertification": false,
+    "verdict": "TECHNICAL_PRE_GO",
+    "reproducedFindings": [
+      "F-01",
+      "F-02",
+      "F-03",
+      "F-04",
+      "F-05",
+      "F-06",
+      "F-07"
+    ],
+    "acceptedResidualFindings": [
+      "F-01",
+      "F-03",
+      "F-04",
+      "F-05",
+      "F-06"
+    ]
+  },
+  "publicArtifact": {
+    "zipSha256": "eeca610e36ea3f11366297728af39510ee9541f8960de72c444ea6683a8f84c0",
+    "publicManifestSha256": "c071bc4af56367458fb4e391019d3476790111f31495718e737bc339ee5cd134",
+    "publicCatalogSha256": "2ab4cab8e95a8c124f1f8670b1cfe861f3e7557dfe9ece89c768bb2d7121fce6",
+    "ownerSignedStatementSha256": "6f0588801d7ec4bc5b3314a4e351603cd6993890ef56b2a636ee497d0b3848c5"
+  },
+  "verification": {
+    "liveCloudflare": "E114_19_OF_19_SHA256_5_OF_5_404",
+    "browser": "E115_WEBKIT_CHROMIUM_8_OF_8",
+    "signedContent": "ES256_TRUSTED_STUDIO_ANCHOR",
+    "teacherAccess": "CLB_01_SIGNED_POLICY",
+    "schoolServer": "DEFERRED_NOT_TESTED"
+  },
+  "scope": "LOW_RISK_ANONYMOUS_PUBLIC_B1_PLAYER_PLUS_SIGNED_TEACHER_STUDIO_LINK",
+  "studentIdentityOrStoredAnswers": false,
+  "thirdPartyTranslationApi": false,
+  "studioTokenForwarding": false,
+  "autoPromotion": false,
+  "riskAcceptanceByProjectOwner": true,
+  "schoolInstitutionalSignoff": "NOT_ATTESTED",
+  "independentSecurityApproval": "NOT_CLAIMED",
+  "lastRequiredTechnicalGate": "CANONICAL_CANDIDATE_P5_SAFEPROMOTION_AND_LIVE_POSTDEPLOY_CHECK",
+  "note": "Evidence of direct project owner instruction, not a cryptographically signed institutional security certificate. The earlier ES256 signature covers public B1 content ONLY. Teacher permit issuance remains signed CLB-01. No external credentials or student data move to Cloudflare."
+}
