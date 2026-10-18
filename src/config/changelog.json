@@ -1,7 +1,29 @@
 {
   "schema": "ai-studio-changelog-v1",
-  "current": "0.21.243",
+  "current": "0.21.244",
   "items": [
+    {
+      "version": "0.21.244",
+      "date": "2026-10-18",
+      "title": {
+        "cs": "Conversation Lab – desátá aplikace a opravy bezpečného vydání",
+        "en": "Conversation Lab – tenth app and safe release QA fixes"
+      },
+      "changes": [
+        {
+          "cs": "Conversation Lab 0.9.2 používá podepsaná učitelská oprávnění CLB-01; anonymní studentský vstup je oddělený.",
+          "en": "Conversation Lab 0.9.2 uses signed CLB-01 teacher access; anonymous student entry stays independent."
+        },
+        {
+          "cs": "Doplněny kategorie pilotního reportu a evidence nulové obsahové telemetrie Conversation Lab; sladěny verze README a P5.",
+          "en": "Added Conversation Lab to pilot reporting and the no-content telemetry registry; aligned README and P5 version metadata."
+        },
+        {
+          "cs": "Ostatních devět aplikací zůstává zachováno a automatické vydávání Conversation Lab je vypnuté.",
+          "en": "The other nine applications stay unchanged; automatic Conversation Lab promotion stays disabled."
+        }
+      ]
+    },
     {
       "version": "0.21.243",
       "date": "2026-10-17",
