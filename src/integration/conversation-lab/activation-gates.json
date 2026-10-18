@@ -1,0 +1,31 @@
+{
+  "schema": "ghrab-clb-studio-activation-gates-v1",
+  "appId": "conversation-lab",
+  "status": "OWNER_APPROVED_STUDIO_ACTIVATION_PREPARATION",
+  "origin": "https://conversation-lab-ghrab.pages.dev",
+  "releaseScope": "one B1 lesson, 37 contextual offline Czech glosses, 8 stations",
+  "ownerConsentRef": "src/integration/conversation-lab/owner-connection-consent.json",
+  "studioManifestRef": "src/integration/conversation-lab/studio-manifest.proposed.json",
+  "trainingPolicyRef": "src/integration/conversation-lab/access-policy-extension.proposed.json",
+  "publicPlayerVerified": {
+    "status": "PASS",
+    "httpRun": 39101830980,
+    "browserRun": 39101830957,
+    "browserAssertions": 87
+  },
+  "independentSecurityGo": "NOT_GRANTED",
+  "garpLive": "NOT_ATTESTED",
+  "studioP5": "NOT_RUN_FOR_THIS_RELEASE",
+  "signing": {
+    "accessPolicyBundle": "NOT_SIGNED_WITH_CLB_01",
+    "productionStatement": "NOT_SIGNED"
+  },
+  "studioManifestActuallyPublished": false,
+  "signedTeacherPermitProvisioned": false,
+  "runtimeRegistryModified": false,
+  "launcherEnabled": false,
+  "sourceVerification": "LIVE_PLAYER_VERIFIED_BUT_STUDIO_MANIFEST_NOT_PUBLISHED",
+  "stage": "PRELIVE_HOLD",
+  "ownerReleaseDeploymentGo": "PENDING_SEPARATE_SIGNED_DECISION",
+  "note": "Owner explicitly authorised Studio connection. This template must never automatically mutate active registries or bypass signed permit, GARP LIVE, P5 or protected Safe Promotion."
+}
