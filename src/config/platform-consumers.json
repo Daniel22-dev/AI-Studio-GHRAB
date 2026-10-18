@@ -417,5 +417,46 @@
       "default": "system",
       "systemFallback": "light"
     }
+  },
+  {
+    "id": "conversation-lab",
+    "name": "Conversation Lab",
+    "version": "0.9.1",
+    "slug": "conversation-lab",
+    "paths": {
+      "app": "https://conversation-lab-ghrab.pages.dev/",
+      "manual": "https://conversation-lab-ghrab.pages.dev/manual/",
+      "schoolApp": "/apps/conversation-lab/",
+      "schoolManual": "/apps/conversation-lab/manual/"
+    },
+    "capabilities": [
+      "conversation-practice",
+      "station-navigation",
+      "offline-translations",
+      "qr-share",
+      "anonymous-student-entry"
+    ],
+    "platform": {
+      "contract": "ghrab-platform-v1",
+      "requiredPlatformRange": ">=1.1.2 <2.0.0",
+      "brandVersion": "1.0.0",
+      "themeContract": "ghrab-theme-v1",
+      "swContract": 1,
+      "studioBridge": 2,
+      "artifactEnvelope": 1,
+      "storagePrefix": "ghrab.conversation-lab.",
+      "platformVersion": "1.1.2",
+      "accessibilityContract": "ghrab-a11y-v1",
+      "performanceContract": "ghrab-performance-v1",
+      "moduleContract": "not-applicable"
+    },
+    "cacheName": "ghrab-conversation-lab-v0.9.1",
+    "theme": {
+      "supported": [
+        "light",
+        "dark"
+      ],
+      "default": "dark"
+    }
   }
 ]
