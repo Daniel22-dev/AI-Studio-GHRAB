@@ -1,0 +1,21 @@
+name: Conversation Lab E102 runtime signed owner content check (NO DEPLOY)
+on:
+  pull_request:
+    paths:
+      - 'src/integration/conversation-lab/teacher-launch.js'
+      - 'scripts/test-clb-e102-runtime-owner-receipt.mjs'
+      - '.github/workflows/clb-e102-owner-runtime-verify.yml'
+permissions:
+  contents: read
+jobs:
+  owner-es256-webcrypto-runtime:
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '24'
+      - run: node --test scripts/test-clb-e102-runtime-owner-receipt.mjs
+      - run: node --test scripts/test-conversation-lab-launcher.mjs
+      - run: node --test scripts/test-clb-e101-owner-content-release.mjs
