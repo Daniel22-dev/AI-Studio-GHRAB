@@ -1,0 +1,53 @@
+{
+  "schema": "ghrab-clb-owner-signed-public-release-handoff-v1",
+  "purpose": "OWNER_CONTENT_RELEASE_ONLY_NOT_INDEPENDENT_SECURITY_GO",
+  "publicOnly": true,
+  "secretIncluded": false,
+  "statement": {
+    "schema": "ghrab-clb-owner-content-release-statement-v1",
+    "purpose": "OWNER_AUTHORISES_EXACT_AI_B1_PUBLIC_PILOT_AND_STUDIO_INTEGRATION_NOT_SECURITY_GO",
+    "appId": "conversation-lab",
+    "appVersion": "0.9.1",
+    "releaseId": "cl-ai-b1-pilot-20261018",
+    "publicOrigin": "https://conversation-lab-ghrab.pages.dev",
+    "publicStaticZipSha256": "4c37353e88a64512a112b7ed2912dddf3d73955c5fe4a493f1a6c89533d76d4d",
+    "publicStudioManifestSha256": "e139a829fadc59e1563632aae9995334c87e0b23f991dcf5e6b41dc9c1b51464",
+    "publicCatalogSha256": "93813482fabf53fe3ff5c0657b4f6b9c362f912aa496dd44c5b2c38de5ee7b4f",
+    "publicLessonSha256": "4a163857dc2b90e3b9a3a60e8e4440f7c45c2a1f2530f970a99543925fe390b9",
+    "publicAppJsSha256": "dabcaced97ca6ec21890a43eb43cf5da3600d106d0164fd5de570ebc7855c03a",
+    "approvedLessonIds": [
+      "artificial-intelligence/en/B1"
+    ],
+    "approvedLessonCount": 1,
+    "contextualOfflineCzechGlosses": 37,
+    "ownerPedagogicalApproval": true,
+    "ownerPublicationRightsSelfAttested": true,
+    "ownerAuthorisesPublicPilot": true,
+    "ownerAuthorisesProtectedTeacherStudioConnection": true,
+    "teacherPermitAndTrainingCode": "CLB-01",
+    "studentAccess": "ANONYMOUS_READ_ONLY",
+    "studioCredentialBridge": "FORBIDDEN",
+    "independentSecurityApproval": "NOT_GRANTED",
+    "garp27SchoolRuntimeLive": "NOT_TESTED_DEFERRED",
+    "studioReleaseP5": "PENDING",
+    "studioProductionPromotion": "NO_GO_UNTIL_SEPARATE_GATES",
+    "signedAt": "2026-10-18T11:45:57.050Z"
+  },
+  "signingDomain": "GHRAB-CLB-OWNER-CONTENT-RELEASE-v1\n",
+  "statementSha256": "77549c561032c35e6c78bb52885ddcc0022d64a7115bb230c8997286e61e8d0a",
+  "signature": {
+    "algorithm": "ES256",
+    "keyId": "ghrab-access-bundle-20260822195407Z-fxjS8DK9",
+    "signature": "JmdG3O7cGSSFadICWU2mobge-GpSdOPwnXIOw8WvGI1AQD6S_TrTtotMnZw5WmKVqa8t6DKmagJyBlSihpzmUg"
+  },
+  "verifyKey": {
+    "keyId": "ghrab-access-bundle-20260822195407Z-fxjS8DK9",
+    "publicKey": {
+      "kty": "EC",
+      "crv": "P-256",
+      "x": "bYxfni4Vsy90xRYtk8qdP9oSame-uHavew5XjHgy3K0",
+      "y": "aEC5jZaXh9Ipj-xrG5_myRsh6T32GhTIfQ9dgFWQJxg"
+    }
+  },
+  "studioReleaseGo": false
+}
