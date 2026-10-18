@@ -30,12 +30,21 @@ for (const asset of ['./access/error-reporter.js', './access/error-reporter.css'
   check(optional.includes(asset), `Offline-essential reporter asset missing: ${asset}`);
 }
 
+// This one static top-level import is required for offline portal start (E121).
+// Every other integration asset must stay outside the install precache.
+const requiredPortalRoute = './integration/conversation-lab/portal-route.js';
+check(required.filter((asset) => asset === requiredPortalRoute).length === 1,
+  'Mandatory Conversation Lab portal route must occur exactly once in CORE_REQUIRED.');
+check(!optional.includes(requiredPortalRoute),
+  'Mandatory portal route must not be optional.');
 for (const prefix of [
   './manualy/', './library/', './workflow/', './automation/', './demo/', './pilot/',
   './safety/', './about/', './assets/presentation/', './report/', './tools/',
   './api-usage/', './tests/', './integration/', './schemas/',
 ]) {
-  check(![...installAssets].some((asset) => asset.startsWith(prefix)), `On-demand prefix leaked into install precache: ${prefix}`);
+  const forbidden = [...installAssets].filter((asset) =>
+      asset.startsWith(prefix) && !(prefix === './integration/' && asset === requiredPortalRoute));
+    check(forbidden.length === 0, `On-demand prefix leaked into install precache: ${prefix}${forbidden.length ? ' (' + forbidden.join(', ') + ')' : ''}`);
 }
 check(!installAssets.has('./config/access-config-bundle.json'), 'Signed access bundle must stay outside install precache.');
 check(!installAssets.has('./config/access-config-bundle.sig.json'), 'Signed access bundle signature must stay outside install precache.');

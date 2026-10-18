@@ -1,7 +1,29 @@
 {
   "schema": "ai-studio-changelog-v1",
-  "current": "0.21.245",
+  "current": "0.21.246",
   "items": [
+    {
+      "version": "0.21.246",
+      "date": "2026-10-18",
+      "title": {
+        "cs": "Conversation Lab – sladění offline testu a produkčního vydání",
+        "en": "Conversation Lab – align offline testing and production release"
+      },
+      "changes": [
+        {
+          "cs": "Výkonnostní kontrola Phase C nově výslovně dovoluje jediný povinný modul Conversation Lab pro offline start portálu; všechny ostatní soubory integration/ nadále odmítá.",
+          "en": "Phase C performance check now narrowly permits the one mandatory Conversation Lab module needed for offline portal boot; every other integration/ asset remains forbidden."
+        },
+        {
+          "cs": "Oprava pouze testovacího kontraktu: nemění SW cache, přístupová oprávnění CLB-01, podepsaný obsah ani pravidla GARP.",
+          "en": "Test-contract-only fix: no changes to service worker cache, CLB-01 access, signed content or GARP rules."
+        },
+        {
+          "cs": "Navazuje na ostré selhání Phase C ve vydání 0.21.245; produkční vydání podléhá beze změn normálnímu P5 a QA.",
+          "en": "Addresses verified Phase C failure in production release 0.21.245; normal P5 and QA remain mandatory."
+        }
+      ]
+    },
     {
       "version": "0.21.245",
       "date": "2026-10-18",
