@@ -2,6 +2,6 @@
   "schema": "ghrab-access-config-signature-v1",
   "algorithm": "ES256",
   "keyId": "ghrab-access-bundle-20260822195407Z-fxjS8DK9",
-  "bundleVersion": "access-p1-20260923T181737Z",
-  "signature": "3LV40BCnCGwmgk6XuqZAVqoXG-bs1ME0KFFfZ7wBVM5sJ-gCHfcw-1MCjW9eQO4H65K4ZBMCJ8KTWjY_avnxOQ"
+  "bundleVersion": "access-p1-20261018062951Z",
+  "signature": "TZPYlLxkUEnvcNYwK2dBgezNc-OLUBBwt9guvz6b6lFKj2vqz8ST4a94UGiMepeu05JdxH1hbbLyUBtFyLQQsw"
 }
