@@ -83,7 +83,7 @@ test('E105 PREVIEW: E106 CSS source wrap removes WebKit overflow through stylesh
       const original = await route.fetch();
       assert.equal(original.status(), 200);
       const css = await original.text();
-      const patch = '\\n@media (max-width:370px){.catalog-heading-row{flex-wrap:wrap}.approved-count{max-width:100%;white-space:normal}}\\n';
+      const patch = '\n@media (max-width:370px){.catalog-heading-row{flex-wrap:wrap}.approved-count{max-width:100%;white-space:normal}}\n';
       intercepted++;
       await route.fulfill({ response: original, body: css + patch });
     });
