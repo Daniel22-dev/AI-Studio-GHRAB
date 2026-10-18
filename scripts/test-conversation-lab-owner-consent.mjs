@@ -93,9 +93,13 @@ test('E9 RELEASE: live player smoke PASS is not a substituted Studio/GARP/signin
  assert.equal(a.garpLive,'NOT_ATTESTED');
  assert.equal(a.studioP5,'NOT_RUN_FOR_THIS_RELEASE');
  assert.equal(a.signing.accessPolicyBundle,'SIGNED_ON_PRELIVE_BRANCH_NOT_PRODUCTION');
- assert.equal(a.signing.productionStatement,'NOT_SIGNED');
+ assert.equal(a.signing.productionStatement,'OWNER_CONTENT_ES256_SIGNED_NO_INDEPENDENT_SECURITY_GO');
+ assert.equal(a.signing.ownerContentStatementSha256,'77549c561032c35e6c78bb52885ddcc0022d64a7115bb230c8997286e61e8d0a');
+ assert.equal(a.signing.ownerContentSignatureVerified,true);
  assert.equal(a.signedAccessBundleSignatureVerified,true);
- assert.equal(a.signing.productionStatement,'NOT_SIGNED');
+ assert.equal(a.signing.productionStatement,'OWNER_CONTENT_ES256_SIGNED_NO_INDEPENDENT_SECURITY_GO');
+ assert.equal(a.signing.ownerContentStatementSha256,'77549c561032c35e6c78bb52885ddcc0022d64a7115bb230c8997286e61e8d0a');
+ assert.equal(a.signing.ownerContentSignatureVerified,true);
  assert.equal(a.runtimeRegistryModified,false);
  assert.equal(a.studioManifestActuallyPublished,false);
  assert.equal(a.launcherEnabled,false);
