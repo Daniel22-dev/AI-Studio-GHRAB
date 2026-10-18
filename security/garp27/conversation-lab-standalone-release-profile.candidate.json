@@ -1,0 +1,66 @@
+{
+  "schema": "ghrab-clb-standalone-release-scope-candidate-v1",
+  "appId": "conversation-lab",
+  "publicAppVersion": "0.9.1",
+  "origin": "https://conversation-lab-ghrab.pages.dev",
+  "authority": "GARP-2.7",
+  "runtimeProfile": "STANDALONE_GITHUB_PAGES_STUDIO_WITH_ISOLATED_CLOUDFLARE_PUBLIC_PLAYER",
+  "releaseState": "HOLD_PENDING_INDEPENDENT_SECURITY_AND_P5",
+  "ownerStudioConnectionConsent": "GRANTED",
+  "ownerPedagogicalApproval": "GRANTED_FOR_AI_EN_B1",
+  "ownerRightsSelfAttestation": "YES",
+  "publicClientLive": {
+    "status": "TECHNICAL_VERIFIED",
+    "scope": "HTTPS static player, no login, no provider AI operations, offline Czech translations only",
+    "manifestSha256": "e139a829fadc59e1563632aae9995334c87e0b23f991dcf5e6b41dc9c1b51464",
+    "catalogSha256": "93813482fabf53fe3ff5c0657b4f6b9c362f912aa496dd44c5b2c38de5ee7b4f",
+    "lessonSha256": "4a163857dc2b90e3b9a3a60e8e4440f7c45c2a1f2530f970a99543925fe390b9",
+    "browserRun": "https://github.com/Daniel22-dev/conversation-lab-source/actions/runs/39116120160",
+    "manifestRun": "https://github.com/Daniel22-dev/conversation-lab-source/actions/runs/39111316240"
+  },
+  "garp27Foundation": {
+    "status": "SOURCE_0_9_1_POLICY_ALIGNED_OWNER_CONTENT_SIGNED_INDEPENDENT_SECURITY_PENDING",
+    "studioPolicyMirrorAppVersion": "0.9.1",
+    "actualPublicAppVersion": "0.9.1",
+    "policyMirrorAligned": true,
+    "signedReleaseStatement": false,
+    "independentSecurityApproval": false,
+    "sourceMainCommit": "fc2e63504274d4dccb51db028040dac45a10b346",
+    "sourcePolicyGitBlobSha1": "1a956c64c09ae43c3e6d5a03499c301fc1e651c2",
+    "sourceCapabilityGitBlobSha1": "558e7e984b439eb964e575acca8dd5e63a065684"
+  },
+  "schoolServerRuntime": {
+    "ownerDecision": "DEFERRED_BY_OWNER_DECISION",
+    "garpLive": "NOT_TESTED",
+    "serverIdentityLive": "NOT_TESTED",
+    "egressLive": "NOT_TESTED",
+    "serverRollbackLive": "NOT_TESTED",
+    "canClaimPass": false
+  },
+  "requiredLauncherReleaseModel": {
+    "standaloneFoundation": "VERIFIED_FOR_EXACT_PLAYER_0_9_1",
+    "independentPublicClientLive": "VERIFIED_FOR_EXACT_SHA",
+    "ownerContentRelease": "SIGNED_EXACT_SHA",
+    "protectedStudioPermit": "VALID_SIGNED_CLB_01",
+    "serverRuntimeEvidence": "DEFERRED_NOT_APPLICABLE_TO_STANDALONE_STATIC_HOST",
+    "expectedProductionState": "NOT_AUTHORISED_YET",
+    "oldUnscopedGarpLiveBooleanIsUnsatisfiable": true
+  },
+  "prohibitedSubstitutions": [
+    "Cloudflare browser PASS must not be asserted as school-server GARP LIVE",
+    "Signed CLB-01 access policy must not be asserted as content or independent security release signature",
+    "Verified owner ES256 content consent must not be treated as independent security GO",
+    "Studio manifest SHA and catalog SHA are different audited assets and cannot be interchanged",
+    "No production Studio registry activation or promotion before separately evidenced independent security and P5"
+  ],
+  "ownerSignedContentReceipt": {
+    "status": "ES256_VERIFIED_SCOPE_ONLY",
+    "statementSha256": "77549c561032c35e6c78bb52885ddcc0022d64a7115bb230c8997286e61e8d0a",
+    "trustAnchorKeyId": "ghrab-access-bundle-20260822195407Z-fxjS8DK9",
+    "source": "src/integration/conversation-lab/owner-content-release.signed.json",
+    "scope": "ONE_AI_EN_B1_37_CZECH_GLOSSES",
+    "independentSecurityApproval": "NOT_GRANTED",
+    "studioP5": "NOT_RUN",
+    "studioPromotion": "NO_GO"
+  }
+}
