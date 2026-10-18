@@ -128,5 +128,17 @@
         "en": "Helps prepare and run the English oral Matura exam. The Studio currently provides only a demo with sample data."
       }
     }
+  },
+  {
+    "id": "conversation-lab",
+    "url": "https://conversation-lab-ghrab.pages.dev/studio-manifest.json",
+    "repository": "Daniel22-dev/conversation-lab-source",
+    "branch": "main",
+    "studioOverrides": {
+      "description": {
+        "cs": "Konverzační laboratoř pro výuku jazyků. Stanoviště, české offline překlady a QR odkazy pro studenty.",
+        "en": "Language conversation laboratory with discussion stations, offline Czech translations and QR links for students."
+      }
+    }
   }
 ]
