@@ -42,6 +42,7 @@ if (window.GHRAB.canAccessAdminPage?.("report") && !window.GHRAB.isTeacherPrevie
     "sortio",
     "lesson-hub",
     "maturita-desk",
+    "conversation-lab",
   ];
   const APP_NAMES = {
     generator: "Generátor testů",
@@ -53,6 +54,7 @@ if (window.GHRAB.canAccessAdminPage?.("report") && !window.GHRAB.isTeacherPrevie
     sortio: "SORTIO",
     "lesson-hub": "Lesson Hub",
     "maturita-desk": "Maturita Desk",
+    "conversation-lab": "Conversation Lab",
   };
   const OUTPUT_LABELS = {
     "test-package": "testové balíčky",
