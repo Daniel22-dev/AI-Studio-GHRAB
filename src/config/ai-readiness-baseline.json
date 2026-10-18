@@ -85,6 +85,10 @@
     {
       "appId": "maturita-desk",
       "classification": "not-applicable"
+    },
+    {
+      "appId": "conversation-lab",
+      "classification": "not-applicable"
     }
   ],
   "generatedAt": "2026-08-04T16:40:00.000Z"
