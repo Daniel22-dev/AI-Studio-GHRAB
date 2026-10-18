@@ -1,0 +1,53 @@
+{
+  "schema": "ghrab-clb-standalone-release-scope-candidate-v1",
+  "appId": "conversation-lab",
+  "publicAppVersion": "0.9.1",
+  "origin": "https://conversation-lab-ghrab.pages.dev",
+  "authority": "GARP-2.7",
+  "runtimeProfile": "STANDALONE_GITHUB_PAGES_STUDIO_WITH_ISOLATED_CLOUDFLARE_PUBLIC_PLAYER",
+  "releaseState": "HOLD_PENDING_RECONCILIATION",
+  "ownerStudioConnectionConsent": "GRANTED",
+  "ownerPedagogicalApproval": "GRANTED_FOR_AI_EN_B1",
+  "ownerRightsSelfAttestation": "YES",
+  "publicClientLive": {
+    "status": "TECHNICAL_VERIFIED",
+    "scope": "HTTPS static player, no login, no provider AI operations, offline Czech translations only",
+    "manifestSha256": "e139a829fadc59e1563632aae9995334c87e0b23f991dcf5e6b41dc9c1b51464",
+    "catalogSha256": "93813482fabf53fe3ff5c0657b4f6b9c362f912aa496dd44c5b2c38de5ee7b4f",
+    "lessonSha256": "4a163857dc2b90e3b9a3a60e8e4440f7c45c2a1f2530f970a99543925fe390b9",
+    "browserRun": "https://github.com/Daniel22-dev/conversation-lab-source/actions/runs/39116120160",
+    "manifestRun": "https://github.com/Daniel22-dev/conversation-lab-source/actions/runs/39111316240"
+  },
+  "garp27Foundation": {
+    "status": "PENDING_CONFORMANT_PUBLIC_0_9_1_SOURCE_MIRROR_AND_INDEPENDENT_REVIEW",
+    "studioPolicyMirrorAppVersion": "0.6.0",
+    "actualPublicAppVersion": "0.9.1",
+    "policyMirrorAligned": false,
+    "signedReleaseStatement": false,
+    "independentSecurityApproval": false
+  },
+  "schoolServerRuntime": {
+    "ownerDecision": "DEFERRED_BY_OWNER_DECISION",
+    "garpLive": "NOT_TESTED",
+    "serverIdentityLive": "NOT_TESTED",
+    "egressLive": "NOT_TESTED",
+    "serverRollbackLive": "NOT_TESTED",
+    "canClaimPass": false
+  },
+  "requiredLauncherReleaseModel": {
+    "standaloneFoundation": "VERIFIED_FOR_EXACT_PLAYER_0_9_1",
+    "independentPublicClientLive": "VERIFIED_FOR_EXACT_SHA",
+    "ownerContentRelease": "SIGNED_EXACT_SHA",
+    "protectedStudioPermit": "VALID_SIGNED_CLB_01",
+    "serverRuntimeEvidence": "DEFERRED_NOT_APPLICABLE_TO_STANDALONE_STATIC_HOST",
+    "expectedProductionState": "NOT_AUTHORISED_YET",
+    "oldUnscopedGarpLiveBooleanIsUnsatisfiable": true
+  },
+  "prohibitedSubstitutions": [
+    "Cloudflare browser PASS must not be asserted as school-server GARP LIVE",
+    "Signed access policy must not be asserted as production content release signature",
+    "Owner's conversational approval must not be fabricated into a crypto-signature",
+    "GARP mirrored 0.6.0 source cannot certify public 0.9.1 as the same audited build",
+    "No active catalog or automation until source/release reconciliation and protected P5"
+  ]
+}
