@@ -12,6 +12,7 @@ on:
       - 'scripts/test-clb-e96-registry-candidate.mjs'
       - 'scripts/test-clb-e96-scoped-garp.mjs'
       - 'scripts/test-clb-e103-signed-candidate.mjs'
+      - 'scripts/test-clb-e104-live-readonly.mjs'
       - 'security/garp27/conversation-lab-standalone-release-profile.candidate.json'
       - '.github/workflows/clb-e96-catalog-candidate.yml'
 permissions:
@@ -40,5 +41,7 @@ jobs:
           node --test scripts/test-clb-e101-owner-content-release.mjs
           node --test scripts/test-clb-e102-runtime-owner-receipt.mjs
           node --test scripts/test-clb-e103-signed-candidate.mjs
+      - name: Read-only verify current public Cloudflare B1 bytes, CSP and negative routes (NO DEPLOY)
+        run: node --test scripts/test-clb-e104-live-readonly.mjs
       - name: Check candidate can launch protected CLB portal without affecting other nine
         run: node --test scripts/test-clb-studio-portal-route.mjs
