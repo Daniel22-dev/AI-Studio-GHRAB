@@ -1,0 +1,34 @@
+{
+  "schema": "ghrab-cl-e9-1-studio-catalog-handoff-v1",
+  "appId": "conversation-lab",
+  "name": {
+    "cs": "Conversation Lab",
+    "en": "Conversation Lab"
+  },
+  "description": {
+    "cs": "Konverzační laboratoř pro jazykovou výuku: tematická stanoviště, offline překlady a QR sdílení.",
+    "en": "Conversation lessons with discussion stations, offline contextual translations, and QR sharing."
+  },
+  "stage": "STAGED_NOT_ACTIVE",
+  "publicOrigin": "https://conversation-lab-ghrab.pages.dev",
+  "releaseId": "cl-ai-b1-pilot-20261018",
+  "firstLesson": "artificial-intelligence/en/B1",
+  "releaseCandidateLessonSha256": "4a163857dc2b90e3b9a3a60e8e4440f7c45c2a1f2530f970a99543925fe390b9",
+  "publicCloudflareZipSha256": "4b38a53d486193b81c67922fe3c05ff2d2b5f3a2cc83dfcdaa6c5b0a805814eb",
+  "publicVersion": "0.9.1",
+  "teacherLaunchMode": "external-protected",
+  "teacherTraining": "CLB-01",
+  "publicStudentMode": "anonymous-read-only",
+  "publisherRights": "OWNER_SELF_ATTESTED",
+  "contentPedagogicalReview": "OWNER_APPROVED",
+  "cryptographicallySignedRelease": false,
+  "publicPlayerDeployed": false,
+  "garpLive": "NOT_TESTED_FOR_PLAYER",
+  "securityGo": false,
+  "studioP5": false,
+  "studioRegistryActive": false,
+  "schoolServerMigrationPlanned": true,
+  "autoDeployment": false,
+  "sourceRepo": "Daniel22-dev/conversation-lab-source",
+  "controls": "Must not be added to runtime app registries, signed access policy, or promoted before verified live player and independent release gates."
+}
