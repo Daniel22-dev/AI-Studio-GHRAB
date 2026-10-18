@@ -1,0 +1,22 @@
+{
+  "schema": "ghrab-clb-studio-access-policy-extension-proposal-v1",
+  "appId": "conversation-lab",
+  "status": "NOT_IN_SIGNED_ACCESS_BUNDLE",
+  "bundleSignatureRequired": true,
+  "issuerAction": "SIGNED_ACCESS_POLICY_UPDATE_REQUIRED",
+  "issuerTrustAnchor": "USE_EXISTING_GHRAB_ACCESS_BUNDLE_VERIFY_KEY_NOT_NEW_UNTRUSTED_KEY",
+  "policyEntry": {
+    "trainingRequired": true,
+    "trainingCode": "CLB-01",
+    "trainingVersion": "2026-10",
+    "label": {
+      "cs": "Conversation Lab",
+      "en": "Conversation Lab"
+    }
+  },
+  "scope": "teacher Studio launcher only; anonymous student player requires no Studio permit",
+  "signWithoutPrivateKey": false,
+  "preserveOtherAppPermissions": true,
+  "rollback": "remove CLB access grant by a newly signed policy, never modify signed data in place",
+  "publishPrivateSigningKey": false
+}
