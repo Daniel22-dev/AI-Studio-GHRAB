@@ -31,5 +31,10 @@
   "signedAccessBundleVersion": "access-p1-20261018062951Z",
   "signedAccessBundleSignatureVerified": true,
   "signedAccessBundleTrustAnchor": "ghrab-access-bundle-20260822195407Z-fxjS8DK9",
-  "signedAccessBundleScope": "EXACTLY_ONE_NEW_POLICY_ENTRY_CLB_01"
+  "signedAccessBundleScope": "EXACTLY_ONE_NEW_POLICY_ENTRY_CLB_01",
+  "studioManifestPlannedSha256": "e139a829fadc59e1563632aae9995334c87e0b23f991dcf5e6b41dc9c1b51464",
+  "studioManifestLiveStatus": "WAITING_FOR_OWNER_UPLOAD",
+  "studioManifestExpectedUrl": "https://conversation-lab-ghrab.pages.dev/studio-manifest.json",
+  "manualExpectedUrl": "https://conversation-lab-ghrab.pages.dev/manual/",
+  "hostingManifestBundleSha256": "4c37353e88a64512a112b7ed2912dddf3d73955c5fe4a493f1a6c89533d76d4d"
 }
