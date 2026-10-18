@@ -16,6 +16,7 @@ on:
       - 'scripts/test-conversation-lab-owner-consent.mjs'
       - 'scripts/test-clb01-signed-access-promotion.mjs'
       - 'scripts/test-clb-e101-owner-content-release.mjs'
+      - 'scripts/test-clb-e102-runtime-owner-receipt.mjs'
       - 'scripts/test-clb-studio-portal-route.mjs'
       - 'scripts/test-clb-e95-manifest-candidate.mjs'
       - 'scripts/test-conversation-lab-launcher.mjs'
@@ -44,6 +45,8 @@ jobs:
         run: node --test scripts/test-conversation-lab-launcher.mjs
       - name: Verify exact public manifest candidate and zero unauthorized Studio release
         run: node --test scripts/test-clb-e95-manifest-candidate.mjs
+      - name: Verify B1 owner signature again at actual Studio launch boundary with browser WebCrypto
+        run: node --test scripts/test-clb-e102-runtime-owner-receipt.mjs
       - name: Verify actual owner ES256 signed exact public B1 release, trusted Studio key, tamper tests, and preserved NO-GO
         run: node --test scripts/test-clb-e101-owner-content-release.mjs
       - name: Verify signed CLB-01 ES256 bundle and nine unchanged apps
