@@ -13,18 +13,24 @@ const root=resolve(fileURLToPath(new URL('..',import.meta.url)));
 const read=async path=>JSON.parse(await readFile(root+'/'+path,'utf8'));
 const sha='a'.repeat(64);
 const studio='https://daniel22-dev.github.io';
-const origin='https://clb-example.pages.dev';
+const origin='https://conversation-lab-ghrab.pages.dev';
 const fakeProd=prelive=>({
   ...prelive,stage:'PRODUCTION_AUTHORIZED',launchEnabled:true,
-  publicOrigin:origin,releaseId:'cl-first-pilot',
-  approvedDistributionManifestSha256:sha,
+  publicOrigin:origin,releaseId:'cl-ai-b1-pilot-20261018',
+  approvedDistributionManifestSha256:'93813482fabf53fe3ff5c0657b4f6b9c362f912aa496dd44c5b2c38de5ee7b4f',
   signedReleaseStatementSha256:'b'.repeat(64),
+  publicStudioManifestSha256:'e139a829fadc59e1563632aae9995334c87e0b23f991dcf5e6b41dc9c1b51464',
   ownerReleaseAuthorization:'SIGNED',hostingOwnership:'VERIFIED',
-  hostingHeaders:'VERIFIED',garpLive:'VERIFIED',
-  publicRelease:'MANUAL_RELEASE_APPROVED',approvedLessons:6,approvedCzechGlosses:222
+  hostingHeaders:'VERIFIED',garpLive:'NOT_TESTED',
+  garpFoundation:'VERIFIED_STATIC_GARP27_0_9_1',
+  publicClientLive:'VERIFIED_EXACT_21_FILES',
+  schoolServerLive:'DEFERRED_NOT_TESTED',
+  independentSecurityApproval:'SIGNED_AND_VERIFIED',
+  publicRelease:'MANUAL_RELEASE_APPROVED',approvedLessons:1,approvedCzechGlosses:37
 });
 const fakeApp=prod=>({
   id:'conversation-lab',
+  version:'0.9.1',
   integration:{
     launchMode:'external-protected',
     securityBoundary:'isolated-anonymous-read-only',
@@ -36,7 +42,7 @@ const fakeApp=prod=>({
     autoPromotionAllowed:false,
     releaseId:prod.releaseId,
     manifestSha256:prod.approvedDistributionManifestSha256,
-    signedStatementSha256:prod.signedReleaseStatementSha256,
+    signedStatementSha256:null,
     externalTargetUrl:prod.publicOrigin+'/'
   }
 });
@@ -77,7 +83,15 @@ test('even simulated future authorized release still requires exact origin, rele
     x=>{x.app.integration.releaseId='cl-other';},
     x=>{x.app.integration.manifestSha256='0'.repeat(64);},
     x=>{x.c.approvedLessons=0;},
-    x=>{x.c.garpLive='NOT_TESTED';},
+    x=>{x.c.garpLive='VERIFIED';},
+    x=>{x.c.garpFoundation='NOT_TESTED';},
+    x=>{x.c.publicClientLive='NOT_TESTED';},
+    x=>{x.c.schoolServerLive='VERIFIED';},
+    x=>{x.c.independentSecurityApproval='NOT_GRANTED';},
+    x=>{x.c.publicStudioManifestSha256='c'.repeat(64);},
+    x=>{x.c.approvedDistributionManifestSha256='d'.repeat(64);},
+    x=>{x.c.approvedCzechGlosses=36;},
+    x=>{x.c.approvedLessons=2;},
     x=>{x.c.autoPromotion='ENABLED';},
     x=>{x.c.ownerReleaseAuthorization='NOT_GRANTED';},
     x=>{x.c.publicOrigin=studio;},
