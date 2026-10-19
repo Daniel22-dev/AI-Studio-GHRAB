@@ -1,0 +1,33 @@
+name: CLB source contract diagnosis (READ ONLY)
+on:
+  push:
+    branches: ['audit/clb-deploy-diagnostics-20261019']
+    paths: ['.github/workflows/clb-source-contract-diagnosis.yml']
+permissions:
+  contents: read
+jobs:
+  inspect:
+    runs-on: ubuntu-latest
+    timeout-minutes: 4
+    steps:
+      - uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683
+        with:
+          persist-credentials: false
+      - name: Inspect exact integration boundaries and preference storage
+        run: |
+          python3 - <<'PY'
+          import pathlib,re
+          pairs=[('scripts/test.mjs',r'600|[Dd]louh|CSP|viewport|localStorage|[Vv]erzovan|lok.ln. odkaz'),('scripts/build.mjs',r'conversation-lab|[Cc][Ss][Pp]|versioned|appendVersion|versionAsset|stampAsset'),('scripts/lib/clb-master-integrity.mjs',r'^'),('src/conversation-lab/assets/app.js',r'fetch\(|import|style|\.js|\.html|innerHTML|createElement')]
+          for filename,pattern in pairs:
+              p=pathlib.Path(filename);lines=p.read_text().splitlines();ids=set()
+              for i,line in enumerate(lines):
+                  if re.search(pattern,line):ids.update(range(max(0,i-6),min(len(lines),i+13)))
+              print('\nFILE '+filename+' TOTAL_LINES '+str(len(lines)))
+              for i in sorted(ids):print(str(i+1)+': '+lines[i][:1100])
+          for p in sorted(pathlib.Path('src/conversation-lab/assets/masters').glob('*.js')):
+              lines=p.read_text().splitlines();ids=set()
+              for i,line in enumerate(lines):
+                  if re.search(r'localStorage|sessionStorage|CLB_THEME|clb-theme',line):ids.update(range(max(0,i-5),min(len(lines),i+8)))
+              print('\nSTORAGE_FILE '+str(p))
+              for i in sorted(ids):print(str(i+1)+': '+lines[i][:800])
+          PY
