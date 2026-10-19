@@ -16,6 +16,26 @@ test('CLB direct/iframe launch and missing guard fail closed',()=>{
  }
  for(const app of [null,{}, {id:''}])assert.throws(()=>studioPortalDestination(app,'./'),/STUDIO_APP_ID_REQUIRED/);
 });
+test('CLB v0.10.1 teacher route remains inside Studio without Cloudflare iframe or permit in URL',()=>{
+ const teacher={id:'conversation-lab',version:'0.10.1',integration:{
+   launchMode:'studio-teacher',releaseId:'cl-three-topics-72-20261019-r2',
+   teacherTrainingRequired:true,credentialBridgeAllowed:false,
+   securityBoundary:'isolated-anonymous-read-only'
+ }};
+ assert.equal(studioPortalDestination(teacher,'./'),'./conversation-lab/');
+ assert.equal(studioPortalDestination(teacher,'../'),'../conversation-lab/');
+ assert.equal(studioPortalDestination(teacher,'/AI-Studio-GHRAB/'),'/AI-Studio-GHRAB/conversation-lab/');
+ assert.doesNotMatch(studioPortalDestination(teacher,'./'),/pages\\.dev|permit|token|\\?/);
+ for(const patch of [
+   {version:'0.9.2'},
+   {integration:{...teacher.integration,releaseId:'cl-ai-b1-pilot-20261018-r2'}},
+   {integration:{...teacher.integration,teacherTrainingRequired:false}},
+   {integration:{...teacher.integration,credentialBridgeAllowed:true}},
+   {integration:{...teacher.integration,securityBoundary:'allow-iframe'}}
+ ]){
+   assert.throws(()=>studioPortalDestination({...teacher,...patch},'./'),/CLB_E9_STUDIO_TEACHER_NOT_SIGNED_READY/);
+ }
+});
 test('Nine pre-existing Studio apps retain the exact viewer route byte-for-byte',()=>{
  const ids=['generator','differentiator','essay-evaluator','correspondence','ludus','activity-builder','sortio','lesson-hub','maturita-desk'];
  for(const id of ids){
