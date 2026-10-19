@@ -1,7 +1,33 @@
 {
   "schema": "ai-studio-changelog-v1",
-  "current": "0.21.248",
+  "current": "0.21.249",
   "items": [
+    {
+      "version": "0.21.249",
+      "date": "2026-10-19",
+      "title": {
+        "cs": "Zabezpečené načítání Conversation Lab ve Studiu",
+        "en": "Secured Conversation Lab Studio deployment envelope"
+      },
+      "changes": [
+        {
+          "cs": "Učitelské stránky mají CSP před načtením zdrojů a verzované odkazy. Podepsané texty lekcí, MASTER CSS/JavaScript, slovníky a QR data se nemění.",
+          "en": "Teacher pages receive CSP before resource loading and versioned references. Signed lesson text, MASTER CSS/JavaScript, dictionaries and QR data remain unchanged."
+        },
+        {
+          "cs": "Kontrola integrity samostatně ověřuje původní podklady a přesně odvozený výstup pro Studio. Změněný obsah ani odstraněná CSP neprojdou.",
+          "en": "Integrity checks independently verify original inputs and the exactly derived Studio deployment. Mutated payloads and removed CSP are rejected."
+        },
+        {
+          "cs": "Obecná validace rozlišuje ověřené HTML fragmenty, neměnné zdroje a omezené preference původních lekcí; plné projektové testy a P5 zůstávají povinné.",
+          "en": "Generic validation distinguishes verified HTML fragments, immutable sources and bounded legacy lesson preferences; full project tests and P5 remain mandatory."
+        },
+        {
+          "cs": "Cloudflare, obsahový podpis ani kód a vydání ostatních aplikací včetně GIT se nepřepisují.",
+          "en": "Cloudflare, the content signature and the code or releases of the other apps including GIT are not rewritten."
+        }
+      ]
+    },
     {
       "version": "0.21.248",
       "date": "2026-10-19",

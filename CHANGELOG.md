@@ -2,6 +2,14 @@
 
 > Tento soubor se generuje ze `src/config/changelog.json`. Neupravujte jej ručně.
 
+## 0.21.249 — 2026-10-19
+**Zabezpečené načítání Conversation Lab ve Studiu**
+
+- Učitelské stránky mají CSP před načtením zdrojů a verzované odkazy. Podepsané texty lekcí, MASTER CSS/JavaScript, slovníky a QR data se nemění.
+- Kontrola integrity samostatně ověřuje původní podklady a přesně odvozený výstup pro Studio. Změněný obsah ani odstraněná CSP neprojdou.
+- Obecná validace rozlišuje ověřené HTML fragmenty, neměnné zdroje a omezené preference původních lekcí; plné projektové testy a P5 zůstávají povinné.
+- Cloudflare, obsahový podpis ani kód a vydání ostatních aplikací včetně GIT se nepřepisují.
+
 ## 0.21.248 — 2026-10-19
 **Conversation Lab MASTER 0.11.0 ve Studiu**
 
