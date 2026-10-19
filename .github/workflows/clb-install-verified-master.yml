@@ -31,14 +31,17 @@ jobs:
               p=root/name;p.parent.mkdir(parents=True,exist_ok=True);p.write_bytes(value if isinstance(value,bytes) else value.encode())
           def pretty(x):return json.dumps(x,ensure_ascii=False,indent=2)+'\n'
           parent=subprocess.check_output(['git','rev-parse','HEAD^']).decode().strip()
-          assert parent=='8363c5aa0ce7e4fdc409172df5f76de6b1b3c576', 'Unexpected initial baseline; do not overwrite concurrent changes'
+          assert parent=='ca5a1d4ccf04ae65f8b794ae2e5c784b82a6c24e', 'Unexpected initial baseline; do not overwrite concurrent changes'
           original_profile=(root/'src/conversation-lab/release-profile.js').read_text()
           original_apps=json.loads((root/'src/config/apps.generated.json').read_text())
           chunks=''.join((root/f'.clb-finish-data/{i:02}.b64').read_text().strip() for i in range(1,5))
           packed=base64.b64decode(chunks,validate=True)
           assert hashlib.sha256(packed).hexdigest()=='f5c9be854c5d2e4a6431b61e901e6d41939e00558f79fe4f779ce4ab4da1fab1'
-          patch=lzma.decompress(packed)
-          pathlib.Path('/tmp/clb-reviewed.patch').write_bytes(patch)
+          patch=lzma.decompress(packed).decode()
+          malformed='+8. Gener\u00e1tor interaktivn\u00edch test\u016f 7.1.100--- a/POSTUP-NAHRANI.md'
+          assert patch.count(malformed)==1
+          patch=patch.replace(malformed,'+8. Gener\u00e1tor interaktivn\u00edch test\u016f 7.1.100\n\\ No newline at end of file\n--- a/POSTUP-NAHRANI.md')
+          pathlib.Path('/tmp/clb-reviewed.patch').write_text(patch)
           subprocess.run(['git','apply','--check','/tmp/clb-reviewed.patch'],check=True)
           subprocess.run(['git','apply','/tmp/clb-reviewed.patch'],check=True)
           write('scripts/fixtures/clb-original-release-profile.js',original_profile)
