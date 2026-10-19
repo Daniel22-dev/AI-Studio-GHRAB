@@ -1,8 +1,8 @@
 /**
  * Conversation Lab E9 - separate-origin teacher launcher assurance.
  * This is a guard, NOT a release approver. Current checked-in launch-control
- * blocks ALL teacher launches. Human content, GARP LIVE, signed release bytes
- * and verified HTTPS origin are independent, mandatory acceptance gates.
+ * permits only its exact signed release. Public content approval, signed
+ * teacher access and verified HTTPS release evidence remain separate gates.
  *
  * Public student direct entry remains anonymous and cannot receive Studio
  * tokens. This Studio-only helper is never shipped to the public player.
@@ -66,6 +66,22 @@ function decodeClbSignature(value){
 }
 
 const deny=code=>{throw Error('CLB_E9_'+code);};
+
+/** Resolve Studio config from this module, independently of the entry page. */
+export function clbIntegrationResourceUrl(resource,moduleUrl=import.meta.url) {
+  if(typeof resource!=='string' || !resource ||
+    /[?#\\]/.test(resource) || resource.startsWith('/') ||
+    /^[a-z][a-z0-9+.-]*:/i.test(resource))deny('INTEGRATION_RESOURCE_INVALID');
+  let base,target;
+  try {
+    base=new URL('./',moduleUrl);
+    target=new URL(resource,moduleUrl);
+  } catch {deny('INTEGRATION_RESOURCE_INVALID')}
+  if(target.origin!==base.origin || !target.href.startsWith(base.href) ||
+    target.username || target.password || target.search || target.hash)
+    deny('INTEGRATION_RESOURCE_OUTSIDE_STUDIO');
+  return target.href;
+}
 
 /**
  * The Studio's requiredTraining() is sourced from the verified access bundle,
@@ -333,7 +349,7 @@ export async function checkedConversationLabTarget(app,{
   studioOrigin,fetchImpl=globalThis.fetch,cryptoImpl=globalThis.crypto
 }={}) {
   if(typeof fetchImpl!=='function')deny('CONFIG_FETCH_UNAVAILABLE');
-  const response=await fetchImpl('../../integration/conversation-lab/launch-control.json',{
+  const response=await fetchImpl(clbIntegrationResourceUrl('./launch-control.json'),{
     method:'GET',credentials:'same-origin',cache:'no-store',redirect:'error'
   });
   if(!response?.ok || response.redirected)deny('CONTROL_UNAVAILABLE');
@@ -343,7 +359,7 @@ export async function checkedConversationLabTarget(app,{
   const target=validateConversationLabTeacherTarget(app,control,{studioOrigin});
   let signed;
   try {
-    signed=await fetchImpl(PILOT_RELEASES[app.version].receiptPath,{
+    signed=await fetchImpl(clbIntegrationResourceUrl(PILOT_RELEASES[app.version].receiptPath),{
       method:'GET',credentials:'same-origin',cache:'no-store',redirect:'error'
     });
   }catch{deny('OWNER_CONTENT_UNAVAILABLE')}
@@ -352,12 +368,208 @@ export async function checkedConversationLabTarget(app,{
   await verifyClbOwnerContentReceipt(app,control,receipt,{cryptoImpl});
   let ownerDecision;
   try {
-    ownerDecision=await fetchImpl(control.ownerRiskAcceptanceRef,{
+    ownerDecision=await fetchImpl(clbIntegrationResourceUrl(control.ownerRiskAcceptanceRef),{
       method:'GET',credentials:'same-origin',cache:'no-store',redirect:'error'
     });
   }catch{deny('OWNER_S0_ACCEPTANCE_UNAVAILABLE')}
   if(!ownerDecision?.ok||ownerDecision.redirected)deny('OWNER_S0_ACCEPTANCE_UNAVAILABLE');
   let decision;try{decision=await ownerDecision.json()}catch{deny('OWNER_S0_ACCEPTANCE_INVALID_JSON')}
   assertClbProjectOwnerS0Acceptance(decision,app,control);
+  return target;
+}
+
+const MASTER_VERSION='0.11.0';
+const MASTER_RELEASE_ID='cl-master-72-20261019-r1';
+const MASTER_ORIGIN='https://conversation-lab-ghrab.pages.dev';
+const MASTER_DOMAIN='GHRAB-CLB-OWNER-CONTENT-RELEASE-v2\n';
+const MASTER_TOPICS=Object.freeze([
+  'artificial-intelligence','the-pressure-to-succeed','summer-holidays'
+]);
+const MASTER_LESSONS=Object.freeze(MASTER_TOPICS.flatMap(topic=>
+  ['en','es','de','fr'].flatMap(language=>
+    ['A1','A2','B1','B2','C1','C2'].map(level=>`${topic}/${language}/${level}`)
+  )).sort());
+const MASTER_HASH_FIELDS=Object.freeze([
+  'publicStaticZipSha256','publicStudioManifestSha256','publicCatalogSha256',
+  'publicAppJsSha256','publicQrIndexSha256','publicGlossaryIndexSha256'
+]);
+
+/**
+ * Build output pins for the MASTER release; never a substitute for its V2
+ * ES256 owner receipt or the separately verified Studio teacher permission.
+ * A missing signature digest deliberately keeps an unsigned build on HOLD.
+ */
+export function validateClbMasterReleaseProfile(profile) {
+  if(!profile || profile.schema!=='ghrab-clb-master-release-profile-v1' ||
+    profile.appId!==APP_ID || profile.appVersion!==MASTER_VERSION ||
+    profile.releaseId!==MASTER_RELEASE_ID || profile.publicOrigin!==MASTER_ORIGIN ||
+    profile.approvedLessonCount!==72 || profile.approvedQrVectorCount!==576 ||
+    profile.legacyOfflineDictionaryCount!==12 ||
+    profile.contextualOfflineCzechGlosses!==0 ||
+    JSON.stringify(profile.approvedLessonIds)!==JSON.stringify(MASTER_LESSONS) ||
+    JSON.stringify(profile.approvedTopicIds)!==JSON.stringify(MASTER_TOPICS) ||
+    !SHA64.test(profile.signedReleaseStatementSha256??'') ||
+    MASTER_HASH_FIELDS.some(field=>!SHA64.test(profile[field]??'')))
+    deny('MASTER_RELEASE_PROFILE_NOT_SIGNED_READY');
+  return true;
+}
+
+/** V2 library scope from the existing private release signing contract. */
+export async function verifyClbMasterOwnerContentReceipt(receipt,profile,{
+  cryptoImpl=globalThis.crypto
+}={}) {
+  validateClbMasterReleaseProfile(profile);
+  if(!receipt || receipt.schema!=='ghrab-clb-owner-signed-library-release-v2' ||
+    receipt.purpose!=='OWNER_CONTENT_RELEASE_ONLY_NOT_INDEPENDENT_SECURITY_GO' ||
+    receipt.publicOnly!==true || receipt.secretIncluded!==false ||
+    receipt.studioReleaseGo!==false || receipt.signingDomain!==MASTER_DOMAIN ||
+    receipt.signature?.algorithm!=='ES256' ||
+    receipt.signature?.keyId!==OWNER_TRUST_KEY_ID ||
+    receipt.verifyKey?.keyId!==OWNER_TRUST_KEY_ID)
+    deny('MASTER_OWNER_CONTENT_RECEIPT_INVALID');
+  for(const field of ['kty','crv','x','y'])
+    if(receipt.verifyKey?.publicKey?.[field]!==OWNER_TRUST_PUBLIC_JWK[field])
+      deny('MASTER_OWNER_CONTENT_TRUST_MISMATCH');
+  const statement=receipt.statement;
+  if(!statement || statement.schema!=='ghrab-clb-owner-content-release-statement-v2' ||
+    statement.purpose!=='OWNER_AUTHORISES_EXACT_CONVERSATION_LIBRARY_CONTENT_NOT_INDEPENDENT_SECURITY_CERTIFICATION' ||
+    statement.appId!==APP_ID || statement.appVersion!==MASTER_VERSION ||
+    statement.releaseId!==MASTER_RELEASE_ID || statement.publicOrigin!==MASTER_ORIGIN ||
+    statement.approvedLessonCount!==72 || statement.approvedQrVectorCount!==576 ||
+    statement.legacyOfflineDictionaryCount!==12 ||
+    statement.contextualOfflineCzechGlosses!==0 ||
+    JSON.stringify(statement.approvedLessonIds)!==JSON.stringify(MASTER_LESSONS) ||
+    JSON.stringify(statement.approvedTopicIds)!==JSON.stringify(MASTER_TOPICS) ||
+    statement.ownerPedagogicalApproval!==true ||
+    statement.ownerPublicationRightsSelfAttested!==true ||
+    statement.ownerAuthorisesPublicLibraryRelease!==true ||
+    statement.ownerAuthorisesProtectedTeacherStudioConnection!==true ||
+    statement.teacherPermitAndTrainingCode!=='CLB-01' ||
+    statement.studentAccess!=='ANONYMOUS_READ_ONLY' ||
+    statement.studioCredentialBridge!=='FORBIDDEN' ||
+    statement.independentSecurityApproval!=='NOT_GRANTED' ||
+    statement.garp27SchoolRuntimeLive!=='NOT_TESTED_DEFERRED' ||
+    statement.studioReleaseP5!=='PENDING' ||
+    statement.studioProductionPromotion!=='NO_GO_UNTIL_SEPARATE_GATES' ||
+    typeof statement.signedAt!=='string' ||
+    !/^\d{4}-\d{2}-\d{2}T\d{2}:\d{2}:\d{2}\.\d{3}Z$/.test(statement.signedAt) ||
+    !Number.isFinite(Date.parse(statement.signedAt)))
+    deny('MASTER_OWNER_CONTENT_SCOPE_MISMATCH');
+  if(MASTER_HASH_FIELDS.some(field=>statement[field]!==profile[field]) ||
+    receipt.statementSha256!==profile.signedReleaseStatementSha256)
+    deny('MASTER_OWNER_CONTENT_BINDING_MISMATCH');
+  const subtle=cryptoImpl?.subtle;
+  if(!subtle || typeof TextEncoder==='undefined')deny('CONTENT_CRYPTO_UNAVAILABLE');
+  const bytes=new TextEncoder().encode(MASTER_DOMAIN+canonicalClbJson(statement));
+  let okay=false;
+  try {
+    const digest=new Uint8Array(await subtle.digest('SHA-256',bytes));
+    const hex=Array.from(digest,x=>x.toString(16).padStart(2,'0')).join('');
+    if(hex!==profile.signedReleaseStatementSha256)deny('MASTER_OWNER_CONTENT_HASH_INVALID');
+    const key=await subtle.importKey('jwk',OWNER_TRUST_PUBLIC_JWK,{
+      name:'ECDSA',namedCurve:'P-256'
+    },false,['verify']);
+    okay=await subtle.verify({name:'ECDSA',hash:'SHA-256'},key,
+      decodeClbSignature(receipt.signature.signature),bytes);
+  } catch(error) {
+    if(String(error?.message||error).startsWith('CLB_E9_'))throw error;
+    deny('CONTENT_CRYPTO_VERIFY_FAILED');
+  }
+  if(!okay)deny('MASTER_OWNER_CONTENT_SIGNATURE_INVALID');
+  return true;
+}
+
+/** Guard an actual same-origin teacher release before importing its player. */
+export function validateClbMasterTeacherTarget(app,control,profile,{studioOrigin}={}) {
+  validateClbMasterReleaseProfile(profile);
+  const studio=canonicalOrigin(studioOrigin);
+  if(studio===MASTER_ORIGIN)deny('ORIGIN_MUST_BE_ISOLATED');
+  if(!app || app.id!==APP_ID || app.version!==MASTER_VERSION ||
+    app.integration?.launchMode!=='studio-teacher' ||
+    app.integration?.securityBoundary!=='isolated-anonymous-read-only' ||
+    app.integration?.requiresHttps!==true ||
+    app.integration?.contentMode!=='approved-public-only' ||
+    app.integration?.teacherTrainingRequired!==true ||
+    app.integration?.credentialBridgeAllowed!==false ||
+    app.integration?.autoPromotionAllowed!==false ||
+    app.integration?.releaseId!==MASTER_RELEASE_ID ||
+    app.integration?.manifestSha256!==profile.publicCatalogSha256 ||
+    app.integration?.signedStatementSha256!==profile.signedReleaseStatementSha256 ||
+    app.integration?.externalTargetUrl!==MASTER_ORIGIN+'/')
+    deny('MASTER_MANIFEST_RELEASE_BINDING');
+  if(!control || control.schema!=='ghrab-cl-studio-e9-teacher-launch-control-v1' ||
+    control.appId!==APP_ID || control.appVersion!==MASTER_VERSION ||
+    control.stage!=='PRODUCTION_AUTHORIZED' || control.launchEnabled!==true ||
+    control.teacherTrainingRequired!==true || control.requiredTrainingCode!=='CLB-01' ||
+    control.requiredTrainingVersion!=='2026-10' ||
+    control.teacherEntry!=='STUDIO_SAME_ORIGIN_PERMIT_AND_TRAINING_GATED' ||
+    control.studentDirectEntry!=='ANONYMOUS_NO_STUDIO_ACCOUNT' ||
+    control.publicPlayer!=='ANONYMOUS_READ_ONLY' ||
+    control.publicOrigin!==MASTER_ORIGIN || control.releaseId!==MASTER_RELEASE_ID ||
+    control.approvedDistributionManifestSha256!==profile.publicCatalogSha256 ||
+    control.publicStudioManifestSha256!==profile.publicStudioManifestSha256 ||
+    control.signedReleaseStatementSha256!==profile.signedReleaseStatementSha256 ||
+    control.approvedLessons!==72 || control.approvedCzechGlosses!==0 ||
+    control.ownerReleaseAuthorization!=='PROJECT_OWNER_S0_APPROVED' ||
+    control.publicRelease!=='MANUAL_RELEASE_APPROVED' ||
+    control.hostingOwnership!=='VERIFIED' || control.hostingHeaders!=='VERIFIED' ||
+    control.garpFoundation!=='VERIFIED_STATIC_GARP27_0_11_0' ||
+    control.publicClientLive!=='VERIFIED_EXACT_PUBLIC_INVENTORY' ||
+    control.garpLive!=='NOT_TESTED' || control.schoolServerLive!=='DEFERRED_NOT_TESTED' ||
+    control.independentSecurityApproval!=='OWNER_S0_AI_OPPOSITION_ACCEPTED' ||
+    control.ownerRiskAcceptanceRef!=='./governance/project-owner-release.v0.11.0.json' ||
+    control.riskProfile!=='S0_ANONYMOUS_STATIC_PUBLIC_PLAYER_ONLY' ||
+    control.studioCredentialBridge!=='FORBIDDEN' || control.publishStudentData!==false ||
+    control.autoPromotion!=='DISABLED' || control.crossRepositoryDispatch!=='DISABLED')
+    deny('MASTER_RELEASE_NOT_AUTHORIZED');
+  return MASTER_ORIGIN+'/';
+}
+
+export function assertClbMasterOwnerAcceptance(record,profile) {
+  validateClbMasterReleaseProfile(profile);
+  if(!record || record.schema!=='ghrab-clb-project-owner-release-acceptance-v1' ||
+    record.appId!==APP_ID || record.appVersion!==MASTER_VERSION ||
+    record.releaseId!==MASTER_RELEASE_ID || record.publicOrigin!==MASTER_ORIGIN ||
+    record.ownerGitHubLogin!=='Daniel22-dev' || record.ownerGitHubUserId!==287402620 ||
+    record.source!=='DIRECT_PROJECT_OWNER_CHAT_INSTRUCTION' ||
+    record.ownerAuthority!=='AI_STUDIO_PROJECT_LEAD_SELF_ASSERTED' ||
+    record.riskAcceptanceByProjectOwner!==true ||
+    record.schoolInstitutionalSignoff!=='NOT_ATTESTED' ||
+    record.independentSecurityApproval!=='NOT_CLAIMED' ||
+    record.publicArtifact?.ownerSignedStatementSha256!==profile.signedReleaseStatementSha256 ||
+    record.publicArtifact?.zipSha256!==profile.publicStaticZipSha256 ||
+    record.publicArtifact?.publicManifestSha256!==profile.publicStudioManifestSha256 ||
+    record.publicArtifact?.publicCatalogSha256!==profile.publicCatalogSha256 ||
+    record.studentIdentityOrStoredAnswers!==false || record.studioTokenForwarding!==false ||
+    record.autoPromotion!==false)
+    deny('MASTER_OWNER_ACCEPTANCE_SCOPE_INVALID');
+  return true;
+}
+
+/**
+ * The teacher entry must call initialiseAccess(), assertClbSignedTrainingPolicy()
+ * and hasAppAccess() first. This function fetches only Studio-origin release
+ * evidence, never a Cloudflare page or any third-party endpoint.
+ */
+export async function checkedConversationLabMasterTarget(app,{
+  studioOrigin,releaseProfile,fetchImpl=globalThis.fetch,cryptoImpl=globalThis.crypto
+}={}) {
+  if(typeof fetchImpl!=='function')deny('CONFIG_FETCH_UNAVAILABLE');
+  const read=async(resource,code)=>{
+    let response;
+    try {
+      response=await fetchImpl(clbIntegrationResourceUrl(resource),{
+        method:'GET',credentials:'same-origin',cache:'no-store',redirect:'error'
+      });
+    } catch {deny(code+'_UNAVAILABLE')}
+    if(!response?.ok || response.redirected)deny(code+'_UNAVAILABLE');
+    try {return await response.json()}catch{deny(code+'_INVALID_JSON')}
+  };
+  const control=await read('./launch-control.v0.11.0.json','MASTER_CONTROL');
+  const target=validateClbMasterTeacherTarget(app,control,releaseProfile,{studioOrigin});
+  const receipt=await read('./owner-content-release.v0.11.0.signed.json','MASTER_OWNER_CONTENT');
+  await verifyClbMasterOwnerContentReceipt(receipt,releaseProfile,{cryptoImpl});
+  const record=await read(control.ownerRiskAcceptanceRef,'MASTER_OWNER_ACCEPTANCE');
+  assertClbMasterOwnerAcceptance(record,releaseProfile);
   return target;
 }

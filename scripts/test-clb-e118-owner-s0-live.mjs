@@ -7,9 +7,9 @@ import {assertClbSignedTrainingPolicy,validateConversationLabTeacherTarget,check
 const load=async f=>JSON.parse(await readFile(new URL('../'+f,import.meta.url),'utf8'));
 const pref='src/integration/conversation-lab/';
 const site='https://conversation-lab-ghrab.pages.dev/';
-const controlPath='../../integration/conversation-lab/launch-control.json';
-const receiptPath='../../integration/conversation-lab/owner-content-release.v0.9.2.signed.json';
-const decisionPath='../../integration/conversation-lab/governance/project-owner-release.v0.9.2.json';
+const controlPath=new URL('../src/integration/conversation-lab/launch-control.json',import.meta.url).href;
+const receiptPath=new URL('../src/integration/conversation-lab/owner-content-release.v0.9.2.signed.json',import.meta.url).href;
+const decisionPath=new URL('../src/integration/conversation-lab/governance/project-owner-release.v0.9.2.json',import.meta.url).href;
 const old=[['generator','7.1.99'],['differentiator','1.3.51'],['essay-evaluator','1.5.30'],['correspondence','5.10.34'],['ludus','1.16.31'],['activity-builder','0.5.30'],['sortio','1.1.23'],['lesson-hub','1.2.26'],['maturita-desk','1.0.6']];
 const clone=v=>structuredClone(v);
 async function fixture(){

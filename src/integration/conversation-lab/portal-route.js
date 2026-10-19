@@ -7,8 +7,8 @@
  * this routing switch must never be mistaken for release authorization.
  * Existing signed B1 v0.9.2 keeps its original external launcher path.
  */
-const TEACHER_VERSION = '0.10.1';
-const TEACHER_RELEASE = 'cl-three-topics-72-20261019-r2';
+const TEACHER_VERSION = '0.11.0';
+const TEACHER_RELEASE = 'cl-master-72-20261019-r1';
 
 export function studioPortalDestination(app, base) {
   if (typeof app?.id !== 'string' || !app.id) throw Error('STUDIO_APP_ID_REQUIRED');
