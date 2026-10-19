@@ -1,7 +1,6 @@
 'use strict';
-// Runs the real built teacher entry, access logic and release verifier. Only the
-// access trust root and teacher permit are ephemeral QA credentials. The actual
-// owner V2 receipt, release guard, registry, HTML/CSS/runtime are NOT mocked.
+// Built teacher bytes and the real content receipt are never stubbed. Only the
+// access trust root and signed synthetic teacher permit are ephemeral QA inputs.
 const fs=require('node:fs'),path=require('node:path'),assert=require('node:assert/strict');
 const {webcrypto}=require('node:crypto');
 const pw=require(process.env.CLB_PLAYWRIGHT_MODULE||'playwright');
@@ -18,6 +17,7 @@ const mime={'.html':'text/html','.js':'text/javascript','.json':'application/jso
 (async()=>{
  let browser;
  try{
+ const {CLB_STUDIO_CSP}=await import('./lib/clb-studio-adapter.mjs');
  const key=await webcrypto.subtle.generateKey({name:'ECDSA',namedCurve:'P-256'},true,['sign','verify']);
  const pub=await webcrypto.subtle.exportKey('jwk',key.publicKey);const kid='clb-ephemeral-qa-not-production';
  const sign=async s=>b64(await webcrypto.subtle.sign({name:'ECDSA',hash:'SHA-256'},key.privateKey,enc(s)));
@@ -38,33 +38,34 @@ const mime={'.html':'text/html','.js':'text/javascript','.json':'application/jso
   browser=await pw[engine].launch({headless:true,...(process.env.CLB_CHROMIUM_PATH&&engine==='chromium'?{executablePath:process.env.CLB_CHROMIUM_PATH}:{}),args:engine==='chromium'?['--no-sandbox']:[]});
   const scenarios=[{name:'actual-policy-no-permit',realTrust:true,deny:true},{name:'signed-permit-no-app',kind:'no-app',deny:true},{name:'signed-permit-missing-training',kind:'no-training',deny:true},{name:'signed-permit-outdated-training',kind:'old-training',deny:true},{name:'release-hold',hold:true,deny:true},{name:'tampered-owner-receipt',receipt:true,deny:true},{name:'tampered-loader-sri',loader:true,deny:true},{name:'actual-owner-release-and-qa-teacher',positive:true}];
   for(const scenario of scenarios){
-   const item={engine,name:scenario.name,requests:[],errors:[],variants:0,stations:0,qr:0,anonymousOpens:0,status:'RUNNING'};report.cases.push(item);
+   const item={engine,name:scenario.name,requests:[],errors:[],cspViolations:[],cspProbeViolations:[],variants:0,stations:0,qr:0,anonymousOpens:0,status:'RUNNING'};report.cases.push(item);
    const context=await browser.newContext({viewport:{width:1440,height:1000},serviceWorkers:'block'});
+   let intentionalProbe=false;
+   await context.exposeBinding('__clbQaCspEvent',(_source,event)=>{(intentionalProbe?item.cspProbeViolations:item.cspViolations).push(event);});
+   await context.addInitScript(()=>{globalThis.__clbCspEvents=[];document.addEventListener('securitypolicyviolation',e=>{const event={directive:e.violatedDirective,blocked:e.blockedURI};globalThis.__clbCspEvents.push(event);globalThis.__clbQaCspEvent(event);});});
    const token=await permit(scenario.kind);
    await context.addInitScript(({token,origin})=>{if(location.origin===origin&&token)localStorage.setItem('ghrab.access.permit.v2',token);},{token:scenario.realTrust?null:token,origin:ORIGIN});
    await context.route('**/*',async route=>{
     const req=route.request(),u=new URL(req.url()),headers=await req.allHeaders();
     item.requests.push({origin:u.origin,path:u.pathname,method:req.method(),authorization:!!headers.authorization,cookie:!!headers.cookie,referrer:headers.referer||null});
     if(![ORIGIN,PUBLIC].includes(u.origin)||req.method()!=='GET')return route.abort();
-    if(u.origin===PUBLIC) { assert.equal(headers.authorization,undefined);assert.equal(headers.cookie,undefined);assert.ok(!headers.referer||!headers.referer.startsWith(ORIGIN));return route.continue(); }
-    let n;
-    if(u.origin===ORIGIN){if(!u.pathname.startsWith(BASE))return route.abort();n=decodeURIComponent(u.pathname.slice(BASE.length)||'index.html');}
-    else {n='conversation-lab/'+decodeURIComponent(u.pathname.slice(1)||'index.html');}
+    if(u.origin===PUBLIC) {assert.equal(headers.authorization,undefined);assert.equal(headers.cookie,undefined);assert.ok(!headers.referer||!headers.referer.startsWith(ORIGIN));return route.continue();}
+    if(!u.pathname.startsWith(BASE))return route.abort();
+    let n=decodeURIComponent(u.pathname.slice(BASE.length)||'index.html');
     if(n.endsWith('/'))n+='index.html';if(n.split('/').includes('..'))return route.abort();
     let bytes;try{bytes=read(n);}catch{return route.fulfill({status:404,body:'missing test resource: '+n});}
-    if(u.origin===ORIGIN){
-     if(!scenario.realTrust&&n==='access/access-control.js')bytes=Buffer.from(qaAccess);
-     if(!scenario.realTrust&&n==='config/access-config-bundle.json')bytes=Buffer.from(JSON.stringify(bundle));
-     if(!scenario.realTrust&&n==='config/access-config-bundle.sig.json')bytes=Buffer.from(JSON.stringify(bundleSig));
-     if(scenario.hold&&n==='integration/conversation-lab/launch-control.v0.11.0.json'){const c=JSON.parse(bytes);c.stage='PRELIVE_HOLD';c.launchEnabled=false;bytes=Buffer.from(JSON.stringify(c));}
-     if(scenario.receipt&&n==='integration/conversation-lab/owner-content-release.v0.11.0.signed.json'){const c=JSON.parse(bytes);c.statement.ownerPedagogicalApproval=false;bytes=Buffer.from(JSON.stringify(c));}
-     if(scenario.loader&&n==='conversation-lab/assets/app.js')bytes=Buffer.concat([bytes,Buffer.from('\n/* QA tampered loader */')]);
-    }
+    if(!scenario.realTrust&&n==='access/access-control.js')bytes=Buffer.from(qaAccess);
+    if(!scenario.realTrust&&n==='config/access-config-bundle.json')bytes=Buffer.from(JSON.stringify(bundle));
+    if(!scenario.realTrust&&n==='config/access-config-bundle.sig.json')bytes=Buffer.from(JSON.stringify(bundleSig));
+    if(scenario.hold&&n==='integration/conversation-lab/launch-control.v0.11.0.json'){const c=JSON.parse(bytes);c.stage='PRELIVE_HOLD';c.launchEnabled=false;bytes=Buffer.from(JSON.stringify(c));}
+    if(scenario.receipt&&n==='integration/conversation-lab/owner-content-release.v0.11.0.signed.json'){const c=JSON.parse(bytes);c.statement.ownerPedagogicalApproval=false;bytes=Buffer.from(JSON.stringify(c));}
+    if(scenario.loader&&n==='conversation-lab/assets/app.js')bytes=Buffer.concat([bytes,Buffer.from('\n/* QA tampered loader */')]);
     await route.fulfill({status:200,body:bytes,headers:{'Content-Type':mime[path.extname(n)]||'application/octet-stream','Cache-Control':'no-store','Referrer-Policy':'no-referrer','X-Content-Type-Options':'nosniff'}});
    });
    const page=await context.newPage();page.on('pageerror',e=>item.errors.push(e.message));page.setDefaultTimeout(12000);
    try{
     await page.goto(TEACHER+'#/l/artificial-intelligence/en/B2/s/s01');
+    assert.equal(await page.locator('meta[http-equiv="Content-Security-Policy"]').getAttribute('content'),CLB_STUDIO_CSP);
     if(scenario.deny){
      await page.waitForFunction(()=>document.documentElement.dataset.clbGate==='denied');
      item.gateMessage=await page.locator('#clb-gate-status').innerText();
@@ -78,6 +79,7 @@ const mime={'.html':'text/html','.js':'text/javascript','.json':'application/jso
       await page.waitForFunction(text=>document.querySelector('#mainQuestion')?.textContent===text,lesson.stations[0].mainQuestion);
       assert.equal(await page.locator('html').getAttribute('lang'),entry.language);
       assert.ok(await page.title());assert.equal(await page.locator('meta[name="viewport"]').count(),1);
+      assert.equal(await page.locator('meta[http-equiv="Content-Security-Policy"]').getAttribute('content'),CLB_STUDIO_CSP);
       for(let i=0;i<8;i++){await page.locator('#sectionNav button').nth(i).evaluate(n=>n.click());assert.equal(await page.locator('#mainQuestion').textContent(),lesson.stations[i].mainQuestion);item.stations++;}item.variants++;
      }
      for(const topic of ['artificial-intelligence','the-pressure-to-succeed','summer-holidays']){
@@ -86,23 +88,32 @@ const mime={'.html':'text/html','.js':'text/javascript','.json':'application/jso
       const target=PUBLIC+'/#/l/'+topic+'/en/B2/s/s03';assert.equal(await page.locator('#clb-share-url').inputValue(),target);assert.equal(await page.locator('#clb-share-qr svg').count(),1);item.qr++;
       await page.screenshot({path:path.join(output,engine+'-'+topic+'-teacher.png')});
       const studentContext=await browser.newContext({serviceWorkers:'block'});
-      try { const student=await studentContext.newPage();const bad=[];await studentContext.route('**/*',async r=>{const h=await r.request().allHeaders();if(!r.request().url().startsWith(PUBLIC+'/')||h.authorization||h.cookie||h.referer?.startsWith(ORIGIN)) {bad.push(r.request().url());return r.abort();}return r.continue();});
-        await student.goto(target);await student.waitForFunction(()=>document.querySelector('#stationNum')?.textContent==='3');
-        assert.equal(await student.locator('#mainQuestion').textContent(),await page.locator('#mainQuestion').textContent());assert.deepEqual(await studentContext.cookies(),[]);assert.deepEqual(bad,[]);item.anonymousOpens++;
-      } finally {await studentContext.close();}
+      try {const student=await studentContext.newPage();const bad=[];await studentContext.route('**/*',async r=>{const h=await r.request().allHeaders();if(!r.request().url().startsWith(PUBLIC+'/')||h.authorization||h.cookie||h.referer?.startsWith(ORIGIN)){bad.push(r.request().url());return r.abort();}return r.continue();});
+       await student.goto(target);await student.waitForFunction(()=>document.querySelector('#stationNum')?.textContent==='3');
+       assert.equal(await student.locator('#mainQuestion').textContent(),await page.locator('#mainQuestion').textContent());assert.deepEqual(await studentContext.cookies(),[]);assert.deepEqual(bad,[]);item.anonymousOpens++;
+      }finally{await studentContext.close();}
      }
      assert.ok(item.requests.some(x=>x.path.endsWith('/owner-content-release.v0.11.0.signed.json')));
      assert.ok(item.requests.some(x=>x.path.endsWith('/governance/project-owner-release.v0.11.0.json')));
      assert.ok(item.requests.every(x=>x.origin===ORIGIN),'Teacher must never fetch Cloudflare with credentials');
      item.accessSnapshot=await page.evaluate(async()=>{const x=await import('../access/access-control.js');const a=x.hasAppAccess('conversation-lab');return {enabled:a.enabled,reason:a.reason,role:a.permit?.role};});
      assert.deepEqual(item.accessSnapshot,{enabled:true,reason:'permitted',role:'teacher'});assert.equal(item.variants,72);assert.equal(item.stations,576);assert.equal(item.qr,3);assert.equal(item.anonymousOpens,3);
+     assert.deepEqual(item.cspViolations,[]);
+     intentionalProbe=true;
+     await page.evaluate(()=>{globalThis.__clbInlineProbe=0;globalThis.__clbCspEvents=[];const inline=document.createElement('script');inline.textContent='globalThis.__clbInlineProbe=1';document.head.append(inline);const foreign=document.createElement('script');foreign.src='https://example.invalid/clb-security-probe.js';document.head.append(foreign);});
+     await page.waitForFunction(()=>globalThis.__clbCspEvents.length>=2);
+     assert.equal(await page.evaluate(()=>globalThis.__clbInlineProbe),0);
+     const probe=await page.evaluate(()=>globalThis.__clbCspEvents);
+     assert.ok(probe.some(x=>x.blocked==='inline'&&x.directive.startsWith('script-src')));
+     assert.ok(probe.some(x=>x.blocked.startsWith('https://example.invalid')&&x.directive.startsWith('script-src')));
+     item.cspEnforcement={inlineScriptBlocked:true,foreignScriptBlocked:true,actualBrowserEvents:probe};
     }
-    assert.deepEqual(item.errors,[]);item.status='PASS';
+    assert.deepEqual(item.cspViolations,[]);assert.deepEqual(item.errors,[]);item.status='PASS';
    }catch(e){item.status='FAIL';item.error=e.stack;throw e;}finally{await context.close();}
   }
   await browser.close();browser=null;
  }
  report.status='PASS';
  }catch(e){report.status='FAIL';report.errors.push(e.stack);console.error(e);process.exitCode=1;}
- finally{await browser?.close();fs.writeFileSync(path.join(output,'report.json'),JSON.stringify(report,null,2)+'\n');console.log('CLB_TEACHER_QA='+JSON.stringify({status:report.status,cases:report.cases.map(({engine,name,status,variants,stations,qr,gateMessage,error})=>({engine,name,status,variants,stations,qr,gateMessage,error})),errors:report.errors}));}
+ finally{await browser?.close();fs.writeFileSync(path.join(output,'report.json'),JSON.stringify(report,null,2)+'\n');console.log('CLB_TEACHER_QA='+JSON.stringify({status:report.status,cases:report.cases.map(({engine,name,status,variants,stations,qr,gateMessage,error,cspViolations,cspEnforcement})=>({engine,name,status,variants,stations,qr,gateMessage,error,cspViolations,cspEnforcement})),errors:report.errors}));}
 })();
