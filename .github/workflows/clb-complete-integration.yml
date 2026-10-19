@@ -1,0 +1,85 @@
+name: CLB final integration and three-engine preflight (NO DEPLOY)
+on:
+  push:
+    branches: ['feature/clb-teacher-same-origin-prelive-20261019']
+    paths: ['.github/workflows/clb-complete-integration.yml']
+permissions:
+  contents: write
+jobs:
+  complete:
+    runs-on: ubuntu-latest
+    timeout-minutes: 40
+    steps:
+      - uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683
+        with:
+          fetch-depth: 2
+          persist-credentials: false
+      - uses: actions/setup-node@49933ea5288caeca8642d1e84afbd3f7d6820020
+        with:
+          node-version: '22'
+      - name: Apply reviewed patch with explicit read-only User-Agent
+        run: |
+          python3 - <<'PY'
+          import pathlib,subprocess,hashlib
+          workflow=pathlib.Path('.github/workflows/clb-install-verified-master.yml').read_text()
+          blob=hashlib.sha1(('blob '+str(len(workflow.encode()))+'\0').encode()+workflow.encode()).hexdigest()
+          assert blob=='68477f65ed5987c3351d6e043ec5dfd4c4a3b4eb', 'Recovery workflow changed'
+          block=workflow.split('        run: |\n',1)[1].split('      - name: Install locked tools',1)[0]
+          script='\n'.join(line[10:] for line in block.splitlines())+'\n'
+          assert script.count("parent=='ca5a1d4ccf04ae65f8b794ae2e5c784b82a6c24e'")==1
+          script=script.replace("parent=='ca5a1d4ccf04ae65f8b794ae2e5c784b82a6c24e'","parent=='584259e96048565d9fa623e127bed37625ffa168'")
+          script=script.replace("headers={'Accept-Encoding':'identity','Cache-Control':'no-cache'}","headers={'Accept-Encoding':'identity','Cache-Control':'no-cache','User-Agent':'CLB-TEACHER-INTEGRATION-READONLY'}")
+          subprocess.run(['bash','-e','-c',script],check=True)
+          PY
+      - name: Install locked tools and run actual static, signature and live checks
+        run: |
+          npm ci --ignore-scripts --no-audit --no-fund
+          node --test scripts/test-clb-master-received-owner-signature.mjs scripts/test-clb-master-staged-hold.mjs scripts/test-clb-master-teacher-gate.mjs scripts/test-clb-studio-portal-route.mjs scripts/test-clb-e118-owner-s0-live.mjs
+          npm run qa:garp27:regressions
+          npm run qa:quality
+          node scripts/test-clb-master-live.mjs
+      - name: Commit exact integration to feature only with optimistic lease
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          set -euo pipefail
+          branch='feature/clb-teacher-same-origin-prelive-20261019'
+          auth="AUTHORIZATION: basic $(printf 'x-access-token:%s' "$GH_TOKEN" | base64 -w0)"
+          test "$(git -c "http.extraHeader=$auth" ls-remote origin "refs/heads/$branch" | cut -f1)" = "$GITHUB_SHA"
+          git config user.name 'github-actions[bot]'
+          git config user.email '41898282+github-actions[bot]@users.noreply.github.com'
+          git add -u
+          git add config/clb-master-public-inventory.json scripts/assemble-clb-master.py scripts/fixtures scripts/lib/clb-master-integrity.mjs scripts/lib/clb-master-registry.mjs scripts/test-clb-master-browser.cjs scripts/test-clb-master-live.mjs src/conversation-lab src/integration/conversation-lab/governance/project-owner-release.v0.11.0.json
+          git commit -m 'feat(clb): install exact MASTER teacher library and verified Studio 0.21.248 integration'
+          git -c "http.extraHeader=$auth" push origin "HEAD:refs/heads/$branch"
+          echo "GHRAB_SOURCE_COMMIT=$(git rev-parse HEAD)" >> "$GITHUB_ENV"
+      - name: Install three browser engines
+        run: npx playwright install --with-deps chromium firefox webkit
+      - name: Actual teacher release crypto and 72 variants in each engine
+        env:
+          CLB_ENGINE: chromium,firefox,webkit
+        run: node scripts/test-clb-master-browser.cjs
+      - name: Full GARP and P5 preflight, not production promotion
+        run: |
+          npm run qa:garp27:foundation
+          npm run qa:p5:ci
+          npm run test:studio-ux
+      - name: Retain source and diagnostics
+        if: always()
+        run: |
+          mkdir -p qa-results/clb-final
+          git archive HEAD > qa-results/clb-final/source.tar
+          git diff > qa-results/clb-final/uncommitted.patch
+          git rev-parse HEAD HEAD^{tree} > qa-results/clb-final/refs.txt
+      - uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
+        if: always()
+        with:
+          name: CLB-FINAL-INTEGRATION
+          path: |
+            qa-results/clb-final/
+            qa-results/clb-master-browser/
+            qa-results/clb-master-live/
+            qa-results/garp27/
+            dist/quality-report.json
+            dist/qa-p5-*.json
+          retention-days: 14
