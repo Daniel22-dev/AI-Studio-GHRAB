@@ -2,7 +2,7 @@
   {
     "id": "ai-studio",
     "name": "AI Studio GHRAB",
-    "version": "0.21.243",
+    "version": "0.21.248",
     "slug": "ai-studio-ghrab",
     "paths": {
       "app": "https://daniel22-dev.github.io/AI-Studio-GHRAB/",
@@ -31,7 +31,7 @@
       "performanceContract": "ghrab-performance-v1",
       "moduleContract": "ghrab-lazy-modules-v1"
     },
-    "cacheName": "ghrab-ai-studio-v0.21.243",
+    "cacheName": "ghrab-ai-studio-v0.21.248",
     "theme": {
       "supported": [
         "dark"
@@ -42,7 +42,7 @@
   {
     "id": "generator",
     "name": "Generátor interaktivních testů",
-    "version": "7.1.99",
+    "version": "7.1.100",
     "slug": "generator-testu",
     "paths": {
       "app": "https://daniel22-dev.github.io/generator-testu/",
@@ -71,7 +71,7 @@
       "performanceContract": "ghrab-performance-v1",
       "moduleContract": "ghrab-lazy-modules-v1"
     },
-    "cacheName": "ghrab-generator-v7.1.99",
+    "cacheName": "ghrab-generator-v7.1.100",
     "theme": {
       "supported": [
         "light",
@@ -421,7 +421,7 @@
   {
     "id": "conversation-lab",
     "name": "Conversation Lab",
-    "version": "0.9.2",
+    "version": "0.11.0",
     "slug": "conversation-lab",
     "paths": {
       "app": "https://conversation-lab-ghrab.pages.dev/",
@@ -450,7 +450,7 @@
       "performanceContract": "ghrab-performance-v1",
       "moduleContract": "not-applicable"
     },
-    "cacheName": "ghrab-conversation-lab-v0.9.2",
+    "cacheName": "ghrab-conversation-lab-v0.11.0",
     "theme": {
       "supported": [
         "light",

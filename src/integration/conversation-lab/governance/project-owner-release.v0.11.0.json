@@ -1,0 +1,50 @@
+{
+  "schema": "ghrab-clb-project-owner-release-acceptance-v1",
+  "appId": "conversation-lab",
+  "appVersion": "0.11.0",
+  "releaseId": "cl-master-72-20261019-r1",
+  "publicOrigin": "https://conversation-lab-ghrab.pages.dev",
+  "ownerGitHubLogin": "Daniel22-dev",
+  "ownerGitHubUserId": 287402620,
+  "source": "DIRECT_PROJECT_OWNER_CHAT_INSTRUCTION",
+  "ownerAuthority": "AI_STUDIO_PROJECT_LEAD_SELF_ASSERTED",
+  "riskAcceptanceByProjectOwner": true,
+  "schoolInstitutionalSignoff": "NOT_ATTESTED",
+  "independentSecurityApproval": "NOT_CLAIMED",
+  "publicArtifact": {
+    "ownerSignedStatementSha256": "7a5d3f31f0ebd146fc3c154f4ba16ddb26cbfa14b06313645ac8be54853f3d79",
+    "zipSha256": "7c226d23bd49d393440bff17a478932fed78f66dd7b0d3978e3999870403f338",
+    "publicManifestSha256": "253650d3fd3a50c66884f3650fcffbd8ffeca16bd4eaacbb1dc73d5e9d947ea5",
+    "publicCatalogSha256": "809b009d66af3d52bc7676b7ba5b0be8cda6cbb34b24f7e5b5b109a2d3f94e38"
+  },
+  "studentIdentityOrStoredAnswers": false,
+  "studioTokenForwarding": false,
+  "autoPromotion": false,
+  "instruction": {
+    "date": "2026-10-19",
+    "text": "dokonči tedy",
+    "context": "Owner explicitly requested completion of the protected Studio integration after owner upload and verified HOSTFIX1; the separate signed V2 statement authorises this teacher connection."
+  },
+  "hostingRepair": {
+    "id": "cl-master-0.11.0-hostfix1",
+    "transportSha256": "6ad3894c2943e76b7ad954ae277e71dd10d528b2f8fdd707793f2dfa3fbc0f74",
+    "signedByOriginalReceipt": false,
+    "runtimeOrLessonChanges": false
+  },
+  "liveEvidence": {
+    "runId": 39300591592,
+    "sourceCommit": "e13d50dc3cdbb47da90f0f1980f111fb21b36202",
+    "status": "PASS",
+    "httpFiles": 119,
+    "negativeRoutes": 6,
+    "browserEngines": [
+      "chromium",
+      "firefox",
+      "webkit"
+    ],
+    "variantsPerEngine": 72,
+    "stationsPerEngine": 576,
+    "physicalDevicesTested": false
+  },
+  "note": "Owner S0 project-level acceptance only. The legacy control label OWNER_S0_AI_OPPOSITION_ACCEPTED is not an independent or institutional security certificate. P5 and branch protection remain required before main promotion."
+}

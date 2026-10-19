@@ -281,16 +281,20 @@
       "repository": "Daniel22-dev/conversation-lab-source",
       "ok": true,
       "verification": "deployment",
-      "version": "0.9.2",
-      "sourceVersion": "0.9.2",
+      "version": "0.11.0",
+      "sourceVersion": "0.11.0",
       "aiOperations": null,
       "operationsWarning": null,
-      "lastSourceVerifiedAt": "2026-10-19T06:28:37.212Z",
-      "lastLiveVerifiedAt": "2026-10-19T06:28:37.212Z",
+      "lastSourceVerifiedAt": "2026-10-19T18:17:36.000Z",
+      "lastLiveVerifiedAt": "2026-10-19T18:17:36.000Z",
       "releaseIdentity": {
         "status": "ABSENT",
         "contract": null,
         "assuranceMode": null
+      },
+      "verificationEvidence": {
+        "runId": 39300591592,
+        "manifestSha256": "253650d3fd3a50c66884f3650fcffbd8ffeca16bd4eaacbb1dc73d5e9d947ea5"
       }
     }
   ],

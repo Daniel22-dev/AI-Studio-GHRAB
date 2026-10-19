@@ -1,3 +1,8 @@
 # Immutable GHRAB AI Core releases are byte-for-byte artifacts.
 # Their integrity is verified by SHA-256; formatting them would invalidate the release.
 src/ai-core/releases/**
+
+# Exact MASTER lesson artifacts; build verifies every byte independently.
+src/conversation-lab/**
+config/clb-master-public-inventory.json
+scripts/fixtures/clb-original-release-profile.js

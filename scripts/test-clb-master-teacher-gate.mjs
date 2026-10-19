@@ -129,12 +129,12 @@ test('Actual signed CLB-01 policy and both B1 owner receipts still verify under 
 
 test('Actual 0.9.2 teacher launch preserves signature, owner scope and same-origin fetches after URL fix',async()=>{
   const [apps,control,receipt,decision]=await Promise.all([
-    'src/config/apps.generated.json',prefix+'launch-control.json',
+    'scripts/fixtures/clb-legacy-0.9.2-app.json',prefix+'launch-control.json',
     prefix+'owner-content-release.v0.9.2.signed.json',prefix+'governance/project-owner-release.v0.9.2.json'
   ].map(read));
   const expected=[prefix+'launch-control.json',prefix+'owner-content-release.v0.9.2.signed.json',prefix+'governance/project-owner-release.v0.9.2.json'].map(path=>new URL(path,root).href);
   const values=[control,receipt,decision],seen=[];
-  const target=await checkedConversationLabTarget(apps.find(app=>app.id==='conversation-lab'),{
+  const target=await checkedConversationLabTarget(apps,{
     studioOrigin:studio,cryptoImpl:webcrypto,fetchImpl:async(url,options)=>{
       seen.push(url);assert.deepEqual(options,{method:'GET',credentials:'same-origin',cache:'no-store',redirect:'error'});
       const index=expected.indexOf(url);assert.ok(index>=0);return {ok:true,redirected:false,json:async()=>values[index]};

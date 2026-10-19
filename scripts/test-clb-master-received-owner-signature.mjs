@@ -45,8 +45,8 @@ test('Unsigned timestamp or content changes cannot piggyback on the received sig
  await assert.rejects(()=>verifyClbMasterOwnerContentReceipt(scope,signedProfile,{cryptoImpl:webcrypto}),/MASTER_OWNER_CONTENT_SCOPE_MISMATCH/);
 });
 
-test('Received content approval does not bypass current production HOLD or fetch missing runtime',async()=>{
- const control=await load('src/integration/conversation-lab/launch-control.v0.11.0.json');
+test('Received content approval cannot bypass an explicit rollback HOLD or fetch runtime',async()=>{
+ const control={...await load('src/integration/conversation-lab/launch-control.v0.11.0.json'),stage:'PRELIVE_HOLD',launchEnabled:false};
  assert.equal(control.stage,'PRELIVE_HOLD');assert.equal(control.launchEnabled,false);
  const app={id:'conversation-lab',version:'0.11.0',integration:{launchMode:'studio-teacher',securityBoundary:'isolated-anonymous-read-only',requiresHttps:true,contentMode:'approved-public-only',teacherTrainingRequired:true,credentialBridgeAllowed:false,autoPromotionAllowed:false,releaseId:signedProfile.releaseId,manifestSha256:signedProfile.publicCatalogSha256,signedStatementSha256:receipt.statementSha256,externalTargetUrl:signedProfile.publicOrigin+'/'}};
  const calls=[];

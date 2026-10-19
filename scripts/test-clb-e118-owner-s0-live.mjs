@@ -10,7 +10,7 @@ const site='https://conversation-lab-ghrab.pages.dev/';
 const controlPath=new URL('../src/integration/conversation-lab/launch-control.json',import.meta.url).href;
 const receiptPath=new URL('../src/integration/conversation-lab/owner-content-release.v0.9.2.signed.json',import.meta.url).href;
 const decisionPath=new URL('../src/integration/conversation-lab/governance/project-owner-release.v0.9.2.json',import.meta.url).href;
-const old=[['generator','7.1.99'],['differentiator','1.3.51'],['essay-evaluator','1.5.30'],['correspondence','5.10.34'],['ludus','1.16.31'],['activity-builder','0.5.30'],['sortio','1.1.23'],['lesson-hub','1.2.26'],['maturita-desk','1.0.6']];
+const old=[['generator','7.1.100'],['differentiator','1.3.51'],['essay-evaluator','1.5.30'],['correspondence','5.10.34'],['ludus','1.16.31'],['activity-builder','0.5.30'],['sortio','1.1.23'],['lesson-hub','1.2.26'],['maturita-desk','1.0.6']];
 const clone=v=>structuredClone(v);
 async function fixture(){
  const [apps,control,receipt,decision,bundle,signature,key]=await Promise.all([
@@ -21,9 +21,9 @@ async function fixture(){
   load('src/config/access-config-bundle.sig.json'),
   load('src/config/access-config-verify-key.json')
  ]);
- return {apps,app:apps.find(a=>a.id==='conversation-lab'),control,receipt,decision,bundle,signature,key};
+ return {apps,app:await load('scripts/fixtures/clb-legacy-0.9.2-app.json'),control,receipt,decision,bundle,signature,key};
 }
-test('E118 exactly ten apps with unchanged original nine, auto-promotion off',async()=>{
+test('E118 exactly ten apps with current nine-app baseline; retained legacy fixture is not active release',async()=>{
  const x=await fixture();
  const [fallback,sources,wave,readiness,consumers,sync,promotion]=await Promise.all([
   load('src/config/apps.fallback.json'),load('src/config/sources.json'),
@@ -31,6 +31,7 @@ test('E118 exactly ten apps with unchanged original nine, auto-promotion off',as
   load('src/config/platform-consumers.json'),load('src/config/sync-report.json'),
   load('src/config/release-promotion-policy.json')]);
  assert.equal(x.apps.length,10);
+ assert.equal(x.apps.find(a=>a.id==='conversation-lab').version,'0.11.0');
  assert.deepEqual(x.apps.slice(0,9).map(v=>[v.id,v.version]),old);
  assert.deepEqual(fallback,x.apps);
  assert.equal(sources.length,10);

@@ -1089,40 +1089,12 @@
     }
   },
   {
-    "schema": "ai-studio-app-manifest-v1",
-    "id": "conversation-lab",
-    "name": {
-      "cs": "Conversation Lab",
-      "en": "Conversation Lab"
-    },
-    "version": "0.9.2",
-    "status": {
-      "cs": "Řízený pilot · první schválená lekce",
-      "en": "Controlled pilot · first approved lesson"
-    },
-    "description": {
-      "cs": "Konverzační laboratoř pro výuku jazyků. Stanoviště, české offline překlady a QR odkazy pro studenty.",
-      "en": "Language conversation laboratory with discussion stations, offline Czech translations and QR links for students."
-    },
-    "launchUrl": "https://conversation-lab-ghrab.pages.dev/",
-    "manualUrl": "https://conversation-lab-ghrab.pages.dev/manual/",
-    "repository": "Daniel22-dev/conversation-lab-source",
-    "icon": "assets/apps/conversation-lab.svg",
     "accent": "#397D9E",
-    "tags": [
-      {
-        "cs": "AJ · konverzace",
-        "en": "EN · speaking"
-      },
-      {
-        "cs": "8 stanovišť",
-        "en": "8 stations"
-      },
-      {
-        "cs": "Offline překlady",
-        "en": "Offline translations"
-      }
-    ],
+    "aiCore": {
+      "reason": "Read-only public player: no identity, AI calls or external translation API",
+      "schema": "ghrab-ai-app-integration-v1",
+      "status": "not-applicable"
+    },
     "capabilities": [
       "conversation-practice",
       "station-navigation",
@@ -1133,51 +1105,79 @@
       "accessibility-v1"
     ],
     "compatibility": {
-      "studioMinVersion": "0.21.243",
-      "studioBridge": "2.0",
       "platformContract": "ghrab-platform-v1",
-      "platformRange": ">=1.1.2 <2.0.0"
+      "platformRange": ">=1.1.2 <2.0.0",
+      "studioBridge": "2.0",
+      "studioMinVersion": "0.21.244"
     },
-    "publishedAt": null,
+    "description": {
+      "cs": "Konverzační laboratoř pro výuku jazyků. Osm stanovišť, 4 jazyky, 6 úrovní CEFR, offline české překlady a QR odkazy.",
+      "en": "Conversation laboratory with 8 stations, 4 languages, 6 CEFR levels, offline Czech translations and QR sharing."
+    },
+    "icon": "assets/apps/conversation-lab.svg",
+    "id": "conversation-lab",
     "integration": {
-      "launchMode": "external-protected",
-      "securityBoundary": "isolated-anonymous-read-only",
-      "requiresHttps": true,
-      "externalTargetUrl": "https://conversation-lab-ghrab.pages.dev/",
-      "contentMode": "approved-public-only",
-      "studioAccessIsLauncherGateOnly": true,
-      "teacherTrainingRequired": true,
-      "credentialBridgeAllowed": false,
       "autoPromotionAllowed": false,
-      "releaseId": "cl-ai-b1-pilot-20261018-r2",
-      "manifestSha256": "2ab4cab8e95a8c124f1f8670b1cfe861f3e7557dfe9ece89c768bb2d7121fce6",
-      "signedStatementSha256": null
+      "contentMode": "approved-public-only",
+      "credentialBridgeAllowed": false,
+      "externalTargetUrl": "https://conversation-lab-ghrab.pages.dev/",
+      "launchMode": "studio-teacher",
+      "manifestSha256": "809b009d66af3d52bc7676b7ba5b0be8cda6cbb34b24f7e5b5b109a2d3f94e38",
+      "releaseId": "cl-master-72-20261019-r1",
+      "requiresHttps": true,
+      "securityBoundary": "isolated-anonymous-read-only",
+      "signedStatementSha256": "7a5d3f31f0ebd146fc3c154f4ba16ddb26cbfa14b06313645ac8be54853f3d79",
+      "studioAccessIsLauncherGateOnly": true,
+      "teacherTrainingRequired": true
     },
-    "slug": "conversation-lab",
+    "launchUrl": "https://conversation-lab-ghrab.pages.dev/",
+    "manualUrl": "https://conversation-lab-ghrab.pages.dev/manual/",
+    "name": {
+      "cs": "Conversation Lab",
+      "en": "Conversation Lab"
+    },
     "paths": {
       "app": "https://conversation-lab-ghrab.pages.dev/",
-      "manual": "https://conversation-lab-ghrab.pages.dev/manual/",
-      "manifest": "https://conversation-lab-ghrab.pages.dev/studio-manifest.json"
-    },
-    "aiCore": {
-      "schema": "ghrab-ai-app-integration-v1",
-      "status": "not-applicable",
-      "reason": "Read-only public conversation player: no provider, identities, AI calls or remote translation API"
+      "manifest": "https://conversation-lab-ghrab.pages.dev/studio-manifest.json",
+      "manual": "https://conversation-lab-ghrab.pages.dev/manual/"
     },
     "platform": {
-      "schema": "ghrab-platform-app-integration-v1",
-      "contract": "ghrab-platform-v1",
-      "requiredPlatformRange": ">=1.1.2 <2.0.0",
-      "platformVersion": "1.1.2",
-      "brandVersion": "1.0.0",
-      "themeContract": "ghrab-theme-v1",
-      "swContract": 1,
-      "studioBridge": "ghrab-studio-handoff-v2",
-      "artifactEnvelope": "ghrab-artifact-envelope-v1",
-      "storagePrefix": "ghrab.conversation-lab.",
-      "cacheName": "ghrab-conversation-lab-v0.9.2",
       "accessibilityContract": "ghrab-a11y-v1",
-      "performanceContract": "ghrab-performance-v1"
-    }
+      "artifactEnvelope": "ghrab-artifact-envelope-v1",
+      "brandVersion": "1.0.0",
+      "cacheName": "ghrab-conversation-lab-v0.11.0",
+      "contract": "ghrab-platform-v1",
+      "performanceContract": "ghrab-performance-v1",
+      "platformVersion": "1.1.2",
+      "requiredPlatformRange": ">=1.1.2 <2.0.0",
+      "schema": "ghrab-platform-app-integration-v1",
+      "storagePrefix": "ghrab.conversation-lab.",
+      "studioBridge": "ghrab-studio-handoff-v2",
+      "swContract": 1,
+      "themeContract": "ghrab-theme-v1"
+    },
+    "publishedAt": null,
+    "repository": "Daniel22-dev/conversation-lab-source",
+    "schema": "ai-studio-app-manifest-v1",
+    "slug": "conversation-lab",
+    "status": {
+      "cs": "MASTER · 3 témata / 72 variant",
+      "en": "MASTER · 3 topics / 72 variants"
+    },
+    "tags": [
+      {
+        "cs": "4 jazyky",
+        "en": "4 languages"
+      },
+      {
+        "cs": "72 variant",
+        "en": "72 variants"
+      },
+      {
+        "cs": "Offline slovník",
+        "en": "Offline glossary"
+      }
+    ],
+    "version": "0.11.0"
   }
 ]
