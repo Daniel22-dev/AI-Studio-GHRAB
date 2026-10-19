@@ -1,14 +1,22 @@
-name: CLB final integration and three-engine preflight (NO DEPLOY)
+name: CLB MASTER repeatable release preflight (READ ONLY, NO DEPLOY)
 on:
   push:
     branches: ['feature/clb-teacher-same-origin-prelive-20261019']
-    paths: ['.github/workflows/clb-complete-integration.yml']
+  workflow_dispatch:
 permissions:
-  contents: write
+  contents: read
+concurrency:
+  group: clb-master-preflight-${{ github.ref }}
+  cancel-in-progress: false
 jobs:
-  complete:
+  preflight:
+    name: clb-${{ matrix.phase }}
     runs-on: ubuntu-latest
     timeout-minutes: 40
+    strategy:
+      fail-fast: false
+      matrix:
+        phase: [foundation, p5, teacher]
     steps:
       - uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683
         with:
@@ -17,77 +25,66 @@ jobs:
       - uses: actions/setup-node@49933ea5288caeca8642d1e84afbd3f7d6820020
         with:
           node-version: '22'
-      - name: Apply reviewed patch with explicit read-only User-Agent
+          cache: npm
+      - name: Install locked dependencies
+        run: npm ci --ignore-scripts --no-audit --no-fund
+      - name: Install pinned browser engines
+        env:
+          PHASE: ${{ matrix.phase }}
+        run: |
+          if [ "$PHASE" = teacher ]; then npx playwright install --with-deps chromium firefox webkit; else npx playwright install --with-deps chromium; fi
+          node -e "console.log('CHROMIUM_PATH=' + require('playwright').chromium.executablePath())" >> "$GITHUB_ENV"
+      - name: Execute real committed-source checks and preserve exact failure diagnostics
+        env:
+          CLB_PHASE: ${{ matrix.phase }}
+          CLB_ENGINE: chromium,firefox,webkit
+          GHRAB_SOURCE_COMMIT: ${{ github.sha }}
         run: |
           python3 - <<'PY'
-          import pathlib,subprocess,hashlib
-          workflow=pathlib.Path('.github/workflows/clb-install-verified-master.yml').read_text()
-          blob=hashlib.sha1(('blob '+str(len(workflow.encode()))+'\0').encode()+workflow.encode()).hexdigest()
-          assert blob=='68477f65ed5987c3351d6e043ec5dfd4c4a3b4eb', 'Recovery workflow changed'
-          block=workflow.split('        run: |\n',1)[1].split('      - name: Install locked tools',1)[0]
-          script='\n'.join(line[10:] for line in block.splitlines())+'\n'
-          assert script.count("parent=='ca5a1d4ccf04ae65f8b794ae2e5c784b82a6c24e'")==1
-          script=script.replace("parent=='ca5a1d4ccf04ae65f8b794ae2e5c784b82a6c24e'","parent=='79ec9a11ebee4fa402d9ea00766cc14822ec77e6'")
-          script=script.replace("headers={'Accept-Encoding':'identity','Cache-Control':'no-cache'}","headers={'Accept-Encoding':'identity','Cache-Control':'no-cache','User-Agent':'CLB-TEACHER-INTEGRATION-READONLY'}")
-          subprocess.run(['bash','-e','-c',script],check=True)
-          # Workflow changes require the connector's explicit workflows scope,
-          # not a repository GITHUB_TOKEN. Retain the reviewed change as evidence;
-          # the connector applies it separately before canonical CI is accepted.
-          target='.github/workflows/clb-e118-owner-s0-release-gates.yml'
-          pathlib.Path('/tmp/clb-e118-reviewed.yml').write_bytes(pathlib.Path(target).read_bytes())
-          subprocess.run(['git','restore','--source=HEAD','--staged','--worktree',target],check=True)
+          import os,pathlib,subprocess,json,re,hashlib,datetime
+          phase=os.environ['CLB_PHASE'];out=pathlib.Path('qa-results/clb-preflight')/phase;out.mkdir(parents=True,exist_ok=True)
+          shared=[['node','--test','scripts/test-clb-e118-owner-s0-live.mjs','scripts/test-clb-master-received-owner-signature.mjs','scripts/test-clb-master-staged-hold.mjs','scripts/test-clb-master-teacher-gate.mjs','scripts/test-clb-studio-portal-route.mjs'],['npm','run','build']]
+          commands={'foundation':[['npm','run','qa:garp27:foundation'],['npm','run','verify:release-version']], 'p5':[['npm','run','qa:p5:ci'],['npm','run','test:studio-ux']], 'teacher':[['node','scripts/test-clb-master-browser.cjs'],['node','scripts/test-clb-master-live.mjs']]}[phase]
+          report={'schema':'ghrab-clb-committed-preflight-v1','phase':phase,'sourceSha':os.environ['GITHUB_SHA'],'sourceTree':subprocess.check_output(['git','rev-parse','HEAD^{tree}']).decode().strip(),'startedAt':datetime.datetime.now(datetime.timezone.utc).isoformat(),'productionDeployment':False,'steps':[]}
+          for index,cmd in enumerate(shared+commands):
+              print('CHECK_COMMAND '+' '.join(cmd),flush=True)
+              r=subprocess.run(cmd,stdout=subprocess.PIPE,stderr=subprocess.STDOUT,text=True)
+              log=out/(str(index)+'.log');log.write_text(r.stdout)
+              report['steps'].append({'command':cmd,'exitCode':r.returncode,'logSha256':hashlib.sha256(log.read_bytes()).hexdigest()})
+              print('CHECK_EXIT '+str(r.returncode),flush=True)
+              lines=r.stdout.splitlines()
+              if r.returncode:
+                  matches=[i for i,x in enumerate(lines) if re.search(r'FAIL|not ok|Error:|error:|failed|mismatch|outside|drift',x,re.I)]
+                  selected=set(range(max(0,len(lines)-50),len(lines)))
+                  for i in matches[-12:]:selected.update(range(max(0,i-2),min(len(lines),i+5)))
+                  print('\n'.join(lines[i][:1400] for i in sorted(selected)),flush=True)
+              else:print('\n'.join(x[:1200] for x in lines[-4:]),flush=True)
+              if index<len(shared) and r.returncode:break
+          summary=pathlib.Path('audit-evidence/garp27-current/foundation-summary.json')
+          if summary.exists():
+              obj=json.loads(summary.read_text());(out/'foundation-summary.json').write_text(json.dumps(obj,indent=2)+'\n')
+              for step in obj.get('steps',[]):
+                  if not step.get('pass'):
+                      p=summary.parent/(step['id']+'.log');text=p.read_text() if p.exists() else 'NO LOG'
+                      (out/('foundation-'+step['id']+'.log')).write_text(text)
+                      print('FOUNDATION_FAILED_STEP '+step['id']+'\n'+'\n'.join(text.splitlines()[-110:]),flush=True)
+          report['status']='PASS' if all(x['exitCode']==0 for x in report['steps']) and len(report['steps'])==len(shared+commands) else 'FAIL'
+          report['completedAt']=datetime.datetime.now(datetime.timezone.utc).isoformat()
+          (out/'summary.json').write_text(json.dumps(report,indent=2)+'\n')
+          print('CLB_PREFLIGHT_RESULT='+json.dumps(report),flush=True)
+          raise SystemExit(0 if report['status']=='PASS' else 1)
           PY
-      - name: Install locked tools and run actual static, signature and live checks
-        run: |
-          npm ci --ignore-scripts --no-audit --no-fund
-          node --test scripts/test-clb-master-received-owner-signature.mjs scripts/test-clb-master-staged-hold.mjs scripts/test-clb-master-teacher-gate.mjs scripts/test-clb-studio-portal-route.mjs scripts/test-clb-e118-owner-s0-live.mjs
-          npm run qa:garp27:regressions
-          npm run qa:quality
-          node scripts/test-clb-master-live.mjs
-      - name: Commit exact integration to feature only with optimistic lease
-        env:
-          GH_TOKEN: ${{ github.token }}
-        run: |
-          set -euo pipefail
-          branch='feature/clb-teacher-same-origin-prelive-20261019'
-          auth="AUTHORIZATION: basic $(printf 'x-access-token:%s' "$GH_TOKEN" | base64 -w0)"
-          test "$(git -c "http.extraHeader=$auth" ls-remote origin "refs/heads/$branch" | cut -f1)" = "$GITHUB_SHA"
-          git config user.name 'github-actions[bot]'
-          git config user.email '41898282+github-actions[bot]@users.noreply.github.com'
-          git add -u
-          git add config/clb-master-public-inventory.json scripts/assemble-clb-master.py scripts/fixtures scripts/lib/clb-master-integrity.mjs scripts/lib/clb-master-registry.mjs scripts/test-clb-master-browser.cjs scripts/test-clb-master-live.mjs src/conversation-lab src/integration/conversation-lab/governance/project-owner-release.v0.11.0.json
-          test -z "$(git diff --cached --name-only -- .github/workflows)"
-          git commit -m 'feat(clb): install exact MASTER teacher library and verified Studio 0.21.248 integration'
-          git -c "http.extraHeader=$auth" push origin "HEAD:refs/heads/$branch"
-          echo "GHRAB_SOURCE_COMMIT=$(git rev-parse HEAD)" >> "$GITHUB_ENV"
-      - name: Install three browser engines
-        run: npx playwright install --with-deps chromium firefox webkit
-      - name: Actual teacher release crypto and 72 variants in each engine
-        env:
-          CLB_ENGINE: chromium,firefox,webkit
-        run: node scripts/test-clb-master-browser.cjs
-      - name: Full GARP and P5 preflight, not production promotion
-        run: |
-          npm run qa:garp27:foundation
-          npm run qa:p5:ci
-          npm run test:studio-ux
-      - name: Retain source and diagnostics
+      - name: Retain diagnostics and exact test evidence
         if: always()
-        run: |
-          mkdir -p qa-results/clb-final
-          git archive HEAD > qa-results/clb-final/source.tar
-          git diff > qa-results/clb-final/uncommitted.patch
-          git rev-parse HEAD HEAD^{tree} > qa-results/clb-final/refs.txt
-          test ! -f /tmp/clb-e118-reviewed.yml || cp /tmp/clb-e118-reviewed.yml qa-results/clb-final/
-      - uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
-        if: always()
+        uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
         with:
-          name: CLB-FINAL-INTEGRATION
+          name: CLB-PREFLIGHT-${{ matrix.phase }}-${{ github.sha }}
           path: |
-            qa-results/clb-final/
+            qa-results/clb-preflight/
             qa-results/clb-master-browser/
             qa-results/clb-master-live/
-            qa-results/garp27/
+            audit-evidence/garp27-current/
             dist/quality-report.json
             dist/qa-p5-*.json
+            dist/qa-p3-browser-report.json
           retention-days: 14
