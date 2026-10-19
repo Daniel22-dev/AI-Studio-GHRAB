@@ -28,6 +28,16 @@ jobs:
           else
             node -e "if(require('./package.json').version !== '0.21.249') throw Error('Unexpected branch version')"
           fi
+          python3 - <<'PY'
+          import pathlib,json
+          assert json.loads(pathlib.Path('package.json').read_text())['version']=='0.21.249'
+          names=['src/index.html','src/config/release-acceptance.json','reporter-test.config.json','src/tests/error-reporter-adapter.js','src/manifest.webmanifest','qa/qa-manifest.json']
+          for name in names:
+              p=pathlib.Path(name);old=p.read_text();new=old.replace('0.21.248','0.21.249')
+              assert '0.21.249' in new, 'Version reference missing: '+name
+              if new!=old:p.write_text(new)
+          PY
+          node scripts/verify-release-version-freshness.mjs --content-only
       - name: Verify generated sources and store only on the isolated repair branch
         id: source
         env:
@@ -46,7 +56,7 @@ jobs:
             git config user.name 'github-actions[bot]'
             git config user.email '41898282+github-actions[bot]@users.noreply.github.com'
             git add -u
-            git commit -m 'fix(clb): secure Studio deployment envelope while preserving all original lesson bytes (0.21.249)'
+            git commit -m 'fix(clb): synchronize existing Studio 0.21.249 release references without altering lesson payloads'
             git -c "http.extraHeader=$auth" push origin "HEAD:refs/heads/$branch"
           fi
           echo "ref=$(git rev-parse HEAD)" >> "$GITHUB_OUTPUT"
