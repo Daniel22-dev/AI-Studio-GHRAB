@@ -18,6 +18,12 @@ const mime={'.html':'text/html','.js':'text/javascript','.json':'application/jso
  let browser;
  try{
  const {CLB_STUDIO_CSP}=await import('./lib/clb-studio-adapter.mjs');
+ // Observe the exact ES module instance imported by the built teacher entry.
+ // Importing a different query URL would create an uninitialized second module.
+ const accessImport=read('conversation-lab/teacher-entry.js').toString().match(/\bfrom\s*['"]([^'"]+access\/access-control\.js(?:\?[^'"]*)?)['"]/);
+ assert.ok(accessImport,'Built teacher access import must be explicit');
+ const accessModuleUrl=new URL(accessImport[1],TEACHER).href;
+ assert.ok(accessModuleUrl.startsWith(ORIGIN+BASE+'access/access-control.js?v='));
  const key=await webcrypto.subtle.generateKey({name:'ECDSA',namedCurve:'P-256'},true,['sign','verify']);
  const pub=await webcrypto.subtle.exportKey('jwk',key.publicKey);const kid='clb-ephemeral-qa-not-production';
  const sign=async s=>b64(await webcrypto.subtle.sign({name:'ECDSA',hash:'SHA-256'},key.privateKey,enc(s)));
@@ -96,7 +102,8 @@ const mime={'.html':'text/html','.js':'text/javascript','.json':'application/jso
      assert.ok(item.requests.some(x=>x.path.endsWith('/owner-content-release.v0.11.0.signed.json')));
      assert.ok(item.requests.some(x=>x.path.endsWith('/governance/project-owner-release.v0.11.0.json')));
      assert.ok(item.requests.every(x=>x.origin===ORIGIN),'Teacher must never fetch Cloudflare with credentials');
-     item.accessSnapshot=await page.evaluate(async()=>{const x=await import('../access/access-control.js');const a=x.hasAppAccess('conversation-lab');return {enabled:a.enabled,reason:a.reason,role:a.permit?.role};});
+     item.accessModuleUrl=accessModuleUrl;
+     item.accessSnapshot=await page.evaluate(async url=>{const x=await import(url);const a=x.hasAppAccess('conversation-lab');return {enabled:a.enabled,reason:a.reason,role:a.permit?.role};},accessModuleUrl);
      assert.deepEqual(item.accessSnapshot,{enabled:true,reason:'permitted',role:'teacher'});assert.equal(item.variants,72);assert.equal(item.stations,576);assert.equal(item.qr,3);assert.equal(item.anonymousOpens,3);
      assert.deepEqual(item.cspViolations,[]);
      intentionalProbe=true;
