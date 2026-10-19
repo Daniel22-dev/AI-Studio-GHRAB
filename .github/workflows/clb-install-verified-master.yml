@@ -1,0 +1,131 @@
+name: CLB install exact reviewed teacher library and integration preflight (NO DEPLOY)
+on:
+  push:
+    branches: ['feature/clb-teacher-same-origin-prelive-20261019']
+    paths: ['.clb-finish-data/**', '.github/workflows/clb-install-verified-master.yml']
+  workflow_dispatch:
+permissions:
+  contents: write
+concurrency:
+  group: clb-exact-install
+  cancel-in-progress: false
+jobs:
+  integrate-and-test:
+    if: github.ref == 'refs/heads/feature/clb-teacher-same-origin-prelive-20261019'
+    runs-on: ubuntu-latest
+    timeout-minutes: 40
+    steps:
+      - uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683
+        with:
+          fetch-depth: 2
+          persist-credentials: false
+      - uses: actions/setup-node@49933ea5288caeca8642d1e84afbd3f7d6820020
+        with:
+          node-version: '22'
+      - name: Apply digest-pinned reviewed patch and recover exact public inputs
+        run: |
+          python3 - <<'PY'
+          import base64,hashlib,json,lzma,pathlib,re,subprocess,urllib.request,shutil
+          root=pathlib.Path('.')
+          def write(name,value):
+              p=root/name;p.parent.mkdir(parents=True,exist_ok=True);p.write_bytes(value if isinstance(value,bytes) else value.encode())
+          def pretty(x):return json.dumps(x,ensure_ascii=False,indent=2)+'\n'
+          parent=subprocess.check_output(['git','rev-parse','HEAD^']).decode().strip()
+          assert parent=='8363c5aa0ce7e4fdc409172df5f76de6b1b3c576', 'Unexpected initial baseline; do not overwrite concurrent changes'
+          original_profile=(root/'src/conversation-lab/release-profile.js').read_text()
+          original_apps=json.loads((root/'src/config/apps.generated.json').read_text())
+          chunks=''.join((root/f'.clb-finish-data/{i:02}.b64').read_text().strip() for i in range(1,5))
+          packed=base64.b64decode(chunks,validate=True)
+          assert hashlib.sha256(packed).hexdigest()=='f5c9be854c5d2e4a6431b61e901e6d41939e00558f79fe4f779ce4ab4da1fab1'
+          patch=lzma.decompress(packed)
+          pathlib.Path('/tmp/clb-reviewed.patch').write_bytes(patch)
+          subprocess.run(['git','apply','--check','/tmp/clb-reviewed.patch'],check=True)
+          subprocess.run(['git','apply','/tmp/clb-reviewed.patch'],check=True)
+          write('scripts/fixtures/clb-original-release-profile.js',original_profile)
+          write('scripts/fixtures/clb-original-nine-apps.json',pretty([x for x in original_apps if x['id']!='conversation-lab']))
+          write('scripts/fixtures/clb-legacy-0.9.2-app.json',pretty(next(x for x in original_apps if x['id']=='conversation-lab')))
+          origin='https://conversation-lab-ghrab.pages.dev'
+          class NoRedirect(urllib.request.HTTPRedirectHandler):
+              def redirect_request(self,*a,**k):return None
+          def get(name,digest):
+              req=urllib.request.Request(origin+'/'+name,headers={'Accept-Encoding':'identity','Cache-Control':'no-cache'})
+              with urllib.request.build_opener(NoRedirect()).open(req,timeout=30) as response:
+                  assert response.status==200 and response.geturl()==origin+'/'+name
+                  raw=response.read(2000000)
+              assert hashlib.sha256(raw).hexdigest()==digest, name
+              return raw
+          inventory=get('release-integrity.json','8d1468774044361a8217af2237eb44804bf07d440c6aac459970289cdfc9e6c8')
+          write('config/clb-master-public-inventory.json',inventory)
+          manifest=json.loads(get('studio-manifest.json','253650d3fd3a50c66884f3650fcffbd8ffeca16bd4eaacbb1dc73d5e9d947ea5'))
+          receipt=json.loads((root/'src/integration/conversation-lab/owner-content-release.v0.11.0.signed.json').read_text())
+          assert receipt['statementSha256']=='7a5d3f31f0ebd146fc3c154f4ba16ddb26cbfa14b06313645ac8be54853f3d79'
+          profile=json.loads(re.search(r'Object\.freeze\((\{.*\})\);',original_profile,re.S)[1])
+          profile['signedReleaseStatementSha256']=receipt['statementSha256']
+          write('src/conversation-lab/release-profile.js','// Exact owner-signed content pins; deployment authorization is checked separately.\nexport default Object.freeze('+json.dumps(profile,ensure_ascii=False,separators=(',',':'))+');\n')
+          manifest['integration']['signedStatementSha256']=receipt['statementSha256']
+          for name in ['apps.generated.json','apps.fallback.json']:
+              data=json.loads((root/'src/config'/name).read_text())
+              write('src/config/'+name,pretty([manifest if x['id']=='conversation-lab' else x for x in data]))
+          subprocess.run(['python3','scripts/assemble-clb-master.py'],check=True)
+          for script in ['sync-platform-consumers.mjs','generate-ai-readiness.mjs','sync-doc-app-versions.mjs','generate-changelog.mjs']:
+              subprocess.run(['node','scripts/'+script],check=True)
+          for name in ['apps.generated.json','apps.fallback.json']:
+              now=json.loads((root/'src/config'/name).read_text())
+              assert [x for x in now if x['id']!='conversation-lab']==[x for x in original_apps if x['id']!='conversation-lab'], 'Other application mutated'
+          shutil.rmtree('.clb-finish-data')
+          print('EXACT_TEACHER_INSTALLED_NO_CLOUDFLARE_WRITE')
+          PY
+      - name: Install locked tools
+        run: npm ci --ignore-scripts --no-audit --no-fund
+      - name: Verify actual signed receipt and isolation regressions
+        run: |
+          node --test scripts/test-clb-master-received-owner-signature.mjs scripts/test-clb-master-staged-hold.mjs scripts/test-clb-master-teacher-gate.mjs scripts/test-clb-studio-portal-route.mjs scripts/test-clb-e118-owner-s0-live.mjs
+          npm run qa:garp27:regressions
+          npm run qa:quality
+          node scripts/test-clb-master-live.mjs
+      - name: Store verified integration only on the existing feature branch
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          set -euo pipefail
+          branch='feature/clb-teacher-same-origin-prelive-20261019'
+          remote=$(git -c "http.extraHeader=AUTHORIZATION: basic $(printf 'x-access-token:%s' "$GH_TOKEN" | base64 -w0)" ls-remote origin "refs/heads/$branch" | cut -f1)
+          test "$remote" = "$GITHUB_SHA"
+          git config user.name 'github-actions[bot]'
+          git config user.email '41898282+github-actions[bot]@users.noreply.github.com'
+          git add -u
+          git add config/clb-master-public-inventory.json scripts/assemble-clb-master.py scripts/fixtures scripts/lib/clb-master-integrity.mjs scripts/lib/clb-master-registry.mjs scripts/test-clb-master-browser.cjs scripts/test-clb-master-live.mjs src/conversation-lab src/integration/conversation-lab/governance/project-owner-release.v0.11.0.json
+          git commit -m 'feat(clb): install exact MASTER teacher library, signed owner binding and Studio 0.21.248 integration'
+          git -c "http.extraHeader=AUTHORIZATION: basic $(printf 'x-access-token:%s' "$GH_TOKEN" | base64 -w0)" push origin "HEAD:refs/heads/$branch"
+          echo "GHRAB_SOURCE_COMMIT=$(git rev-parse HEAD)" >> "$GITHUB_ENV"
+      - name: Install actual Chromium, Firefox and WebKit
+        run: npx playwright install --with-deps chromium firefox webkit
+      - name: Real release crypto, QA signed teacher permits, all 72 variants, actual anonymous Cloudflare links
+        env:
+          CLB_ENGINE: chromium,firefox,webkit
+        run: node scripts/test-clb-master-browser.cjs
+      - name: Full Studio preflight without production promotion
+        run: |
+          npm run qa:garp27:foundation
+          npm run qa:p5:ci
+          npm run test:studio-ux
+      - name: Retain exact source and truthful diagnostics
+        if: always()
+        run: |
+          mkdir -p "$RUNNER_TEMP/clb-final-evidence"
+          git archive HEAD > "$RUNNER_TEMP/clb-final-evidence/committed-source.tar"
+          git diff > "$RUNNER_TEMP/clb-final-evidence/uncommitted.patch"
+          git rev-parse HEAD HEAD^{tree} > "$RUNNER_TEMP/clb-final-evidence/refs.txt"
+          git status --short > "$RUNNER_TEMP/clb-final-evidence/status.txt"
+      - uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
+        if: always()
+        with:
+          name: CLB-FINAL-INTEGRATION-EVIDENCE
+          path: |
+            ${{ runner.temp }}/clb-final-evidence/
+            qa-results/clb-master-browser/
+            qa-results/clb-master-live/
+            qa-results/garp27/
+            dist/quality-report.json
+            dist/qa-p5-*.json
+          retention-days: 14
