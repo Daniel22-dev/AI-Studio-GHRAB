@@ -1,7 +1,33 @@
 {
   "schema": "ai-studio-changelog-v1",
-  "current": "0.21.247",
+  "current": "0.21.248",
   "items": [
+    {
+      "version": "0.21.248",
+      "date": "2026-10-19",
+      "title": {
+        "cs": "Conversation Lab MASTER 0.11.0 ve Studiu",
+        "en": "Conversation Lab MASTER 0.11.0 inside Studio"
+      },
+      "changes": [
+        {
+          "cs": "Dokoncena chranena ucitelska cesta k puvodnim MASTER lekcim: 3 temata, 72 variant a QR na oddelene anonymni Cloudflare zobrazeni.",
+          "en": "Completed protected teacher route to the original MASTER lessons: 3 topics, 72 variants and QR links to the separate anonymous Cloudflare view."
+        },
+        {
+          "cs": "Pripojen skutecny podpis obsahu a overeni HOSTFIX1. Ucitelske opravneni CLB-01 zustava povinne; zadne udaje ani opravneni Studia se neprenaseji studentum.",
+          "en": "Bound the actual owner content signature and verified HOSTFIX1. CLB-01 teacher access remains required; Studio credentials and identity are never sent to students."
+        },
+        {
+          "cs": "Sestaveni zachovava presne bajty MASTER HTML, CSS a JavaScriptu. Knihovna se nacita na vyzadani s vlastnim omezenym rozpoctem; puvodni startovaci limity Studia se nemeni.",
+          "en": "Build preserves exact MASTER HTML, CSS and JavaScript bytes. The library loads on demand under its own bounded budget; original Studio startup limits are unchanged."
+        },
+        {
+          "cs": "Sjednoceny registry a testy aktualni integrace. Kod ani vydani GIT a ostatnich deviti aplikaci nebyly zmeneny.",
+          "en": "Synchronized registries and current integration tests. GIT code and the releases of the other nine applications remain unchanged."
+        }
+      ]
+    },
     {
       "version": "0.21.247",
       "date": "2026-10-19",

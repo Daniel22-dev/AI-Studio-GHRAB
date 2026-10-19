@@ -14,18 +14,17 @@ export function verifyPolicy(policy,wave) {
   const waveIds=(wave.applications||[]).map(x=>x.id);
   const policyIds=(policy.apps||[]).map(x=>x.id);
   if(new Set(waveIds).size!==waveIds.length||new Set(policyIds).size!==policyIds.length) findings.push("Duplicate application IDs");
-  // Nine historically protected GitHub repositories keep ALL their P5 rules.
-  // One separately reviewed static S0 public pilot is allowed only by exact
-  // owner ES256/Cloudflare pin and signed Studio CLB-01 gate. Arbitrary tenth
-  // repositories or altered versions remain hard-blocked.
+  // Nine protected GitHub repositories retain ALL existing P5 requirements.
+  // Only the exact, separately received MASTER owner receipt and public catalog
+  // are admitted as the static tenth app. Legacy B1 signatures cannot bind it.
   const s0Expected={
-    id:"conversation-lab",version:"0.9.2",repository:"conversation-lab-source",
+    id:"conversation-lab",version:"0.11.0",repository:"conversation-lab-source",
     publicOrigin:"https://conversation-lab-ghrab.pages.dev",
-    publicCatalogSha256:"2ab4cab8e95a8c124f1f8670b1cfe861f3e7557dfe9ece89c768bb2d7121fce6",
-    ownerSignedStatementSha256:"6f0588801d7ec4bc5b3314a4e351603cd6993890ef56b2a636ee497d0b3848c5",
+    publicCatalogSha256:"809b009d66af3d52bc7676b7ba5b0be8cda6cbb34b24f7e5b5b109a2d3f94e38",
+    ownerSignedStatementSha256:"7a5d3f31f0ebd146fc3c154f4ba16ddb26cbfa14b06313645ac8be54853f3d79",
     classification:"S0_ANONYMOUS_STATIC_PUBLIC_PLAYER_ONLY",
     studioTeacherGate:"SIGNED_CLB_01_AND_E118",
-    evidence:"E114_LIVE_HASH_E115_REAL_BROWSER_E118_P5",autoPromotion:false
+    evidence:"MASTER_011_HOSTFIX1_LIVE_39300591592_AND_STUDIO_P5",autoPromotion:false
   };
   const standalone=policy.standalonePublicS0Pilots||[];
   const exactS0=standalone.length===1 &&

@@ -13,6 +13,11 @@ if (consumer.appVersion !== pkg.version) throw new Error(`Consumer appVersion ${
 
 await checkAccessBundleFreshness({ root, required: false });
 
+// The MASTER library has its own exact signed-content and SRI boundary.
+const { verifyClbMasterFiles } = await import("./lib/clb-master-integrity.mjs");
+await verifyClbMasterFiles(root, src);
+const isClbMasterAsset = (file) => file.startsWith(path.join(dist, "conversation-lab") + path.sep);
+
 function appendRevision(ref, version) {
   if (!ref || /^(?:[a-z]+:|\/\/|#|data:|blob:)/i.test(ref)) return ref;
   const hashIndex = ref.indexOf("#");
@@ -253,7 +258,7 @@ for (const sourceOnlyDoc of [
 // transfer overhead. The compactor is deliberately conservative: it preserves every
 // token and comment and only collapses CSS whitespace outside quoted strings.
 for (const file of await walk(dist)) {
-  if (!file.endsWith(".css")) continue;
+  if (!file.endsWith(".css") || isClbMasterAsset(file)) continue;
   const content = await readFile(file, "utf8");
   const compacted = compactCssWhitespace(content);
   if (compacted.length < content.length) await writeFile(file, compacted, "utf8");
@@ -378,7 +383,7 @@ await import("./apply-ghrab-platform.mjs");
 // Revision every executable/style entry after all postprocessors have injected assets.
 // This prevents a waiting/old service worker from combining new HTML with stale JS.
 for (const file of await walk(dist)) {
-  if (!/\.(?:html|js)$/.test(file)) continue;
+  if (!/\.(?:html|js)$/.test(file) || isClbMasterAsset(file)) continue;
   const content = await readFile(file, "utf8");
   const revised = file.endsWith(".html")
     ? revisionHtmlAssets(stampHtmlAppVersion(content, pkg.version), pkg.version)
@@ -521,6 +526,9 @@ const rootIndexCompacted = `${rootIndexText
   .join("\n")}\n`;
 if (rootIndexCompacted !== rootIndexText) await writeFile(rootIndex, rootIndexCompacted, "utf8");
 
+
+// Validate byte parity after all platform and performance post-processing.
+await verifyClbMasterFiles(root, dist);
 
 // P2B: fingerprint the FINAL generated dist after all build post-processing.
 if (p2bObservation) await p2bObservation.finishObservedBuild(root, p2bStarted);

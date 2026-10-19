@@ -1,0 +1,31 @@
+name: CLB actual 0.11.0 owner signature and HOLD regressions (NO DEPLOY)
+on:
+  push:
+    branches: ['feature/clb-teacher-same-origin-prelive-20261019']
+    paths:
+      - 'src/integration/conversation-lab/owner-content-release.v0.11.0.signed.json'
+      - 'scripts/test-clb-master-received-owner-signature.mjs'
+      - '.github/workflows/clb-master-received-signature.yml'
+  pull_request:
+    paths:
+      - 'src/integration/conversation-lab/owner-content-release.v0.11.0.signed.json'
+      - 'scripts/test-clb-master-received-owner-signature.mjs'
+      - '.github/workflows/clb-master-received-signature.yml'
+permissions:
+  contents: read
+jobs:
+  actual-signature:
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+    steps:
+      - uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683
+        with:
+          persist-credentials: false
+      - uses: actions/setup-node@49933ea5288caeca8642d1e84afbd3f7d6820020
+        with:
+          node-version: '22'
+      - name: Actual cryptography and separate production controls
+        run: |
+          node --test scripts/test-clb-master-received-owner-signature.mjs
+          node --test scripts/test-clb-master-teacher-gate.mjs scripts/test-clb-master-staged-hold.mjs scripts/test-clb-studio-portal-route.mjs
+# Does not modify registries, GIT, global versions, production controls or deployments.

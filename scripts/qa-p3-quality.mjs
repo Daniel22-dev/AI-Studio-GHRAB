@@ -3,6 +3,7 @@ import fs from 'node:fs';
 import path from 'node:path';
 import crypto from 'node:crypto';
 import { fileURLToPath } from 'node:url';
+import { verifyClbMasterFiles } from './lib/clb-master-integrity.mjs';
 
 const root = path.resolve(path.dirname(fileURLToPath(import.meta.url)), '..');
 const dist = path.join(root, 'dist');
@@ -10,6 +11,7 @@ const consumerPath = path.join(root, 'ghrab-platform.consumer.json');
 const readJson = (file) => JSON.parse(fs.readFileSync(file, 'utf8'));
 const consumer = readJson(consumerPath);
 const quality = consumer.quality || {};
+await verifyClbMasterFiles(root, dist);
 const budget = quality.performanceBudget || {};
 const checks = [];
 const warnings = [];
@@ -40,15 +42,32 @@ const isProductionPruned = (file) => {
 // for full artifact visibility, but exclude them from the bounded payload budget.
 const isOnDemandHistory = (file) =>
   /^config\/changelog(?:\.archive-\d+)?\.json$/i.test(rel(file));
+const onDemandLibraries = quality.onDemandLibraries || [];
+const isOnDemandLibrary = (file) => onDemandLibraries.some((entry) => rel(file).startsWith(entry.prefix));
+const libraryFiles = files.filter(isOnDemandLibrary);
 const payloadFiles = files.filter(
-  (file) => !isLazyMedia(file) && !isProductionPruned(file) && !isOnDemandHistory(file),
+  (file) => !isLazyMedia(file) && !isProductionPruned(file) && !isOnDemandHistory(file) && !isOnDemandLibrary(file),
 );
+for (const entry of onDemandLibraries) {
+  const assets = files.filter((file) => rel(file).startsWith(entry.prefix));
+  check(entry.id === 'conversation-lab' && entry.prefix === 'conversation-lab/', 'lazy-library.scope');
+  check(assets.length === 120 && assets.length <= entry.maxFiles, 'lazy-library.file-count');
+  check(assets.reduce((sum, file) => sum + size(file), 0) <= entry.maxBytes, 'lazy-library.total');
+  check(assets.every((file) => size(file) <= entry.maxSingleFileBytes), 'lazy-library.single-file');
+  check(entry.precacheAllowed === false, 'lazy-library.no-precache-policy');
+}
 const lazyMediaFiles = files.filter(isLazyMedia);
 const productionPrunedFiles = files.filter(isProductionPruned);
 const onDemandHistoryFiles = files.filter(isOnDemandHistory);
 const sumExt = (extensions) => payloadFiles.filter((file) => extensions.some((ext) => file.toLowerCase().endsWith(ext))).reduce((sum, file) => sum + size(file), 0);
 const htmlFiles = files.filter((file) => file.toLowerCase().endsWith('.html'));
-const fullHtml = htmlFiles.filter((file) => /<html\b[^>]*>[\s\S]*<\/html>/i.test(fs.readFileSync(file, 'utf8')));
+// These three byte-pinned MASTER fragments are inserted into the verified
+// teacher document. They are not standalone navigable app entry documents.
+// Their immutable bytes were independently checked above; composed document
+// language, title and viewport are also tested by the CLB browser suite.
+const clbFragments = new Set(['artificial-intelligence', 'the-pressure-to-succeed', 'summer-holidays'].map(topic => `conversation-lab/assets/masters/${topic}.html`));
+check(htmlFiles.filter(file => clbFragments.has(rel(file))).length === 3, 'master.exact-fragment-set');
+const fullHtml = htmlFiles.filter((file) => !clbFragments.has(rel(file)) && /<html\b[^>]*>[\s\S]*<\/html>/i.test(fs.readFileSync(file, 'utf8')));
 const entry = path.join(dist, 'index.html');
 const entryHtml = fs.existsSync(entry) ? fs.readFileSync(entry, 'utf8') : '';
 const allText = files.filter((file) => /\.(?:html|js|css|json|webmanifest)$/i.test(file)).map((file) => fs.readFileSync(file, 'utf8')).join('\n');
@@ -111,6 +130,7 @@ function duplicateBytes() {
 }
 
 const precache = precacheMetrics();
+check(!precache.assets.some(asset => asset.startsWith('conversation-lab/')), 'lazy-library.not-precached');
 const duplicate = duplicateBytes();
 const largestFile = payloadFiles.slice().sort((a, b) => size(b) - size(a))[0] || null;
 const largestLazyMediaFile = lazyMediaFiles.slice().sort((a, b) => size(b) - size(a))[0] || null;
@@ -122,6 +142,8 @@ const metrics = {
   measuredAt: new Date().toISOString(),
   distBytes: payloadFiles.reduce((sum, file) => sum + size(file), 0),
   totalDistBytes: files.reduce((sum, file) => sum + size(file), 0),
+  onDemandLibraryBytes: libraryFiles.reduce((sum, file) => sum + size(file), 0),
+  onDemandLibraryFileCount: libraryFiles.length,
   lazyMediaBytes: lazyMediaFiles.reduce((sum, file) => sum + size(file), 0),
   lazyMediaFileCount: lazyMediaFiles.length,
   largestLazyMediaBytes: largestLazyMediaFile ? size(largestLazyMediaFile) : 0,
@@ -168,7 +190,7 @@ for (const file of fullHtml) {
   check(/<main\b|role=["']main["']/i.test(text) || name.includes('tests/'), `a11y.main:${name}`);
   const platformRuntimeCount = (text.match(/data-ghrab-platform-loader/g) || []).length;
   const engineRuntimeCount = (text.match(/data-ludus-(?:engine|shared)-runtime/g) || []).length;
-  const runtimeOk = name.includes('tests/') || platformRuntimeCount === 1 || engineRuntimeCount === 1;
+  const runtimeOk = name.includes('tests/') || name.startsWith('conversation-lab/') || platformRuntimeCount === 1 || engineRuntimeCount === 1;
   check(runtimeOk, `a11y.runtime:${name}`, `platform=${platformRuntimeCount}; engine=${engineRuntimeCount}`);
   const missingAlt = [...text.matchAll(/<img\b(?![^>]*\balt=)[^>]*>/gi)].length;
   if (missingAlt) warn(`a11y.auto-alt:${name}`, missingAlt);

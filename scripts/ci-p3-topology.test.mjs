@@ -2,8 +2,11 @@ import test from "node:test";
 import assert from "node:assert/strict";
 import { readFile } from "node:fs/promises";
 import { fileURLToPath } from "node:url";
+import { webcrypto } from "node:crypto";
 import path from "node:path";
 import { verifyPolicy, assessRepository, makeReport, renderMarkdown, createGitHubClient, inspectRepository } from "./ci-p3-topology.mjs";
+import { verifyClbMasterOwnerContentReceipt } from "../src/integration/conversation-lab/teacher-launch.js";
+import masterProfile from "../src/conversation-lab/release-profile.js";
 const ROOT=path.resolve(path.dirname(fileURLToPath(import.meta.url)),"..");
 const policy=JSON.parse(await readFile(path.join(ROOT,"ci/topology-policy.json"),"utf8"));
 const wave={schema:"ghrab-platform-release-wave-v1",applications:policy.apps.map(({id})=>({id,version:"1.0.0"}))};
@@ -22,17 +25,33 @@ function snapshotFor(item=app){
 }
 function codes(result){return result.findings.map(f=>f.code)}
 test("Policy covers nine wave apps", ()=>{assert.deepEqual(verifyPolicy(policy,wave),[])});
-test("Owner-signed 0.9.2 static S0 tenth app is permitted without lowering nine original repository P5 requirements",()=>{
- const wave10={...wave,applications:[...wave.applications,{id:"conversation-lab",version:"0.9.2"}]};
+test("Actual owner-signed MASTER 0.11.0 is the only current static tenth app",()=>{
+ const wave10={...wave,applications:[...wave.applications,{id:"conversation-lab",version:"0.11.0"}]};
  assert.deepEqual(verifyPolicy(policy,wave10),[]);
- const wrongVersion={...wave,applications:[...wave.applications,{id:"conversation-lab",version:"0.9.3"}]};
- assert.match(verifyPolicy(policy,wrongVersion).join(" "),/nine protected wave apps/);
- const wrongId={...wave,applications:[...wave.applications,{id:"unreviewed-tenth",version:"0.9.2"}]};
+ for(const version of ["0.9.2","0.10.1","0.11.1"]){
+  const wrongVersion={...wave,applications:[...wave.applications,{id:"conversation-lab",version}]};
+  assert.match(verifyPolicy(policy,wrongVersion).join(" "),/nine protected wave apps/);
+ }
+ const wrongId={...wave,applications:[...wave.applications,{id:"unreviewed-tenth",version:"0.11.0"}]};
  assert.match(verifyPolicy(policy,wrongId).join(" "),/nine protected wave apps/);
- const tampered=structuredClone(policy);tampered.standalonePublicS0Pilots[0].publicCatalogSha256="f".repeat(64);
- assert.match(verifyPolicy(tampered,wave10).join(" "),/Unreviewed or modified static S0/);
+ for(const [key,value] of [["publicCatalogSha256","f".repeat(64)],["ownerSignedStatementSha256","6f0588801d7ec4bc5b3314a4e351603cd6993890ef56b2a636ee497d0b3848c5"],["autoPromotion",true]]){
+  const tampered=structuredClone(policy);tampered.standalonePublicS0Pilots[0][key]=value;
+  assert.match(verifyPolicy(tampered,wave10).join(" "),/Unreviewed or modified static S0/);
+ }
  const missing=structuredClone(policy);delete missing.standalonePublicS0Pilots;
  assert.match(verifyPolicy(missing,wave10).join(" "),/nine protected wave apps/);
+});
+test("Current wave and topology pins bind to the actual received ES256 receipt, not historical B1", async()=>{
+ const actual=JSON.parse(await readFile(path.join(ROOT,policy.waveFile),"utf8"));
+ assert.deepEqual(verifyPolicy(policy,actual),[]);
+ const receipt=JSON.parse(await readFile(path.join(ROOT,"src/integration/conversation-lab/owner-content-release.v0.11.0.signed.json"),"utf8"));
+ assert.equal(await verifyClbMasterOwnerContentReceipt(receipt,masterProfile,{cryptoImpl:webcrypto}),true);
+ const s0=policy.standalonePublicS0Pilots[0];
+ assert.equal(s0.publicCatalogSha256,receipt.statement.publicCatalogSha256);
+ assert.equal(s0.ownerSignedStatementSha256,receipt.statementSha256);
+ assert.equal(s0.version,receipt.statement.appVersion);
+ assert.equal(receipt.statement.approvedLessonCount,72);
+ assert.equal(s0.autoPromotion,false);
 });
 
 test("Missing wave app fails", ()=>{assert.match(verifyPolicy(policy,{...wave,applications:wave.applications.slice(1)}).join(" "),/exactly cover/)});

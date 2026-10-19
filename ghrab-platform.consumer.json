@@ -2,7 +2,7 @@
   "schema": "ghrab-platform-consumer-v1",
   "appId": "ai-studio",
   "appName": "AI Studio GHRAB",
-  "appVersion": "0.21.247",
+  "appVersion": "0.21.248",
   "platform": {
     "version": "1.1.2",
     "contract": "ghrab-platform-v1",
@@ -89,13 +89,14 @@
     ]
   },
   "cache": {
-    "name": "ghrab-ai-studio-v0.21.247",
+    "name": "ghrab-ai-studio-v0.21.248",
     "updateMessage": "GHRAB_SKIP_WAITING"
   },
   "html": {
     "exclude": [
       "tests/",
-      "integration/"
+      "integration/",
+      "conversation-lab/"
     ],
     "noFooter": [
       "tests/",
@@ -174,7 +175,18 @@
       ],
       "maxBytes": 65000000,
       "maxSingleFileBytes": 60000000
-    }
+    },
+    "onDemandLibraries": [
+      {
+        "id": "conversation-lab",
+        "prefix": "conversation-lab/",
+        "inventory": "conversation-lab/teacher-integrity.json",
+        "maxBytes": 9200000,
+        "maxSingleFileBytes": 620000,
+        "maxFiles": 120,
+        "precacheAllowed": false
+      }
+    ]
   },
   "performance": {
     "stage": "P5",
