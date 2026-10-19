@@ -6,13 +6,13 @@ Ochranná vrstva je součástí federovaného přístupového modelu všech dev�
 Konkrétní nasazené verze se v tomto dokumentu záměrně neudržují; autoritativní stav vede
 aplikační registr, release-wave a release gate.
 
-- Generátor interaktivních testů 7.1.53 — ID `generator`,
-- Diferenciátor 1.3.49 — ID `differentiator`,
-- Hodnotitel maturitních slohů 1.5.29 — ID `essay-evaluator`,
-- LUDUS 1.16.29 — ID `ludus`,
-- Korespondenční asistent 5.10.31 — ID `correspondence`,
+- Generátor interaktivních testů 7.1.100 — ID `generator`,
+- Diferenciátor 1.3.51 — ID `differentiator`,
+- Hodnotitel maturitních slohů 1.5.30 — ID `essay-evaluator`,
+- LUDUS 1.16.31 — ID `ludus`,
+- Korespondenční asistent 5.10.34 — ID `correspondence`,
 - ACTIVA 0.5.30 — ID `activity-builder`,
-- SORTIO 1.1.22 — ID `sortio`,
+- SORTIO 1.1.23 — ID `sortio`,
 - Lesson Hub 1.2.26 — ID `lesson-hub`.
 
 ## Princip pro budoucí aplikace

@@ -1,0 +1,71 @@
+<!doctype html><html><head><meta charset="utf-8"></head><body>
+<div class="app">
+<header class="topbar" aria-label="Lesson controls">
+ <div class="brand"><div class="logo" aria-hidden="true">GO</div><div class="brand-copy"><strong id="brandTitle">The Pressure to Succeed</strong><span id="brandSubtitle">Conversation Lab</span></div></div>
+ <div class="controls">
+  <div class="control-group"><label class="control-label" for="languageSelect" id="languageLabel">Language</label><select id="languageSelect" class="lang-select" aria-label="Language"><option value="en">English</option><option value="es">Español</option><option value="de">Deutsch</option><option value="fr">Français</option></select></div>
+  <div class="control-group"><span class="control-label" id="levelLabel">CEFR level</span><div class="level-switch" id="levelSwitch" role="group" aria-labelledby="levelLabel"><button type="button" data-level="A1">A1</button><button type="button" data-level="A2">A2</button><button type="button" data-level="B1">B1</button><button type="button" data-level="B2">B2</button><button type="button" data-level="C1">C1</button><button type="button" data-level="C2">C2</button></div></div>
+  <button class="btn icon-only" id="themeBtn" type="button" title="Toggle day and night mode">☀ <span class="small-hide">Day</span></button>
+  <button class="btn icon-only" id="fullBtn" type="button" aria-pressed="false" title="Toggle fullscreen">⛶ <span class="small-hide">Full screen</span></button>
+  <button class="btn icon-only" id="resetBtn" type="button" title="Reset lesson">↺ <span class="small-hide">Reset</span></button>
+ </div>
+</header>
+<section class="hero" id="hero">
+ <div class="kicker" id="kicker">SPEAK · CHALLENGE · JUSTIFY · RESPOND</div>
+ <h1 id="heroTitle">The Pressure to Succeed</h1>
+ <p class="strap" id="heroStrap">Who gets to define success?</p>
+ <p class="hero-intro" id="heroIntro"></p>
+ <div class="meta"><span class="pill" id="metaLevel">B2</span><span class="pill" id="metaFormat"></span><span class="pill" id="metaTime"></span></div>
+ <div class="goal-strip"><span id="goalLabel">Speaking goal</span><strong id="goalText"></strong></div>
+ <div class="quickstart" id="quickstart"></div><p class="privacy-notice" id="privacyNotice"></p><div class="begin-row"><button class="btn primary" type="button" id="startLessonBtn">Begin the conversation →</button></div>
+</section>
+<details class="warmup" id="warmDetails"><summary><span class="warm-bubble" aria-hidden="true">✦</span><span class="warm-summary-text"><span id="warmTitle">Warm-up</span><small id="warmTime">Optional</small></span><span class="warm-chevron" aria-hidden="true">⌄</span></summary><div class="warm-content"><p id="warmTask"></p><small id="warmHint"></small></div></details>
+
+<p class="lookup-hint" id="lookupHint" aria-live="off"></p>
+<div class="nav-heading"><span id="navHeading">CONVERSATION STATIONS</span><small id="formatHint" class="mini-label">PAIR CONVERSATION</small></div>
+<nav class="section-nav" id="sectionNav" aria-label="Conversation stations"></nav>
+<main><section class="station" id="station" aria-live="off">
+ <div class="station-head"><div class="station-ident"><span class="station-num" id="stationNum">1</span><div class="station-copy"><div class="station-eyebrow" id="stationEyebrow"></div><h2 class="station-title" id="stationTitle"></h2><p class="station-subtitle" id="stationSubtitle"></p></div></div><div id="timerDock" class="timer-dock"></div></div>
+ <div class="station-body"><div class="station-grid">
+  <div class="card"><div class="mini-label" id="mainLabel">MAIN QUESTION</div><p class="main-question" id="mainQuestion"></p><div class="questions-label" id="questionsLabel"></div><div class="questions" id="questions"></div></div>
+  <div class="tools">
+   <div class="toolbox"><h3 class="toolbox-title" id="supportTitle"></h3><p class="toolbox-desc" id="supportDesc"></p><button class="btn" id="supportBtn" type="button" aria-controls="supportReveal" aria-expanded="false"></button><div id="supportReveal" class="reveal support" hidden><ul id="supportList"></ul></div></div>
+   <div class="toolbox"><h3 class="toolbox-title" id="challengeTitle"></h3><p class="toolbox-desc" id="challengeDesc"></p><button class="btn" id="challengeBtn" type="button" aria-controls="challengeReveal" aria-expanded="false"></button><div id="challengeReveal" class="reveal challenge" hidden></div></div>
+   <div class="toolbox"><h3 class="toolbox-title" id="stretchTitle"></h3><p class="toolbox-desc" id="stretchDesc"></p><button class="btn" id="stretchBtn" type="button" aria-controls="stretchReveal" aria-expanded="false"></button><div id="stretchReveal" class="reveal stretch" hidden></div></div>
+  </div>
+ </div><div class="station-foot"><div class="progress" id="progressText"></div><div class="nav-buttons"><button id="previousBtn" class="btn" type="button"></button><button id="nextBtn" class="btn primary" type="button"></button></div></div></div>
+</section>
+<section class="resource-card"><div class="mini-label" id="vocabLabel" hidden></div><h2 id="vocabHeading"></h2><p class="resource-desc" id="vocabDesc"></p><div class="vocab-grid" id="vocabGrid"></div></section>
+<section class="resource-card"><div class="mini-label" id="toolkitLabel" hidden></div><h2 id="toolkitHeading"></h2><p class="resource-desc" id="toolkitDesc"></p><div class="toolkit-grid" id="toolkitGrid"></div></section>
+<p class="lesson-tip"><b id="lessonTipLabel"></b> <span id="lessonTipText"></span></p><p class="footer-credit" id="footerCredit"></p>
+</main>
+</div>
+<!-- ONE timer node. The same running countdown is moved from desktop into the phone overlay. -->
+<section class="timer-panel" id="timerPanel" aria-label="Countdown" hidden>
+ <button class="timer-grip" id="timerGrip" type="button" aria-label="Drag timer" title="Drag timer">⠿</button>
+ <span class="timer-label" id="timerLabel">COUNTDOWN</span>
+ <button class="clock" id="clock" type="button" title="Set countdown">00:00</button>
+ <span class="timer-hint" id="timerHint" role="status"></span>
+ <button class="timer-float-toggle" id="timerFloatToggle" type="button" aria-expanded="false" aria-label="Expand countdown controls">⌃</button>
+ <div class="timer-buttons"><button id="timerStart" class="start" type="button"></button><button id="timerReset" type="button"></button></div>
+ <form class="timer-editor" id="timerEditor" hidden novalidate>
+   <div class="timer-editor-title" id="timerEditorTitle"></div>
+   <div class="timer-time-fields" role="group" aria-labelledby="timerEditorTitle" aria-describedby="timeHelp">
+    <div class="timer-time-field"><label for="timerMinutes" id="timerMinutesLabel">Minutes</label><input id="timerMinutes" type="text" inputmode="numeric" pattern="[0-9]*" maxlength="2" autocomplete="off" enterkeyhint="next" placeholder="00" aria-describedby="timeError"></div>
+    <span class="timer-separator" aria-hidden="true">:</span>
+    <div class="timer-time-field"><label for="timerSeconds" id="timerSecondsLabel">Seconds</label><input id="timerSeconds" type="text" inputmode="numeric" pattern="[0-9]*" maxlength="2" autocomplete="off" enterkeyhint="done" placeholder="00" aria-describedby="timeError"></div>
+   </div><p class="timer-help" id="timeHelp"></p><div class="timer-error" id="timeError" role="alert"></div>
+   <div class="timer-editor-buttons"><button type="submit" id="timerSet"></button><button type="button" id="cancelEdit"></button></div>
+ </form>
+</section>
+
+<aside class="lookup-popover" id="lookupPopover" role="dialog" aria-modal="false" aria-label="Překlad výrazu" hidden>
+  <div class="lookup-head"><span class="lookup-eyebrow">OFFLINE SLOVNÍK · ČESKY</span><button class="lookup-close" type="button" id="lookupClose" aria-label="Zavřít překlad" title="Zavřít překlad">×</button></div>
+  <strong class="lookup-expression" id="lookupExpression"></strong>
+  <p class="lookup-translation" id="lookupTranslation" aria-live="polite"></p>
+  <p class="lookup-context" id="lookupContext"></p>
+  <p class="lookup-origin" id="lookupOrigin"></p>
+</aside>
+<div class="toast" id="toast" role="status" aria-live="polite"></div>
+
+</body></html>

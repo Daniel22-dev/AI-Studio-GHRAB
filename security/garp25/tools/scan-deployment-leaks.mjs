@@ -17,13 +17,17 @@ if (existsSync(exceptionPath)) {
 function gitBlobSha(buffer) {
   return createHash('sha1').update(Buffer.from(`blob ${buffer.length}\0`, 'utf8')).update(buffer).digest('hex');
 }
-function reviewedSourceException(rel, rules) {
+function reviewedSourceException(rel, rules, deployedBytes) {
   if (!rules?.length || rules.some((id) => isPrivateKeyRule(id))) return null;
   const sourcePath = `src/${String(rel).replaceAll('\\\\','/')}`;
   const abs = path.join(projectRoot, sourcePath);
   if (!existsSync(abs)) return null;
-  const sha = gitBlobSha(readFileSync(abs));
-  const matching = exceptionEntries.filter((e) => e.sourcePath === sourcePath && e.sourceGitBlobSha === sha);
+  const sourceBytes = readFileSync(abs);
+  const sha = gitBlobSha(sourceBytes);
+  // Immutable content exceptions must bind both the reviewed source and the
+  // actual deployed bytes. A clean source cannot excuse a modified dist file.
+  const matching = exceptionEntries.filter((e) => e.sourcePath === sourcePath && e.sourceGitBlobSha === sha &&
+    (e.requireExactDeployedBytes !== true || deployedBytes.equals(sourceBytes)));
   const allowed = new Set(matching.flatMap((e) => e.allowedRules || []));
   if (!rules.every((id) => allowed.has(id))) return null;
   return { sourcePath, sourceGitBlobSha: sha, rules, rationale: matching.map((e) => e.rationale).filter(Boolean) };
@@ -41,8 +45,9 @@ const info = [];
 const acceptedExceptions = [];
 
 async function scanFile(abs, rel) {
-  const result = scanSecretBuffer(await readFile(abs), rel);
-  const exception = reviewedSourceException(rel, result.hits);
+  const bytes = await readFile(abs);
+  const result = scanSecretBuffer(bytes, rel);
+  const exception = reviewedSourceException(rel, result.hits, bytes);
   if (result.hits.length && exception) acceptedExceptions.push({ path: rel, ...exception });
   else for (const label of result.hits) errors.push(`secret-pattern:${rel}:${label}`);
   if (result.binary && result.hits.length === 0) info.push(`binary-no-private-key-detected:${rel}`);

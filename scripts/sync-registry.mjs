@@ -2,6 +2,7 @@ import { readFile, writeFile } from "node:fs/promises";
 import path from "node:path";
 import { fileURLToPath } from "node:url";
 import { evaluateRepositoryFallback } from "./release-promotion.mjs";
+import { bindClbMasterRegistry, verifyClbPublicManifestBytes } from "./lib/clb-master-registry.mjs";
 
 const here = path.dirname(fileURLToPath(import.meta.url));
 const root = path.resolve(here, "..");
@@ -156,7 +157,7 @@ function applyStudioOverrides(app, source, fallbackApp) {
   if (override?.description)
     merged.description = { ...merged.description, ...override.description };
   if (Array.isArray(override?.tags)) merged.tags = override.tags;
-  return validate(merged, source.id, source);
+  return validate(bindClbMasterRegistry(merged, source), source.id, source);
 }
 
 function validateOperationsManifest(operations, app) {
@@ -207,7 +208,9 @@ async function fetchUrl(url, { format = "json", timeoutMs = 12000 } = {}) {
 
 async function fetchManifest(source) {
   if (offline) throw new Error("offline režim");
-  const app = validate(await fetchUrl(source.url), source.id, source);
+  const raw = await fetchUrl(source.url, { format: 'text' });
+  verifyClbPublicManifestBytes(raw, source);
+  const app = validate(JSON.parse(raw), source.id, source);
   let operationsCount = null;
   let operationsError = null;
   if (app.aiCore?.serverReady) {
