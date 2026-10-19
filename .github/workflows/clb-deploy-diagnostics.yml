@@ -1,0 +1,37 @@
+name: CLB actual deploy project-log diagnosis (READ ONLY)
+on:
+  push:
+    branches: ['audit/clb-deploy-diagnostics-20261019']
+    paths: ['.github/workflows/clb-deploy-diagnostics.yml']
+permissions:
+  contents: read
+  actions: read
+jobs:
+  diagnose:
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+    steps:
+      - uses: actions/download-artifact@d3f86a106a0bac45b974a628896c90dbdf5c8093
+        with:
+          repository: Daniel22-dev/AI-Studio-GHRAB
+          run-id: 39316644299
+          name: ghrab-qa-72472a390a3530321bf04ee09ab6c3cda37ce79d
+          path: evidence
+          github-token: ${{ github.token }}
+      - name: Print exact failing assertion and all original gate findings
+        run: |
+          python3 - <<'PY'
+          import pathlib,json,re
+          root=pathlib.Path('evidence')
+          logs=list(root.rglob('project-tests.log'));assert len(logs)==1
+          text=logs[0].read_text();lines=text.splitlines();selected=set(range(max(0,len(lines)-160),len(lines)))
+          for i,line in enumerate(lines):
+              if re.search(r'not ok|AssertionError|Error:|FAIL|expected|actual|mismatch',line):
+                  selected.update(range(max(0,i-3),min(len(lines),i+9)))
+          print('ACTUAL_PROJECT_TEST_LOG\n'+'\n'.join(lines[i] for i in sorted(selected)))
+          reports=list(root.rglob('qa-report.json'));assert len(reports)==1
+          report=json.loads(reports[0].read_text())
+          for gate in report.get('gates',[]):
+              if gate.get('findings'):print('GATE_FINDINGS '+json.dumps({'name':gate['name'],'status':gate['status'],'findings':gate['findings']},ensure_ascii=False))
+          print('DIAGNOSIS_ONLY; NO_DEPLOYMENT_OR_PASS_CLAIM')
+          PY
