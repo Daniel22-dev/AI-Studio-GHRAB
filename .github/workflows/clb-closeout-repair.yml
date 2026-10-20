@@ -1,0 +1,106 @@
+name: CLB bounded closeout repair and verification (FEATURE ONLY)
+on:
+  push:
+    branches: ['fix/clb-studio-deployment-contract-20261019']
+    paths: ['.github/workflows/clb-closeout-repair.yml']
+permissions:
+  contents: write
+jobs:
+  closeout:
+    runs-on: ubuntu-latest
+    timeout-minutes: 20
+    steps:
+      - uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683
+        with:
+          persist-credentials: false
+      - uses: actions/setup-node@49933ea5288caeca8642d1e84afbd3f7d6820020
+        with:
+          node-version: '22'
+      - name: Apply bounded documentation and test-only repairs
+        run: |
+          python3 - <<'PY'
+          from pathlib import Path
+          import subprocess
+          assert subprocess.check_output(['git','rev-parse','HEAD^']).decode().strip()=='f546232720a1cb8f842b1c1ab6e3915ce589d5c9'
+          docs=['README.md','BEZPECNOST.md','AUTOMATIZACE-GITHUB.md','RELEASE-CHECKLIST.md','ARCHITEKTURA.md','POSTUP-NAHRANI.md','NAHRANI-NA-GITHUB.md']
+          for n in docs:
+              p=Path(n);s=p.read_text();assert '0.21.248' in s[:600];p.write_text(s[:600].replace('0.21.248','0.21.249')+s[600:])
+          p=Path('scripts/test-clb-secret-exceptions.mjs');s=p.read_text()
+          old=next(line for line in s.splitlines() if line.startswith('  assert.ok(qb.toString().includes('))
+          new="""  const dummyUrl = qb.toString().match(/https?:\\/\\/CLB_DUMMY_USER:[^'\"\\s]+/);
+            assert.ok(dummyUrl, 'Expected the explicit dummy redaction URL');
+            const parsedDummy = new URL(dummyUrl[0]);
+            assert.equal(parsedDummy.username, 'CLB_DUMMY_USER');
+            assert.equal(parsedDummy.password, 'CLB_DUMMY_PASSWORD');
+            assert.equal(parsedDummy.hostname, 'example.invalid');"""
+          s=s.replace(old,new);p.write_text(s)
+          p=Path('scripts/test-clb-master-browser.cjs');s=p.read_text()
+          old=next(line for line in s.splitlines() if 'await context.addInitScript(()=>{globalThis.__clbCspEvents=[];' in line)
+          new="""   await context.addInitScript(()=>{
+              globalThis.__clbCspEvents=[];globalThis.__clbQaInsertedStyles=[];
+              new MutationObserver(records=>{for(const record of records)for(const n of record.addedNodes)if(n.nodeType===1&&n.tagName==='STYLE')globalThis.__clbQaInsertedStyles.push((n.textContent||'').slice(0,1500));}).observe(document,{childList:true,subtree:true});
+              document.addEventListener('securitypolicyviolation',e=>{const event={directive:e.violatedDirective,blocked:e.blockedURI,sourceFile:e.sourceFile,line:e.lineNumber,column:e.columnNumber,styles:globalThis.__clbQaInsertedStyles.slice(-3)};globalThis.__clbCspEvents.push(event);globalThis.__clbQaCspEvent(event);});
+             });"""
+          s=s.replace(old,new)
+          old="      await page.screenshot({path:path.join(output,engine+'-'+topic+'-teacher.png')});"
+          assert old in s
+          new="""      console.log('CLB_BEFORE_SCREENSHOT',engine,topic,JSON.stringify(item.cspViolations));
+                await page.screenshot({path:path.join(output,engine+'-'+topic+'-teacher.png'),caret:'initial'});
+                await page.evaluate(()=>new Promise(resolve=>setTimeout(resolve,0)));
+                console.log('CLB_AFTER_SCREENSHOT',engine,topic,JSON.stringify(item.cspViolations));"""
+          p.write_text(s.replace(old,new))
+          assert subprocess.check_output(['git','diff','--name-only','--','src','config','security']).decode().strip()==''
+          PY
+      - name: Verify real source, signatures and security before saving
+        run: |
+          npm ci --ignore-scripts --no-audit --no-fund
+          node --test scripts/test-clb-studio-adapter.mjs scripts/test-clb-secret-exceptions.mjs scripts/test-clb-master-received-owner-signature.mjs scripts/test-clb-master-staged-hold.mjs scripts/test-clb-master-teacher-gate.mjs scripts/test-clb-studio-portal-route.mjs
+          node scripts/qa-security.mjs
+      - name: Save only the reviewed documentation and QA changes to feature branch
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          set -euo pipefail
+          branch='fix/clb-studio-deployment-contract-20261019'
+          auth="AUTHORIZATION: basic $(printf 'x-access-token:%s' "$GH_TOKEN" | base64 -w0)"
+          test "$(git -c "http.extraHeader=$auth" ls-remote origin "refs/heads/$branch" | cut -f1)" = "$GITHUB_SHA"
+          git config user.name 'github-actions[bot]'
+          git config user.email '41898282+github-actions[bot]@users.noreply.github.com'
+          git add README.md BEZPECNOST.md AUTOMATIZACE-GITHUB.md RELEASE-CHECKLIST.md ARCHITEKTURA.md POSTUP-NAHRANI.md NAHRANI-NA-GITHUB.md scripts/test-clb-secret-exceptions.mjs scripts/test-clb-master-browser.cjs
+          test -z "$(git diff --cached --name-only -- src config security .github)"
+          git commit -m 'fix(clb): close release documentation drift and instrument exact CSP attribution'
+          git -c "http.extraHeader=$auth" push origin "HEAD:refs/heads/$branch"
+          echo "GHRAB_SOURCE_COMMIT=$(git rev-parse HEAD)" >> "$GITHUB_ENV"
+      - name: Install pinned browser engines
+        run: |
+          npx playwright install --with-deps chromium firefox webkit
+          node -e "console.log('CHROMIUM_PATH='+require('playwright').chromium.executablePath())" >> "$GITHUB_ENV"
+      - name: Run full project and actual teacher checks with durable logs
+        env:
+          CLB_ENGINE: chromium,firefox,webkit
+        run: |
+          python3 - <<'PY'
+          import subprocess,pathlib,json,os
+          out=pathlib.Path(os.environ['RUNNER_TEMP'])/'clb-closeout';out.mkdir(exist_ok=True)
+          commands=[['npm','test'],['npm','run','qa:release'],['node','scripts/test-clb-master-browser.cjs'],['node','scripts/test-clb-master-live.mjs']]
+          results=[]
+          for i,cmd in enumerate(commands):
+              r=subprocess.run(cmd,stdout=subprocess.PIPE,stderr=subprocess.STDOUT,text=True)
+              (out/(str(i)+'.log')).write_text(r.stdout)
+              results.append({'command':cmd,'exitCode':r.returncode})
+              print('CLB_COMMAND',cmd,'EXIT',r.returncode,flush=True)
+              lines=r.stdout.splitlines()
+              print('\n'.join(line for line in lines if 'CLB_BEFORE_SCREENSHOT' in line or 'CLB_AFTER_SCREENSHOT' in line),flush=True)
+              print('\n'.join(lines[-70:] if r.returncode else lines[-5:]),flush=True)
+          (out/'results.json').write_text(json.dumps({'sourceSha':os.environ['GHRAB_SOURCE_COMMIT'],'results':results},indent=2))
+          subprocess.run(['git','archive','HEAD','-o',str(out/'source.tar')],check=True)
+          raise SystemExit(0 if all(r['exitCode']==0 for r in results) else 1)
+          PY
+      - uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
+        if: always()
+        with:
+          name: CLB-CLOSEOUT-VERIFICATION
+          path: |
+            ${{ runner.temp }}/clb-closeout/
+            qa-results/
+          retention-days: 14
