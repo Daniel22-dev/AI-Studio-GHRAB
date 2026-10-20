@@ -49,7 +49,6 @@ jobs:
           node scripts/sync-doc-app-versions.mjs
           node scripts/generate-changelog.mjs
           npm run qa:doc-versions
-          npm run verify:release-version
           after="$(git ls-tree -r HEAD src/conversation-lab | sha256sum | cut -d' ' -f1)"
           test "$before" = "$after"
           python3 - <<'PY'
@@ -71,5 +70,6 @@ jobs:
           git config user.email '41898282+github-actions[bot]@users.noreply.github.com'
           git add -u
           git commit -m "chore(studio): independently release CLB CSP fix as 0.21.250 after app 0.21.249 promotion"
+          npm run verify:release-version
           git -c "http.extraHeader=$auth" push origin HEAD:refs/heads/fix/clb-studio-deployment-contract-20261019
           echo "FEATURE_ONLY_VERSION_COMMIT=$(git rev-parse HEAD)"
