@@ -22,7 +22,7 @@ jobs:
           python3 - <<'PY'
           from pathlib import Path
           import subprocess
-          assert 'parent e0a54ada2c99ccf50b80153dc92d439722090c0d\n' in subprocess.check_output(['git','cat-file','-p','HEAD']).decode()
+          assert 'parent 862b5e884879b4384e1130fd5b2f01d903a3a2b7\n' in subprocess.check_output(['git','cat-file','-p','HEAD']).decode()
           docs=['README.md','BEZPECNOST.md','AUTOMATIZACE-GITHUB.md','RELEASE-CHECKLIST.md','ARCHITEKTURA.md','POSTUP-NAHRANI.md','NAHRANI-NA-GITHUB.md']
           for n in docs:
               p=Path(n);s=p.read_text();assert '0.21.248' in s[:600];p.write_text(s[:600].replace('0.21.248','0.21.249')+s[600:])
@@ -52,10 +52,11 @@ jobs:
           p.write_text(s.replace(old,new))
           assert subprocess.check_output(['git','diff','--name-only','--','src','config','security']).decode().strip()==''
           PY
-      - name: Verify real source, signatures and security before saving
+      - name: Verify real source, signatures and built deployment security before saving
         run: |
           npm ci --ignore-scripts --no-audit --no-fund
           node --test scripts/test-clb-studio-adapter.mjs scripts/test-clb-secret-exceptions.mjs scripts/test-clb-master-received-owner-signature.mjs scripts/test-clb-master-staged-hold.mjs scripts/test-clb-master-teacher-gate.mjs scripts/test-clb-studio-portal-route.mjs
+          npm run build
           node scripts/qa-security.mjs
       - name: Save only documentation and QA changes to feature with optimistic lease
         env:
