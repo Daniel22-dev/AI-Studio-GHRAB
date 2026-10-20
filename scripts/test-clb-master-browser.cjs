@@ -48,7 +48,11 @@ const mime={'.html':'text/html','.js':'text/javascript','.json':'application/jso
    const context=await browser.newContext({viewport:{width:1440,height:1000},serviceWorkers:'block'});
    let intentionalProbe=false;
    await context.exposeBinding('__clbQaCspEvent',(_source,event)=>{(intentionalProbe?item.cspProbeViolations:item.cspViolations).push(event);});
-   await context.addInitScript(()=>{globalThis.__clbCspEvents=[];document.addEventListener('securitypolicyviolation',e=>{const event={directive:e.violatedDirective,blocked:e.blockedURI};globalThis.__clbCspEvents.push(event);globalThis.__clbQaCspEvent(event);});});
+   await context.addInitScript(()=>{
+    globalThis.__clbCspEvents=[];globalThis.__clbQaInsertedStyles=[];
+    new MutationObserver(records=>{for(const record of records)for(const n of record.addedNodes)if(n.nodeType===1&&n.tagName==='STYLE')globalThis.__clbQaInsertedStyles.push((n.textContent||'').slice(0,1500));}).observe(document,{childList:true,subtree:true});
+    document.addEventListener('securitypolicyviolation',e=>{const event={directive:e.violatedDirective,blocked:e.blockedURI,sourceFile:e.sourceFile,line:e.lineNumber,column:e.columnNumber,styles:globalThis.__clbQaInsertedStyles.slice(-3)};globalThis.__clbCspEvents.push(event);globalThis.__clbQaCspEvent(event);});
+   });
    const token=await permit(scenario.kind);
    await context.addInitScript(({token,origin})=>{if(location.origin===origin&&token)localStorage.setItem('ghrab.access.permit.v2',token);},{token:scenario.realTrust?null:token,origin:ORIGIN});
    await context.route('**/*',async route=>{
@@ -92,7 +96,10 @@ const mime={'.html':'text/html','.js':'text/javascript','.json':'application/jso
       await page.goto('about:blank');await page.goto(TEACHER+'#/l/'+topic+'/en/B2/s/s03');await page.waitForFunction(()=>document.querySelector('#stationNum')?.textContent==='3');
       await page.locator('#clb-share-open').click();await page.locator('#clb-share[open]').waitFor();
       const target=PUBLIC+'/#/l/'+topic+'/en/B2/s/s03';assert.equal(await page.locator('#clb-share-url').inputValue(),target);assert.equal(await page.locator('#clb-share-qr svg').count(),1);item.qr++;
-      await page.screenshot({path:path.join(output,engine+'-'+topic+'-teacher.png')});
+      console.log('CLB_BEFORE_SCREENSHOT',engine,topic,JSON.stringify(item.cspViolations));
+      await page.screenshot({path:path.join(output,engine+'-'+topic+'-teacher.png'),caret:'initial'});
+      await page.evaluate(()=>new Promise(resolve=>setTimeout(resolve,0)));
+      console.log('CLB_AFTER_SCREENSHOT',engine,topic,JSON.stringify(item.cspViolations));
       const studentContext=await browser.newContext({serviceWorkers:'block'});
       try {const student=await studentContext.newPage();const bad=[];await studentContext.route('**/*',async r=>{const h=await r.request().allHeaders();if(!r.request().url().startsWith(PUBLIC+'/')||h.authorization||h.cookie||h.referer?.startsWith(ORIGIN)){bad.push(r.request().url());return r.abort();}return r.continue();});
        await student.goto(target);await student.waitForFunction(()=>document.querySelector('#stationNum')?.textContent==='3');
