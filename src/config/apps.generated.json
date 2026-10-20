@@ -52,7 +52,7 @@
       "platformContract": "ghrab-platform-v1",
       "platformRange": ">=1.1.2 <2.0.0"
     },
-    "publishedAt": "2026-10-19T06:27:53.526Z",
+    "publishedAt": "2026-10-20T06:55:25.887Z",
     "aiCore": {
       "schema": "ghrab-ai-app-integration-v1",
       "status": "integrated-p1",
@@ -1111,8 +1111,8 @@
       "studioMinVersion": "0.21.244"
     },
     "description": {
-      "cs": "Konverzační laboratoř pro výuku jazyků. Osm stanovišť, 4 jazyky, 6 úrovní CEFR, offline české překlady a QR odkazy.",
-      "en": "Conversation laboratory with 8 stations, 4 languages, 6 CEFR levels, offline Czech translations and QR sharing."
+      "cs": "Konverzační laboratoř pro výuku jazyků. Stanoviště, české offline překlady a QR odkazy pro studenty.",
+      "en": "Language conversation laboratory with discussion stations, offline Czech translations and QR links for students."
     },
     "icon": "assets/apps/conversation-lab.svg",
     "id": "conversation-lab",
