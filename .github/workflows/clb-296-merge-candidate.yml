@@ -31,7 +31,7 @@ jobs:
           test "$main_sha" = "$candidate_sha"
           git config user.email '41898282+github-actions[bot]@users.noreply.github.com'
           git config user.name 'github-actions[bot]'
-          git merge --no-ff --no-edit -m "chore(clb): preserve candidate app promotion while integrating verified MASTER teacher fix" "$candidate_sha"
+          git merge -X theirs --no-ff --no-edit -m "chore(clb): preserve candidate app promotion while integrating verified MASTER teacher fix" "$candidate_sha"
           python3 - <<'PY'
           import subprocess
           base=subprocess.check_output(['git','rev-parse','HEAD^2'],text=True).strip()
