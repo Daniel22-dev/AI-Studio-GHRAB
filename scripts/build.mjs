@@ -527,7 +527,9 @@ const rootIndexCompacted = `${rootIndexText
 if (rootIndexCompacted !== rootIndexText) await writeFile(rootIndex, rootIndexCompacted, "utf8");
 
 
-// Validate byte parity after all platform and performance post-processing.
+// Apply only the independently reviewed teacher envelope after generic processing.
+const { applyClbStudioAdapter } = await import("./lib/clb-studio-adapter.mjs");
+await applyClbStudioAdapter(root, dist, pkg.version);
 await verifyClbMasterFiles(root, dist);
 
 // P2B: fingerprint the FINAL generated dist after all build post-processing.

@@ -1,0 +1,76 @@
+name: CLB Studio envelope full project and browser verification (READ ONLY)
+on:
+  push:
+    branches: ['fix/clb-studio-deployment-contract-20261019']
+  workflow_dispatch:
+permissions:
+  contents: read
+jobs:
+  verify:
+    name: verify-${{ matrix.phase }}
+    runs-on: ubuntu-latest
+    timeout-minutes: 40
+    strategy:
+      fail-fast: false
+      matrix:
+        phase: [project, foundation-p5, teacher]
+    steps:
+      - uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683
+        with:
+          persist-credentials: false
+          fetch-depth: 2
+      - uses: actions/setup-node@49933ea5288caeca8642d1e84afbd3f7d6820020
+        with:
+          node-version: '22'
+          cache: npm
+      - name: Install locked runtime and browser tools
+        env:
+          PHASE: ${{ matrix.phase }}
+        run: |
+          npm ci --ignore-scripts --no-audit --no-fund
+          if [ "$PHASE" = teacher ]; then npx playwright install --with-deps chromium firefox webkit; else npx playwright install --with-deps chromium; fi
+          node -e "console.log('CHROMIUM_PATH='+require('playwright').chromium.executablePath())" >> "$GITHUB_ENV"
+      - name: Verify committed source with logs outside all build-cleaned directories
+        env:
+          PHASE: ${{ matrix.phase }}
+          CLB_ENGINE: chromium,firefox,webkit
+          GHRAB_SOURCE_COMMIT: ${{ github.sha }}
+        run: |
+          python3 - <<'PY'
+          import subprocess,pathlib,json,os,re,hashlib,datetime
+          phase=os.environ['PHASE'];out=pathlib.Path(os.environ['RUNNER_TEMP'])/'clb-envelope'/phase;out.mkdir(parents=True,exist_ok=True)
+          shared=[['node','--test','scripts/test-clb-studio-adapter.mjs','scripts/test-clb-secret-exceptions.mjs','scripts/test-clb-master-received-owner-signature.mjs','scripts/test-clb-master-staged-hold.mjs','scripts/test-clb-master-teacher-gate.mjs','scripts/test-clb-studio-portal-route.mjs'],['npm','run','build']]
+          commands={'project':[['npm','test'],['npm','run','qa:release']], 'foundation-p5':[['npm','run','qa:garp27:foundation'],['npm','run','qa:p5:ci'],['npm','run','verify:release-version']], 'teacher':[['node','scripts/test-clb-master-browser.cjs'],['node','scripts/test-clb-master-live.mjs']]}[phase]
+          report={'schema':'ghrab-clb-envelope-preflight-v1','phase':phase,'sourceSha':os.environ['GHRAB_SOURCE_COMMIT'],'startedAt':datetime.datetime.now(datetime.timezone.utc).isoformat(),'productionDeployment':False,'steps':[]}
+          for i,cmd in enumerate(shared+commands):
+              print('RUN '+' '.join(cmd),flush=True)
+              r=subprocess.run(cmd,stdout=subprocess.PIPE,stderr=subprocess.STDOUT,text=True)
+              raw=r.stdout;out.mkdir(parents=True,exist_ok=True);(out/(str(i)+'.log')).write_text(raw)
+              report['steps'].append({'command':cmd,'exitCode':r.returncode,'logSha256':hashlib.sha256(raw.encode()).hexdigest()})
+              print('EXIT '+str(r.returncode),flush=True)
+              if r.returncode:
+                  lines=raw.splitlines();indices=set(range(max(0,len(lines)-80),len(lines)))
+                  for j,line in enumerate(lines):
+                      if re.search(r'not ok|Error:|FAIL|SELHAL|BLOCKER|MAJOR',line):indices.update(range(max(0,j-2),min(len(lines),j+9)))
+                  print('\n'.join(lines[j][:1500] for j in sorted(indices)),flush=True)
+              else:print('\n'.join(raw.splitlines()[-3:]),flush=True)
+              if i<len(shared) and r.returncode:break
+          report['status']='PASS' if len(report['steps'])==len(shared+commands) and all(x['exitCode']==0 for x in report['steps']) else 'FAIL'
+          for base in [pathlib.Path('qa-results'),pathlib.Path('audit-evidence/garp27-current')]:
+              for file in base.rglob('project-tests.log') if base.exists() else []:
+                  print('PROJECT_TEST_TAIL\n'+'\n'.join(file.read_text().splitlines()[-160:]),flush=True)
+          report['completedAt']=datetime.datetime.now(datetime.timezone.utc).isoformat();(out/'summary.json').write_text(json.dumps(report,indent=2)+'\n');print('CLB_ENVELOPE_RESULT='+json.dumps(report),flush=True)
+          raise SystemExit(0 if report['status']=='PASS' else 1)
+          PY
+      - name: Retain complete diagnostics even when a tested command clears qa-results
+        if: always()
+        uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
+        with:
+          name: CLB-ENVELOPE-${{ matrix.phase }}-${{ github.sha }}
+          path: |
+            ${{ runner.temp }}/clb-envelope/
+            qa-results/
+            audit-evidence/garp27-current/
+            dist/quality-report.json
+            dist/qa-p5-*.json
+          retention-days: 14
