@@ -1,0 +1,27 @@
+name: CLB exact source snapshot (READ ONLY)
+on:
+  push:
+    branches: ['fix/clb-studio-deployment-contract-20261019']
+    paths: ['.github/workflows/clb-closeout-snapshot.yml']
+  workflow_dispatch:
+permissions:
+  contents: read
+jobs:
+  snapshot:
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+    steps:
+      - uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683
+        with:
+          persist-credentials: false
+      - name: Retain exact tracked source and tree identity
+        run: |
+          mkdir -p "$RUNNER_TEMP/clb-snapshot"
+          git archive HEAD > "$RUNNER_TEMP/clb-snapshot/source.tar"
+          git rev-parse HEAD HEAD^{tree} > "$RUNNER_TEMP/clb-snapshot/refs.txt"
+          sha256sum "$RUNNER_TEMP/clb-snapshot/source.tar" > "$RUNNER_TEMP/clb-snapshot/SHA256SUMS"
+      - uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
+        with:
+          name: CLB-CLOSEOUT-SOURCE
+          path: ${{ runner.temp }}/clb-snapshot/
+          retention-days: 14
