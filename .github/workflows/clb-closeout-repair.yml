@@ -13,6 +13,7 @@ jobs:
       - uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683
         with:
           persist-credentials: false
+          fetch-depth: 2
       - uses: actions/setup-node@49933ea5288caeca8642d1e84afbd3f7d6820020
         with:
           node-version: '22'
@@ -21,7 +22,7 @@ jobs:
           python3 - <<'PY'
           from pathlib import Path
           import subprocess
-          assert subprocess.check_output(['git','rev-parse','HEAD^']).decode().strip()=='f546232720a1cb8f842b1c1ab6e3915ce589d5c9'
+          assert 'parent e0a54ada2c99ccf50b80153dc92d439722090c0d\n' in subprocess.check_output(['git','cat-file','-p','HEAD']).decode()
           docs=['README.md','BEZPECNOST.md','AUTOMATIZACE-GITHUB.md','RELEASE-CHECKLIST.md','ARCHITEKTURA.md','POSTUP-NAHRANI.md','NAHRANI-NA-GITHUB.md']
           for n in docs:
               p=Path(n);s=p.read_text();assert '0.21.248' in s[:600];p.write_text(s[:600].replace('0.21.248','0.21.249')+s[600:])
@@ -33,7 +34,7 @@ jobs:
             assert.equal(parsedDummy.username, 'CLB_DUMMY_USER');
             assert.equal(parsedDummy.password, 'CLB_DUMMY_PASSWORD');
             assert.equal(parsedDummy.hostname, 'example.invalid');"""
-          s=s.replace(old,new);p.write_text(s)
+          p.write_text(s.replace(old,new))
           p=Path('scripts/test-clb-master-browser.cjs');s=p.read_text()
           old=next(line for line in s.splitlines() if 'await context.addInitScript(()=>{globalThis.__clbCspEvents=[];' in line)
           new="""   await context.addInitScript(()=>{
@@ -56,7 +57,7 @@ jobs:
           npm ci --ignore-scripts --no-audit --no-fund
           node --test scripts/test-clb-studio-adapter.mjs scripts/test-clb-secret-exceptions.mjs scripts/test-clb-master-received-owner-signature.mjs scripts/test-clb-master-staged-hold.mjs scripts/test-clb-master-teacher-gate.mjs scripts/test-clb-studio-portal-route.mjs
           node scripts/qa-security.mjs
-      - name: Save only the reviewed documentation and QA changes to feature branch
+      - name: Save only documentation and QA changes to feature with optimistic lease
         env:
           GH_TOKEN: ${{ github.token }}
         run: |
@@ -68,7 +69,7 @@ jobs:
           git config user.email '41898282+github-actions[bot]@users.noreply.github.com'
           git add README.md BEZPECNOST.md AUTOMATIZACE-GITHUB.md RELEASE-CHECKLIST.md ARCHITEKTURA.md POSTUP-NAHRANI.md NAHRANI-NA-GITHUB.md scripts/test-clb-secret-exceptions.mjs scripts/test-clb-master-browser.cjs
           test -z "$(git diff --cached --name-only -- src config security .github)"
-          git commit -m 'fix(clb): close release documentation drift and instrument exact CSP attribution'
+          git commit -m 'fix(clb): close documentation drift and instrument exact CSP attribution'
           git -c "http.extraHeader=$auth" push origin "HEAD:refs/heads/$branch"
           echo "GHRAB_SOURCE_COMMIT=$(git rev-parse HEAD)" >> "$GITHUB_ENV"
       - name: Install pinned browser engines
