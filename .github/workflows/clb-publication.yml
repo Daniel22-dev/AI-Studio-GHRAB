@@ -1,0 +1,41 @@
+name: CLB actual Studio publication verification (READ ONLY)
+on:
+  workflow_run:
+    workflows: ['Sync, certify and deploy AI Studio GHRAB']
+    types: [completed]
+    branches: [main]
+  workflow_dispatch:
+permissions:
+  contents: read
+jobs:
+  verify-live:
+    if: >-
+      github.event_name == 'workflow_dispatch' ||
+      (github.event.workflow_run.conclusion == 'success' &&
+       github.event.workflow_run.head_branch == 'main' &&
+       github.event.workflow_run.head_repository.full_name == github.repository)
+    runs-on: ubuntu-latest
+    timeout-minutes: 8
+    steps:
+      - uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683
+        with:
+          persist-credentials: false
+          ref: ${{ github.event.workflow_run.head_sha || github.sha }}
+      - uses: actions/setup-node@49933ea5288caeca8642d1e84afbd3f7d6820020
+        with:
+          node-version: '22'
+      - name: Compare all 120 teacher files and five release controls with actual HTTPS
+        env:
+          GHRAB_SOURCE_COMMIT: ${{ github.event.workflow_run.head_sha || github.sha }}
+        run: node scripts/verify-clb-publication.mjs
+      - name: Verify unchanged anonymous Cloudflare publication
+        run: node scripts/test-clb-master-live.mjs
+      - uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
+        if: always()
+        with:
+          name: CLB-ACTUAL-PUBLICATION-${{ github.event.workflow_run.head_sha || github.sha }}
+          path: |
+            qa-results/clb-publication/
+            qa-results/clb-master-live/
+          if-no-files-found: error
+          retention-days: 90

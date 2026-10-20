@@ -27,6 +27,9 @@ test('CSP precedes all fetched resources; no inline/eval or cross-origin executi
     assert.ok(policy>head && !/<(?:script|link)\b/i.test(text.slice(head,policy)));
     assert.ok(!/unsafe-inline|unsafe-eval|frame-ancestors|sandbox|https?:/.test(CLB_STUDIO_CSP));
     assert.ok(CLB_STUDIO_CSP.includes("script-src-attr 'none'"));
+    const firstScript = text.match(/<script\b[^>]*>/i)?.[0];
+    assert.equal(firstScript, '<script src="/AI-Studio-GHRAB/frame-guard.js?v=' + pkg.version + '">');
+    assert.ok(text.indexOf(firstScript) > policy);
     for (const match of text.matchAll(/(?:src|href)=["']([^"']+\.(?:js|css)(?:\?[^"']*)?)["']/g)) assert.ok(match[1].endsWith('?v='+pkg.version));
   }
   const entry=expected.get('teacher-entry.js').toString();
@@ -44,6 +47,11 @@ test('derived inventory and actual deployment reject missing CSP, altered payloa
     await assert.rejects(verifyClbMasterFiles(root,dir),/DEPLOYED_ENVELOPE_OR_PAYLOAD/);
     await writeFile(path.join(dest,name),expected.get(name));
   }
+  const withoutGuard = expected.get('index.html').toString().replace(/<script src="[^"]*frame-guard\.js[^"]*"><\/script>/, '');
+  assert.notEqual(withoutGuard, expected.get('index.html').toString());
+  await writeFile(path.join(dest,'index.html'), withoutGuard);
+  await assert.rejects(verifyClbMasterFiles(root,dir), /DEPLOYED_ENVELOPE_OR_PAYLOAD/);
+  await writeFile(path.join(dest,'index.html'), expected.get('index.html'));
   await writeFile(path.join(dest,'unreviewed.js'),'void 0;');
   await assert.rejects(verifyClbMasterFiles(root,dir),/DEPLOYED_FILE_SET/);
 });

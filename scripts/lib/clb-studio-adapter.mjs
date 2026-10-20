@@ -23,7 +23,7 @@ export function adaptClbStudioAsset(name, bytes, version) {
     need((text.match(/<head>/gi) || []).length === 1 && !/http-equiv=["']Content-Security-Policy/i.test(text), 'SOURCE_ENVELOPE_DRIFT');
     // Meta CSP must precede every fetch. Unsupported meta directives such as
     // frame-ancestors are deliberately NOT claimed here; teacher top-frame gate remains enforced.
-    text = text.replace(/<head>/i, '<head>\n<meta http-equiv="Content-Security-Policy" content="' + CLB_STUDIO_CSP + '">');
+    text = text.replace(/<head>/i, '<head>\n<meta http-equiv="Content-Security-Policy" content="' + CLB_STUDIO_CSP + '">\n<script src="/AI-Studio-GHRAB/frame-guard.js"></script>');
     text = text.replace(/(<script\b[^>]*\bsrc=["'])([^"']+\.js(?:\?[^"']*)?)(["'])/gi, (_m, a, ref, z) => a + revision(ref, version) + z);
     text = text.replace(/(<link\b(?=[^>]*\brel=["']stylesheet["'])[^>]*\bhref=["'])([^"']+\.css(?:\?[^"']*)?)(["'])/gi, (_m, a, ref, z) => a + revision(ref, version) + z);
     return Buffer.from(text);

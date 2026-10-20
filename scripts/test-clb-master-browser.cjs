@@ -96,10 +96,12 @@ const mime={'.html':'text/html','.js':'text/javascript','.json':'application/jso
       await page.goto('about:blank');await page.goto(TEACHER+'#/l/'+topic+'/en/B2/s/s03');await page.waitForFunction(()=>document.querySelector('#stationNum')?.textContent==='3');
       await page.locator('#clb-share-open').click();await page.locator('#clb-share[open]').waitFor();
       const target=PUBLIC+'/#/l/'+topic+'/en/B2/s/s03';assert.equal(await page.locator('#clb-share-url').inputValue(),target);assert.equal(await page.locator('#clb-share-qr svg').count(),1);item.qr++;
-      console.log('CLB_BEFORE_SCREENSHOT',engine,topic,JSON.stringify(item.cspViolations));
-      await page.screenshot({path:path.join(output,engine+'-'+topic+'-teacher.png'),caret:'initial'});
-      await page.evaluate(()=>new Promise(resolve=>setTimeout(resolve,0)));
-      console.log('CLB_AFTER_SCREENSHOT',engine,topic,JSON.stringify(item.cspViolations));
+      // Playwright WebKit's screenshot helper inserts inline `body {}` to sync
+      // animations. Keep that tooling mutation out of the CSP enforcement test.
+      // Chromium/Firefox captures keep the caret unchanged for the same reason.
+      if(engine!=='webkit') {
+       await page.screenshot({path:path.join(output,engine+'-'+topic+'-teacher.png'),caret:'initial'});
+      } else item.screenshotScope='NOT_CAPTURED_HERE_WEBKIT_HELPER_INJECTS_INLINE_STYLE';
       const studentContext=await browser.newContext({serviceWorkers:'block'});
       try {const student=await studentContext.newPage();const bad=[];await studentContext.route('**/*',async r=>{const h=await r.request().allHeaders();if(!r.request().url().startsWith(PUBLIC+'/')||h.authorization||h.cookie||h.referer?.startsWith(ORIGIN)){bad.push(r.request().url());return r.abort();}return r.continue();});
        await student.goto(target);await student.waitForFunction(()=>document.querySelector('#stationNum')?.textContent==='3');
