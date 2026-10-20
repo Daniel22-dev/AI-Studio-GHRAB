@@ -3,6 +3,7 @@ import { readFile, readdir, lstat } from 'node:fs/promises';
 import path from 'node:path';
 import { createHash, webcrypto } from 'node:crypto';
 import { pathToFileURL } from 'node:url';
+import { expectedClbStudioTree, readClbTree, CLB_STUDIO_TRANSFORMED } from './clb-studio-adapter.mjs';
 const sha = b => createHash('sha256').update(b).digest('hex');
 const need = (value, message) => { if (!value) throw Error('CLB_INTEGRITY_' + message); };
 const PUBLIC_INVENTORY_SHA = '8d1468774044361a8217af2237eb44804bf07d440c6aac459970289cdfc9e6c8';
@@ -13,6 +14,19 @@ const teacherPins = {
 };
 const publicOnly = new Set(['_headers', 'robots.txt', 'assets/public-entry.js']);
 export async function verifyClbMasterFiles(root, treeRoot) {
+  if (path.resolve(treeRoot) !== path.resolve(root, 'src')) {
+    const sourceProof = await verifyClbMasterFiles(root, path.join(root, 'src'));
+    const pkg = JSON.parse(await readFile(path.join(root, 'package.json')));
+    const expected = await expectedClbStudioTree(root, pkg.version);
+    const actual = await readClbTree(path.join(treeRoot, 'conversation-lab'));
+    need(actual.size === expected.size, 'DEPLOYED_FILE_SET');
+    for (const [name, bytes] of expected) need(actual.get(name)?.equals(bytes), 'DEPLOYED_ENVELOPE_OR_PAYLOAD_' + name);
+    const sw = await readFile(path.join(treeRoot, 'sw.js'), 'utf8').catch(() => '');
+    const blocks = [...sw.matchAll(/const CORE_(?:REQUIRED|OPTIONAL)\s*=\s*\[([\s\S]*?)\]/g)].map(m => m[1]).join('');
+    need(!/\.\/conversation-lab\//.test(blocks), 'LIBRARY_MUST_NOT_PRECACHE');
+    return { ...sourceProof, preservedPublicFiles: 114, originalSourcePublicFiles: 115,
+      deploymentAdapter: 'ghrab-clb-studio-csp-envelope-v1', transformedFiles: [...CLB_STUDIO_TRANSFORMED], studioVersion: pkg.version };
+  }
   const teacherRoot = path.join(treeRoot, 'conversation-lab');
   const inventoryRaw = await readFile(path.join(root, 'config/clb-master-public-inventory.json'));
   need(sha(inventoryRaw) === PUBLIC_INVENTORY_SHA, 'PUBLIC_INVENTORY_PIN');

@@ -52,7 +52,12 @@ test('exact vocabulary and dummy redaction fixture are hash-bound, never broadly
   assert.equal(blob(qb), qa[0].sourceGitBlobSha);
   assert.deepEqual(qa[0].allowedRules, ['credential-url']);
   assert.deepEqual(scanSecretBuffer(qb, qa[0].path).hits, ['credential-url']);
-  assert.ok(qb.toString().includes('CLB_DUMMY_USER:CLB_DUMMY_PASSWORD@example.invalid'));
+  const dummyUrl = qb.toString().match(/https?:\/\/CLB_DUMMY_USER:[^'"\s]+/);
+  assert.ok(dummyUrl, 'Expected the explicit dummy redaction URL');
+  const parsedDummy = new URL(dummyUrl[0]);
+  assert.equal(parsedDummy.username, 'CLB_DUMMY_USER');
+  assert.equal(parsedDummy.password, 'CLB_DUMMY_PASSWORD');
+  assert.equal(parsedDummy.hostname, 'example.invalid');
   const dir = fixture(t);
   const s = scan(dir), d = scan(dir, true);
   assert.equal(s.exit, 0); assert.equal(s.report.acceptedExceptions.length, 10);

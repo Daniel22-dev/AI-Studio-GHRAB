@@ -5,6 +5,8 @@ import path from "node:path";
 import { fileURLToPath } from "node:url";
 import { safeExportSelfTest } from "../src/shared/safe-export.js";
 import { validateMaterialPackage } from "../src/shared/material-validator.js";
+import { verifyClbMasterFiles } from "./lib/clb-master-integrity.mjs";
+import { adaptClbStudioAsset, CLB_MASTER_FRAGMENTS, CLB_MASTER_RUNTIMES, assertClbPreferenceSource } from "./lib/clb-studio-adapter.mjs";
 
 const here = path.dirname(fileURLToPath(import.meta.url));
 const root = path.resolve(here, "..");
@@ -60,6 +62,11 @@ const isVersionAtLeast = (version, minimum) => {
 };
 
 const pkg = await loadJson(path.join(root, "package.json"));
+// Only the exact crypto-verified 120-file library gets immutable-source treatment.
+// No directory wildcard bypass survives a modified/extra/missing source file.
+await verifyClbMasterFiles(root, src);
+const clbRel = file => path.relative(path.join(src, "conversation-lab"), file).replaceAll("\\", "/");
+const verifiedClbSource = file => file.startsWith(path.join(src, "conversation-lab") + path.sep);
 const apps = await loadJson(path.join(src, "config/apps.generated.json"));
 const fallback = await loadJson(path.join(src, "config/apps.fallback.json"));
 const sources = await loadJson(path.join(src, "config/sources.json"));
@@ -887,7 +894,7 @@ for (const file of sourceFiles.filter((file) =>
 )) {
   const lines = (await readFile(file, "utf8")).split(/\r?\n/);
   const tooLong = lines.findIndex((line) => line.length > 500);
-  if (tooLong !== -1)
+  if (tooLong !== -1 && !verifiedClbSource(file))
     fail(`Příliš dlouhý řádek v ${path.relative(root, file)}:${tooLong + 1}`);
 }
 
@@ -923,7 +930,9 @@ const standardPages = new Set([
   "tools/security-center/index.html",
 ]);
 for (const file of sourceFiles.filter((f) => f.endsWith(".html"))) {
-  const html = await readFile(file, "utf8");
+  const rawHtml = await readFile(file);
+  // Validate the actual deterministic Studio envelope, not the original transport wrapper.
+  const html = (verifiedClbSource(file) ? adaptClbStudioAsset(clbRel(file), rawHtml, pkg.version) : rawHtml).toString("utf8");
   const rel = path.relative(src, file).replaceAll("\\", "/");
   const ids = [...html.matchAll(/\sid=["']([^"']+)["']/g)].map((m) => m[1]);
   const seen = new Set();
@@ -931,7 +940,7 @@ for (const file of sourceFiles.filter((f) => f.endsWith(".html"))) {
     if (seen.has(id)) fail(`Duplicitní id ${id} v ${rel}`);
     seen.add(id);
   }
-  const isFragment = rel.startsWith("integration/");
+  const isFragment = rel.startsWith("integration/") || (verifiedClbSource(file) && CLB_MASTER_FRAGMENTS.includes(clbRel(file)));
   if (!isFragment && !html.includes("Content-Security-Policy"))
     fail(`Chybí CSP v ${rel}`);
   if (
@@ -965,7 +974,9 @@ for (const file of sourceFiles.filter((f) => f.endsWith(".html"))) {
     if (/^(?:https?:|data:|mailto:|tel:)/.test(url) || url.startsWith("__"))
       continue;
     const clean = url.split("?")[0];
-    let target = path.resolve(path.dirname(file), clean);
+    let target = clean.startsWith("/AI-Studio-GHRAB/")
+      ? path.resolve(src, clean.slice("/AI-Studio-GHRAB/".length))
+      : path.resolve(path.dirname(file), clean);
     if (clean.endsWith("/")) target = path.join(target, "index.html");
     if (!(await exists(target)))
       fail(`Neplatný lokální odkaz v ${rel}: ${url}`);
@@ -1595,6 +1606,10 @@ const directStorageWriters = sourceFiles.filter(
 );
 for (const file of directStorageWriters) {
   const text = await readFile(file, "utf8");
+  if (verifiedClbSource(file) && CLB_MASTER_RUNTIMES.includes(clbRel(file))) {
+    assertClbPreferenceSource(clbRel(file), Buffer.from(text));
+    continue;
+  }
   if (text.includes("localStorage.setItem("))
     fail(
       `Přímý zápis do localStorage mimo bezpečný modul: ${path.relative(root, file)}`,
@@ -1745,6 +1760,8 @@ for (const file of distFiles.filter((item) => item.endsWith(".js"))) {
       fail(`Build nemá verzovaný modulární import ${path.relative(dist, file)} -> ${ref}`);
   }
 }
+await verifyClbMasterFiles(root, dist);
+
 const requiredBlock =
   builtSw.match(/const CORE_REQUIRED = \[([\s\S]*?)\];/)?.[1] || "";
 const optionalBlock =
