@@ -1,7 +1,29 @@
 {
   "schema": "ai-studio-changelog-v1",
-  "current": "0.21.249",
+  "current": "0.21.250",
   "items": [
+    {
+      "version": "0.21.250",
+      "date": "2026-10-20",
+      "title": {
+        "cs": "Finální CSP a učitelské otevření Conversation Lab MASTER 0.11.0",
+        "en": "Final CSP and teacher access for Conversation Lab MASTER 0.11.0"
+      },
+      "changes": [
+        {
+          "cs": "Dokončené připojení původních 72 MASTER variant do chráněného učitelského prostředí AI Studia; studentské odkazy vedou na nezměněný anonymní Cloudflare HOSTFIX1.",
+          "en": "Completed exact 72-variant MASTER integration into the protected Studio teacher environment; student links continue to the unchanged anonymous Cloudflare HOSTFIX1."
+        },
+        {
+          "cs": "Učitelské HTML má povinnou CSP a časný ochranný rámcový guard. Kryptograficky ověřené původní lekce, slovníky, QR, skutečný obsahový podpis, bezpečnostní brány CLB-01 a verze GIT zůstávají nedotčeny.",
+          "en": "Teacher HTML enforces CSP and an early frame guard. Reviewed source lessons, dictionaries, QR links, the actual content signature, CLB-01 gates, and GIT version remain untouched."
+        },
+        {
+          "cs": "Oprava je oddělena od předchozího automatického povýšení 0.21.249; produkční vydání nadále vyžaduje úspěšný úplný projektový QA, P5 a live-parity.",
+          "en": "This fix is separate from the prior 0.21.249 auto-promotion; production remains gated on complete project QA, P5 and live parity."
+        }
+      ]
+    },
     {
       "version": "0.21.249",
       "date": "2026-10-20",

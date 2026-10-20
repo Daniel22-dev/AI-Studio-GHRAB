@@ -2,13 +2,17 @@
 
 > Tento soubor se generuje ze `src/config/changelog.json`. Neupravujte jej ručně.
 
-## 0.21.249 — 2026-10-19
-**Zabezpečené načítání Conversation Lab ve Studiu**
+## 0.21.250 — 2026-10-20
+**Finální CSP a učitelské otevření Conversation Lab MASTER 0.11.0**
 
-- Učitelské stránky mají CSP před načtením zdrojů a verzované odkazy. Podepsané texty lekcí, MASTER CSS/JavaScript, slovníky a QR data se nemění.
-- Kontrola integrity samostatně ověřuje původní podklady a přesně odvozený výstup pro Studio. Změněný obsah ani odstraněná CSP neprojdou.
-- Obecná validace rozlišuje ověřené HTML fragmenty, neměnné zdroje a omezené preference původních lekcí; plné projektové testy a P5 zůstávají povinné.
-- Cloudflare, obsahový podpis ani kód a vydání ostatních aplikací včetně GIT se nepřepisují.
+- Dokončené připojení původních 72 MASTER variant do chráněného učitelského prostředí AI Studia; studentské odkazy vedou na nezměněný anonymní Cloudflare HOSTFIX1.
+- Učitelské HTML má povinnou CSP a časný ochranný rámcový guard. Kryptograficky ověřené původní lekce, slovníky, QR, skutečný obsahový podpis, bezpečnostní brány CLB-01 a verze GIT zůstávají nedotčeny.
+- Oprava je oddělena od předchozího automatického povýšení 0.21.249; produkční vydání nadále vyžaduje úspěšný úplný projektový QA, P5 a live-parity.
+
+## 0.21.249 — 2026-10-20
+**Bezpečné automatické PATCH povýšení**
+
+- Ověřená PATCH změna aplikace aktualizovala release-wave a současně zvýšila patch verzi AI Studia právě jednou; duplicitní nebo bezezměnový běh verzi Studia nezvyšuje.
 
 ## 0.21.248 — 2026-10-19
 **Conversation Lab MASTER 0.11.0 ve Studiu**
