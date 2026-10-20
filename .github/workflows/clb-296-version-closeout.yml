@@ -46,6 +46,7 @@ jobs:
           })
           path.write_text(json.dumps(log,ensure_ascii=False,indent=2)+'\n')
           PY
+          node scripts/sync-doc-app-versions.mjs
           node scripts/generate-changelog.mjs
           npm run qa:doc-versions
           npm run verify:release-version
