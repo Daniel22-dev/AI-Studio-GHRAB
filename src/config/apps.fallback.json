@@ -198,7 +198,7 @@
       "cs": "Hodnotitel maturitních slohů",
       "en": "Matura Essay Evaluator"
     },
-    "version": "1.5.30",
+    "version": "1.5.31",
     "status": {
       "cs": "Připraveno k řízenému pilotu",
       "en": "Ready for controlled pilot"
@@ -278,7 +278,7 @@
       "platformContract": "ghrab-platform-v1",
       "platformRange": ">=1.1.2 <2.0.0"
     },
-    "publishedAt": "2026-10-13T07:07:35.000Z",
+    "publishedAt": "2026-10-22T08:19:46.000Z",
     "aiCore": {
       "schema": "ghrab-ai-app-integration-v1",
       "status": "integrated-p1",
@@ -310,7 +310,7 @@
       "studioBridge": "not-applicable",
       "artifactEnvelope": "ghrab-artifact-envelope-v1",
       "storagePrefix": "ghrab.essay-evaluator.",
-      "cacheName": "ghrab-essay-evaluator-v1.5.30"
+      "cacheName": "ghrab-essay-evaluator-v1.5.31"
     },
     "releaseIdentity": {
       "contract": "ghrab-release-integrity-v2",
