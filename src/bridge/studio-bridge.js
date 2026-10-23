@@ -1,51 +1,71 @@
-/* AI Studio GHRAB — Studio Bridge 2.0 compatibility facade. */
+/* AI Studio GHRAB: legacy-compatible facade. Workspace authority is GHRAB core. */
 (function (global) {
   "use strict";
-  const WORKSPACE_KEY = "ghrab.ai-studio.workspace.v1";
-  const LEGACY_WORKSPACE_KEY = "ghrab.workspace.v1";
+  const CURRENT = "ghrab.ai-studio.workspace.v1";
+  const LEGACY = "ghrab.workspace.v1";
   const parse = (key, fallback) => {
     try { return JSON.parse(localStorage.getItem(key) || JSON.stringify(fallback)); }
     catch { return fallback; }
   };
-  const validMaterial = (material) => Boolean(
-    material && material.schema === "ghrab-material-v1" && material.id &&
-    material.content && typeof material.content === "object"
-  );
+  const validMaterial = (m) => Boolean(m && m.schema === "ghrab-material-v1" && typeof m.id === "string" && m.id && m.content && typeof m.content === "object");
   const bridge = () => global.GHRAB_PLATFORM?.bridge || null;
-  function peek(target) { return bridge()?.peek?.({ target, maxBytes: 500000 }) || null; }
-  function consume(target) { return bridge()?.take?.({ target, maxBytes: 500000 }) || null; }
+  function pending() { return bridge()?.peek?.({ allowAnyTarget: true, maxBytes: 500000 }) || null; }
+  function peek(target) {
+    const packet = pending();
+    return packet && packet.target === target ? packet : null;
+  }
+  function consume(target) {
+    if (!peek(target)) return null;
+    return bridge()?.take?.({ target, maxBytes: 500000 }) || null;
+  }
   function create(target, material, ttlMinutes = 30) {
-    if (!validMaterial(material)) throw new Error("Invalid GHRAB Material v1");
+    if (!validMaterial(material)) throw new TypeError("Invalid GHRAB Material v1");
+    const admission = global.GHRAB?.checkOutboundMaterial?.(material);
+    if (!admission?.ok) throw new Error("Material admission unavailable or unsafe");
+    if (pending()) return null;
     if (!bridge()?.create) return null;
     return bridge().create({
       target,
       sourceAppId: global.GHRAB_PLATFORM?.appId || "ai-studio",
       sourceAppVersion: global.GHRAB_PLATFORM?.appVersion || "unknown",
-      ttlMs: Math.max(1, Number(ttlMinutes || 30)) * 60000,
+      ttlMs: Math.min(1440, Math.max(1, Number(ttlMinutes) || 30)) * 60000,
       studioUrl: new URL("./", location.href).href,
       material,
       writeLegacy: true,
     });
   }
   function workspace() {
-    const current = parse(WORKSPACE_KEY, null);
-    const legacy = current === null ? parse(LEGACY_WORKSPACE_KEY, []) : current;
-    return Array.isArray(legacy) ? legacy : [];
+    if (typeof global.GHRAB?.getWorkspace === "function") return global.GHRAB.getWorkspace();
+    const modern = parse(CURRENT, []), older = parse(LEGACY, []);
+    const map = new Map();
+    for (const item of [...(Array.isArray(older) ? older : []), ...(Array.isArray(modern) ? modern : [])]) {
+      if (validMaterial(item)) map.set(item.id, item);
+    }
+    return [...map.values()].slice(0, 20);
   }
   function save(material) {
-    if (!validMaterial(material)) throw new Error("Invalid GHRAB Material v1");
-    const list = workspace();
-    const index = list.findIndex((item) => item.id === material.id);
-    if (index >= 0) list[index] = material; else list.unshift(material);
-    try { localStorage.setItem(WORKSPACE_KEY, JSON.stringify(list.slice(0, 20))); return material; }
-    catch (error) { console.warn("Studio Bridge: workspace write failed", error); return null; }
+    if (typeof global.GHRAB?.saveWorkspaceMaterial === "function") return global.GHRAB.saveWorkspaceMaterial(material);
+    if (!validMaterial(material)) throw new TypeError("Invalid GHRAB Material v1");
+    const list = workspace().filter((item) => item.id !== material.id);
+    list.unshift(material);
+    const value = JSON.stringify(list.slice(0, 20));
+    const previous = [localStorage.getItem(CURRENT), localStorage.getItem(LEGACY)];
+    try { localStorage.setItem(CURRENT, value); localStorage.setItem(LEGACY, value); return material; }
+    catch (error) {
+      [CURRENT, LEGACY].forEach((key, i) => { try { if (previous[i] === null) localStorage.removeItem(key); else localStorage.setItem(key, previous[i]); } catch {} });
+      console.warn("Studio Bridge: workspace write failed", error);
+      return null;
+    }
   }
   function studioUrl(payload) {
-    try { return new URL(payload?.studioUrl || global.__GHRAB_DEPLOYMENT_CONFIG__?.studioBaseUrl || "./", location.href).href; }
-    catch { return new URL("./", location.href).href; }
+    try {
+      const candidate = new URL(payload?.studioUrl || global.__GHRAB_DEPLOYMENT_CONFIG__?.studioBaseUrl || "./", location.href);
+      if (candidate.origin === location.origin && /^(https:|http:)$/.test(candidate.protocol)) return candidate.href;
+    } catch {}
+    return new URL("./", location.href).href;
   }
   global.GHRABStudioBridge = Object.freeze({
-    version: "2.0.0", contract: "ghrab-studio-handoff-v2", peek, consume, create,
+    version: "2.1.0", contract: "ghrab-studio-handoff-v2", peek, consume, create,
     workspace, save, studioUrl, validMaterial,
   });
 })(window);

@@ -1,6 +1,7 @@
 import { studioPortalDestination } from "./integration/conversation-lab/portal-route.js";
 import { sanitizePilotEvent, sanitizePilotEventList } from "./privacy/pilot-event.js";
 import { validateMaterialPackage } from "./shared/material-validator.js";
+import { createWorkspaceAdapter, inspectOutboundMaterial } from "./material-flow/material-flow.js";
 import { buildPilotSummary } from "./shared/safe-export.js";
 import {
   applyDeploymentToAppRegistry,
@@ -1310,40 +1311,42 @@ function parseLocal(key, fallback) {
     return fallback;
   }
 }
+function workspaceAdapter() {
+  return createWorkspaceAdapter(localStorage, { validator: validateMaterialPackage });
+}
 function getWorkspace() {
-  const list = parseLocal(WORKSPACE_KEY, []);
-  return Array.isArray(list) ? list : [];
+  try { return workspaceAdapter().list(); }
+  catch (error) { console.warn("AI Studio: workspace read failed", error); return []; }
+}
+function migrateWorkspace() {
+  try { return workspaceAdapter().migrate(); }
+  catch (error) {
+    console.warn("AI Studio: workspace migration failed", error);
+    showToast(t(
+      "Při slučování materiálů byl zjištěn nekompatibilní záznam. Původní data zůstala zachována; před dalšími úpravami je exportujte nebo obnovte.",
+      "An incompatible saved resource prevented workspace migration. Original data were preserved; export or recover them before editing.",
+    ));
+    return null;
+  }
 }
 function saveWorkspaceMaterial(material) {
-  const list = getWorkspace();
-  const copy =
-    typeof structuredClone === "function"
-      ? structuredClone(material)
-      : JSON.parse(JSON.stringify(material));
-  copy.provenance = copy.provenance || {};
-  copy.provenance.updatedAt = new Date().toISOString();
-  const index = list.findIndex((item) => item.id === copy.id);
-  if (index >= 0) list[index] = copy;
-  else list.unshift(copy);
-  const sourceLength = String(copy.content?.sourceText || "").length;
+  const sourceLength = String(material?.content?.sourceText || "").length;
   if (sourceLength > WORKSPACE_SOFT_LIMIT_CHARS) {
-    showToast(
-      t(
-        `Zdrojový text má ${sourceLength.toLocaleString("cs-CZ")} znaků. Uložení může zabrat výraznou část místního úložiště.`,
-        `The source text has ${sourceLength.toLocaleString("en-GB")} characters. Saving it may use a significant part of local storage.`,
-      ),
-    );
+    showToast(t(
+      `Zdrojový text má ${sourceLength.toLocaleString("cs-CZ")} znaků. Uložení může zabrat výraznou část místního úložiště.`,
+      `The source text has ${sourceLength.toLocaleString("en-GB")} characters. Saving it may use a significant part of local storage.`,
+    ));
   }
-  return safeSetJson(WORKSPACE_KEY, list.slice(0, 20)) ? copy : null;
+  try { return workspaceAdapter().save(material); }
+  catch (error) { console.warn("AI Studio: workspace save failed", error); showToast(storageErrorMessage(error)); return null; }
 }
 function deleteWorkspaceMaterial(id) {
-  return safeSetJson(
-    WORKSPACE_KEY,
-    getWorkspace().filter((item) => item.id !== id),
-  );
+  try { return workspaceAdapter().remove(id); }
+  catch (error) { console.warn("AI Studio: workspace delete failed", error); return false; }
 }
 function createHandoff(target, material) {
-  if (!validMaterial(material)) throw new Error("Invalid GHRAB Material v1");
+  const admission = inspectOutboundMaterial(material, { validator: validateMaterialPackage });
+  if (!admission.ok) throw new Error(`Material handoff denied: ${admission.reasons.join(",")}`);
   const bridge = globalThis.GHRAB_PLATFORM?.bridge;
   if (typeof bridge?.create === "function") {
     return bridge.create({
@@ -3118,6 +3121,8 @@ window.GHRAB = {
   clearTestTelemetry,
   recordLaunch,
   getWorkspace,
+  migrateWorkspace,
+  checkOutboundMaterial: (material) => inspectOutboundMaterial(material, { validator: validateMaterialPackage }),
   saveWorkspaceMaterial,
   deleteWorkspaceMaterial,
   createHandoff,
