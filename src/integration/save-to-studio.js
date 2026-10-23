@@ -1,6 +1,19 @@
 const DEFAULT_TTL_MS = 30 * 60 * 1000;
 // Exact published mount points; do not route material to a lookalike app path.
 const TRUSTED_STUDIO_PATHS = new Set(['/AI-Studio-GHRAB/', '/ai-studio/']);
+// Keep the source-app helper self-contained for standalone consumers.
+// This is a conservative first gate; Studio revalidates the complete package.
+const PERSONAL_FIELD = /(?:student|pupil|learner|roster|classlist|attendance|dateofbirth|birthdate|personaldata|rodnecislo|firstname|lastname|fullname|studentid|emailaddress|resultsbyname)/i;
+const UNSAFE_MARKUP = /<\s*(?:script|iframe|object|embed)\b|\bon\w+\s*=|javascript\s*:/i;
+function hasPrivateField(json) {
+  const keys = json.matchAll(/"([^"\\]{1,128})"\s*:/g);
+  for (const match of keys) {
+    const key = match[1].replace(/[^a-zA-Z0-9]/g, '');
+    if (key !== 'containsPersonalData' && PERSONAL_FIELD.test(key)) return true;
+  }
+  return false;
+}
+
 
 function normaliseStudioRoot(value) {
   const url = new URL(String(value || ""), globalThis.location?.href || "http://localhost/");
@@ -41,7 +54,7 @@ export function saveMaterialToStudio({
   if (material.provenance?.containsPersonalData !== false ||
       new TextEncoder().encode(serialized).byteLength > 480000 ||
       /\b[A-Z0-9._%+-]+@[A-Z0-9.-]+\.[A-Z]{2,}\b/i.test(serialized) ||
-      /"(?:student(?:Roster|Name|Email|List|s)|roster|firstName|lastName|student[_-]?(?:name|email))"\s*:/i.test(serialized)) {
+      hasPrivateField(serialized) || UNSAFE_MARKUP.test(serialized)) {
     return { ok: false, packet: null, targetUrl: null, reason: "unsafe-material" };
   }
   const configuredStudioUrl =

@@ -165,7 +165,17 @@ test('portable Save to Studio source helper rejects personal data before touchin
  globalThis.GHRAB_PLATFORM={bridge:{create(){writes+=1;throw new Error('unexpected-bridge-write');}}};
  try {
    const {saveMaterialToStudio}=await import('../../src/integration/save-to-studio.js');
-   for(const update of [m=>m.provenance.containsPersonalData=true,m=>m.studentName='Private Student',m=>m.content.sourceText='student@school.cz']) {
+   for(const update of [
+      m=>m.provenance.containsPersonalData=true,
+      m=>m.studentName='Private Student',
+      m=>m.content.sourceText='student@school.cz',
+      m=>m.content.context={school:{class_list:[{surname:'Private'}]}},
+      m=>m.content.meta={'student-email':'hidden@example.org'},
+      m=>m.content.metadata={'parent_telephone':'12345',attendance:['Here']},
+      m=>m.content.sourceText='<iframe src="https://example.invalid"></iframe>',
+      m=>m.content.sourceText='Select option with onload=bad()',
+      m=>m.content.sourceText='javascript:alert(1)',
+   ]) {
      const testMaterial=material();update(testMaterial);
      const result=saveMaterialToStudio({material:testMaterial,studioUrl:studioUrl,navigate:false});
      assert.equal(result.ok,false);assert.equal(result.reason,'unsafe-material');
