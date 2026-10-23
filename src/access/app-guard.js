@@ -539,8 +539,13 @@ function localPlatformUnlockReady() {
 
 export async function waitForLocalPlatformUnlock(options = {}) {
   const protectedScripts = document.querySelectorAll("script[data-ghrab-protected]");
-  if (!protectedScripts.length || localPlatformUnlockReady())
+  if (!protectedScripts.length) return globalThis.GHRAB_PLATFORM || null;
+  if (localPlatformUnlockReady()) {
+    // Already-ready platform must expose the same stable state as the event/
+    // poll path. This is observable metadata, not an access authorization.
+    document.documentElement.dataset.ghrabPlatformUnlockWait = "ready";
     return globalThis.GHRAB_PLATFORM || null;
+  }
 
   const loader = document.querySelector("script[data-ghrab-platform-loader]");
   if (!loader) {

@@ -36,6 +36,7 @@ jobs:
         run: |
           node --test tests/stage05/material-flow.test.mjs
           node --check tests/stage05/consumer-browser-uat.mjs
+          node --check scripts/test-platform-bootstrap-browser.mjs
       - name: Audit nine release-wave apps and AI Studio
         env:
           GITHUB_TOKEN: ${{ github.token }}
