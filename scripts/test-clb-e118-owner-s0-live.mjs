@@ -10,7 +10,7 @@ const site='https://conversation-lab-ghrab.pages.dev/';
 const controlPath=new URL('../src/integration/conversation-lab/launch-control.json',import.meta.url).href;
 const receiptPath=new URL('../src/integration/conversation-lab/owner-content-release.v0.9.2.signed.json',import.meta.url).href;
 const decisionPath=new URL('../src/integration/conversation-lab/governance/project-owner-release.v0.9.2.json',import.meta.url).href;
-const old=[['generator','7.1.100'],['differentiator','1.3.51'],['essay-evaluator','1.5.30'],['correspondence','5.10.34'],['ludus','1.16.31'],['activity-builder','0.5.30'],['sortio','1.1.23'],['lesson-hub','1.2.26'],['maturita-desk','1.0.6']];
+const currentNine=[['generator','7.1.101'],['differentiator','1.3.51'],['essay-evaluator','1.5.31'],['correspondence','5.10.34'],['ludus','1.16.31'],['activity-builder','0.5.30'],['sortio','1.1.23'],['lesson-hub','1.2.27'],['maturita-desk','1.0.6']];
 const clone=v=>structuredClone(v);
 async function fixture(){
  const [apps,control,receipt,decision,bundle,signature,key]=await Promise.all([
@@ -32,7 +32,7 @@ test('E118 exactly ten apps with current nine-app baseline; retained legacy fixt
   load('src/config/release-promotion-policy.json')]);
  assert.equal(x.apps.length,10);
  assert.equal(x.apps.find(a=>a.id==='conversation-lab').version,'0.11.0');
- assert.deepEqual(x.apps.slice(0,9).map(v=>[v.id,v.version]),old);
+ assert.deepEqual(x.apps.slice(0,9).map(v=>[v.id,v.version]),currentNine);
  assert.deepEqual(fallback,x.apps);
  assert.equal(sources.length,10);
  assert.equal(wave.applications.length,10);

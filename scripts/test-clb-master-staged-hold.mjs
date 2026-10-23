@@ -37,10 +37,10 @@ test('No owner signature is recast as independent or school-server certification
  assert.equal(owner.independentSecurityApproval,'NOT_CLAIMED');assert.equal(owner.schoolInstitutionalSignoff,'NOT_ATTESTED');
  assert.equal(owner.hostingRepair.signedByOriginalReceipt,false);assert.equal(control.garpLive,'NOT_TESTED');assert.equal(control.schoolServerLive,'DEFERRED_NOT_TESTED');
 });
-test('All nine unrelated registry entries are unchanged, including the existing GIT release',async()=>{
- const before=await load('scripts/fixtures/clb-original-nine-apps.json');
+test('All nine non-CLB entries match the pinned current main snapshot, with GIT source unchanged',async()=>{
+ const before=await load('scripts/fixtures/clb-current-nine-apps-2026-10-23.json');
  for(const file of ['apps.generated.json','apps.fallback.json']){
   const apps=await load('src/config/'+file);assert.deepEqual(apps.filter(a=>a.id!=='conversation-lab'),before);
-  assert.equal(apps.find(a=>a.id==='generator').version,'7.1.100');
+  assert.equal(apps.find(a=>a.id==='generator').version,'7.1.101');
  }
 });
