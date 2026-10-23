@@ -150,6 +150,20 @@ export function validateRegistry(registry) {
     for (const field of ['minObjectives','minSourceChars','minTasks']) if (req[field] != null && (!Number.isSafeInteger(req[field]) || req[field] < 0 || req[field] > 100000)) throw new TypeError('material-flow-registry-requirements');
     if (req.taskTypes != null && (!Array.isArray(req.taskTypes) || !req.taskTypes.every((s) => ['select','truefalse','short','open','order'].includes(s)))) throw new TypeError('material-flow-registry-task-types');
     if (req.oneOf != null && (!Array.isArray(req.oneOf) || !req.oneOf.every((s) => ['source-text','structured-tasks'].includes(s)))) throw new TypeError('material-flow-registry-oneof');
+    if (req.taskOptionRules != null) {
+      if (!isRecord(req.taskOptionRules)) throw new TypeError('material-flow-registry-option-rules');
+      for (const [type, rule] of Object.entries(req.taskOptionRules)) {
+        if (!['select','truefalse','short','open','order'].includes(type) || !isRecord(rule)) throw new TypeError('material-flow-registry-option-rules');
+        for (const field of Object.keys(rule)) {
+          if (!['exactOptions','minOptions','maxOptions','requireAnswer','requireValidOptionAnswer'].includes(field)) throw new TypeError('material-flow-registry-option-rules');
+          if (field.startsWith('require')) {
+            if (typeof rule[field] !== 'boolean') throw new TypeError('material-flow-registry-option-rules');
+          } else if (!Number.isSafeInteger(rule[field]) || rule[field] < 0 || rule[field] > 100) throw new TypeError('material-flow-registry-option-rules');
+        }
+        if (rule.minOptions != null && rule.maxOptions != null && rule.minOptions > rule.maxOptions) throw new TypeError('material-flow-registry-option-rules');
+        if (rule.exactOptions != null && ((rule.minOptions != null && rule.exactOptions < rule.minOptions) || (rule.maxOptions != null && rule.exactOptions > rule.maxOptions))) throw new TypeError('material-flow-registry-option-rules');
+      }
+    }
   }
   return registry;
 }
@@ -161,7 +175,24 @@ export function assessContent(material, entry) {
   const req = entry.requirements || {};
   if (req.minSourceChars && sourceLength < req.minSourceChars) return 'needs-source';
   if (req.minObjectives && objectives.length < req.minObjectives) return 'needs-objectives';
-  const accepted = req.taskTypes ? tasks.filter((task) => req.taskTypes.includes(task.type)) : tasks;
+  const accepted = tasks.filter((task) => {
+    if (req.taskTypes && !req.taskTypes.includes(task.type)) return false;
+    const rule = req.taskOptionRules?.[task.type];
+    if (!rule) return true;
+    const options = Array.isArray(task.options) ? task.options : [];
+    if (rule.exactOptions != null && options.length !== rule.exactOptions) return false;
+    if (rule.minOptions != null && options.length < rule.minOptions) return false;
+    if (rule.maxOptions != null && options.length > rule.maxOptions) return false;
+    if (rule.requireAnswer && (task.answer === null || task.answer === undefined || String(task.answer).trim() === '')) return false;
+    if (rule.requireValidOptionAnswer) {
+      if (typeof task.answer === 'number') {
+        if (!Number.isInteger(task.answer) || task.answer < 0 || task.answer >= options.length) return false;
+      } else if (typeof task.answer === 'string') {
+        if (!options.some(option => String(option).trim().toLocaleLowerCase() === task.answer.trim().toLocaleLowerCase())) return false;
+      } else return false;
+    }
+    return true;
+  });
   if (req.minTasks && accepted.length < req.minTasks) return 'needs-tasks';
   if (req.oneOf?.length && !req.oneOf.some((type) => type === 'source-text' ? sourceLength > 0 : tasks.length > 0)) return 'needs-content';
   if (entry.contentTypes.length && !entry.contentTypes.some((type) => type === 'source-text' ? sourceLength > 0 : tasks.length > 0)) return 'unsupported-content';

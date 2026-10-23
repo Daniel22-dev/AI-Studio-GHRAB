@@ -2,7 +2,7 @@
   "schema": "ghrab-material-flow-registry-v1",
   "version": 1,
   "policy": "anonymous-teaching-material-only",
-  "verificationNote": "Source-level consumer review on 2026-10-23. Real-device/browser acceptance remains required before production release.",
+  "verificationNote": "2026-10-23 source-verified LUDUS mc4 requires exactly four options; browser UAT remains mandatory.",
   "targets": [
     {
       "id": "generator",
@@ -68,7 +68,25 @@
           "truefalse",
           "short",
           "order"
-        ]
+        ],
+        "taskOptionRules": {
+          "select": {
+            "exactOptions": 4,
+            "requireAnswer": true,
+            "requireValidOptionAnswer": true
+          },
+          "truefalse": {
+            "maxOptions": 2,
+            "requireAnswer": true
+          },
+          "short": {
+            "minOptions": 1,
+            "requireAnswer": true
+          },
+          "order": {
+            "minOptions": 1
+          }
+        }
       },
       "maxBytes": 500000,
       "verification": "source-reviewed",
