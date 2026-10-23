@@ -1,3 +1,5 @@
+import { inspectOutboundMaterial } from "../material-flow/material-flow.js";
+
 const RECORD_SCHEMA = "ghrab-shared-material-record-v1";
 const PUBLISH_SCHEMA = "ghrab-shared-material-write-v1";
 const QUALITY_EVENT_SCHEMA = "ghrab-material-quality-event-v1";
@@ -44,11 +46,18 @@ function assertSafeMaterial(G, material) {
   if (!validation.valid) {
     throw new TypeError("Invalid GHRAB Material v1 package.");
   }
-  if (material?.provenance?.containsPersonalData === true) {
+  // A missing/incorrect privacy flag is not evidence of anonymisation.
+  // Server publication and incoming shared forks apply the same exhaustive
+  // outbound preflight as the local-first Bridge: nested roster keys, email
+  // addresses, executable markup and explicit PII flags fail closed.
+  const admission = inspectOutboundMaterial(material, {
+    validator: G.validateMaterialPackage,
+  });
+  if (!admission.ok) {
     throw new TypeError(
       G.t(
-        "Materiál označený jako obsahující osobní údaje nelze sdílet na školní server.",
-        "A resource marked as containing personal data cannot be shared to the school server.",
+        "Materiál nelze sdílet: anonymizace a bezpečnost obsahu nejsou potvrzeny.",
+        "The material cannot be shared: anonymisation and content safety are not confirmed.",
       ),
     );
   }
@@ -81,7 +90,19 @@ export function createMaterialRepository(G) {
   async function request(path, { method = "GET", body } = {}) {
     const config = await configuration();
     if (!serverConnected(config)) throw new MaterialServerUnavailableError();
-    const url = new URL(trimSlash(path), config.apiBaseUrl);
+    const apiBase = new URL(config.apiBaseUrl);
+    const studioBase = new URL(config.studioBaseUrl);
+    const url = new URL(trimSlash(path), apiBase);
+    // Server-session cookies must only accompany same-origin requests under
+    // the configured API prefix. Never trust endpoint overrides to reroute a
+    // material/roster-bearing POST to a third-party URL.
+    if (
+      apiBase.origin !== studioBase.origin ||
+      url.origin !== apiBase.origin ||
+      !url.pathname.startsWith(apiBase.pathname)
+    ) {
+      throw new TypeError("Material API must stay within the Studio same-origin API base.");
+    }
     const response = await fetch(url, {
       method,
       cache: "no-store",

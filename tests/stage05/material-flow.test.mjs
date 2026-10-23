@@ -11,6 +11,7 @@ import {
   createHandoffTransport
 } from '../../src/material-flow/material-flow.js';
 import { validateMaterialPackage } from '../../src/shared/material-validator.js';
+import { createMaterialRepository, MaterialServerUnavailableError } from '../../src/library/material-service.js';
 const root = path.resolve(path.dirname(fileURLToPath(import.meta.url)), '../..');
 const registry = JSON.parse(fs.readFileSync(path.join(root,'src/config/material-flow-registry.json'),'utf8'));
 const apps = JSON.parse(fs.readFileSync(path.join(root,'src/config/apps.generated.json'),'utf8'));
@@ -308,4 +309,76 @@ test('source helper rejects same-origin lookalike Studio paths before bridge sto
     if(previousLocation === undefined) delete globalThis.location; else globalThis.location=previousLocation;
     globalThis.GHRAB_PLATFORM=previousBridge;
   }
+});
+
+
+test('school-server material publication and fork reject PII even with a false or absent privacy flag',async()=>{
+ const config={
+   profile:'school-server',
+   studioBaseUrl:'https://school.example/ai-studio/',
+   apiBaseUrl:'https://school.example/api/v1/',
+   features:{schoolServerConnected:true,sharedMaterialLibrary:true},
+   endpoints:{materials:'materials'}
+ };
+ const G={deploymentReady:Promise.resolve(config),validateMaterialPackage,t:(cs)=>cs,VERSION:'0.21.255'};
+ const repo=createMaterialRepository(G);
+ const previousFetch=globalThis.fetch;
+ const calls=[];
+ globalThis.fetch=async (url,opts)=>{
+   calls.push({url:String(url),opts});
+   return {ok:true,status:201,json:async()=>({schema:'ghrab-shared-material-record-v1',id:'test-safe',material:material()})};
+ };
+ try{
+   const mutations=[
+     m=>delete m.provenance.containsPersonalData,
+     m=>{m.provenance.containsPersonalData=true;},
+     m=>{m.content.sourceText='Synthetic educator: schoolteacher@example.test';},
+     m=>{m.content.metadata={class_list:[{studentName:'Sensitive pupil'}]};},
+     m=>{m.content.sourceText='<img src=x onerror=alert(1)>';},
+     m=>{m.student_email='secret@example.test';}
+   ];
+   for(const mutate of mutations){
+     const unsafe=material();mutate(unsafe);
+     await assert.rejects(repo.publishToCommission(unsafe,'english'),/anonymizace/);
+   }
+   assert.equal(calls.length,0,'Rejected material must never hit the network');
+   const accepted=await repo.publishToCommission(material(),'english');
+   assert.equal(accepted.id,'test-safe');
+   assert.equal(calls.length,1);
+   assert.equal(calls[0].url,'https://school.example/api/v1/materials');
+   assert.equal(calls[0].opts.credentials,'same-origin');
+   const request=JSON.parse(calls[0].opts.body);
+   assert.equal(request.visibility.commissionId,'english');
+   assert.equal(request.material.provenance.containsPersonalData,false);
+   globalThis.fetch=async () => ({ok:true,status:200,json:async()=>({
+     material:{...material(),content:{...material().content,meta:{studentName:'Secret'}}}
+   })});
+   await assert.rejects(repo.forkToWorkspace('test-safe'),/anonymizace/);
+ } finally {globalThis.fetch=previousFetch;}
+});
+
+test('school-server material API never sends teaching data to another origin or escapes API prefix',async()=>{
+ const base={
+   profile:'school-server',studioBaseUrl:'https://school.example/ai-studio/',
+   apiBaseUrl:'https://school.example/api/v1/',
+   features:{schoolServerConnected:true,sharedMaterialLibrary:true},
+   endpoints:{materials:'materials'}
+ };
+ const G=config=>({deploymentReady:Promise.resolve(config),validateMaterialPackage,t:cs=>cs,VERSION:'0.21.255'});
+ const previousFetch=globalThis.fetch;
+ let calls=0;globalThis.fetch=async()=>{calls++;throw new Error('network should be blocked')};
+ try{
+   for(const config of [
+     {...base,apiBaseUrl:'https://outside.example/api/v1/'},
+     {...base,endpoints:{materials:'https://outside.example/steal'}},
+     {...base,endpoints:{materials:'../outside'}},
+   ]){
+     const repo=createMaterialRepository(G(config));
+     await assert.rejects(repo.publishToCommission(material(),'english'),/Material API must stay within/);
+   }
+   assert.equal(calls,0);
+   const disconnected=createMaterialRepository(G({...base,profile:'github-pages',features:{schoolServerConnected:false,sharedMaterialLibrary:false}}));
+   await assert.rejects(disconnected.publishToCommission(material(),'english'),MaterialServerUnavailableError);
+   assert.equal(calls,0);
+ } finally {globalThis.fetch=previousFetch;}
 });
