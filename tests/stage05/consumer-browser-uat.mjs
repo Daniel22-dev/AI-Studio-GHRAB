@@ -24,13 +24,13 @@ const materialFor=(id,viewport)=>({
   {id:'q3',type:'select',prompt:'Pick C',options:['A','B'],answer:0,difficulty:1}
  ]},quality:{status:'ai-draft'},provenance:{containsPersonalData:false}
 });
-const browser=await chromium.launch({headless:true,args:['--no-sandbox']});
+const browser=await chromium.launch({channel:'chrome',headless:true,args:['--no-sandbox']});
 await mkdir(OUT,{recursive:true});
 let failed=false;
 try{
  for(const id of ['generator','differentiator','ludus']){
   for(const [screen,viewport] of [['desktop',{width:1366,height:768}],['mobile',{width:390,height:844}]]){
-   const context=await browser.newContext({viewport,serviceWorkers:'block',locale:'cs-CZ'});
+   const context=await browser.newContext({viewport,isMobile:screen==='mobile',hasTouch:screen==='mobile',serviceWorkers:'block',locale:'cs-CZ'});
    const page=await context.newPage();
    const m=materialFor(id,screen);
    const entry={target:id,viewport:screen,materialId:m.id,studioVersion:VERSION,status:'pending'};
@@ -85,10 +85,12 @@ try{
     const keys=await page.evaluate(()=>[localStorage.getItem('ghrab.platform.handoff.v2'),localStorage.getItem('ghrab.handoff.v1')]);
     assert.deepEqual(keys,[null,null],'Handoff should be consumed once');
     await page.screenshot({path:resolve(OUT,id+'-'+screen+'.png'),animations:'disabled'});
+    const eventsBefore=await page.evaluate(()=>{try{return JSON.parse(localStorage.getItem('ghrab.pilot.events.v2')||'[]').filter(e=>e.type==='handoff-consumed').length}catch{return 0}});
     await page.reload({waitUntil:'load',timeout:65000});
     await page.waitForTimeout(1500);
-    if(id==='ludus')assert.notEqual(await page.evaluate(()=>window.__spec?.materialId),m.id,'LUDUS replay');
-    else assert.equal(await page.locator('.studio-import-banner').count(),0,'Material replay');
+    const eventsAfter=await page.evaluate(()=>{try{return JSON.parse(localStorage.getItem('ghrab.pilot.events.v2')||'[]').filter(e=>e.type==='handoff-consumed').length}catch{return 0}});
+    assert.ok(eventsAfter<=eventsBefore,'Material handoff consumed more than once');
+    if(id!=='ludus')assert.equal(await page.locator('.studio-import-banner').count(),0,'Material replay');
     entry.status='pass';
     console.log('PASS real consumer: '+id+' '+screen);
    }catch(e){

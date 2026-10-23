@@ -27,8 +27,8 @@ jobs:
         run: npm ci --ignore-scripts --no-audit --no-fund
       - name: Verify Stage05 platform and privacy contracts
         run: node --test tests/stage05/material-flow.test.mjs
-      - name: Install Chromium
-        run: npx playwright install --with-deps chromium
+      - name: Verify preinstalled Chrome (no browser download)
+        run: google-chrome --version
       - name: Verify six real consumer browser handoffs using synthetic data
         run: node tests/stage05/consumer-browser-uat.mjs
       - name: Archive screenshot and JSON evidence
