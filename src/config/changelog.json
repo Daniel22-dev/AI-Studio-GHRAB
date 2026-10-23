@@ -1,7 +1,21 @@
 {
   "schema": "ai-studio-changelog-v1",
-  "current": "0.21.253",
+  "current": "0.21.254",
   "items": [
+    {
+      "version": "0.21.254",
+      "date": "2026-10-23",
+      "title": {
+        "cs": "Centrální Material Flow Hub – etapa 05",
+        "en": "Central Material Flow Hub – stage 05"
+      },
+      "changes": [
+        {
+          "cs": "Sjednocené pracovní materiály, anonymizační kontrola a jednorázové předání do Generátoru, Diferenciátoru a LUDUS. Bez změny zdrojového kódu cílových aplikací.",
+          "en": "Unified workspace, privacy preflight and one-time transfers to Generator, Differentiator and LUDUS; consumer applications unchanged."
+        }
+      ]
+    },
     {
       "version": "0.21.253",
       "date": "2026-10-23",
