@@ -2,7 +2,7 @@
   "schema": "ghrab-material-flow-registry-v1",
   "version": 1,
   "policy": "anonymous-teaching-material-only",
-  "verificationNote": "Source-level consumer review on 2026-10-23. Real-device/browser acceptance remains required before production release.",
+  "verificationNote": "2026-10-23 Studio source-reviewed LUDUS: first 12 supported tasks must all be playable, MC4 exactly four options; authorized browser UAT still required.",
   "targets": [
     {
       "id": "generator",
@@ -68,7 +68,28 @@
           "truefalse",
           "short",
           "order"
-        ]
+        ],
+        "taskOptionRules": {
+          "select": {
+            "exactOptions": 4,
+            "requireAnswer": true,
+            "requireValidOptionAnswer": true
+          },
+          "truefalse": {
+            "maxOptions": 2,
+            "requireAnswer": true,
+            "requireValidOptionAnswer": true
+          },
+          "short": {
+            "minOptions": 1,
+            "requireAnswer": true
+          },
+          "order": {
+            "minOptions": 1
+          }
+        },
+        "maxImportedTasks": 12,
+        "rejectInvalidTasks": true
       },
       "maxBytes": 500000,
       "verification": "source-reviewed",
