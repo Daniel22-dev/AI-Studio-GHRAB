@@ -1,6 +1,6 @@
 {
   "schema": "ghrab-ai-readiness-report-v1",
-  "generatedAt": "2026-10-22T08:22:29.115Z",
+  "generatedAt": "2026-10-23T06:40:51.086Z",
   "activeCoreVersion": "1.0.0",
   "runtime": {
     "defaultMode": "direct-gemini",
@@ -123,7 +123,7 @@
     },
     {
       "appId": "lesson-hub",
-      "appVersion": "1.2.26",
+      "appVersion": "1.2.27",
       "classification": "not-applicable",
       "status": "not-applicable",
       "coreVersion": null,

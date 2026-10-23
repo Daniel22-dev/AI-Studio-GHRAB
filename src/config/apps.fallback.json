@@ -854,7 +854,7 @@
       "cs": "Lesson Hub",
       "en": "Lesson Hub"
     },
-    "version": "1.2.26",
+    "version": "1.2.27",
     "status": {
       "cs": "Připraveno k řízenému pilotu",
       "en": "Ready for controlled pilot"
@@ -934,7 +934,7 @@
       "platformContract": "ghrab-platform-v1",
       "platformRange": ">=1.1.2 <2.0.0"
     },
-    "publishedAt": "2026-10-09T18:09:58.000Z",
+    "publishedAt": "2026-10-23T06:31:15.000Z",
     "aiCore": {
       "schema": "ghrab-ai-app-integration-v1",
       "status": "not-applicable",
@@ -957,7 +957,7 @@
       "studioBridge": 2,
       "artifactEnvelope": 1,
       "storagePrefix": "ghrab.lesson-hub.",
-      "cacheName": "ghrab-lesson-hub-v1.2.26",
+      "cacheName": "ghrab-lesson-hub-v1.2.27",
       "suiteSessionContract": "ghrab-suite-session-v1",
       "requiredRange": ">=1.1.2 <2.0.0",
       "storageContract": "ghrab-storage-namespace-v1",
@@ -974,12 +974,12 @@
       "url": "./release-integrity.json",
       "assuranceMode": "TRANSITIONAL",
       "appId": "lesson-hub",
-      "version": "1.2.26",
+      "version": "1.2.27",
       "source": {
         "repository": "Daniel22-dev/lesson-hub",
-        "commit": "c2cfcc457acf81898522cb63cfb09446504d01ea"
+        "commit": "c49db0f14e44fad52d0050a08d3e642e2a956fcb"
       },
-      "buildId": "github-37971546206-1",
+      "buildId": "github-39912147531-1",
       "evidence": {
         "releaseIntegrity": "release-integrity.json",
         "provenance": "build-provenance.json",
