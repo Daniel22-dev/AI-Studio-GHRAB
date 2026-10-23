@@ -2,7 +2,7 @@
   "schema": "ghrab-material-flow-registry-v1",
   "version": 1,
   "policy": "anonymous-teaching-material-only",
-  "verificationNote": "2026-10-23 source-verified LUDUS mc4 requires exactly four options; browser UAT remains mandatory.",
+  "verificationNote": "2026-10-23 Studio source-reviewed LUDUS: first 12 supported tasks must all be playable, MC4 exactly four options; authorized browser UAT still required.",
   "targets": [
     {
       "id": "generator",
@@ -77,7 +77,8 @@
           },
           "truefalse": {
             "maxOptions": 2,
-            "requireAnswer": true
+            "requireAnswer": true,
+            "requireValidOptionAnswer": true
           },
           "short": {
             "minOptions": 1,
@@ -86,7 +87,9 @@
           "order": {
             "minOptions": 1
           }
-        }
+        },
+        "maxImportedTasks": 12,
+        "rejectInvalidTasks": true
       },
       "maxBytes": 500000,
       "verification": "source-reviewed",

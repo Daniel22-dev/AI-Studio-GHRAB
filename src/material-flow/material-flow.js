@@ -149,6 +149,8 @@ export function validateRegistry(registry) {
     const req = entry.requirements || {};
     for (const field of ['minObjectives','minSourceChars','minTasks']) if (req[field] != null && (!Number.isSafeInteger(req[field]) || req[field] < 0 || req[field] > 100000)) throw new TypeError('material-flow-registry-requirements');
     if (req.taskTypes != null && (!Array.isArray(req.taskTypes) || !req.taskTypes.every((s) => ['select','truefalse','short','open','order'].includes(s)))) throw new TypeError('material-flow-registry-task-types');
+    if (req.maxImportedTasks != null && (!Number.isSafeInteger(req.maxImportedTasks) || req.maxImportedTasks < 1 || req.maxImportedTasks > 500)) throw new TypeError('material-flow-registry-import-limit');
+    if (req.rejectInvalidTasks != null && typeof req.rejectInvalidTasks !== 'boolean') throw new TypeError('material-flow-registry-task-strictness');
     if (req.oneOf != null && (!Array.isArray(req.oneOf) || !req.oneOf.every((s) => ['source-text','structured-tasks'].includes(s)))) throw new TypeError('material-flow-registry-oneof');
     if (req.taskOptionRules != null) {
       if (!isRecord(req.taskOptionRules)) throw new TypeError('material-flow-registry-option-rules');
@@ -175,8 +177,13 @@ export function assessContent(material, entry) {
   const req = entry.requirements || {};
   if (req.minSourceChars && sourceLength < req.minSourceChars) return 'needs-source';
   if (req.minObjectives && objectives.length < req.minObjectives) return 'needs-objectives';
-  const accepted = tasks.filter((task) => {
-    if (req.taskTypes && !req.taskTypes.includes(task.type)) return false;
+
+  // Match the actual consumer: LUDUS filters unsupported task types and then
+  // imports only the first 12 supported tasks. Valid tasks after that cutoff
+  // must not mask an unplayable task inside the imported subset.
+  const supported = req.taskTypes ? tasks.filter((task) => req.taskTypes.includes(task.type)) : tasks;
+  const imported = req.maxImportedTasks ? supported.slice(0, req.maxImportedTasks) : supported;
+  const accepted = imported.filter((task) => {
     const rule = req.taskOptionRules?.[task.type];
     if (!rule) return true;
     const options = Array.isArray(task.options) ? task.options : [];
@@ -185,7 +192,16 @@ export function assessContent(material, entry) {
     if (rule.maxOptions != null && options.length > rule.maxOptions) return false;
     if (rule.requireAnswer && (task.answer === null || task.answer === undefined || String(task.answer).trim() === '')) return false;
     if (rule.requireValidOptionAnswer) {
-      if (typeof task.answer === 'number') {
+      if (task.type === 'truefalse') {
+        // LUDUS falls back to two options when none are supplied. A single
+        // supplied option would be silently discarded by that fallback.
+        if (options.length === 1) return false;
+        if (typeof task.answer === 'number') {
+          if (!Number.isInteger(task.answer) || task.answer < 0 || task.answer > 1) return false;
+        } else if (typeof task.answer === 'string') {
+          if (!/^(?:ano|ne|yes|no|true|false|pravda|nepravda)$/i.test(task.answer.trim())) return false;
+        } else return false;
+      } else if (typeof task.answer === 'number') {
         if (!Number.isInteger(task.answer) || task.answer < 0 || task.answer >= options.length) return false;
       } else if (typeof task.answer === 'string') {
         if (!options.some(option => String(option).trim().toLocaleLowerCase() === task.answer.trim().toLocaleLowerCase())) return false;
@@ -193,9 +209,10 @@ export function assessContent(material, entry) {
     }
     return true;
   });
+  if (req.rejectInvalidTasks && imported.length !== accepted.length) return 'needs-tasks';
   if (req.minTasks && accepted.length < req.minTasks) return 'needs-tasks';
-  if (req.oneOf?.length && !req.oneOf.some((type) => type === 'source-text' ? sourceLength > 0 : tasks.length > 0)) return 'needs-content';
-  if (entry.contentTypes.length && !entry.contentTypes.some((type) => type === 'source-text' ? sourceLength > 0 : tasks.length > 0)) return 'unsupported-content';
+  if (req.oneOf?.length && !req.oneOf.some((type) => type === 'source-text' ? sourceLength > 0 : accepted.length > 0)) return 'needs-content';
+  if (entry.contentTypes.length && !entry.contentTypes.some((type) => type === 'source-text' ? sourceLength > 0 : accepted.length > 0)) return 'unsupported-content';
   return 'compatible';
 }
 export function resolveTargets(material, apps, registry, { validator, studioUrl } = {}) {

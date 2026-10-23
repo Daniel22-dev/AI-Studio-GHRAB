@@ -100,6 +100,48 @@ test('LUDUS rejects two-option MC4 and malformed imported task shapes',()=>{
   malformed.targets[2].requirements.taskOptionRules.select.exactOptions=-1;
   assert.throws(()=>validateRegistry(malformed),/option-rules/);
 });
+test('LUDUS preflight matches first 12 imported supported tasks and cannot hide invalid tasks',()=>{
+ const withInvalidLater=material();withInvalidLater.content.tasks.push({
+   id:'q4',type:'select',prompt:'Four choices required',options:['A','B'],answer:0,difficulty:1
+ });
+ assert.equal(assessContent(withInvalidLater,registry.targets[2]),'needs-tasks');
+
+ const outsideLimit=material();
+ outsideLimit.content.tasks=[
+   ...Array.from({length:12},(_,i)=>({...material().content.tasks[0],id:'valid-'+i})),
+   {id:'q13',type:'select',prompt:'Not imported',options:['A','B'],answer:0,difficulty:1}
+ ];
+ assert.equal(assessContent(outsideLimit,registry.targets[2]),'compatible');
+ const hiddenValid=material();
+ hiddenValid.content.tasks=[
+   ...Array.from({length:12},(_,i)=>({id:'bad-'+i,type:'select',prompt:'Missing choices',options:['A','B'],answer:0,difficulty:1})),
+   ...Array.from({length:3},(_,i)=>({...material().content.tasks[0],id:'valid-after-'+i}))
+ ];
+ assert.equal(assessContent(hiddenValid,registry.targets[2]),'needs-tasks');
+ const open=material();
+ open.content.tasks.unshift({id:'ignored',type:'open',prompt:'Explain your reasoning',difficulty:2});
+ assert.equal(assessContent(open,registry.targets[2]),'compatible');
+});
+
+test('LUDUS truefalse accepts playable answers and rejects out-of-range or ambiguous answers',()=>{
+ const base=material();
+ const tf=(answer,options=['Ano','Ne'])=>({...base.content.tasks[0],type:'truefalse',options,answer});
+ const valid=material();valid.content.tasks=[tf(0),tf('false'),tf(1,[])];
+ assert.equal(assessContent(valid,registry.targets[2]),'compatible');
+ for (const answer of [2,-1,1.5,'maybe',null]) {
+   const invalid=material();invalid.content.tasks=[tf(answer),tf(answer),tf(answer)];
+   assert.equal(assessContent(invalid,registry.targets[2]),'needs-tasks',String(answer));
+ }
+ const oneOption=material();oneOption.content.tasks=[tf(0,['Only']),tf(1,['Only']),tf('true',['Only'])];
+ assert.equal(assessContent(oneOption,registry.targets[2]),'needs-tasks');
+ const invalidRegistry=JSON.parse(JSON.stringify(registry));
+ invalidRegistry.targets[2].requirements.maxImportedTasks=0;
+ assert.throws(()=>validateRegistry(invalidRegistry),/import-limit/);
+ invalidRegistry.targets[2].requirements.maxImportedTasks=12;
+ invalidRegistry.targets[2].requirements.rejectInvalidTasks='yes';
+ assert.throws(()=>validateRegistry(invalidRegistry),/task-strictness/);
+});
+
 test('different origins, spoofed paths, incompatible content and unverified consumers fail closed',()=>{
  const cross=resolveTargets(material(),[target('generator','https://evil.example/generator/')],registry,{validator:validateMaterialPackage,studioUrl});
  assert.equal(cross[0].reason,'different-origin');
