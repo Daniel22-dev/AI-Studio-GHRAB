@@ -32,6 +32,10 @@ jobs:
           node scripts/verify-release-version-freshness.mjs
       - name: Verify read-only policy and negative cases
         run: node --test scripts/ci-p3-topology.test.mjs
+      - name: Stage 05 Material Flow source-contract regressions (non-browser)
+        run: |
+          node --test tests/stage05/material-flow.test.mjs
+          node --check tests/stage05/consumer-browser-uat.mjs
       - name: Audit nine release-wave apps and AI Studio
         env:
           GITHUB_TOKEN: ${{ github.token }}
