@@ -1,7 +1,25 @@
 {
   "schema": "ai-studio-changelog-v1",
-  "current": "0.21.254",
+  "current": "0.21.255",
   "items": [
+    {
+      "version": "0.21.255",
+      "date": "2026-10-23",
+      "title": {
+        "cs": "Offline spuštění AI Studia po integraci Material Flow",
+        "en": "AI Studio offline startup after Material Flow integration"
+      },
+      "changes": [
+        {
+          "cs": "Nový modul material-flow/material-flow.js se ukládá do povinné cache service workeru. Je statickou závislostí app.js; jeho nepřítomnost bránila zobrazení karet po offline obnovení.",
+          "en": "The material-flow/material-flow.js module is now precached because app.js imports it statically; its absence prevented app cards from rendering after an offline restart."
+        },
+        {
+          "cs": "Nemění se podepsaná knihovna Conversation Lab 0.11.0 ani nativní přístupová kontrola CLB-01. Nasazení stále vyžaduje úplné P5 a Safe Promotion.",
+          "en": "The signed Conversation Lab 0.11.0 library and native CLB-01 access gates remain unchanged. Deployment still requires full P5 and Safe Promotion."
+        }
+      ]
+    },
     {
       "version": "0.21.254",
       "date": "2026-10-23",
