@@ -1,7 +1,25 @@
 {
   "schema": "ai-studio-changelog-v1",
-  "current": "0.21.253",
+  "current": "0.21.254",
   "items": [
+    {
+      "version": "0.21.254",
+      "date": "2026-10-23",
+      "title": {
+        "cs": "Materiálový hub AI Studia a správce témat Conversation Lab",
+        "en": "AI Studio Material Flow Hub and Conversation Lab Topic Manager"
+      },
+      "changes": [
+        {
+          "cs": "Nová centrální správa a předávání výukových materiálů mezi AI Studiem, Generátorem, Diferenciátorem a LUDUS; validace dat, soukromí a bezpečnostní testy.",
+          "en": "Central management and handoff of teaching materials across AI Studio, Generator, Differentiator and LUDUS, with data and privacy validation and security tests."
+        },
+        {
+          "cs": "Zachována aktualizace správce témat Conversation Lab; vydání podléhá standardním CI, UAT a release branám.",
+          "en": "Conversation Lab Topic Manager update retained; release remains subject to standard CI, UAT and release gates."
+        }
+      ]
+    },
     {
       "version": "0.21.253",
       "date": "2026-10-23",
