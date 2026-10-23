@@ -19,9 +19,9 @@ const materialFor=(id,viewport)=>({
  title:'STAGE05 SYNTHETIC '+id.toUpperCase(),subject:'English',language:'en',yearGroup:'1',level:'B1',
  objectives:['Compare three fictional examples'],
  content:{sourceText:'SYNTHETIC-STAGE05-SOURCE: neutral example with no personal data.',vocabulary:[],tasks:[
-  {id:'q1',type:'select',prompt:'Pick A',options:['A','B'],answer:0,difficulty:1},
-  {id:'q2',type:'select',prompt:'Pick B',options:['A','B'],answer:1,difficulty:1},
-  {id:'q3',type:'select',prompt:'Pick C',options:['A','B'],answer:0,difficulty:1}
+  {id:'q1',type:'select',prompt:'Pick A',options:['A','B','C','D'],answer:0,difficulty:1},
+  {id:'q2',type:'select',prompt:'Pick B',options:['A','B','C','D'],answer:1,difficulty:1},
+  {id:'q3',type:'select',prompt:'Pick C',options:['A','B','C','D'],answer:0,difficulty:1}
  ]},quality:{status:'ai-draft'},provenance:{containsPersonalData:false}
 });
 const browser=await chromium.launch({channel:'chrome',headless:true,args:['--no-sandbox']});
@@ -49,6 +49,9 @@ try{
      if(flow.inspectOutboundMaterial(pii,{validator}).ok)throw Error('PII admitted');
      const xss=structuredClone(m);xss.content.sourceText='<img src=x onerror=alert(1)>';
      if(flow.inspectOutboundMaterial(xss,{validator}).ok)throw Error('XSS admitted');
+     const two=structuredClone(m);two.content.tasks.forEach(t=>{t.options=['A','B'];});
+     if(flow.resolveTargets(two,apps,registry,{validator,studioUrl:studio}).find(x=>x.id==='ludus')?.reason!=='needs-tasks')
+       throw Error('LUDUS admitted incompatible two-option MC4 tasks');
      const transport=flow.createHandoffTransport({bridge,validator,studioUrl:studio,apps,registry});
      let rejected=false;
      try{transport.prepare({targetId:id,material:m,ttlMs:1000,sourceAppVersion:version})}catch(e){rejected=String(e).includes('handoff-ttl')}

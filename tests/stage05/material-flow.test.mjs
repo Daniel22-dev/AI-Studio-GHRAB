@@ -19,9 +19,9 @@ const material = (id='m1') => ({
   schema: 'ghrab-material-v1', id, version: 1, title:'Adjectives', subject:'English',
   language:'en', yearGroup:'1',level:'B1',objectives:['Compare two items'],
   content:{sourceText:'A familiar topic for discussion.', vocabulary: [],tasks:[
-    {id:'q1',type:'select',prompt:'Pick A',options:['A','B'],answer:0,difficulty:1},
-    {id:'q2',type:'select',prompt:'Pick B',options:['A','B'],answer:1,difficulty:1},
-    {id:'q3',type:'select',prompt:'Pick C',options:['A','B'],answer:0,difficulty:1},
+    {id:'q1',type:'select',prompt:'Pick A',options:['A','B','C','D'],answer:0,difficulty:1},
+    {id:'q2',type:'select',prompt:'Pick B',options:['A','B','C','D'],answer:1,difficulty:1},
+    {id:'q3',type:'select',prompt:'Pick C',options:['A','B','C','D'],answer:0,difficulty:1},
   ]}, quality:{status:'ai-draft'}, provenance:{containsPersonalData:false}
 });
 const memory = () => {
@@ -84,6 +84,21 @@ test('declarative manifest contract, registry validation and per-content require
  assert.deepEqual(result.map(x=>[x.id,x.reason]),[['generator','compatible'],['differentiator','compatible'],['ludus','compatible']]);
  assert.equal(assessContent({...material(),objectives:[]},registry.targets[1]),'needs-objectives');
  assert.equal(assessContent({...material(),content:{sourceText:'',tasks:[]}},registry.targets[2]),'needs-tasks');
+});
+test('LUDUS rejects two-option MC4 and malformed imported task shapes',()=>{
+  const two=material();
+  two.content.tasks.forEach(t=>{t.options=['A','B'];});
+  assert.equal(assessContent(two,registry.targets[2]),'needs-tasks');
+  assert.deepEqual(resolveTargets(two,available,registry,{validator:validateMaterialPackage,studioUrl})
+    .map(x=>[x.id,x.reason]),[['generator','compatible'],['differentiator','compatible'],['ludus','needs-tasks']]);
+  assert.equal(assessContent(material(),registry.targets[2]),'compatible');
+  const bad=material();bad.content.tasks.forEach(t=>{t.answer=7;});
+  assert.equal(assessContent(bad,registry.targets[2]),'needs-tasks');
+  const missing=material();missing.content.tasks.forEach(t=>{t.type='short';t.options=[];t.answer='word';});
+  assert.equal(assessContent(missing,registry.targets[2]),'needs-tasks');
+  const malformed=JSON.parse(JSON.stringify(registry));
+  malformed.targets[2].requirements.taskOptionRules.select.exactOptions=-1;
+  assert.throws(()=>validateRegistry(malformed),/option-rules/);
 });
 test('different origins, spoofed paths, incompatible content and unverified consumers fail closed',()=>{
  const cross=resolveTargets(material(),[target('generator','https://evil.example/generator/')],registry,{validator:validateMaterialPackage,studioUrl});
