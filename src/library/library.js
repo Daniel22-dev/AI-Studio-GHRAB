@@ -1,5 +1,6 @@
 import { validateMaterialFile } from "../shared/material-validator.js";
 import { createMaterialRepository } from "./material-service.js";
+import { loadMaterialFlowController, materialFlowDetails } from "../material-flow/controller.js";
 
 const G = window.GHRAB;
 const repository = createMaterialRepository(G);
@@ -7,6 +8,7 @@ let catalog = { items: [] };
 let serverCaps = { prepared: false, connected: false };
 let commissions = [];
 let selectedCommissionId = "";
+let materialFlowController = null;
 
 const grid = document.querySelector("#library-grid");
 const workspace = document.querySelector("#library-workspace");
@@ -119,7 +121,7 @@ function card(item) {
   save.addEventListener("click", async () => {
     try {
       const material = await loadMaterial(item);
-      G.saveWorkspaceMaterial(material);
+      if (!G.saveWorkspaceMaterial(material)) throw new Error("workspace-save-failed");
       renderWorkspace();
       G.showToast(
         G.t("Materiál byl uložen místně.", "The resource was saved locally."),
@@ -249,8 +251,31 @@ function renderWorkspace() {
           },
         ).catch((error) => G.showToast(error.message));
       });
-      actions.append(localShareButton(material), exp);
-      article.append(quality, heading, description, actions);
+      const edit = document.createElement("button");
+      edit.type = "button";
+      edit.className = "button secondary";
+      edit.textContent = G.t("Upravit / anonymizovat", "Edit / anonymise");
+      edit.addEventListener("click", () => {
+        try {
+          const draftExists = Boolean(G.safeGetItem("ghrab.workflow.draft.v1", ""));
+          if (draftExists && !confirm(G.t(
+            "Otevření materiálu nahradí současný koncept v editoru. Pokračovat?",
+            "Opening this resource will replace the current editor draft. Continue?",
+          ))) return;
+          sessionStorage.setItem("ghrab.ai-studio.material-flow.edit-selection.v1", material.id);
+          location.assign("../workflow/");
+        } catch {
+          G.showToast(G.t("Editor se nepodařilo otevřít.", "The editor could not be opened."));
+        }
+      });
+      actions.append(localShareButton(material), exp, edit);
+      if (materialFlowController) {
+        const next = materialFlowDetails(G, materialFlowController, material, { onRefresh: renderWorkspace });
+        actions.append(next.toggle);
+        article.append(quality, heading, description, actions, next.detail);
+      } else {
+        article.append(quality, heading, description, actions);
+      }
       return article;
     }),
   );
@@ -301,7 +326,7 @@ function sharedMaterialCard(record) {
     fork.addEventListener("click", async () => {
       try {
         const material = await repository.forkToWorkspace(record.id);
-        G.saveWorkspaceMaterial(material);
+        if (!G.saveWorkspaceMaterial(material)) throw new Error("workspace-save-failed");
         renderWorkspace();
         G.showToast(
           G.t(
@@ -459,6 +484,13 @@ async function consumeIncomingStudioHandoff() {
       );
     }
     const validation = G.validateMaterialPackage(packet.material);
+    const admission = G.checkOutboundMaterial?.(packet.material);
+    if (!admission?.ok) {
+      throw new Error(G.t(
+        "Předaný materiál nebyl potvrzen jako anonymní a bezpečný. Obsah nebyl uložen.",
+        "The incoming material is not confirmed anonymous and safe. It was not stored.",
+      ));
+    }
     if (!validation.valid) {
       const issue = validation.errors?.[0];
       throw new Error(
@@ -593,5 +625,19 @@ document
   ?.setAttribute("aria-current", "page");
 
 renderWorkspace();
+// Fail closed when the local material registry is missing or invalid.
+Promise.all([G.accessReady, loadMaterialFlowController(G)])
+  .then(([, controller]) => {
+    materialFlowController = controller;
+    G.migrateWorkspace?.();
+    renderWorkspace();
+  })
+  .catch((error) => console.warn("Material Flow Hub unavailable", error));
+window.addEventListener("storage", (event) => {
+  if (["ghrab.workspace.v1", "ghrab.ai-studio.workspace.v1", "ghrab.platform.handoff.v2", "ghrab.handoff.v1"].includes(event.key)) {
+    renderWorkspace();
+  }
+});
+window.addEventListener("pageshow", (event) => { if (event.persisted) renderWorkspace(); });
 void initialiseServerMaterials();
 void consumeIncomingStudioHandoff();

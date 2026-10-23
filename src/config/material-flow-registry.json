@@ -1,0 +1,82 @@
+{
+  "schema": "ghrab-material-flow-registry-v1",
+  "version": 1,
+  "policy": "anonymous-teaching-material-only",
+  "verificationNote": "Source-level consumer review on 2026-10-23. Real-device/browser acceptance remains required before production release.",
+  "targets": [
+    {
+      "id": "generator",
+      "bridgeVersion": 2,
+      "importSchemas": [
+        "ghrab-material-v1"
+      ],
+      "exportSchemas": [],
+      "contentTypes": [
+        "source-text",
+        "structured-tasks"
+      ],
+      "requirements": {
+        "oneOf": [
+          "source-text",
+          "structured-tasks"
+        ]
+      },
+      "maxBytes": 500000,
+      "verification": "source-reviewed",
+      "evidence": "generator-testu main: src/js/17-ai-studio-bridge.js (read-only; no GIT changes)",
+      "allowedLaunchPaths": [
+        "/generator-testu/",
+        "/apps/generator-testu/"
+      ]
+    },
+    {
+      "id": "differentiator",
+      "bridgeVersion": 2,
+      "importSchemas": [
+        "ghrab-material-v1"
+      ],
+      "exportSchemas": [],
+      "contentTypes": [
+        "source-text"
+      ],
+      "requirements": {
+        "minSourceChars": 1,
+        "minObjectives": 1
+      },
+      "maxBytes": 500000,
+      "verification": "source-reviewed",
+      "evidence": "diferenciator main: src/js/25-ai-studio-bridge.js",
+      "allowedLaunchPaths": [
+        "/diferenciator/",
+        "/apps/diferenciator/"
+      ]
+    },
+    {
+      "id": "ludus",
+      "bridgeVersion": 2,
+      "importSchemas": [
+        "ghrab-material-v1"
+      ],
+      "exportSchemas": [],
+      "contentTypes": [
+        "structured-tasks"
+      ],
+      "requirements": {
+        "minTasks": 3,
+        "taskTypes": [
+          "select",
+          "truefalse",
+          "short",
+          "order"
+        ]
+      },
+      "maxBytes": 500000,
+      "verification": "source-reviewed",
+      "evidence": "Ludus main: src/index.html studioTake/studioImportMaterial",
+      "allowedLaunchPaths": [
+        "/Ludus/",
+        "/apps/ludus/"
+      ]
+    }
+  ]
+}
