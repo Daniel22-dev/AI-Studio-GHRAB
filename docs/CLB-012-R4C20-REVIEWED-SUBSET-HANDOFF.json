@@ -1,0 +1,22 @@
+{
+  "schema": "ghrab-clb-0120-studio-reviewed-subset-staging-v1",
+  "sourcePrUrl": "https://github.com/Daniel22-dev/conversation-lab-source/pull/26",
+  "sourceCandidateHead": "a4c844ed03ae22a4979bfb4d29e664770437f618",
+  "sourceReleaseBuilderGitBlob": "547b08a690ee357592b9bd361d71f72be01b1a02",
+  "sourceReviewConsoleGitBlob": "7a4cac278ca0cf3f199b18507459e78b9ff18ebf",
+  "reviewedSourceOuterZipSha256": "87fdbcd2bd91aa168b3d4fdff99beeff77ee1cc12388e4158b328adb682ebe75",
+  "releasePolicy": "ONLY_EXACT_32_QUESTIONS_PER_SELECTED_VARIANT_WITH_SEPARATE_OWNER_AND_P5",
+  "oldTeacherRelease": "0.11.0",
+  "teacherClb01Mandatory": true,
+  "existing011TeacherBytesMustRemainIntact": true,
+  "ownerES256Verified": false,
+  "independentP5Verified": false,
+  "currentRealHumanApprovedNewVariants": 0,
+  "teacherNewRuntimeReady": false,
+  "studioReleasePin012Provided": false,
+  "studioCredentialBridgeAllowed": false,
+  "canPromote": false,
+  "canMerge": false,
+  "canDeploy": false,
+  "state": "STUDIO_012_NATIVE_RELEASE_NOT_AUTHORIZED"
+}
