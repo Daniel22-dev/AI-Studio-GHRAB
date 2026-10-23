@@ -1,7 +1,9 @@
 // Real published consumers; synthetic content only, never invokes AI endpoints.
 import assert from 'node:assert/strict';
-import {readFile, mkdir, writeFile} from 'node:fs/promises';
-import {resolve} from 'node:path';
+import {readFile, mkdir, writeFile, mkdtemp, rm} from 'node:fs/promises';
+import {createInterface} from 'node:readline/promises';
+import {tmpdir} from 'node:os';
+import {join, resolve} from 'node:path';
 import {chromium} from 'playwright';
 
 const STUDIO='https://daniel22-dev.github.io/AI-Studio-GHRAB/';
@@ -24,18 +26,49 @@ const materialFor=(id,viewport)=>({
   {id:'q3',type:'select',prompt:'Pick C',options:['A','B','C','D'],answer:0,difficulty:1}
  ]},quality:{status:'ai-draft'},provenance:{containsPersonalData:false}
 });
-const browser=await chromium.launch({channel:'chrome',headless:true,args:['--no-sandbox']});
+const MANUAL_AUTHORIZED=process.argv.includes('--manual-authorized');
+if(MANUAL_AUTHORIZED && (process.env.CI || !process.stdin.isTTY)) throw new Error('Manual activation requires an interactive local terminal; never run with CI credentials.');
+// Temporary Chrome profile is kept outside the repository and always removed.
+// No authentication storage-state file or credential is uploaded to GitHub.
+const manualProfile=MANUAL_AUTHORIZED ? await mkdtemp(join(tmpdir(),'ghrab-stage05-authorized-')) : null;
+const terminal=MANUAL_AUTHORIZED ? createInterface({input:process.stdin,output:process.stdout}) : null;
+const browser=MANUAL_AUTHORIZED ? null : await chromium.launch({channel:'chrome',headless:true,args:['--no-sandbox']});
 await mkdir(OUT,{recursive:true});
 let failed=false;
 try{
  for(const id of ['generator','differentiator','ludus']){
   for(const [screen,viewport] of [['desktop',{width:1366,height:768}],['mobile',{width:390,height:844}]]){
-   const context=await browser.newContext({viewport,isMobile:screen==='mobile',hasTouch:screen==='mobile',serviceWorkers:'block',locale:'cs-CZ'});
+   const contextOptions={viewport,isMobile:screen==='mobile',hasTouch:screen==='mobile',serviceWorkers:'block',locale:'cs-CZ'};
+   const context=MANUAL_AUTHORIZED
+     ? await chromium.launchPersistentContext(manualProfile,{...contextOptions,channel:'chrome',headless:false,args:['--no-sandbox']})
+     : await browser.newContext(contextOptions);
    const page=await context.newPage();
    const m=materialFor(id,screen);
    const entry={target:id,viewport:screen,materialId:m.id,studioVersion:VERSION,status:'pending'};
+   const app=apps.find(x=>x.id===id);
    page.setDefaultTimeout(45000);
    try{
+    if(!app?.launchUrl) throw new Error('Missing declared consumer target '+id);
+    if(MANUAL_AUTHORIZED){
+      // The isolated persistent profile normally retains activation between
+      // runs. Recheck every viewport: session-bound grants may not persist.
+      await page.goto(app.launchUrl,{waitUntil:'load',timeout:65000});
+      await page.waitForTimeout(1000);
+      let locked=await page.evaluate(()=>/tato aplikace je uzam(?:č|c)en(?:a|á)|přístup zatím nebyl aktivován|this application is locked|access has not been activated/i.test(document.body?.innerText||''));
+      if(locked){
+        // The operator activates the consumer in visible dedicated Chrome.
+        // Never ask for or export school access codes.
+        console.log('\nSTAGE05 AUTH: '+id+' ('+screen+'). Activate the app in the visible Chrome window through the official AI Studio process.');
+        await terminal.question('Po řádné aktivaci aplikace stiskněte Enter (kód sem nevkládejte): ');
+        await page.reload({waitUntil:'load',timeout:65000});
+        await page.waitForTimeout(1000);
+        locked=await page.evaluate(()=>/tato aplikace je uzam(?:č|c)en(?:a|á)|přístup zatím nebyl aktivován|this application is locked|access has not been activated/i.test(document.body?.innerText||''));
+      }
+      if(locked){
+        entry.blocker='AUTHORIZATION_REQUIRED';
+        throw new Error('AUTHORIZATION_REQUIRED: consumer remains locked after the operator preflight; no grant may be bypassed.');
+      }
+    }
     const html='<!doctype html><html lang="cs" data-ghrab-app-id="ai-studio" data-ghrab-app-version="'+VERSION+'"><head><meta charset="utf-8"><title>Stage05 synthetic sender</title><script>window.GHRAB_PLATFORM_CONFIG={appId:"ai-studio",appVersion:"'+VERSION+'",autoFooter:false,requiredPlatformRange:">=1.1.2 <2.0.0"};</script></head><body>Stage05 synthetic sender</body></html>';
     await page.route(HARNESS,route=>route.fulfill({status:200,contentType:'text/html; charset=utf-8',body:html}));
     await page.goto(HARNESS,{waitUntil:'domcontentloaded',timeout:30000});
@@ -63,7 +96,6 @@ try{
      if(!rejected)throw Error('Pending handoff overwritten');
      return packet.launchUrl.href;
     },{flowJS,validatorJS,apps,registry,m,id,studio:STUDIO,version:VERSION});
-    const app=apps.find(x=>x.id===id);
     assert.equal(prepared,app?.launchUrl,'Registered route must be used');
     const url=new URL(prepared);url.searchParams.set('studioHandoff','1');
     const response=await page.goto(url.href,{waitUntil:'load',timeout:65000});
@@ -133,7 +165,9 @@ try{
   }
  }
 }finally{
- await browser.close();
+ if(browser) await browser.close();
+ if(terminal) terminal.close();
+ if(manualProfile) await rm(manualProfile,{recursive:true,force:true});
  await writeFile(resolve(OUT,'results.json'),JSON.stringify({schema:'ghrab-stage05-real-consumer-uat-v1',sourceSha:process.env.GITHUB_SHA||'unrecorded',syntheticOnly:true,results},null,2)+'\n');
 }
 if(failed||results.length!==6||results.some(x=>x.status!=='pass'))process.exitCode=1;
