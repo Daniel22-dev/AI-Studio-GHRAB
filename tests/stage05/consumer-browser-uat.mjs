@@ -68,6 +68,11 @@ try{
     const url=new URL(prepared);url.searchParams.set('studioHandoff','1');
     const response=await page.goto(url.href,{waitUntil:'load',timeout:65000});
     assert.ok(response?.ok(),'Consumer HTTP response not OK');
+    const visible=(await page.locator('body').innerText({timeout:10000})).slice(0,10000);
+    if (/tato aplikace je uzam(?:č|c)en(?:a|á)|přístup zatím nebyl aktivován|access has not been activated/i.test(visible)) {
+      entry.blocker='AUTHORIZATION_REQUIRED';
+      throw Error('AUTHORIZATION_REQUIRED: '+id+' requires a legitimately issued school access grant. Automated UAT cannot bypass licensing.');
+    }
     if(id==='ludus'){
      await page.waitForFunction(materialId=>window.__spec?.materialId===materialId,m.id,{timeout:50000});
      assert.equal(await page.evaluate(()=>window.__spec.title),m.title);

@@ -1,0 +1,78 @@
+name: Stage05 advisory P5 preflight - NO DEPLOY
+on:
+  pull_request:
+    branches: [candidate]
+    paths:
+      - 'src/material-flow/**'
+      - 'src/library/**'
+      - 'src/workflow/**'
+      - 'tests/stage05/**'
+      - '.github/workflows/stage05-p5-source-preflight.yml'
+permissions:
+  contents: read
+jobs:
+  advisory-p5:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 45
+    env:
+      CHROMIUM_PATH: /usr/bin/google-chrome
+    steps:
+      - uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683
+        with:
+          persist-credentials: false
+      - uses: actions/setup-node@49933ea5288caeca8642d1e84afbd3f7d6820020
+        with:
+          node-version: 22
+          cache: npm
+          registry-url: https://registry.npmjs.org
+      - name: Install pinned dependencies
+        run: npm ci --ignore-scripts --no-audit --no-fund --registry=https://registry.npmjs.org
+      - name: Check source version and release-logbook policy
+        run: |
+          node --test scripts/test-changelog-policy.mjs
+          npm run verify:release-version
+      - name: Verify source-fallback and synchronise official registries
+        run: |
+          npm run qa:fallback
+          npm run test:runtime-fallback
+          npm run sync
+          npm run format:generated-json
+          npm run test:release-identity-timing
+          node --test scripts/test-p2-reporter-build-parity.mjs
+          node --test scripts/test-qa-p2b-build-observer.mjs
+          node --test scripts/test-qa-p2c-build-reuse-guard.mjs
+          node scripts/verify-deployment-release-identities.mjs
+          node scripts/sync-platform-consumers.mjs --check
+          node scripts/qa-ecosystem.mjs --require-source-verification
+          npm run sync:fallback
+          npm run qa:fallback
+          npm run test:runtime-fallback
+      - name: Install pinned Playwright browser only, no apt
+        run: npx playwright install chromium
+      - name: Run GARP foundation
+        env:
+          GHRAB_SOURCE_COMMIT: ${{ github.event.pull_request.head.sha }}
+        run: npm run qa:garp27:foundation
+      - name: Run official P5 CI checks on review commit (advisory)
+        run: npm run qa:p5:ci
+      - name: Studio UX and GARP release identity chain
+        env:
+          GHRAB_SOURCE_COMMIT: ${{ github.event.pull_request.head.sha }}
+          GHRAB_SOURCE_REPOSITORY: ${{ github.repository }}
+          GHRAB_RELEASE_STAGE: PREP-VALIDATION
+        run: |
+          npm run test:studio-ux
+          npm run prepare:studio-release
+          npm run verify:studio-release
+      - name: Preserve audit evidence
+        if: always()
+        uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
+        with:
+          name: stage05-advisory-p5
+          path: |
+            dist/qa-p5-*.json
+            dist/quality-report.json
+            dist/studio-manifest.json
+            qa-results/release-current/
+          retention-days: 14
+          if-no-files-found: warn
