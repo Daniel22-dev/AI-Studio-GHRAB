@@ -276,6 +276,8 @@ const requiredCacheFiles = [
   // Without it the service worker can serve index/app.js offline but the whole
   // JS import graph fails and no application cards render after reload.
   "./integration/conversation-lab/portal-route.js",
+  // Material Flow Hub is a static import of app.js; offline bootstrap requires it.
+  "./material-flow/material-flow.js",
   "./styles.css",
   "./polish.css",
   "./portal-card-hotfix.css",

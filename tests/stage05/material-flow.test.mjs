@@ -166,6 +166,12 @@ test('workspace reconciliation keeps more than the old 20-item cutoff without si
  const w=createWorkspaceAdapter(st,{validator:validateMaterialPackage});
  assert.equal(w.list().length,40);w.migrate();assert.equal(JSON.parse(st.getItem(CURRENT_WORKSPACE_KEY)).length,40);
 });
+test('new static Material Flow module is a mandatory offline precache dependency',()=>{
+  const portal=fs.readFileSync(path.join(root,'src/app.js'),'utf8');
+  const builder=fs.readFileSync(path.join(root,'scripts/build.mjs'),'utf8');
+  assert.match(portal,/import\\s*\\{[^}]*createWorkspaceAdapter[^}]*\\}\\s*from\\s*["']\\.\\/material-flow\\/material-flow\\.js["']/);
+  assert.match(builder,/["']\\.\\/material-flow\\/material-flow\\.js["']/);
+});
 test('Studio-only editor selection contains no material text in navigation URL',()=>{
  const library=fs.readFileSync(path.join(root,'src/library/library.js'),'utf8');
  const workflow=fs.readFileSync(path.join(root,'src/workflow/workflow.js'),'utf8');
