@@ -488,11 +488,15 @@ check(!builtServiceWorker.includes('"./assets/presentation/'), "Velke PR video n
 check(!demoHtml.includes("Jeden materiál. Tři výukové nástroje"), "Prezentace stale obsahuje stary technicky petikrokovy koncept.");
 
 const workflowJs = await text("src/workflow/workflow.js");
+const materialRegistry = JSON.parse(await text("src/config/material-flow-registry.json"));
+check(materialRegistry.schema === "ghrab-material-flow-registry-v1", "Material Flow Hub nema platny registry kontrakt.");
 for (const target of ["differentiator", "generator", "ludus"]) {
-  check(workflowJs.includes(`id: "${target}"`), `Workflow nema definovanou kompatibilitu ${target}.`);
+  check(materialRegistry.targets?.some((entry) => entry.id === target && entry.bridgeVersion === 2 && entry.importSchemas.includes("ghrab-material-v1")), `Material Flow registry neobsahuje importni kontrakt ${target}.`);
 }
-check(workflowJs.includes("G.createHandoff(app.id, material)"), "Workflow nevytvari platformni handoff.");
-check(workflowJs.includes('target.searchParams.set("studioHandoff", "1")'), "Workflow neoznacuje otevreni cilove aplikace handoff parametrem.");
+check(workflowJs.includes('loadMaterialFlowController(G)') && workflowJs.includes('materialFlowController.transport.prepare('), "Workflow nepouziva centralni deklarativni material router.");
+check(workflowJs.includes('targetUrl.searchParams.set("studioHandoff", "1")'), "Workflow neoznacuje otevreni cilove aplikace handoff parametrem.");
+const flowLibraryJs = await text('src/library/library.js');
+check(flowLibraryJs.includes('materialFlowDetails(G, materialFlowController, material'), "Katalog nenabizi centralni Pouzit dal UX.");
 
 // Functional contract test for the shared handoff v2: create -> validate -> peek -> consume.
 const consumerForPlatform = JSON.parse(await text("ghrab-platform.consumer.json"));

@@ -1,0 +1,24 @@
+/* Stage 05: additive, scoped styles. No global button/footer changes. */
+.material-flow-detail { display: grid; gap: .8rem; margin-top: 1rem; padding: 1rem; border: 1px solid var(--line, #40516d); border-radius: .8rem; background: rgba(58, 98, 151, .09); }
+.material-flow-detail[hidden], .material-flow-pending[hidden] { display: none; }
+.material-flow-targets { display: grid; gap: .6rem; }
+.material-flow-target { padding: .75rem; border: 1px solid var(--line, #40516d); border-radius: .6rem; display: flex; gap: .6rem; align-items: center; justify-content: space-between; flex-wrap: wrap; }
+.material-flow-target > div { flex: 1 1 14rem; }
+.material-flow-target h4 { margin: 0 0 .25rem; font-size: 1rem; }
+.material-flow-target p { margin: 0; opacity: .82; line-height: 1.4; }
+.material-flow-target button:disabled { cursor: not-allowed; opacity: .65; }
+.material-flow-target.is-incompatible { opacity: .84; }
+.material-flow-pending { margin: .75rem 0; padding: .75rem; border: 1px solid var(--line, #40516d); border-radius: .6rem; }
+.material-flow-pending p { margin: .3rem 0 .65rem; }
+.material-flow-detail > p, .material-flow-detail > small { margin: 0; }
+.material-flow-info { font-size: .93rem; opacity: .87; }
+.material-flow-status { font-weight: 600; }
+@media (max-width: 560px) { .material-flow-target { align-items: stretch; } .material-flow-target button { width: 100%; } .material-flow-detail { padding: .7rem; } }
+
+/* Safe material detail preview: never render stored material as HTML. */
+.material-flow-preview { border: 1px solid var(--line, #40516d); border-radius: .6rem; padding: .7rem; min-width: 0; }
+.material-flow-preview summary { cursor: pointer; font-weight: 650; }
+.material-flow-preview-body { padding-top: .5rem; max-width: 100%; overflow-wrap: anywhere; }
+.material-flow-preview-body h5 { margin: .65rem 0 .3rem; font-size: .92rem; }
+.material-flow-preview-body ul { margin: .3rem 0 .7rem; padding-inline-start: 1.25rem; }
+.material-flow-source { font: .9rem/1.55 ui-monospace, SFMono-Regular, Consolas, monospace; white-space: pre-wrap; overflow-wrap: anywhere; max-height: 22rem; overflow: auto; padding: .65rem; border: 1px solid var(--line, #40516d); border-radius: .45rem; }

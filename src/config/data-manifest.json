@@ -115,6 +115,7 @@
       "category": "session-state",
       "patterns": [
         "ghrab.ai-studio.role-preview.v1",
+        "ghrab.ai-studio.material-flow.edit-selection.v1",
         "ghrab.platform.shared-device.v1",
         "ghrab.startup-intro.*"
       ],
