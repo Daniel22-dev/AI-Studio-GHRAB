@@ -411,7 +411,7 @@ check(libraryHtml.includes("Materiály dnes lokálně, později společně v př
 check(libraryHtml.includes('id="material-server-state"'), "Materialy nemaji pravdivy stav serveroveho sdileni.");
 check(libraryHtml.includes('id="server-shared-section"') && libraryHtml.includes("Ověřeno ve výuce") && libraryHtml.includes("Doporučeno komisí"), "Materialy nemaji pripraveny budouci komisni katalog a stavy kvality.");
 check(materialService.includes('config?.features?.schoolServerConnected === true') && materialService.includes('config?.features?.sharedMaterialLibrary === true'), "Material server adapter se muze aktivovat bez skutecneho serveroveho profilu.");
-check(materialService.includes("containsPersonalData === true"), "Serverove sdileni nema ochranu proti publikaci materialu s osobnimi udaji.");
+check(materialService.includes("inspectOutboundMaterial(material") && materialService.includes("validator: G.validateMaterialPackage"), "Serverove sdileni musi pouzivat uplny Material Flow PII a XSS preflight; pouhy boolean flag nestaci.");
 check(materialService.includes("publishToCommission") && materialService.includes("forkToWorkspace") && materialService.includes("recordQuality"), "Material server adapter nema pripraveny zakladni operace sdileni/verzovani/overeni.");
 const libraryJs = await text("src/library/library.js");
 const saveToStudio = await text("src/integration/save-to-studio.js");
@@ -457,6 +457,45 @@ try {
   }
   check(blocked, "GitHub profil neblokuje serverovou publikaci materialu.");
   check(materialFetchCalled === false, "GitHub profil se pokusil kontaktovat materialovy server.");
+  // Functional privacy regression: the future school-server adapter must
+  // reject unsafe material BEFORE any request, even if its schema passes.
+  // This test checks behaviour rather than hardcoding the obsolete
+  // provenance.containsPersonalData === true source expression.
+  const synthetic = {
+    schema: "ghrab-material-v1",
+    id: "synthetic-material",
+    title: "Synthetic English exercise",
+    provenance: { containsPersonalData: false },
+    content: { sourceText: "Public synthetic teaching text.", tasks: [] },
+  };
+  const schoolRepository = materialModule.createMaterialRepository({
+    VERSION: "0.21.255",
+    deploymentReady: Promise.resolve({
+      profile: "school-server",
+      studioBaseUrl: "https://example.school/ai-studio/",
+      apiBaseUrl: "https://example.school/api/v1/",
+      endpoints: { materials: "materials" },
+      features: { schoolServerConnected: true, sharedMaterialLibrary: true },
+    }),
+    validateMaterialPackage: () => ({ valid: true }),
+    t: (cs) => cs,
+  });
+  const violations = [
+    (m) => { delete m.provenance.containsPersonalData; },
+    (m) => { m.provenance.containsPersonalData = true; },
+    (m) => { m.content.meta = { class_list: [{ studentName: "Synthetic Student" }] }; },
+    (m) => { m.content.sourceText = "teacher@example.test"; },
+    (m) => { m.content.sourceText = "<img src=x onerror=alert(1)>"; },
+  ];
+  for (const violate of violations) {
+    const unsafe = JSON.parse(JSON.stringify(synthetic));
+    violate(unsafe);
+    let rejected = false;
+    try { await schoolRepository.publishToCommission(unsafe, "english"); }
+    catch (error) { rejected = error instanceof TypeError && /anonymizace/.test(error.message); }
+    check(rejected, "Material server prijal neanonymni obsah pred jakymkoli fetch.");
+  }
+  check(materialFetchCalled === false, "Kontrola anonymizace nesmi posilat studentska data do site.");
 } finally {
   globalThis.fetch = originalFetch;
 }
