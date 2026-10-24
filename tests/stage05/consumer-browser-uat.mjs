@@ -40,7 +40,7 @@ try{
   for(const [screen,viewport] of [['desktop',{width:1366,height:768}],['mobile',{width:390,height:844}]]){
    const contextOptions={viewport,isMobile:screen==='mobile',hasTouch:screen==='mobile',serviceWorkers:'block',locale:'cs-CZ'};
    const context=MANUAL_AUTHORIZED
-     ? await chromium.launchPersistentContext(manualProfile,{...contextOptions,channel:'chrome',headless:false,args:['--no-sandbox']})
+     ? await chromium.launchPersistentContext(manualProfile,{...contextOptions,channel:'chrome',headless:false,chromiumSandbox:true})
      : await browser.newContext(contextOptions);
    const page=await context.newPage();
    const m=materialFor(id,screen);
@@ -85,18 +85,24 @@ try{
      const two=structuredClone(m);two.content.tasks.forEach(t=>{t.options=['A','B'];});
      if(flow.resolveTargets(two,apps,registry,{validator,studioUrl:studio}).find(x=>x.id==='ludus')?.reason!=='needs-tasks')
        throw Error('LUDUS admitted incompatible two-option MC4 tasks');
-     const transport=flow.createHandoffTransport({bridge,validator,studioUrl:studio,apps,registry});
+     const transport=flow.createHandoffTransport({bridge,validator,studioUrl:studio,apps,registry,writeLegacy:false});
      let rejected=false;
      try{transport.prepare({targetId:id,material:m,ttlMs:1000,sourceAppVersion:version})}catch(e){rejected=String(e).includes('handoff-ttl')}
      if(!rejected)throw Error('Invalid TTL admitted');
      const packet=transport.prepare({targetId:id,material:m,ttlMs:600000,sourceAppVersion:version});
      if(!packet?.packet||packet.target?.id!==id)throw Error('No handoff');
+     const v2=JSON.parse(localStorage.getItem('ghrab.platform.handoff.v2')||'null');
+     if(v2?.schema!=='ghrab-studio-handoff-v2'||v2?.payload?.value?.id!==m.id)throw Error('Bridge v2 packet missing');
+     if(localStorage.getItem('ghrab.handoff.v1')!==null)throw Error('Legacy fallback unexpectedly created');
      rejected=false;
      try{transport.prepare({targetId:id,material:m,ttlMs:600000,sourceAppVersion:version})}catch(e){rejected=String(e).includes('handoff-already-pending')}
      if(!rejected)throw Error('Pending handoff overwritten');
      return packet.launchUrl.href;
     },{flowJS,validatorJS,apps,registry,m,id,studio:STUDIO,version:VERSION});
     assert.equal(prepared,app?.launchUrl,'Registered route must be used');
+    const v2ConsumedBefore=await page.evaluate(()=>{
+      try{return JSON.parse(localStorage.getItem('ghrab.pilot.events.v2')||'[]').filter(e=>e.type==='handoff-consumed'&&e.contractVersion===2&&e.sourceAppId==='ai-studio').length}catch{return 0}
+    });
     const url=new URL(prepared);url.searchParams.set('studioHandoff','1');
     const response=await page.goto(url.href,{waitUntil:'load',timeout:65000});
     assert.ok(response?.ok(),'Consumer HTTP response not OK');
@@ -138,6 +144,10 @@ try{
     }
     const keys=await page.evaluate(()=>[localStorage.getItem('ghrab.platform.handoff.v2'),localStorage.getItem('ghrab.handoff.v1')]);
     assert.deepEqual(keys,[null,null],'Handoff should be consumed once');
+    const v2ConsumedAfter=await page.evaluate(()=>{
+      try{return JSON.parse(localStorage.getItem('ghrab.pilot.events.v2')||'[]').filter(e=>e.type==='handoff-consumed'&&e.contractVersion===2&&e.sourceAppId==='ai-studio').length}catch{return 0}
+    });
+    assert.equal(v2ConsumedAfter,v2ConsumedBefore+1,'Consumer must actually consume Bridge v2, not legacy fallback');
     // Never archive screenshots of an authenticated teacher UI; JSON evidence is synthetic and metadata-only.
     const eventsBefore=await page.evaluate(()=>{try{return JSON.parse(localStorage.getItem('ghrab.pilot.events.v2')||'[]').filter(e=>e.type==='handoff-consumed').length}catch{return 0}});
     await page.reload({waitUntil:'load',timeout:65000});
@@ -148,7 +158,7 @@ try{
     entry.status='pass';
     console.log('PASS real consumer: '+id+' '+screen);
    }catch(e){
-    failed=true;entry.status='fail';entry.error=String(e?.stack||e);
+    failed=true;entry.status='fail';entry.error=String(e?.message||e).slice(0,500);
     console.error('FAIL real consumer: '+id+' '+screen+'\n'+entry.error);
     // Keep diagnostics limited to booleans/path: no teacher identity, tokens or content.
     try { entry.diagnostics=await page.evaluate(()=>({
@@ -157,10 +167,8 @@ try{
       platformBridgePresent:Boolean(window.GHRAB_PLATFORM?.bridge),
       pathname:location.pathname
     })); } catch {}
-    // The locked splash has no authenticated teacher material. Other app UI
-    // must never be screenshotted into a public CI artifact.
-    if(entry.blocker==='AUTHORIZATION_REQUIRED')
-      try{await page.screenshot({path:resolve(OUT,id+'-'+screen+'-access-required.png')})}catch{}
+    // Screenshots are never captured: even access gates may show school identity.
+    // Record only error classification and synthetic, non-personal metadata.
    }finally{results.push(entry);await context.close()}
   }
  }
