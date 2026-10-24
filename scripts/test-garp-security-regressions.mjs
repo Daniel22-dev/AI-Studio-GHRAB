@@ -357,7 +357,7 @@ async function caseSaveToStudioCollision() {
   globalThis.location.assign = () => { navigations += 1; };
   globalThis.GHRAB_PLATFORM = { bridge: { create: () => null, peek: () => ({ schema: 'ghrab-handoff-v2', id: 'synthetic-pending' }) } };
   const helper = await importFresh('src/integration/save-to-studio.js', 'save-to-studio-collision');
-  const material = { schema: 'ghrab-material-v1', id: 'synthetic-material', content: { sourceText: CANARY } };
+  const material = { schema: 'ghrab-material-v1', id: 'synthetic-material', content: { sourceText: CANARY }, provenance: { containsPersonalData: false } };
   const blocked = helper.saveMaterialToStudio({ material, studioUrl: 'https://audit.invalid/AI-Studio-GHRAB/', sourceAppId: 'synthetic-app', sourceAppVersion: '1.0.0', navigate: true });
   globalThis.GHRAB_PLATFORM = { bridge: { create: () => ({ schema: 'ghrab-handoff-v2', id: 'synthetic-new' }), peek: () => null } };
   const accepted = helper.saveMaterialToStudio({ material, studioUrl: 'https://audit.invalid/AI-Studio-GHRAB/', sourceAppId: 'synthetic-app', sourceAppVersion: '1.0.0', navigate: true });

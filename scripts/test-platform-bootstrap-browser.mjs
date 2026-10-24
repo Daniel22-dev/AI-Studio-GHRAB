@@ -46,8 +46,14 @@ try{
 }catch(error){document.body.dataset.testResult='fail';document.body.dataset.error=String(error?.stack||error)}
 <\/script></body></html>`;
 
+// Exercise both bootstrap orders deterministically: platform-ready before the
+// protected module is imported, and platform-ready after the guard starts.
+const earlyHarness=harness.replace('setTimeout(()=>{','{').replace('},250);','}');
+if(earlyHarness===harness || earlyHarness.includes('setTimeout(()=>{'))throw new Error('Unable to construct early platform harness');
+
 const routes = new Map([
   ['/harness.html', ['text/html; charset=utf-8', harness]],
+  ['/harness-early.html', ['text/html; charset=utf-8', earlyHarness]],
   ['/AI-Studio-GHRAB/access/app-guard.js', ['text/javascript; charset=utf-8', appGuard]],
   ['/AI-Studio-GHRAB/access/access-control.js', ['text/javascript; charset=utf-8', accessStub]],
   ['/AI-Studio-GHRAB/access/platform-runtime.js', ['text/javascript; charset=utf-8', platformRuntimeStub]],
@@ -62,20 +68,23 @@ const port=server.address().port;
 let browser;
 try{
   browser=await chromium.launch({headless:true,args:['--no-sandbox','--disable-dev-shm-usage','--disable-gpu']});
-  const page=await browser.newPage();
-  const errors=[];
-  page.on('pageerror',(error)=>errors.push(String(error)));
-  page.on('console',(msg)=>{if(msg.type()==='error')errors.push(msg.text())});
-  await page.goto(`http://127.0.0.1:${port}/harness.html`,{waitUntil:'load'});
-  await page.waitForFunction(()=>document.body.dataset.testResult,{timeout:5000});
-  const result=await page.evaluate(()=>({result:document.body.dataset.testResult,error:document.body.dataset.error||'',elapsed:Number(document.body.dataset.elapsed||0),platformReadyAt:Number(document.body.dataset.platformReadyAt||0),guardResolvedAt:Number(document.body.dataset.guardResolvedAt||0),wait:document.documentElement.dataset.ghrabPlatformUnlockWait||''}));
-  if(result.result!=='pass') throw new Error(result.error||'browser harness failed');
-  if(result.wait!=='ready') throw new Error(`unexpected wait state ${result.wait}`);
-  if(!Number.isFinite(result.platformReadyAt)||result.platformReadyAt<=0) throw new Error('platform ready timestamp missing');
-  if(!Number.isFinite(result.guardResolvedAt)||result.guardResolvedAt<=0) throw new Error('guard resolved timestamp missing');
-  if(result.guardResolvedAt<result.platformReadyAt) throw new Error(`guard resolved before platform was ready (guard=${result.guardResolvedAt}, platform=${result.platformReadyAt})`);
-  if(errors.length) throw new Error(`browser errors: ${errors.join(' | ')}`);
-  console.log(`platform bootstrap browser regression: PASS (${result.elapsed} ms)`);
+  for(const scenario of [{path:'/harness.html',label:'delayed-ready'},{path:'/harness-early.html',label:'already-ready'}]) {
+    const page=await browser.newPage();
+    const errors=[];
+    page.on('pageerror',(error)=>errors.push(String(error)));
+    page.on('console',(msg)=>{if(msg.type()==='error')errors.push(msg.text())});
+    await page.goto(`http://127.0.0.1:${port}${scenario.path}`,{waitUntil:'load'});
+    await page.waitForFunction(()=>document.body.dataset.testResult,{timeout:5000});
+    const result=await page.evaluate(()=>({result:document.body.dataset.testResult,error:document.body.dataset.error||'',elapsed:Number(document.body.dataset.elapsed||0),platformReadyAt:Number(document.body.dataset.platformReadyAt||0),guardResolvedAt:Number(document.body.dataset.guardResolvedAt||0),wait:document.documentElement.dataset.ghrabPlatformUnlockWait||''}));
+    if(result.result!=='pass') throw new Error(result.error||'browser harness failed');
+    if(result.wait!=='ready') throw new Error(`unexpected wait state ${result.wait} (${scenario.label})`);
+    if(!Number.isFinite(result.platformReadyAt)||result.platformReadyAt<=0) throw new Error('platform ready timestamp missing');
+    if(!Number.isFinite(result.guardResolvedAt)||result.guardResolvedAt<=0) throw new Error('guard resolved timestamp missing');
+    if(result.guardResolvedAt<result.platformReadyAt) throw new Error(`guard resolved before platform was ready (guard=${result.guardResolvedAt}, platform=${result.platformReadyAt})`);
+    if(errors.length) throw new Error(`browser errors: ${errors.join(' | ')}`);
+    console.log(`platform bootstrap browser regression: PASS (${scenario.label}, ${result.elapsed} ms)`);
+    await page.close();
+  }
 } finally {
   await browser?.close().catch(()=>{});
   await new Promise((resolve)=>server.close(resolve));

@@ -68,7 +68,10 @@
       "type": "object"
     },
     "publishedAt": {
-      "type": "string",
+      "type": [
+        "string",
+        "null"
+      ],
       "format": "date-time"
     },
     "manualUrl": {
@@ -77,46 +80,192 @@
       "pattern": "^https://"
     },
     "aiCore": {
+      "oneOf": [
+        {
+          "type": "object",
+          "required": [
+            "schema",
+            "coreVersion",
+            "contractVersion",
+            "serverReady",
+            "conformancePassed",
+            "operationsManifestUrl"
+          ],
+          "properties": {
+            "schema": {
+              "const": "ghrab-ai-app-integration-v1"
+            },
+            "coreVersion": {
+              "type": "string",
+              "pattern": "^\\d+\\.\\d+\\.\\d+(?:[-+][0-9A-Za-z.-]+)?$"
+            },
+            "contractVersion": {
+              "type": [
+                "string",
+                "integer"
+              ]
+            },
+            "serverReady": {
+              "type": "boolean"
+            },
+            "conformancePassed": {
+              "type": "boolean"
+            },
+            "operationsManifestUrl": {
+              "type": "string",
+              "format": "uri",
+              "pattern": "^https://"
+            },
+            "runtimeSchema": {
+              "const": "ghrab-runtime-config-v1"
+            },
+            "certifiedAt": {
+              "type": "string",
+              "format": "date-time"
+            },
+            "status": {
+              "enum": [
+                "integrated-p1"
+              ]
+            },
+            "gatewayContract": {
+              "type": "string",
+              "minLength": 1,
+              "maxLength": 120
+            },
+            "certificationStatus": {
+              "type": "string",
+              "minLength": 1,
+              "maxLength": 120
+            },
+            "certificationEvidence": {
+              "type": "string",
+              "minLength": 1,
+              "maxLength": 1024
+            },
+            "certifiedOperations": {
+              "type": "integer",
+              "minimum": 0,
+              "maximum": 10000
+            }
+          },
+          "additionalProperties": false
+        },
+        {
+          "type": "object",
+          "required": [
+            "schema",
+            "status",
+            "reason"
+          ],
+          "properties": {
+            "schema": {
+              "const": "ghrab-ai-app-integration-v1"
+            },
+            "status": {
+              "const": "not-applicable"
+            },
+            "reason": {
+              "type": "string",
+              "minLength": 1,
+              "maxLength": 2000
+            }
+          },
+          "additionalProperties": false
+        }
+      ]
+    },
+    "materialFlow": {
       "type": "object",
       "required": [
-        "schema",
-        "coreVersion",
-        "contractVersion",
-        "serverReady",
-        "conformancePassed",
-        "operationsManifestUrl"
+        "bridgeVersion",
+        "importSchemas",
+        "contentTypes",
+        "verification"
       ],
       "properties": {
-        "schema": {
-          "const": "ghrab-ai-app-integration-v1"
+        "bridgeVersion": {
+          "const": 2
         },
-        "coreVersion": {
-          "type": "string",
-          "pattern": "^\\d+\\.\\d+\\.\\d+(?:[-+][0-9A-Za-z.-]+)?$"
+        "importSchemas": {
+          "type": "array",
+          "minItems": 1,
+          "uniqueItems": true,
+          "items": {
+            "const": "ghrab-material-v1"
+          }
         },
-        "contractVersion": {
-          "type": [
-            "string",
-            "integer"
+        "exportSchemas": {
+          "type": "array",
+          "uniqueItems": true,
+          "items": {
+            "type": "string"
+          }
+        },
+        "contentTypes": {
+          "type": "array",
+          "uniqueItems": true,
+          "items": {
+            "enum": [
+              "source-text",
+              "structured-tasks"
+            ]
+          }
+        },
+        "verification": {
+          "enum": [
+            "disabled",
+            "source-reviewed",
+            "browser-verified"
           ]
         },
-        "serverReady": {
-          "type": "boolean"
+        "maxBytes": {
+          "type": "integer",
+          "minimum": 1024,
+          "maximum": 500000
         },
-        "conformancePassed": {
-          "type": "boolean"
+        "requirements": {
+          "type": "object",
+          "properties": {
+            "minObjectives": {
+              "type": "integer",
+              "minimum": 0
+            },
+            "minSourceChars": {
+              "type": "integer",
+              "minimum": 0
+            },
+            "minTasks": {
+              "type": "integer",
+              "minimum": 0
+            },
+            "taskTypes": {
+              "type": "array",
+              "items": {
+                "enum": [
+                  "select",
+                  "truefalse",
+                  "short",
+                  "open",
+                  "order"
+                ]
+              }
+            },
+            "oneOf": {
+              "type": "array",
+              "items": {
+                "enum": [
+                  "source-text",
+                  "structured-tasks"
+                ]
+              }
+            }
+          },
+          "additionalProperties": false
         },
-        "operationsManifestUrl": {
+        "evidence": {
           "type": "string",
-          "format": "uri",
-          "pattern": "^https://"
-        },
-        "runtimeSchema": {
-          "const": "ghrab-runtime-config-v1"
-        },
-        "certifiedAt": {
-          "type": "string",
-          "format": "date-time"
+          "maxLength": 300
         }
       },
       "additionalProperties": false
