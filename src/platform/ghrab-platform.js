@@ -1,7 +1,7 @@
 (function (global) {
   'use strict';
 
-  const PLATFORM_VERSION = '1.1.2';
+  const PLATFORM_VERSION = '1.1.3';
   const CONTRACT = 'ghrab-platform-v1';
   const HANDOFF_SCHEMA = 'ghrab-studio-handoff-v2';
   const LEGACY_HANDOFF_SCHEMA = 'ghrab-handoff-v1';
@@ -588,7 +588,9 @@
     if (!packet.source || !packet.source.appId || !packet.source.appVersion) return { ok: false, code: 'source' };
     if (!packet.payload || packet.payload.type !== MATERIAL_SCHEMA || !validMaterial(packet.payload.value)) return { ok: false, code: 'material' };
     const range = String(packet.target.versionRange || '*');
-    if (appVersion && range !== '*' && !satisfies(appVersion, range)) return { ok: false, code: 'version-range' };
+    // Version range belongs to the RECEIVER. A sender must validate packet integrity
+    // without checking the intended receiver's version against its own appVersion.
+    if (appId === String(packet.target.appId || '') && appVersion && range !== '*' && !satisfies(appVersion, range)) return { ok: false, code: 'version-range' };
     if (!packet.legacy) {
       if (!packet.checksum || packet.checksum.algorithm !== 'FNV-1A-32') return { ok: false, code: 'checksum-format' };
       if (fnv1a(handoffPayloadForChecksum(packet)) !== packet.checksum.value) return { ok: false, code: 'checksum' };

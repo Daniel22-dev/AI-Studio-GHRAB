@@ -35,6 +35,7 @@ jobs:
       - name: Stage 05 Material Flow source-contract regressions (non-browser)
         run: |
           node --test tests/stage05/material-flow.test.mjs
+          node --test tests/stage05/bridge-cross-app.test.mjs
           node --test tests/stage05/uat-harness-contract.test.mjs
           node --check tests/stage05/consumer-browser-uat.mjs
           node --check scripts/test-platform-bootstrap-browser.mjs
