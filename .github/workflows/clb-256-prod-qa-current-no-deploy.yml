@@ -1,0 +1,65 @@
+name: AI Studio CLB 0.21.256 exact candidate production QA (NO DEPLOY)
+on:
+  push:
+    branches: [review/studio-clb-256-prod-qa-current-20261025]
+permissions:
+  contents: read
+jobs:
+  production-qa-only:
+    runs-on: ubuntu-latest
+    timeout-minutes: 24
+    steps:
+      - uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683 # v4.2.2
+        with:
+          fetch-depth: 5
+      - name: Pin exact Studio 0.21.256 candidate and reject other source changes
+        shell: bash
+        run: |
+          set -euo pipefail
+          candidate=1c89c73ebdb1ccbf7b1e9e52a8707e43043c3b23
+          git cat-file -e "$candidate^{commit}"
+          git merge-base --is-ancestor "$candidate" HEAD
+          actual="$(git diff --name-only "$candidate" HEAD)"
+          test "$actual" = ".github/workflows/clb-256-prod-qa-current-no-deploy.yml"
+          echo "Verified ONLY no-deploy test workflow differs from the exact candidate."
+      - uses: actions/setup-node@49933ea5288caeca8642d1e84afbd3f7d6820020 # v4.4.0
+        with:
+          node-version: 22
+          cache: npm
+      - run: npm ci --ignore-scripts --no-audit --no-fund --registry=https://registry.npmjs.org
+      - name: Validate canonical version 0.21.256 and bilingual logbook
+        run: |
+          node -e "const p=require('./package.json');if(p.version!=='0.21.256')process.exit(1)"
+          node scripts/verify-release-version-freshness.mjs --content-only
+      - name: Verify live sources, regenerate matching fallback and documentation
+        run: |
+          node scripts/sync-runtime-fallback.mjs --check --committed-presync-legacy
+          npm run sync
+          npm run format:generated-json
+          node scripts/verify-deployment-release-identities.mjs
+          node scripts/sync-platform-consumers.mjs --check
+          node scripts/qa-ecosystem.mjs --require-source-verification
+          npm run sync:fallback
+          npm run qa:fallback
+          npm run test:runtime-fallback
+          npm run verify:ai-core
+          npm run format
+          npm run verify:ai-core
+      - name: Install pinned Chromium used by production QA
+        shell: bash
+        run: |
+          npx playwright install --with-deps chromium
+          node -e "console.log('CHROMIUM_PATH=' + require('playwright').chromium.executablePath())" >> "$GITHUB_ENV"
+      - name: Run unmodified full production QA release gate (NO DEPLOY)
+        env:
+          NPM_CONFIG_REGISTRY: https://registry.npmjs.org
+          GHRAB_VISUAL_ATTEMPTS: 3
+          GHRAB_VISUAL_SCREENSHOT_ATTEMPTS: 3
+        run: npm run qa:release
+      - name: Independently verify CLB CSP, source readability and offline-export guard
+        run: node --test scripts/test-clb-topic-manager-prod-qa.mjs
+      - name: Explicit no deployment permitted
+        shell: bash
+        run: |
+          test "${GITHUB_REF_NAME}" = "review/studio-clb-256-prod-qa-current-20261025"
+          echo "QA complete. No deployment, no promotion, no credentials."
