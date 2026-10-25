@@ -51,3 +51,15 @@ export function validateWavePlatformPins(wave) {
   if (!result.has(ONLY_EXCEPTION.id)) fail('EXCEPTION_MISSING');
   return result;
 }
+
+/**
+ * Transitional PRE-SYNC read-only validation of the last committed 1.1.2
+ * snapshot. The caller MUST require --check and the explicit pre-sync flag;
+ * refresh and post-sync checks always use validateWavePlatformPins instead.
+ */
+export function isPinnedHistoricalDifferentiatorSnapshot(app) {
+  return app?.id === ONLY_EXCEPTION.id && app.version === ONLY_EXCEPTION.version &&
+    app.platform?.platformVersion === BASELINE.platformVersion &&
+    app.platform?.requiredPlatformRange === BASELINE.requiredPlatformRange &&
+    app.compatibility?.platformRange === BASELINE.requiredPlatformRange;
+}
