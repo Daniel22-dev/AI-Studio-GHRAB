@@ -27,7 +27,7 @@ jobs:
           git cat-file -e "$GHRAB_STAGE05_UNDER_TEST^{commit}"
           git merge-base --is-ancestor "$GHRAB_STAGE05_UNDER_TEST" HEAD
           git diff --name-only "$GHRAB_STAGE05_UNDER_TEST" HEAD | sort > /tmp/stage05-files.txt
-          printf '%s\n' '.github/workflows/stage05-garp-regression-diagnostic.yml' 'scripts/stage05-garp-regression-diagnostic.mjs' | sort > /tmp/stage05-expected.txt
+          printf '%s\n' '.github/workflows/stage05-garp-regression-diagnostic.yml' 'scripts/stage05-garp-regression-diagnostic.mjs' 'scripts/test-release-promotion.mjs' | sort > /tmp/stage05-expected.txt
           cmp /tmp/stage05-files.txt /tmp/stage05-expected.txt
       - name: Setup locked Node.js 22
         uses: actions/setup-node@49933ea5288caeca8642d1e84afbd3f7d6820020
