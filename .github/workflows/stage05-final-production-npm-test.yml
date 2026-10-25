@@ -1,0 +1,51 @@
+name: Stage05 final 0.21.256 independent npm test
+on:
+  push:
+    branches: [review/stage05-final-production-npm-test-0-21-256]
+permissions:
+  contents: read
+jobs:
+  full-project-test:
+    runs-on: ubuntu-latest
+    timeout-minutes: 22
+    steps:
+      - uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683
+        with:
+          fetch-depth: 2
+      - name: Verify exact candidate source and no source changes
+        shell: bash
+        run: |
+          test "$(git rev-parse HEAD^)" = "1c89c73ebdb1ccbf7b1e9e52a8707e43043c3b23"
+          test "$(git diff --name-only HEAD^ HEAD)" = ".github/workflows/stage05-final-production-npm-test.yml"
+      - uses: actions/setup-node@49933ea5288caeca8642d1e84afbd3f7d6820020
+        with:
+          node-version: 22
+          cache: npm
+      - run: npm ci --ignore-scripts --no-audit --no-fund --registry=https://registry.npmjs.org
+      - name: Verify version consistency
+        run: node scripts/verify-release-version-freshness.mjs --content-only
+      - name: Mirror canonical live registry sync without releasing
+        shell: bash
+        run: |
+          npm run sync
+          npm run format:generated-json
+          npm run sync:doc-versions
+          node scripts/verify-deployment-release-identities.mjs
+          node scripts/qa-ecosystem.mjs --require-source-verification
+          npm run sync:fallback
+          npm run qa:fallback
+      - name: Build Studio before test
+        run: npm run build
+      - name: Install pinned Chromium and provide official binary path
+        shell: bash
+        run: |
+          npx playwright install --with-deps chromium
+          node -e "console.log('CHROMIUM_PATH=' + require('playwright').chromium.executablePath())" >> "$GITHUB_ENV"
+      - name: Full npm test, including previously failed production security gate
+        run: npm test
+      - name: Explicit CLB production CSP and frame guard checks
+        run: |
+          node --test scripts/test-clb-topic-manager-prod-qa.mjs
+          node scripts/test-production-dist-security.mjs
+      - name: Material Flow/Bridge v2 regression
+        run: npm run test:material-flow
