@@ -1,0 +1,63 @@
+name: Stage05 GARP27 isolated regression diagnosis (synthetic only)
+on:
+  push:
+    branches:
+      - review/stage05-garp-regression-diagnostic-20261025
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  diagnose:
+    runs-on: ubuntu-latest
+    timeout-minutes: 18
+    env:
+      CI: "true"
+      GHRAB_STAGE05_UNDER_TEST: "c53205773afeb79e3fa124c22f60815e082803d1"
+    steps:
+      - name: Check out pinned Stage05 candidate and test-only additions
+        uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683
+        with:
+          fetch-depth: 5
+      - name: Verify immutable candidate base and test-only changes
+        shell: bash
+        run: |
+          set -euo pipefail
+          git cat-file -e "$GHRAB_STAGE05_UNDER_TEST^{commit}"
+          git merge-base --is-ancestor "$GHRAB_STAGE05_UNDER_TEST" HEAD
+          git diff --name-only "$GHRAB_STAGE05_UNDER_TEST" HEAD | sort > /tmp/stage05-files.txt
+          printf '%s\n' '.github/workflows/stage05-garp-regression-diagnostic.yml' 'scripts/stage05-garp-regression-diagnostic.mjs' | sort > /tmp/stage05-expected.txt
+          cmp /tmp/stage05-files.txt /tmp/stage05-expected.txt
+      - name: Setup locked Node.js 22
+        uses: actions/setup-node@49933ea5288caeca8642d1e84afbd3f7d6820020
+        with:
+          node-version: 22
+          cache: npm
+      - run: npm ci --ignore-scripts --no-audit --no-fund --registry=https://registry.npmjs.org
+      - name: Reproduce production candidate live registry synchronisation
+        run: |
+          npm run qa:fallback
+          npm run sync
+          npm run format:generated-json
+          node scripts/verify-deployment-release-identities.mjs
+          node scripts/sync-platform-consumers.mjs --check
+          node scripts/qa-ecosystem.mjs --require-source-verification
+          npm run sync:fallback
+          npm run qa:fallback
+      - name: Diagnose each GARP27 application regression subcommand
+        id: diagnosis
+        continue-on-error: true
+        run: node scripts/stage05-garp-regression-diagnostic.mjs
+      - name: Upload sanitized subtest verdicts
+        if: always()
+        uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
+        with:
+          name: stage05-garp27-regression-diagnostic
+          path: qa-results/stage05/garp-regression-diagnostic.json
+          if-no-files-found: warn
+          retention-days: 7
+      - name: Assert full regression diagnosis green
+        if: always()
+        run: |
+          node -e "const f=require('./qa-results/stage05/garp-regression-diagnostic.json');if(f.results.length!==8||f.results.some(x=>!x.pass))process.exit(1)"
