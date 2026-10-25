@@ -1,0 +1,41 @@
+name: P5 GARP application regression diagnosis (temporary review)
+
+on:
+  pull_request:
+    branches: [candidate]
+    paths:
+      - ".github/workflows/p5-regression-diagnosis.yml"
+
+permissions:
+  contents: read
+
+jobs:
+  pinpoint:
+    runs-on: ubuntu-latest
+    timeout-minutes: 18
+    steps:
+      - uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262 # v4
+        with:
+          persist-credentials: false
+      - uses: actions/setup-node@49933ea5288caeca8642d1e84afbd3f7d6820020 # v4
+        with:
+          node-version: 22
+          cache: npm
+      - name: Install locked dependencies
+        run: npm ci --ignore-scripts --no-audit --no-fund
+      - name: 1 Ecosystem contracts
+        run: npm run qa:ecosystem
+      - name: 2 Exact candidate build and Platform conformance
+        run: npm run build
+      - name: 3 Audit regressions
+        run: npm run test:audit-regressions
+      - name: 4 Security regressions
+        run: npm run test:security-regressions
+      - name: 5 GARP security regressions
+        run: npm run test:garp-security
+      - name: 6 Release policy
+        run: npm run test:release-policy
+      - name: 7 Safe Promotion contracts
+        run: npm run test:release-promotion
+      - name: 8 Auto patch regression
+        run: npm run test:auto-patch-idempotence
