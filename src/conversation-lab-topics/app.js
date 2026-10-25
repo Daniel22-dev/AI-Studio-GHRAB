@@ -105,7 +105,11 @@
     const counts=inspectContent(record.content);
     const glossary=validGlossary(record.glossary);
     const language=record.content.en?'en':Object.keys(record.content)[0];
+    if(record.sourceMasterSha256!==undefined)
+      need(typeof record.sourceMasterSha256==='string'&&/^[a-f0-9]{64}$/.test(record.sourceMasterSha256),
+        'SOURCE_MASTER_SHA');
     return {id:record.id,fileName:record.fileName,content:record.content,
+      ...(record.sourceMasterSha256?{sourceMasterSha256:record.sourceMasterSha256}:{}),
       glossary,variantCount:counts.variantCount,questionCount:counts.questionCount,
       title:record.content[language].ui.title,
       importedAt:typeof record.importedAt==='string'?record.importedAt:new Date().toISOString(),
@@ -433,10 +437,17 @@
     for(const file of sources){
       try{
         need(file.size>0&&file.size<=MAX_SOURCE,'FILE_TOO_LARGE');
-        const raw=await file.text();need(raw.length<=MAX_SOURCE,'FILE_TOO_LARGE');
+        need(global.crypto?.subtle,'SHA256_UNAVAILABLE');
+        const sourceBytes=await file.arrayBuffer();
+        need(sourceBytes.byteLength===file.size&&sourceBytes.byteLength<=MAX_SOURCE,'FILE_BYTES');
+        const originalSha=Array.from(new Uint8Array(await global.crypto.subtle.digest(
+          'SHA-256',sourceBytes)),b=>b.toString(16).padStart(2,'0')).join('');
+        let raw;try{raw=new TextDecoder('utf-8',{fatal:true}).decode(sourceBytes);}
+        catch{fail('INVALID_UTF8_SOURCE');}
         const rec=parseCard(raw,file.name);
+        rec.sourceMasterSha256=originalSha;
         need(state.records.size<MAX_RECORDS||state.records.has(rec.id),'LIBRARY_FULL');
-        rec.fingerprint=shortHash(raw);
+        rec.fingerprint=originalSha;
         const old=state.records.get(rec.id);
         if(old?.fingerprint===rec.fingerprint){results.push(file.name+': beze změny');continue;}
         if(old)updated++;else added++;
