@@ -1,0 +1,96 @@
+name: Stage05 autonomous public-consumer browser E2E (synthetic only)
+
+on:
+  push:
+    branches:
+      - review/stage05-autonomous-browser-e2e-20261025
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+concurrency:
+  group: stage05-autonomous-e2e-${{ github.ref }}
+  cancel-in-progress: false
+
+jobs:
+  synthetic-real-consumers:
+    runs-on: ubuntu-latest
+    timeout-minutes: 25
+    env:
+      CI: "true"
+      GHRAB_STAGE05_UNDER_TEST: "c53205773afeb79e3fa124c22f60815e082803d1"
+    steps:
+      - name: Check out immutable Stage05 source snapshot
+        uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683
+        with:
+          fetch-depth: 2
+      - name: Assert test-only commit and pinned source
+        shell: bash
+        run: |
+          set -euo pipefail
+          test "$(git rev-parse HEAD^)" = "$GHRAB_STAGE05_UNDER_TEST"
+          changed="$(git diff --name-only HEAD^ HEAD)"
+          test "$changed" = ".github/workflows/stage05-autonomous-browser-e2e.yml"
+          echo "Verified test-only workflow commit on pinned Stage05 source."
+      - name: Prepare Node 22 and locked dependencies
+        uses: actions/setup-node@49933ea5288caeca8642d1e84afbd3f7d6820020
+        with:
+          node-version: 22
+          cache: npm
+      - run: npm ci --ignore-scripts --no-audit --no-fund --registry=https://registry.npmjs.org
+      - name: Execute canonical cross-app material-flow tests
+        run: npm run test:material-flow
+      - name: Check Studio UX regressions
+        run: npm run test:studio-ux
+      - name: Check Stage05 and GARP security regressions
+        run: |
+          npm run test:security-regressions
+          npm run test:garp-security
+      - name: Install Chromium-compatible actual Google Chrome
+        run: npx playwright install --with-deps chrome
+      - name: Run official real-published-consumer Chrome E2E, no access secrets
+        id: real_consumer
+        continue-on-error: true
+        run: |
+          mkdir -p qa-results/stage05/real-consumers
+          node tests/stage05/consumer-browser-uat.mjs
+      - name: Emit safe synthetic-only six-case verdict
+        if: always()
+        shell: bash
+        run: |
+          node --input-type=module <<'JS'
+          import fs from 'node:fs';
+          const path='qa-results/stage05/real-consumers/results.json';
+          const source=process.env.GHRAB_STAGE05_UNDER_TEST;
+          const audit={schema:'ghrab-stage05-autonomous-e2e-v1',pinnedCandidate:source,
+            executedIn:'ephemeral-github-actions-chrome',noSchoolCredentials:true,
+            genuineSchoolAuthorization:false,successfulImports:0,total:6,cases:[],
+            certifiedForProduction:false};
+          if(fs.existsSync(path)){
+            const data=JSON.parse(fs.readFileSync(path,'utf8'));
+            audit.cases=(data.results||[]).map(x=>({
+              target:x.target,viewport:x.viewport,status:x.status,
+              blocker: x.blocker || (/AUTHORIZATION_REQUIRED/.test(x.error||'')?'AUTHORIZATION_REQUIRED':null),
+              errorClass: String(x.error||'').split(':')[0].slice(0,90)
+            }));
+            audit.successfulImports=audit.cases.filter(x=>x.status==='pass').length;
+            audit.total=audit.cases.length;
+          }
+          audit.certifiedForProduction=false; // never impersonate school-authorized UAT
+          fs.mkdirSync('qa-results/stage05/real-consumers',{recursive:true});
+          fs.writeFileSync('qa-results/stage05/real-consumers/autonomous-verdict.json',JSON.stringify(audit,null,2)+'\n');
+          console.log(JSON.stringify(audit));
+          JS
+      - name: Upload anonymous synthetic-only evidence
+        if: always()
+        uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
+        with:
+          name: stage05-autonomous-public-consumers
+          path: qa-results/stage05/real-consumers/autonomous-verdict.json
+          if-no-files-found: error
+          retention-days: 7
+      - name: Fail if any genuine consumer import did not complete
+        if: always()
+        run: |
+          node -e "const f=require('./qa-results/stage05/real-consumers/autonomous-verdict.json');if(f.total!==6||f.successfulImports!==6)process.exit(1)"
