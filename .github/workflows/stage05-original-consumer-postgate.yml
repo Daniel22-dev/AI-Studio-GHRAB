@@ -1,0 +1,44 @@
+name: Stage05 original consumer post-gate contract (isolated, synthetic)
+
+on:
+  push:
+    branches:
+      - review/stage05-postgate-consumer-contract-20261025
+
+permissions:
+  contents: read
+
+jobs:
+  original-consumer-contract:
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    env:
+      CI: "true"
+      STAGE05_SOURCE_PIN: "aa242dccdb81f45740c22553664dbed054d6145c"
+    steps:
+      - name: Check out immutable Stage05 source plus test files only
+        uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683
+        with:
+          fetch-depth: 8
+      - name: Verify no app source changes
+        shell: bash
+        run: |
+          set -euo pipefail
+          git cat-file -e "$STAGE05_SOURCE_PIN^{commit}"
+          git merge-base --is-ancestor "$STAGE05_SOURCE_PIN" HEAD
+          git diff --name-only "$STAGE05_SOURCE_PIN" HEAD | sort > /tmp/stage05-actual.txt
+          printf '%s\n' \
+            .github/workflows/stage05-original-consumer-postgate.yml \
+            scripts/test-stage05-original-consumer-postgate.mjs | sort > /tmp/stage05-expected.txt
+          cmp /tmp/stage05-expected.txt /tmp/stage05-actual.txt
+      - uses: actions/setup-node@49933ea5288caeca8642d1e84afbd3f7d6820020
+        with:
+          node-version: 22
+      - name: Verify original immutable consumer handlers after a synthetic v2 handoff
+        run: node --test scripts/test-stage05-original-consumer-postgate.mjs
+      - name: Boundary statement
+        if: always()
+        run: |
+          echo "Offline post-gate VM tests do not use live school grants."
+          echo "Authenticated live-browser 6/6 UAT remains separately required."
+          echo "No authenticated production consumer import may be claimed from this job."
