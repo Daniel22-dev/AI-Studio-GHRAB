@@ -269,7 +269,7 @@ for (const entry of actualPolicy.applications) {
     wave,
     enabled: true,
   });
-  assert.equal(decision.status, "ELIGIBLE", `${entry.id}: reviewed baseline must allow a contract-identical next patch`);
+  assert.equal(decision.status, "ELIGIBLE", `${entry.id}: reviewed baseline must allow a contract-identical next patch [reason=${decision.reasonCode}]`);
 }
 
 const generatorRegistry = actualApps.find((app) => app.id === "generator");
