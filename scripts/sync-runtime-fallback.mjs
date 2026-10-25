@@ -2,6 +2,7 @@
 import { readFile, writeFile } from "node:fs/promises";
 import path from "node:path";
 import { fileURLToPath } from "node:url";
+import { pinnedPlatformForApp } from "./release-wave-platform-policy.mjs";
 
 const root = path.resolve(path.dirname(fileURLToPath(import.meta.url)), "..");
 const configDir = path.join(root, "src", "config");
@@ -57,9 +58,12 @@ for (const app of generated) {
   const source = reportById.get(app.id);
   if (waveApp?.version !== app.version)
     fail(`${app.id}: generated version ${app.version} does not match release-wave ${waveApp?.version || "?"}`);
-  if (app.platform?.platformVersion !== wave.platformVersion)
+  let pin;
+  try { pin = pinnedPlatformForApp(wave, waveApp); }
+  catch (error) { fail(`${app.id}: invalid approved release-wave pin: ${error.message}`); }
+  if (app.platform?.platformVersion !== pin.platformVersion)
     fail(`${app.id}: Platform version does not match release-wave`);
-  if (app.platform?.requiredPlatformRange !== wave.requiredPlatformRange)
+  if (app.platform?.requiredPlatformRange !== pin.requiredPlatformRange)
     fail(`${app.id}: required Platform range does not match release-wave`);
   if (source?.ok !== true || !["deployment", "repository"].includes(source?.verification))
     fail(`${app.id}: source is not deployment/repository verified`);
