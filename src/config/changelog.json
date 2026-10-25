@@ -1,7 +1,25 @@
 {
   "schema": "ai-studio-changelog-v1",
-  "current": "0.21.255",
+  "current": "0.21.256",
   "items": [
+    {
+      "version": "0.21.256",
+      "date": "2026-10-25",
+      "title": {
+        "cs": "Oprava bezpečného spuštění Správce témat Conversation Lab",
+        "en": "Conversation Lab Topic Manager secure production startup repair"
+      },
+      "changes": [
+        {
+          "cs": "Učitelský Správce témat nově používá restriktivní CSP a čitelný HTML/CSS zdroj. Produkční kontrola při vydání 0.21.255 oprávněně zabránila nasazení kvůli chybějící CSP a příliš dlouhým řádkům.",
+          "en": "The teacher Topic Manager now uses a restrictive CSP and QA-compliant HTML/CSS source. The 0.21.255 production gate correctly blocked deployment because the CSP was missing and source lines were too long."
+        },
+        {
+          "cs": "P5 před vydáním ověřuje stejné limity a bezpečnostní požadavky jako produkční test. Offline exporty nadále odstraňují CSP z hostované stránky, aby fungovaly v samostatném prohlížeči. Přístup CLB-01, podepsaná studentská 0.11.0 a školní pravidla zůstávají nezměněny.",
+          "en": "P5 now checks production CSP and source line limits before promotion; standalone offline exports strip the hosted-page CSP as before. Signed CLB 0.11.0, school access policies, and the CLB-01 gate remain unchanged."
+        }
+      ]
+    },
     {
       "version": "0.21.255",
       "date": "2026-10-23",
