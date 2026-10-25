@@ -30,6 +30,10 @@ jobs:
           npm run sync
           npm run format:generated-json
           npm run sync:doc-versions
+          node scripts/verify-deployment-release-identities.mjs
+          node scripts/qa-ecosystem.mjs --require-source-verification
+          npm run sync:fallback
+          npm run qa:fallback
       - name: Rebuild Studio artifacts
         run: npm run build
       - name: Install pinned Chromium for error-reporter browser checks
