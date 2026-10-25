@@ -77,9 +77,9 @@ jobs:
         run: node --test scripts/test-changelog-policy.mjs
       - name: Enforce release version freshness
         run: npm run verify:release-version
-      - name: Verify committed runtime fallback before live synchronisation
+      - name: Verify exact historical committed fallback before live synchronisation (read only)
         run: |
-          npm run qa:fallback
+          node scripts/sync-runtime-fallback.mjs --check --committed-presync-legacy
           npm run test:runtime-fallback
       - name: Synchronise application manifests
         run: npm run sync

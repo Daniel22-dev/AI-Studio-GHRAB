@@ -1,6 +1,6 @@
 import test from 'node:test';
 import assert from 'node:assert/strict';
-import { BASELINE, ONLY_EXCEPTION, validateWavePlatformPins } from './release-wave-platform-policy.mjs';
+import { BASELINE, ONLY_EXCEPTION, validateWavePlatformPins, isPinnedHistoricalDifferentiatorSnapshot } from './release-wave-platform-policy.mjs';
 const ids = ['generator','differentiator','essay-evaluator','correspondence','ludus',
  'activity-builder','sortio','lesson-hub','maturita-desk','conversation-lab'];
 const wave=()=>({schema:'ghrab-platform-release-wave-v1',...BASELINE,status:'candidate',
@@ -26,3 +26,10 @@ test('no snapshots accepted',()=>fail(w=>w.policy.allowSnapshotForDeploy=true,/B
 test('no source verification disabled',()=>fail(w=>w.policy.requireSourceVerificationForDeploy=false,/BASELINE_OR_SOURCE_POLICY/));
 test('no missing differentiator',()=>fail(w=>w.applications[1].id='another',/ENTRY_FIELDS_OR_DUPLICATE/));
 test('no missing application',()=>fail(w=>w.applications.pop(),/BASELINE_OR_SOURCE_POLICY/));
+
+const oldDiff=()=>({id:'differentiator',version:'1.3.51',platform:{platformVersion:'1.1.2',requiredPlatformRange:'>=1.1.2 <2.0.0'},compatibility:{platformRange:'>=1.1.2 <2.0.0'}});
+test('only exact historical Differentiator pre-sync read-only snapshot may be recognized',()=>assert.equal(isPinnedHistoricalDifferentiatorSnapshot(oldDiff()),true));
+test('historical marker rejects another consumer',()=>assert.equal(isPinnedHistoricalDifferentiatorSnapshot({...oldDiff(),id:'generator'}),false));
+test('historical marker rejects future app versions',()=>assert.equal(isPinnedHistoricalDifferentiatorSnapshot({...oldDiff(),version:'1.3.52'}),false));
+test('historical marker rejects weakened platform ranges',()=>assert.equal(isPinnedHistoricalDifferentiatorSnapshot({...oldDiff(),compatibility:{platformRange:'>=1.1.0 <3.0.0'}}),false));
+test('historical marker rejects current new platform to avoid masking later errors',()=>assert.equal(isPinnedHistoricalDifferentiatorSnapshot({...oldDiff(),platform:{platformVersion:'1.1.3',requiredPlatformRange:'>=1.1.3 <2.0.0'}}),false));
