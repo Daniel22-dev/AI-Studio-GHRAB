@@ -32,6 +32,11 @@ jobs:
           npm run sync:doc-versions
       - name: Rebuild Studio artifacts
         run: npm run build
+      - name: Install pinned Chromium for error-reporter browser checks
+        shell: bash
+        run: |
+          npx playwright install --with-deps chromium
+          node -e "console.log('CHROMIUM_PATH=' + require('playwright').chromium.executablePath())" >> "$GITHUB_ENV"
       - name: Reproduce the previously failing project-test gate
         run: npm test
       - name: Validate Stage05 Material Flow and Bridge v2 regressions
