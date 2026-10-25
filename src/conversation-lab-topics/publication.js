@@ -27,7 +27,7 @@
   return Array.from(new Uint8Array(raw),b=>b.toString(16).padStart(2,'0')).join('');
  };
  const fields=(object,names)=>safe(object)&&Object.keys(object).length===names.length&&names.every(k=>Object.hasOwn(object,k));
- const RECORD=['id','fileName','content','glossary'];
+ const RECORD=['id','fileName','content','glossary','sourceMasterSha256'];
  const ROW=['id','path','sha256','title','variantCount','questionCount'];
  const ROOT=['schema','state','canDeploy','topicCount','variantCount','questionCount','topics','files'];
  async function makeDraft(records,validateRecord,hash=digest){
@@ -39,8 +39,9 @@
    const id=rec.id;
    requireThat(typeof id==='string'&&/^[a-z0-9]+(?:-[a-z0-9]+)*$/.test(id)&&id.length<=100&&!ids.has(id),'TOPIC_ID');
    ids.add(id);
-   // No import timestamp, fingerprint, author identifiers, credentials or executable HTML.
-   const publicRecord={id,fileName:rec.fileName,content:rec.content,glossary:rec.glossary};
+   // No import timestamp, fingerprint, identities, credentials or executable HTML.
+   requireThat(typeof rec.sourceMasterSha256==='string'&&SHA.test(rec.sourceMasterSha256),'SOURCE_SHA_REQUIRED');
+   const publicRecord={id,fileName:rec.fileName,content:rec.content,glossary:rec.glossary,sourceMasterSha256:rec.sourceMasterSha256};
    const path=topicName(id),body=canonical(publicRecord)+'\n';
    totalSize+=body.length;requireThat(totalSize<=MAX_TOTAL,'TOTAL_SIZE');
    const sha=await hash(body);
@@ -74,6 +75,8 @@
    requireThat(fields(parsed,RECORD)&&parsed.id===row.id&&
     canonical(parsed)+'\n'===raw,'CANONICAL_CONTENT');
    const rec=validateRecord(parsed);
+   requireThat(typeof rec.sourceMasterSha256==='string'&&SHA.test(rec.sourceMasterSha256)&&
+    rec.sourceMasterSha256===parsed.sourceMasterSha256,'SOURCE_SHA_BINDING');
    requireThat(rec.title===row.title&&rec.variantCount===row.variantCount&&
     rec.questionCount===row.questionCount,'CONTENT_STATS');
    variants+=rec.variantCount;questions+=rec.questionCount;
