@@ -31,6 +31,17 @@ test('Studio gate uses native signed policy, teacher permit and top-level same o
  "window.top!==window.self",'https://daniel22-dev.github.io'])assert.ok(gate.includes(token),token);
  assert.ok(!gate.includes('localStorage.setItem'));
 });
+test('Czech authored filenames resolve to canonical signed public topic IDs',()=>{
+ const cases={
+  'Vánoce.html':'weihnachten',
+  'Umela-inteligence_konverzacni-karta.html':'artificial-intelligence',
+  'Prazdniny_konverzacni-karta.html':'summer-holidays',
+  'Tlak-na-vykon_konverzacni-karta.html':'the-pressure-to-succeed',
+  'Jidlo-piti-restaurace_konverzacni-karta.html':'jidlo-piti-restaurace',
+  'Rodina_konverzacni-karta.html':'rodina'};
+ for(const [name,expected] of Object.entries(cases))
+  assert.equal(core.canonicalTopicId(core.slugify(name)),expected);
+});
 test('standalone parser accepts real CEFR shape without executing source JS',()=>{
  const card=core.parseCard(synthetic(),'demo-topic.html');
  assert.equal(card.id,'demo-topic');assert.equal(card.variantCount,1);
