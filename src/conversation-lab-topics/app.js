@@ -27,6 +27,15 @@
     need(SLUG.test(value)&&value.length<=100,'TOPIC_ID_INVALID');
     return value;
   }
+  // Keep the original signed Cloudflare topic identity stable across Czech
+  // HTML filenames. A new SHA still requires its own owner/P5 release review.
+  const TOPIC_ALIASES=Object.freeze({
+    'van-oce':'weihnachten','vanoce':'weihnachten',
+    'umela-inteligence':'artificial-intelligence',
+    'tlak-na-vykon':'the-pressure-to-succeed',
+    'prazdniny':'summer-holidays'
+  });
+  function canonicalTopicId(id){return TOPIC_ALIASES[id]||id;}
   function jsonLiteral(source,name){
     need(typeof source==='string'&&source.length<=MAX_SOURCE,'HTML_SIZE');
     const re=new RegExp('\\bconst\\s+'+name+'\\s*=\\s*','g');
@@ -154,7 +163,7 @@
     }
     return (h1>>>0).toString(16).padStart(8,'0')+(h2>>>0).toString(16).padStart(8,'0');
   }
-  const core=Object.freeze({LANGS,CEFR,parseCard,slugify,inspectContent,validateRecord,
+  const core=Object.freeze({LANGS,CEFR,parseCard,slugify,canonicalTopicId,inspectContent,validateRecord,
     findLesson,canUse,labelsFor,restoreBackup,safeSeedText,shortHash});
   if(typeof module==='object'&&module.exports)module.exports=core;
   if(typeof document==='undefined')return;
@@ -445,6 +454,7 @@
         let raw;try{raw=new TextDecoder('utf-8',{fatal:true}).decode(sourceBytes);}
         catch{fail('INVALID_UTF8_SOURCE');}
         const rec=parseCard(raw,file.name);
+        rec.id=canonicalTopicId(rec.id);
         rec.sourceMasterSha256=originalSha;
         need(state.records.size<MAX_RECORDS||state.records.has(rec.id),'LIBRARY_FULL');
         rec.fingerprint=originalSha;
