@@ -12,6 +12,7 @@ import {
   validatePromotionPolicy,
   normalizeStudioBridge,
 } from "./release-promotion.mjs";
+import { validateWavePlatformPins } from "./release-wave-platform-policy.mjs";
 
 const root = path.resolve(path.dirname(fileURLToPath(import.meta.url)), "..");
 const actualPolicy = JSON.parse(readFileSync(path.join(root, "src", "config", "release-promotion-policy.json"), "utf8"));
@@ -233,6 +234,13 @@ for (const entry of actualPolicy.applications) {
   assert.ok(sourceConfig, `${entry.id}: source registry entry missing`);
   assert.ok(acceptedVersion, `${entry.id}: accepted release-wave baseline missing`);
   const current = structuredClone(registryApp);
+  // The committed fallback may still be on 1.1.2 before live sync; test the
+  // exact source-verified target wave for the sole explicit Diff exception.
+  if (entry.id === "differentiator") {
+    const pin = validateWavePlatformPins(actualWave).get(entry.id);
+    current.platform = {...current.platform, ...pin};
+    current.compatibility = {...current.compatibility, platformRange: pin.requiredPlatformRange};
+  }
   current.version = acceptedVersion;
   current.platform = { ...current.platform, cacheName: `ghrab-${entry.id}-v${acceptedVersion}` };
   const currentVsMinimum = compareVersions(current.version, entry.minimumVersion);
@@ -266,10 +274,45 @@ for (const entry of actualPolicy.applications) {
     source: sourceConfig,
     sourceReport: report,
     policyEntry: entry,
-    wave,
+    wave: entry.id === "differentiator" ? actualWave : wave,
     enabled: true,
   });
   assert.equal(decision.status, "ELIGIBLE", `${entry.id}: reviewed baseline must allow a contract-identical next patch`);
+}
+
+// The approved Differentiator 1.1.3 wave cannot be diluted by a forged input.
+{
+  const diff = actualApps.find(app => app.id === "differentiator");
+  const source = actualSources.find(app => app.id === "differentiator");
+  const policy = actualEntries.get("differentiator");
+  assert.ok(diff && source && policy);
+  const candidate = structuredClone(diff);
+  const pin = validateWavePlatformPins(actualWave).get("differentiator");
+  candidate.platform = {...candidate.platform, ...pin};
+  candidate.compatibility = {...candidate.compatibility, platformRange: pin.requiredPlatformRange};
+  candidate.version = "1.3.52";
+  candidate.platform.cacheName = "ghrab-differentiator-v1.3.52";
+  const report = {
+    id: "differentiator", ok: true, verification: "deployment",
+    repository: source.repository, version: candidate.version,
+    sourceVersion: candidate.version, operationsWarning: null,
+    releaseIdentity: verifiedV2IdentityFixture("differentiator", candidate.version),
+  };
+  const base = {
+    app: candidate, waveApp: {id:"differentiator",version:"1.3.51"},
+    source, sourceReport: report, policyEntry: policy, wave: actualWave, enabled: true,
+  };
+  assert.equal(evaluateAutoPromotion(base).status, "ELIGIBLE");
+  const changedPlatform = structuredClone(candidate);
+  changedPlatform.platform.platformVersion = "1.1.4";
+  assert.equal(evaluateAutoPromotion({...base,app:changedPlatform}).reasonCode,"PLATFORM_VERSION");
+  const changedRange = structuredClone(candidate);
+  changedRange.compatibility.platformRange = ">=1.1.2 <2.0.0";
+  assert.equal(evaluateAutoPromotion({...base,app:changedRange}).reasonCode,"COMPATIBILITY_RANGE");
+  const changedWave = structuredClone(actualWave);
+  changedWave.applications.find(row=>row.id==="differentiator").platformVersion = "1.1.4";
+  assert.equal(evaluateAutoPromotion({...base,wave:changedWave}).reasonCode,"PLATFORM_WAVE_PIN");
+  assert.equal(evaluateAutoPromotion({...base,waveApp:{id:"differentiator",version:"1.3.50"}}).reasonCode,"PLATFORM_WAVE_PIN");
 }
 
 const generatorRegistry = actualApps.find((app) => app.id === "generator");

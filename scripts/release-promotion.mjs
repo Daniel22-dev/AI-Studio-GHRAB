@@ -1,3 +1,4 @@
+import { BASELINE, validateWavePlatformPins } from "./release-wave-platform-policy.mjs";
 const STRICT_SEMVER = /^(\d+)\.(\d+)\.(\d+)$/;
 const SHA40 = /^[0-9a-f]{40}$/i;
 const SHA256 = /^[0-9a-f]{64}$/i;
@@ -251,9 +252,31 @@ export function evaluateAutoPromotion({
 
   const platform = app?.platform || {};
   if (platform.contract !== "ghrab-platform-v1") return blocked("PLATFORM_CONTRACT", "Candidate ma nepodporovany platformni kontrakt.");
-  if (platform.platformVersion !== wave?.platformVersion) return blocked("PLATFORM_VERSION", "Candidate meni zamcenou verzi GHRAB Platform.");
-  if (platform.requiredPlatformRange !== wave?.requiredPlatformRange) return blocked("PLATFORM_RANGE", "Candidate meni requiredPlatformRange release wave.");
-  if (app?.compatibility?.platformRange !== wave?.requiredPlatformRange) return blocked("COMPATIBILITY_RANGE", "Candidate meni compatibility platform range.");
+  // Official production evaluations use the exact, source-verified 10-app wave.
+  // The two-field BASELINE form is retained exclusively for existing synthetic
+  // unit fixtures; it cannot introduce an alternate or relaxed platform pin.
+  let approvedPlatform = null;
+  if (wave?.schema === "ghrab-platform-release-wave-v1") {
+    try {
+      const pinned = validateWavePlatformPins(wave);
+      approvedPlatform = pinned.get(app?.id);
+    } catch {
+      return blocked("PLATFORM_WAVE_PIN", "Release wave nema platne presne schvalene platformni piny.");
+    }
+    const actualWaveEntry = wave.applications.find(row => row.id === app?.id);
+    if (!approvedPlatform || waveApp?.id !== app?.id ||
+        actualWaveEntry?.version !== waveApp?.version)
+      return blocked("PLATFORM_WAVE_PIN", "Candidate neodpovida zamcene identite release wave.");
+  } else if (wave && Object.keys(wave).length === 2 &&
+      wave.platformVersion === BASELINE.platformVersion &&
+      wave.requiredPlatformRange === BASELINE.requiredPlatformRange) {
+    approvedPlatform = BASELINE;
+  } else {
+    return blocked("PLATFORM_WAVE_PIN", "Nepodporovany profil release wave.");
+  }
+  if (platform.platformVersion !== approvedPlatform.platformVersion) return blocked("PLATFORM_VERSION", "Candidate meni zamcenou verzi GHRAB Platform.");
+  if (platform.requiredPlatformRange !== approvedPlatform.requiredPlatformRange) return blocked("PLATFORM_RANGE", "Candidate meni requiredPlatformRange release wave.");
+  if (app?.compatibility?.platformRange !== approvedPlatform.requiredPlatformRange) return blocked("COMPATIBILITY_RANGE", "Candidate meni compatibility platform range.");
   if (platform.storagePrefix !== `ghrab.${app.id}.`) return blocked("STORAGE_NAMESPACE", "Candidate meni nebo porusuje storage namespace.");
   if (platform.cacheName !== `ghrab-${app.id}-v${toVersion}`) return blocked("CACHE_IDENTITY", "Candidate nema cache navazanou na appId a verzi.");
   const expectedStudioBridge = policyEntry.expectedStudioBridge;
