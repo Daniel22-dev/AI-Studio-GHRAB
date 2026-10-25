@@ -22,6 +22,16 @@ async function main(){
   assertClbSignedTrainingPolicy(requiredTraining('conversation-lab'));
   if(hasAppAccess('conversation-lab')?.enabled!==true)
     fail('CLB01_ACCESS_REQUIRED');
+  // Load the content-only export library AFTER the verified CLB-01 teacher gate.
+  // The module neither uploads data nor grants public release authority.
+  await new Promise((resolve,reject)=>{
+    const publication=document.createElement('script');
+    publication.src=new URL('./publication.js',import.meta.url).href;
+    publication.async=false;
+    publication.onload=resolve;
+    publication.onerror=()=>reject(Error('CLB_PUBLICATION_MODULE_UNAVAILABLE'));
+    document.body.append(publication);
+  });
   const script=document.createElement('script');
   script.src=new URL('./app.js',import.meta.url).href;
   script.async=false;
