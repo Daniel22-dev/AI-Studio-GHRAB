@@ -11,7 +11,8 @@ function makeRecord(id='rodina',language='en'){
   content:{[language]:{ui:{title:'Family'},levels:{B2:{warm:'Discuss',stations:Array.from({length:8},station),
    vocab:Array.from({length:12},(_,i)=>['Word '+i,'Translation '+i]),
    toolkit:Array.from({length:4},(_,i)=>['Phrase '+i,'Translation '+i])}}}},glossary:{},
-  importedAt:'2026-10-25T00:00:00Z',fingerprint:'abcde1234567890'};
+  importedAt:'2026-10-25T00:00:00Z',fingerprint:'abcde1234567890',
+  sourceMasterSha256:'a'.repeat(64)};
  return record;
 }
 const validate=r=>{
@@ -30,7 +31,8 @@ test('draft has correct private-only schema and SHA-256 digest',async()=>{
 test('no importedAt, fingerprint, credential or executable source HTML exported',async()=>{
  const data=await draft();const raw=data.files['topics/rodina.json'];
  assert.doesNotMatch(raw,/importedAt|fingerprint|const CONTENT|<script|teacherAccess/);
- assert.equal(Object.keys(JSON.parse(raw)).length,4);
+ assert.equal(Object.keys(JSON.parse(raw)).length,5);
+ assert.equal(JSON.parse(raw).sourceMasterSha256,'a'.repeat(64));
 });
 test('deterministic sort and canonical content irrespective of import order',async()=>{
  const a=await draft([makeRecord('skola'),makeRecord('rodina')]);
@@ -78,6 +80,10 @@ test('invalid digest from caller rejects',async()=>{
 });
 test('missing WebCrypto rejects (no weak crypto fallback)',async()=>{
  await assert.rejects(pub.makeDraft([makeRecord()],validate,async()=>{throw Error('WEBCRYPTO_OFF')}),/WEBCRYPTO_OFF/);
+});
+test('missing authentic source SHA-256 refuses export',async()=>{
+ const x=makeRecord();delete x.sourceMasterSha256;
+ await assert.rejects(draft([x]),/SOURCE_SHA_REQUIRED/);
 });
 test('valid unicode is canonically preserved in json',async()=>{
  const x=makeRecord();x.content.en.levels.B2.warm='¿Qué? Vánoce 🦉';
