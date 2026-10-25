@@ -36,6 +36,7 @@ jobs:
         run: |
           node scripts/sync-platform-consumers.mjs --check
           node scripts/qa-ecosystem.mjs
+          node --input-type=module -e "import fs from 'node:fs';const c=JSON.parse(fs.readFileSync('ghrab-platform.consumer.json','utf8'));const m=JSON.parse(fs.readFileSync('src/manifest.webmanifest','utf8'));if(m.ghrab_platform.version!==c.platform.version||m.ghrab_platform.required_range!==c.platform.requiredRange)throw Error('PWA source platform metadata drift')"
       - name: Stage 05 Material Flow source-contract regressions (non-browser)
         run: |
           node --test tests/stage05/material-flow.test.mjs
