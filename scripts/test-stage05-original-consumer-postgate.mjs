@@ -161,7 +161,7 @@ async function runReceiver(id,{tamper=false,wrongTarget=false}={}){
  const v2=events.filter(e=>e.type==='handoff-consumed'&&e.contractVersion===2&&e.sourceAppId==='ai-studio');
  if(tamper||wrongTarget){
   assert.equal(v2.length,0,'Rejected packet must not produce a v2 consume event');
-  if(id==='ludus')assert.equal(w.context.__spec?.materialId,m.id,'Unexpected game import');
+  if(id==='ludus')assert.notEqual(w.context.__spec?.materialId,m.id,'Rejected packet must not import a game');
   else assert.equal(w.nodes.get(id==='generator'?'nazev':'mTopic')?.value||'','');
  } else {
   assert.equal(v2.length,1,'Bridge v2 must be consumed once by the actual receiver script');
