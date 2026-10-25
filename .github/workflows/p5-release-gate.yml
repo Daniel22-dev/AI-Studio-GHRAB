@@ -109,10 +109,15 @@ jobs:
         run: |
           npx playwright install --with-deps chromium
           node -e "console.log('CHROMIUM_PATH=' + require('playwright').chromium.executablePath())" >> "$GITHUB_ENV"
+      - name: Test GARP safe failure diagnostics (no secrets)
+        run: node --test scripts/garp27/failure-diagnostics.test.mjs
       - name: Run GARP 2.7 FOUNDATION gate
         env:
           GHRAB_SOURCE_COMMIT: ${{ github.event.pull_request.head.sha || github.sha }}
         run: npm run qa:garp27:foundation
+      - name: Summarize failed GARP checks without exposing raw logs
+        if: failure()
+        run: node scripts/garp27/failure-diagnostics.mjs
       - name: Run P5 R2 release gate
         run: npm run qa:p5:ci
       # Ensure the complete Studio UX / reviewed manual PDF contract is tested before Safe Promotion.
