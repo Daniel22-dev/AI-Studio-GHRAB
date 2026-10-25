@@ -1,0 +1,98 @@
+name: Stage05 deployed consumer gate and Bridge v2 (anonymous, read-only)
+
+on:
+  push:
+    branches:
+      - review/stage05-production-public-gate-e2e-20261025
+
+permissions:
+  contents: read
+
+jobs:
+  verify-public-consumers:
+    runs-on: ubuntu-latest
+    timeout-minutes: 20
+    env:
+      CI: "true"
+      GHRAB_STAGE05_SOURCE_PIN: "aa242dccdb81f45740c22553664dbed054d6145c"
+    steps:
+      - name: Checkout pinned source plus this workflow only
+        uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683
+        with:
+          fetch-depth: 2
+      - name: Refuse any changed production source
+        shell: bash
+        run: |
+          set -euo pipefail
+          test "$(git rev-parse HEAD^)" = "$GHRAB_STAGE05_SOURCE_PIN"
+          test "$(git diff --name-only HEAD^ HEAD)" = ".github/workflows/stage05-production-public-gate-e2e.yml"
+          echo "Source provenance verified; no production-code modification."
+      - name: Install Node 22 with locked dependencies
+        uses: actions/setup-node@49933ea5288caeca8642d1e84afbd3f7d6820020
+        with:
+          node-version: 22
+          cache: npm
+      - name: Install locked test dependencies
+        run: npm ci --ignore-scripts --no-audit --no-fund --registry=https://registry.npmjs.org
+      - name: Reconfirm source-only Material Flow and Bridge v2 behavior
+        run: npm run test:material-flow
+      - name: Install actual Chrome used for deployed UI tests
+        run: npx playwright install --with-deps chrome
+      - name: Attempt six authentic public HTTP imports without a school grant
+        id: public_browser
+        continue-on-error: true
+        run: node tests/stage05/consumer-browser-uat.mjs
+      - name: Produce strictly anonymized fail-closed consumer evidence
+        if: always()
+        shell: bash
+        run: |
+          mkdir -p qa-results/stage05/anonymous-review
+          node --input-type=module <<'NODE'
+          import fs from 'node:fs';
+          const source='qa-results/stage05/real-consumers/results.json';
+          const report={
+            schema:'ghrab-stage05-postdeploy-public-gate-e2e-v1',
+            releaseCommit:process.env.GHRAB_STAGE05_SOURCE_PIN,
+            testEnvironment:'temporary GitHub Actions Chrome without school access',
+            realSchoolAuthorization:false,
+            verifiedAuthenticatedImports:0,
+            productionApprovalImplied:false,
+            cases:[],
+            summary:'NOT_CERTIFIED'
+          };
+          if(fs.existsSync(source)){
+            const raw=JSON.parse(fs.readFileSync(source,'utf8'));
+            const seen=new Set();
+            report.cases=(raw.results||[]).map(row=>{
+              const target=String(row.target||'');
+              const viewport=String(row.viewport||'');
+              const key=target+'/'+viewport;
+              if(seen.has(key))report.duplicateCases=true;
+              seen.add(key);
+              return {
+                target,viewport,
+                gateDetected:row.blocker==='AUTHORIZATION_REQUIRED',
+                outcome:row.status==='pass'?'UNEXPECTED_SUCCESS_WITHOUT_GRANT':
+                  row.blocker==='AUTHORIZATION_REQUIRED'?'EXPECTED_AUTHORIZATION_GATE':'OTHER_ERROR'
+              };
+            });
+            report.testedSixUniqueCases = report.cases.length===6 &&
+              ['generator','differentiator','ludus'].every(id=>
+                ['desktop','mobile'].every(v=>seen.has(id+'/'+v)));
+          }
+          report.gateSecurityPass=report.testedSixUniqueCases===true &&
+            report.cases.every(x=>x.outcome==='EXPECTED_AUTHORIZATION_GATE') &&
+            report.duplicateCases!==true;
+          report.summary=report.gateSecurityPass?'PUBLIC_ACCESS_GATE_PASS__AUTHENTICATED_UAT_STILL_REQUIRED':'PUBLIC_ACCESS_GATE_FAIL_OR_INCOMPLETE';
+          fs.writeFileSync('qa-results/stage05/anonymous-review/verdict.json',JSON.stringify(report,null,2)+'\n');
+          console.log(JSON.stringify(report));
+          if(!report.gateSecurityPass)process.exitCode=1;
+          NODE
+      - name: Publish only anonymous status flags
+        if: always()
+        uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
+        with:
+          name: stage05-postdeploy-unauthenticated-gate-evidence
+          path: qa-results/stage05/anonymous-review/verdict.json
+          if-no-files-found: error
+          retention-days: 14
