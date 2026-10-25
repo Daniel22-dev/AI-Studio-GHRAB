@@ -8,6 +8,7 @@ import {
   promotionEntryById,
   validatePromotionPolicy,
 } from "./release-promotion.mjs";
+import { validatePlatformWave } from "./platform-wave-policy.mjs";
 
 const root = path.resolve(path.dirname(fileURLToPath(import.meta.url)), "..");
 const cfg = path.join(root, "src", "config");
@@ -205,12 +206,9 @@ for (const app of apps || []) {
       `${app.id}: wave version drift (${app.version} != ${expected.version}); auto-promotion BLOCKED [${decision.reasonCode}]: ${decision.reason}`,
     );
   }
-  if (platform.platformVersion !== wave.platformVersion)
-    fail(`${app.id}: wave platform drift (${platform.platformVersion || "?"} != ${wave.platformVersion}).`);
-  if (platform.requiredPlatformRange !== wave.requiredPlatformRange)
-    fail(`${app.id}: wave required range drift.`);
-  if (app.compatibility?.platformRange !== wave.requiredPlatformRange)
-    fail(`${app.id}: compatibility platform range drift.`);
+  for (const error of validatePlatformWave({
+    wave, waveApp: expected, app, sourceReport: reportBy.get(app.id), requireSourceVerification,
+  })) fail(`${app.id}: ${error}`);
 }
 
 if (!Array.isArray(localApps)) fail("apps.local.json musi byt pole.");
