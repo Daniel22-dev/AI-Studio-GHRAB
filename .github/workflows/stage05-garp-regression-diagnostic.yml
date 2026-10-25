@@ -37,7 +37,7 @@ jobs:
       - run: npm ci --ignore-scripts --no-audit --no-fund --registry=https://registry.npmjs.org
       - name: Reproduce production candidate live registry synchronisation
         run: |
-          npm run qa:fallback
+          node scripts/sync-runtime-fallback.mjs --check --committed-presync-legacy
           npm run sync
           npm run format:generated-json
           node scripts/verify-deployment-release-identities.mjs
