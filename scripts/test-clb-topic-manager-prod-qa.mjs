@@ -38,7 +38,7 @@ test('teacher HTML declares one strict same-origin CSP before any asset', () => 
   ]) assert.ok(csp.split(';').map(v => v.trim()).includes(fragment), 'Missing restrictive CSP: ' + fragment);
   assert.doesNotMatch(csp, /unsafe-inline|unsafe-eval|data:\s*\*|https?:|\*/i);
   assert.ok(head.indexOf('Content-Security-Policy') < head.indexOf('<link rel="stylesheet"'));
-  assert.match(html, /<script src="\.\/gate\.js" type="module"><\/script>/);
+  assert.match(html, /<script src="\.\/gate\.js" type="module">\s*<\/script>/);
 });
 
 test('portable offline exports explicitly remove the live page CSP before inserting self-contained styles and code', () => {
