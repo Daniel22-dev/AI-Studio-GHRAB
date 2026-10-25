@@ -15,12 +15,13 @@ jobs:
     steps:
       - uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683
         with:
-          fetch-depth: 2
+          fetch-depth: 5
       - name: Verify no production code changes in test branch
         shell: bash
         run: |
-          test "$(git rev-parse HEAD^)" = "f5640f460b9ec9be9e704c7a0840febaa9f11efd"
-          test "$(git diff --name-only HEAD^ HEAD)" = ".github/workflows/stage05-promotion-hotfix-validation.yml"
+          git cat-file -e "f5640f460b9ec9be9e704c7a0840febaa9f11efd^{commit}"
+          git merge-base --is-ancestor f5640f460b9ec9be9e704c7a0840febaa9f11efd HEAD
+          test "$(git diff --name-only f5640f460b9ec9be9e704c7a0840febaa9f11efd HEAD)" = ".github/workflows/stage05-promotion-hotfix-validation.yml"
       - uses: actions/setup-node@49933ea5288caeca8642d1e84afbd3f7d6820020
         with:
           node-version: 22
@@ -34,5 +35,7 @@ jobs:
         run: npm run test:material-flow
       - name: Reconfirm GARP security
         run: npm run test:garp-security
+      - name: Build artifacts for audit regression fixtures
+        run: npm run build
       - name: Reconfirm audit regressions
         run: npm run test:audit-regressions
