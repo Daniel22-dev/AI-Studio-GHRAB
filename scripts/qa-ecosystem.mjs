@@ -8,6 +8,7 @@ import {
   promotionEntryById,
   validatePromotionPolicy,
 } from "./release-promotion.mjs";
+import { validateWavePlatformPins } from "./release-wave-platform-policy.mjs";
 
 const root = path.resolve(path.dirname(fileURLToPath(import.meta.url)), "..");
 const cfg = path.join(root, "src", "config");
@@ -181,6 +182,9 @@ if (wave?.status !== "candidate") fail("Platform 1.1.2 wave musi zustat candidat
 if (wave?.platformVersion !== "1.1.2" || wave?.requiredPlatformRange !== ">=1.1.2 <2.0.0")
   fail("release-wave.json nezamyka Platform 1.1.2 a required range.");
 const waveBy = uniq(wave?.applications, "id", "release-wave");
+let wavePins;
+try { wavePins = validateWavePlatformPins(wave); }
+catch (error) { fail(`release-wave: ${error.message}`); wavePins = new Map(); }
 if (JSON.stringify([...waveBy.keys()].sort()) !== JSON.stringify(ids))
   fail("release-wave: sada appId neodpovida apps.generated.");
 
@@ -205,11 +209,16 @@ for (const app of apps || []) {
       `${app.id}: wave version drift (${app.version} != ${expected.version}); auto-promotion BLOCKED [${decision.reasonCode}]: ${decision.reason}`,
     );
   }
-  if (platform.platformVersion !== wave.platformVersion)
-    fail(`${app.id}: wave platform drift (${platform.platformVersion || "?"} != ${wave.platformVersion}).`);
-  if (platform.requiredPlatformRange !== wave.requiredPlatformRange)
+  const pinnedPlatform = wavePins.get(app.id);
+  if (!pinnedPlatform) {
+    fail(`${app.id}: missing exact approved platform release-wave pin.`);
+    continue;
+  }
+  if (platform.platformVersion !== pinnedPlatform.platformVersion)
+    fail(`${app.id}: wave platform drift (${platform.platformVersion || "?"} != ${pinnedPlatform.platformVersion}).`);
+  if (platform.requiredPlatformRange !== pinnedPlatform.requiredPlatformRange)
     fail(`${app.id}: wave required range drift.`);
-  if (app.compatibility?.platformRange !== wave.requiredPlatformRange)
+  if (app.compatibility?.platformRange !== pinnedPlatform.requiredPlatformRange)
     fail(`${app.id}: compatibility platform range drift.`);
 }
 
