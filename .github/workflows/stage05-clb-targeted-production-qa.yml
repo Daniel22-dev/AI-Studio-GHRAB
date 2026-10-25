@@ -1,0 +1,34 @@
+name: Stage05 CLB 0.21.256 targeted production QA
+on:
+  push:
+    branches: [review/stage05-clb-production-qa-0-21-256]
+permissions:
+  contents: read
+jobs:
+  targeted-source-qa:
+    runs-on: ubuntu-latest
+    timeout-minutes: 16
+    steps:
+      - uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683
+        with:
+          fetch-depth: 2
+      - name: Confirm immutable application source and only test workflow delta
+        shell: bash
+        run: |
+          test "$(git rev-parse HEAD^)" = "9333e81991b4b80a52af26d385a05e61958026b3"
+          test "$(git diff --name-only HEAD^ HEAD)" = ".github/workflows/stage05-clb-targeted-production-qa.yml"
+      - uses: actions/setup-node@49933ea5288caeca8642d1e84afbd3f7d6820020
+        with:
+          node-version: 22
+          cache: npm
+      - run: npm ci --ignore-scripts --no-audit --no-fund --registry=https://registry.npmjs.org
+      - name: Check patch release version and logbook
+        run: node scripts/verify-release-version-freshness.mjs --content-only
+      - name: Rebuild Studio artifacts
+        run: npm run build
+      - name: Reproduce the previously failing project-test gate
+        run: npm test
+      - name: Validate Stage05 Material Flow and Bridge v2 regressions
+        run: npm run test:material-flow
+      - name: Validate GARP security regressions
+        run: npm run test:garp-security
