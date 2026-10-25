@@ -7,12 +7,15 @@ import os from 'node:os';
 import path from 'node:path';
 import { spawnSync } from 'node:child_process';
 import { fileURLToPath } from 'node:url';
+import { BASELINE, ONLY_EXCEPTION } from './release-wave-platform-policy.mjs';
 
 const root = path.resolve(path.dirname(fileURLToPath(import.meta.url)), '..');
 const script = path.join(root, 'scripts/sync-runtime-fallback.mjs');
 const version = '1.5.30';
-const platformVersion = '1.1.2';
-const requiredPlatformRange = '>=1.1.2 <2.0.0';
+const platformVersion = BASELINE.platformVersion;
+const requiredPlatformRange = BASELINE.requiredPlatformRange;
+const IDS = ['generator','differentiator','essay-evaluator','correspondence','ludus',
+  'activity-builder','sortio','lesson-hub','maturita-desk','conversation-lab'];
 
 function fixture() {
   const work = fs.mkdtempSync(path.join(os.tmpdir(), 'ghrab-fallback-admission-'));
@@ -20,20 +23,32 @@ function fixture() {
   fs.mkdirSync(dir, { recursive: true });
   fs.mkdirSync(path.join(work, 'scripts'), { recursive: true });
   fs.copyFileSync(script, path.join(work, 'scripts/sync-runtime-fallback.mjs'));
-  const app = id => ({
-    id, version,
-    publishedAt: '2026-10-13T07:07:35.000Z',
-    platform: { platformVersion, requiredPlatformRange, cacheName: `ghrab-${id}-v${version}` },
-  });
-  const generated = [app('essay-evaluator'), app('lesson-hub')];
+  fs.copyFileSync(path.join(root,'scripts/release-wave-platform-policy.mjs'),
+    path.join(work,'scripts/release-wave-platform-policy.mjs'));
+  const app = id => {
+    const isDiff = id === ONLY_EXCEPTION.id;
+    const expectedVersion = isDiff ? ONLY_EXCEPTION.version : version;
+    const platform = isDiff ? ONLY_EXCEPTION.platformVersion : platformVersion;
+    const range = isDiff ? ONLY_EXCEPTION.requiredPlatformRange : requiredPlatformRange;
+    return {
+      id, version: expectedVersion,
+      publishedAt: '2026-10-13T07:07:35.000Z',
+      platform: { platformVersion: platform, requiredPlatformRange: range, cacheName: `ghrab-${id}-v${expectedVersion}` },
+      compatibility: { platformRange: range },
+    };
+  };
+  const generated = IDS.map(app);
   const fallback = structuredClone(generated);
   const wave = {
-    schema: 'ghrab-platform-release-wave-v1', platformVersion, requiredPlatformRange,
-    applications: generated.map(({ id, version }) => ({ id, version })),
+    schema: 'ghrab-platform-release-wave-v1', wave: BASELINE.wave,
+    status: 'candidate', platformVersion, requiredPlatformRange,
+    applications: generated.map(({ id, version }) =>
+      id === ONLY_EXCEPTION.id ? { ...ONLY_EXCEPTION } : { id, version }),
+    policy: { requireSourceVerificationForDeploy: true, allowSnapshotForDeploy: false },
   };
   const report = {
     schema: 'ai-studio-sync-report-v1', generated: true,
-    counts: { verified: 2, deployment: 2, repository: 0, snapshot: 0, total: 2 },
+    counts: { verified: 10, deployment: 10, repository: 0, snapshot: 0, total: 10 },
     sources: generated.map(({ id, version }) => ({ id, version, sourceVersion: version, ok: true, verification: 'deployment' })),
   };
   const write = (name, value) => fs.writeFileSync(path.join(dir, name), JSON.stringify(value, null, 2) + '\n');
@@ -58,6 +73,25 @@ test('committed equal registries pass before remote synchronisation', () => {
     const r = f.run('--check');
     assert.equal(r.status, 0, r.stdout + r.stderr);
     assert.deepEqual(f.read('apps.fallback.json'), f.generated);
+  } finally { f.dispose(); }
+});
+
+test('pre-sync legacy is read-only, applies only to exact committed Differentiator 1.1.2', () => {
+  const f = fixture();
+  try {
+    const old = f.generated.find(row => row.id === ONLY_EXCEPTION.id);
+    old.platform.platformVersion = BASELINE.platformVersion;
+    old.platform.requiredPlatformRange = BASELINE.requiredPlatformRange;
+    old.compatibility.platformRange = BASELINE.requiredPlatformRange;
+    const oldFallback = f.fallback.find(row => row.id === ONLY_EXCEPTION.id);
+    oldFallback.platform.platformVersion = BASELINE.platformVersion;
+    oldFallback.platform.requiredPlatformRange = BASELINE.requiredPlatformRange;
+    oldFallback.compatibility.platformRange = BASELINE.requiredPlatformRange;
+    f.persist();
+    assert.notEqual(f.run('--check').status, 0, 'stale 1.1.2 must fail strict current check');
+    assert.equal(f.run('--check','--committed-presync-legacy').status, 0, 'exact old snapshot may be read-only audited');
+    assert.notEqual(f.run('--committed-presync-legacy').status, 0, 'historical flag must never refresh');
+    assert.equal(f.read('apps.fallback.json').find(row=>row.id===ONLY_EXCEPTION.id).platform.platformVersion,'1.1.2');
   } finally { f.dispose(); }
 });
 
@@ -90,7 +124,7 @@ test('repository verified fallback is not sufficient to refresh stored snapshots
   const f = fixture();
   try {
     f.report.sources[1].verification = 'repository';
-    f.report.counts.deployment = 1;
+    f.report.counts.deployment = 9;
     f.report.counts.repository = 1;
     f.fallback[0].publishedAt = '2026-10-13T06:58:21.000Z';
     f.persist();
@@ -130,7 +164,7 @@ test('a source version mismatch cannot be laundered into fallback', () => {
 test('release-wave drift blocks refreshing fallback', () => {
   const f = fixture();
   try {
-    f.wave.applications[1].version = '1.5.31';
+    f.wave.applications[2].version = '1.5.31';
     f.persist();
     const r = f.run();
     assert.notEqual(r.status, 0);
@@ -142,7 +176,7 @@ test('CI workflows verify committed snapshots, then refresh only after live veri
   const paths = ['.github/workflows/p5-release-gate.yml', '.github/workflows/deploy.yml'];
   for (const relative of paths) {
     const source = fs.readFileSync(path.join(root, relative), 'utf8');
-    const before = source.indexOf('- name: Verify committed runtime fallback before live synchronisation');
+    const before = source.indexOf('- name: Verify exact historical committed fallback before live synchronisation (read only)');
     const sync = source.indexOf('- name: Synchronise application manifests');
     const verified = relative.includes('p5-')
       ? source.indexOf('- name: Verify committed release-wave against live sources')
