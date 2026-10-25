@@ -256,6 +256,8 @@
       if(!state.student){
         addButton(actions,'⇩ Pro studenty','Exportovat '+title+' pro studenty',
           ()=>void exportPortable([rec],'student',`${rec.id}_konverzace_student.html`).catch(e=>inform(e.message,true)));
+        addButton(actions,'⇧ Připravit vydání','Vytvořit kontrolní balíček pro '+title,
+          ()=>void exportPublicationDraft([rec]).catch(e=>inform(e.message,true)));
         const rm=addButton(actions,'✕','Odstranit '+title,async()=>{
           if(!global.confirm('Opravdu odstranit téma „'+title+'“ z této knihovny?'))return;
           state.records.delete(rec.id);await forget(rec.id);renderLibrary();
@@ -370,6 +372,7 @@
     // No imported HTML or its JS goes into the resulting document: only validated JSON.
     const css=await getSource('styles.css','clb-inline-styles');
     const js=await getSource('app.js','clb-app-inline');
+    const publication=mode==='teacher'?await getSource('publication.js','clb-publication-inline'):null;
     const root=document.documentElement.cloneNode(true);root.dataset.mode=mode;root.dataset.theme='dark';
     // The downloaded portable file uses inline CSS+JS; Studio's source CSP
     // must never be copied into it, or the offline browser would block both.
@@ -382,6 +385,12 @@
     const seed=root.querySelector('#clb-seed');need(seed,'PORTABLE_SEED');
     seed.textContent=safeSeedText({schema:SEED_SCHEMA,items});
     const embedded=root.querySelector('#clb-app-inline');if(embedded)embedded.remove();
+    if(publication){
+      root.querySelector('#clb-publication-inline')?.remove();
+      const pubScript=document.createElement('script');pubScript.id='clb-publication-inline';
+      pubScript.textContent=publication.replace(/<\/(script)/gi,'<\\/$1');
+      root.querySelector('body').append(pubScript);
+    }
     const code=document.createElement('script');code.id='clb-app-inline';
     // Inline JS never contains markup from a card. Its closing-tag sequences
     // are escaped when serialised into HTML, independent of the original JSON.
@@ -400,6 +409,21 @@
     saveBlob(out,'text/html;charset=utf-8',name);
     inform(mode==='student'?'Samostatná studentská lekce byla připravena ke stažení.':
       'Aktuální knihovna byla uložena jako samostatná HTML aplikace.');
+  }
+  async function exportPublicationDraft(items){
+    need(!state.student&&Array.isArray(items)&&items.length>0,'AUTHOR_EXPORT_ONLY');
+    const publisher=global.CLBPublication;
+    need(publisher&&typeof publisher.makeDraft==='function'&&
+      typeof publisher.inspectDraft==='function','PUBLICATION_MODULE_MISSING');
+    if(!global.confirm('Připravit '+items.length+
+      ' témat k veřejnému vydání? Balíček obsahuje texty otázek a slovníky. '+
+      'Nic se zatím neodešle na GitHub ani Cloudflare. Před zveřejněním je nutná revize a podpisy.'))return;
+    const draft=await publisher.makeDraft(items,core.validateRecord);
+    await publisher.inspectDraft(draft,core.validateRecord);
+    saveBlob(JSON.stringify(draft,null,2),'application/json;charset=utf-8',
+      'CLB_NAVRH_K_PUBLIKACI_'+new Date().toISOString().slice(0,10)+'.json');
+    inform('Připraven neveřejný návrh: '+draft.topicCount+' témat, '+
+      draft.variantCount+' variant. Na GitHub ani Cloudflare se nic neodeslalo.');
   }
   async function importFiles(files){
     if(state.student)return;
@@ -468,6 +492,7 @@
       $('backup-files').addEventListener('change',e=>{
         const file=e.target.files?.[0];if(file)void importBackup(file);e.target.value='';});
       $('export-backup').addEventListener('click',exportJson);
+      $('export-publication-draft')?.addEventListener('click',()=>void exportPublicationDraft(currentList()).catch(e=>inform(e.message,true)));
       $('export-all-html').addEventListener('click',()=>void exportPortable(currentList(),'teacher',
         'Conversation_Lab_Moje_Temata.html').catch(e=>inform(e.message,true)));
       const zone=$('upload-zone');
