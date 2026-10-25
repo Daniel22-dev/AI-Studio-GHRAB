@@ -24,15 +24,16 @@ jobs:
       - name: Check out immutable Stage05 source snapshot
         uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683
         with:
-          fetch-depth: 2
-      - name: Assert test-only commit and pinned source
+          fetch-depth: 5
+      - name: Assert test-only commits and pinned source
         shell: bash
         run: |
           set -euo pipefail
-          test "$(git rev-parse HEAD^)" = "$GHRAB_STAGE05_UNDER_TEST"
-          changed="$(git diff --name-only HEAD^ HEAD)"
+          git cat-file -e "$GHRAB_STAGE05_UNDER_TEST^{commit}"
+          git merge-base --is-ancestor "$GHRAB_STAGE05_UNDER_TEST" HEAD
+          changed="$(git diff --name-only "$GHRAB_STAGE05_UNDER_TEST" HEAD)"
           test "$changed" = ".github/workflows/stage05-autonomous-browser-e2e.yml"
-          echo "Verified test-only workflow commit on pinned Stage05 source."
+          echo "Verified only test-workflow changes against pinned Stage05 source."
       - name: Prepare Node 22 and locked dependencies
         uses: actions/setup-node@49933ea5288caeca8642d1e84afbd3f7d6820020
         with:
@@ -41,7 +42,11 @@ jobs:
       - run: npm ci --ignore-scripts --no-audit --no-fund --registry=https://registry.npmjs.org
       - name: Execute canonical cross-app material-flow tests
         run: npm run test:material-flow
+      - name: Build Studio assets for UX test
+        run: npm run build
       - name: Check Studio UX regressions
+        id: studio_ux
+        continue-on-error: true
         run: npm run test:studio-ux
       - name: Check Stage05 and GARP security regressions
         run: |
@@ -90,7 +95,9 @@ jobs:
           path: qa-results/stage05/real-consumers/autonomous-verdict.json
           if-no-files-found: error
           retention-days: 7
-      - name: Fail if any genuine consumer import did not complete
+      - name: Assert consumer and UX outcomes
         if: always()
+        env:
+          UX_OUTCOME: ${{ steps.studio_ux.outcome }}
         run: |
-          node -e "const f=require('./qa-results/stage05/real-consumers/autonomous-verdict.json');if(f.total!==6||f.successfulImports!==6)process.exit(1)"
+          node -e "const f=require('./qa-results/stage05/real-consumers/autonomous-verdict.json');if(f.total!==6||f.successfulImports!==6||process.env.UX_OUTCOME!=='success')process.exit(1)"
