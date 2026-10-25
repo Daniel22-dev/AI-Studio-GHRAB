@@ -46,3 +46,46 @@
 ## Publikační režim
 
 Nový správce lokálních témat **nenahrazuje** distribuční politiku Conversation Lab 0.12.0 ani není důvodem ke zfalšování vlastnického ES256/P5 potvrzení. Je to funkční soběstačná učitelská aplikace. Nasazení nové Studio stránky je třeba provést standardní cestou candidate → main. Bez spuštěného nasazení nelze tvrdit, že je tento nový webový odkaz živý.
+
+## Společná publikační cesta – R4c34 (25. 10. 2026)
+
+Tento správce **importuje karty HTML lokálně**, nově ale zároveň eviduje
+`sourceMasterSha256` vypočtené přímo z původních bajtů souboru
+(`File.arrayBuffer() → WebCrypto SHA-256`). Známé české názvy původních
+karet mají stabilní veřejné ID (např. Vánoce → `weihnachten`),
+ale tím se **žádná stará revize automaticky neschvaluje**.
+
+Učitel může u jedné karty použít **Připravit vydání**, nebo připravit celý
+výběr tlačítkem **Připravit veřejné vydání**. Po výslovném potvrzení se
+stáhne `CLB_NAVRH_K_PUBLIKACI_YYYY-MM-DD.json` se schématem
+`ghrab-clb-publication-draft-v1`. Balíček obsahuje pouze validovaná
+výuková data, slovníky a přesné SHA-256 zdrojového HTML i jednotlivých
+exportovaných témat; žádný importovaný skript, přístupový kód, identitu
+studenta ani uložený token. Nenahrává se automaticky na GitHub či
+Cloudflare a obsahuje `canDeploy:false`, `PRIVATE_AUTHOR_REVIEW_PENDING`.
+
+V *soukromém* repozitáři `conversation-lab-source` jej zpracuje
+`release/candidates/0.12.0/r4c34_studio_draft_ingest.py`: neznámé téma
+nebo odlišný SHA originálu zamítne, vyrobí pouze **bezobsahový inventář pro
+revizi**, ne veřejnou lekci. Následně je pro každou variantu potřeba
+přímá vazba na revidované zdrojové údaje, R4c33 migrace, finální
+owner ES256 v3, nezávislé P5 a podepsaný release. Stávající Cloudflare
+0.11.0 se nesmí přepsat nepodepsaným HTML exportem.
+
+**Zobrazení kolegům bez Studia:** současný Cloudflare
+`https://conversation-lab-ghrab.pages.dev/` již zpřístupňuje stabilní
+podepsanou 0.11.0 se třemi tématy a 72 variantami. Nová témata budou
+stejně veřejně dostupná až po podepsaném vydání 0.12.0. To ještě nebylo
+nasazeno; soukromá knihovna v IndexedDB nadále není automaticky sdílený
+školní server.
+
+### Kontroly
+- `node --test scripts/test-clb-topic-manager.mjs` – parser, školní brána,
+  kanonické ID a negativní scenáře
+- `node --test scripts/test-clb-publication.cjs` – 16/16 testů
+  návrhového exportu včetně SHA, úniku metadata, XSS a falešných schválení
+- `python -m unittest discover -s release/candidates/0.12.0/tests
+  -p test_r4c34_studio_draft_ingest.py` – 11/11 kontrol exportu na straně
+  privátního zdrojového repozitáře
+
+Tato sada **není** pozitivní Cloudflare HTTP / WebKit / QR akceptace.
