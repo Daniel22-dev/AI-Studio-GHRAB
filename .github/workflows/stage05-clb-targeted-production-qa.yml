@@ -11,12 +11,13 @@ jobs:
     steps:
       - uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683
         with:
-          fetch-depth: 2
+          fetch-depth: 5
       - name: Confirm immutable application source and only test workflow delta
         shell: bash
         run: |
-          test "$(git rev-parse HEAD^)" = "9333e81991b4b80a52af26d385a05e61958026b3"
-          test "$(git diff --name-only HEAD^ HEAD)" = ".github/workflows/stage05-clb-targeted-production-qa.yml"
+          git cat-file -e "9333e81991b4b80a52af26d385a05e61958026b3^{commit}"
+          git merge-base --is-ancestor 9333e81991b4b80a52af26d385a05e61958026b3 HEAD
+          test "$(git diff --name-only 9333e81991b4b80a52af26d385a05e61958026b3 HEAD)" = ".github/workflows/stage05-clb-targeted-production-qa.yml"
       - uses: actions/setup-node@49933ea5288caeca8642d1e84afbd3f7d6820020
         with:
           node-version: 22
@@ -24,6 +25,11 @@ jobs:
       - run: npm ci --ignore-scripts --no-audit --no-fund --registry=https://registry.npmjs.org
       - name: Check patch release version and logbook
         run: node scripts/verify-release-version-freshness.mjs --content-only
+      - name: Synchronize live app sources and derived documentation
+        run: |
+          npm run sync
+          npm run format:generated-json
+          npm run sync:doc-versions
       - name: Rebuild Studio artifacts
         run: npm run build
       - name: Reproduce the previously failing project-test gate
