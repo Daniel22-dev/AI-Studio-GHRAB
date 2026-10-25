@@ -1,0 +1,38 @@
+name: Stage05 exact mixed-platform promotion hotfix check
+
+on:
+  push:
+    branches:
+      - review/stage05-promotion-hotfix-validation-20261025
+
+permissions:
+  contents: read
+
+jobs:
+  source-verified-regressions:
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    steps:
+      - uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683
+        with:
+          fetch-depth: 2
+      - name: Verify no production code changes in test branch
+        shell: bash
+        run: |
+          test "$(git rev-parse HEAD^)" = "f5640f460b9ec9be9e704c7a0840febaa9f11efd"
+          test "$(git diff --name-only HEAD^ HEAD)" = ".github/workflows/stage05-promotion-hotfix-validation.yml"
+      - uses: actions/setup-node@49933ea5288caeca8642d1e84afbd3f7d6820020
+        with:
+          node-version: 22
+          cache: npm
+      - run: npm ci --ignore-scripts --no-audit --no-fund --registry=https://registry.npmjs.org
+      - name: Verify approved mixed-platform pins including negative cases
+        run: node --test scripts/test-release-wave-platform-policy.mjs
+      - name: Verify repaired Differentiator promotion regression
+        run: npm run test:release-promotion
+      - name: Reconfirm Stage05 Material Flow and Bridge v2
+        run: npm run test:material-flow
+      - name: Reconfirm GARP security
+        run: npm run test:garp-security
+      - name: Reconfirm audit regressions
+        run: npm run test:audit-regressions
