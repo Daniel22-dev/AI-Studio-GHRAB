@@ -17,7 +17,9 @@ jobs:
         run: |
           git cat-file -e "9333e81991b4b80a52af26d385a05e61958026b3^{commit}"
           git merge-base --is-ancestor 9333e81991b4b80a52af26d385a05e61958026b3 HEAD
-          test "$(git diff --name-only 9333e81991b4b80a52af26d385a05e61958026b3 HEAD)" = ".github/workflows/stage05-clb-targeted-production-qa.yml"
+          printf '%s\n' '.github/workflows/stage05-clb-targeted-production-qa.yml' 'src/conversation-lab-topics/index.html' | sort > /tmp/stage05-expected.txt
+          git diff --name-only 9333e81991b4b80a52af26d385a05e61958026b3 HEAD | sort > /tmp/stage05-actual.txt
+          cmp /tmp/stage05-expected.txt /tmp/stage05-actual.txt
       - uses: actions/setup-node@49933ea5288caeca8642d1e84afbd3f7d6820020
         with:
           node-version: 22
