@@ -32,6 +32,10 @@ jobs:
           node scripts/verify-release-version-freshness.mjs
       - name: Verify read-only policy and negative cases
         run: node --test scripts/ci-p3-topology.test.mjs
+      - name: Verify synchronized platform registry and strict release-wave ecosystem
+        run: |
+          node scripts/sync-platform-consumers.mjs --check
+          node scripts/qa-ecosystem.mjs
       - name: Stage 05 Material Flow source-contract regressions (non-browser)
         run: |
           node --test tests/stage05/material-flow.test.mjs
