@@ -1,7 +1,25 @@
 {
   "schema": "ai-studio-changelog-v1",
-  "current": "0.21.255",
+  "current": "0.21.256",
   "items": [
+    {
+      "version": "0.21.256",
+      "date": "2026-10-25",
+      "title": {
+        "cs": "Oprava vydání etapy 05 – Material Flow Hub a Conversation Lab",
+        "en": "Stage05 release correction for Material Flow Hub and Conversation Lab"
+      },
+      "changes": [
+        {
+          "cs": "Doplněna přísná CSP pro správce konverzačních témat a upraveno formátování HTML a CSS; opraveny tři konkrétní chyby, které blokovaly produkční kontrolu.",
+          "en": "Added a strict CSP for the conversation topic manager and normalized HTML/CSS formatting, addressing three specific production QA blockers."
+        },
+        {
+          "cs": "Zachována školní aktivace CLB-01, ochrana soukromých materiálů a protokol Bridge v2; veřejné publikování témat nadále vyžaduje samostatný schvalovací krok.",
+          "en": "Preserved CLB-01 signed access, private material protections and Bridge v2; public topic publication still requires separate approval."
+        }
+      ]
+    },
     {
       "version": "0.21.255",
       "date": "2026-10-23",
