@@ -27,6 +27,15 @@
     need(SLUG.test(value)&&value.length<=100,'TOPIC_ID_INVALID');
     return value;
   }
+  // Keep the original signed Cloudflare topic identity stable across Czech
+  // HTML filenames. A new SHA still requires its own owner/P5 release review.
+  const TOPIC_ALIASES=Object.freeze({
+    'van-oce':'weihnachten','vanoce':'weihnachten',
+    'umela-inteligence':'artificial-intelligence',
+    'tlak-na-vykon':'the-pressure-to-succeed',
+    'prazdniny':'summer-holidays'
+  });
+  function canonicalTopicId(id){return TOPIC_ALIASES[id]||id;}
   function jsonLiteral(source,name){
     need(typeof source==='string'&&source.length<=MAX_SOURCE,'HTML_SIZE');
     const re=new RegExp('\\bconst\\s+'+name+'\\s*=\\s*','g');
@@ -105,7 +114,11 @@
     const counts=inspectContent(record.content);
     const glossary=validGlossary(record.glossary);
     const language=record.content.en?'en':Object.keys(record.content)[0];
+    if(record.sourceMasterSha256!==undefined)
+      need(typeof record.sourceMasterSha256==='string'&&/^[a-f0-9]{64}$/.test(record.sourceMasterSha256),
+        'SOURCE_MASTER_SHA');
     return {id:record.id,fileName:record.fileName,content:record.content,
+      ...(record.sourceMasterSha256?{sourceMasterSha256:record.sourceMasterSha256}:{}),
       glossary,variantCount:counts.variantCount,questionCount:counts.questionCount,
       title:record.content[language].ui.title,
       importedAt:typeof record.importedAt==='string'?record.importedAt:new Date().toISOString(),
@@ -150,7 +163,7 @@
     }
     return (h1>>>0).toString(16).padStart(8,'0')+(h2>>>0).toString(16).padStart(8,'0');
   }
-  const core=Object.freeze({LANGS,CEFR,parseCard,slugify,inspectContent,validateRecord,
+  const core=Object.freeze({LANGS,CEFR,parseCard,slugify,canonicalTopicId,inspectContent,validateRecord,
     findLesson,canUse,labelsFor,restoreBackup,safeSeedText,shortHash});
   if(typeof module==='object'&&module.exports)module.exports=core;
   if(typeof document==='undefined')return;
@@ -256,6 +269,8 @@
       if(!state.student){
         addButton(actions,'⇩ Pro studenty','Exportovat '+title+' pro studenty',
           ()=>void exportPortable([rec],'student',`${rec.id}_konverzace_student.html`).catch(e=>inform(e.message,true)));
+        addButton(actions,'⇧ Připravit vydání','Vytvořit kontrolní balíček pro '+title,
+          ()=>void exportPublicationDraft([rec]).catch(e=>inform(e.message,true)));
         const rm=addButton(actions,'✕','Odstranit '+title,async()=>{
           if(!global.confirm('Opravdu odstranit téma „'+title+'“ z této knihovny?'))return;
           state.records.delete(rec.id);await forget(rec.id);renderLibrary();
@@ -370,6 +385,7 @@
     // No imported HTML or its JS goes into the resulting document: only validated JSON.
     const css=await getSource('styles.css','clb-inline-styles');
     const js=await getSource('app.js','clb-app-inline');
+    const publication=mode==='teacher'?await getSource('publication.js','clb-publication-inline'):null;
     const root=document.documentElement.cloneNode(true);root.dataset.mode=mode;root.dataset.theme='dark';
     // The downloaded portable file uses inline CSS+JS; Studio's source CSP
     // must never be copied into it, or the offline browser would block both.
@@ -382,6 +398,12 @@
     const seed=root.querySelector('#clb-seed');need(seed,'PORTABLE_SEED');
     seed.textContent=safeSeedText({schema:SEED_SCHEMA,items});
     const embedded=root.querySelector('#clb-app-inline');if(embedded)embedded.remove();
+    if(publication){
+      root.querySelector('#clb-publication-inline')?.remove();
+      const pubScript=document.createElement('script');pubScript.id='clb-publication-inline';
+      pubScript.textContent=publication.replace(/<\/(script)/gi,'<\\/$1');
+      root.querySelector('body').append(pubScript);
+    }
     const code=document.createElement('script');code.id='clb-app-inline';
     // Inline JS never contains markup from a card. Its closing-tag sequences
     // are escaped when serialised into HTML, independent of the original JSON.
@@ -401,6 +423,21 @@
     inform(mode==='student'?'Samostatná studentská lekce byla připravena ke stažení.':
       'Aktuální knihovna byla uložena jako samostatná HTML aplikace.');
   }
+  async function exportPublicationDraft(items){
+    need(!state.student&&Array.isArray(items)&&items.length>0,'AUTHOR_EXPORT_ONLY');
+    const publisher=global.CLBPublication;
+    need(publisher&&typeof publisher.makeDraft==='function'&&
+      typeof publisher.inspectDraft==='function','PUBLICATION_MODULE_MISSING');
+    if(!global.confirm('Připravit '+items.length+
+      ' témat k veřejnému vydání? Balíček obsahuje texty otázek a slovníky. '+
+      'Nic se zatím neodešle na GitHub ani Cloudflare. Před zveřejněním je nutná revize a podpisy.'))return;
+    const draft=await publisher.makeDraft(items,core.validateRecord);
+    await publisher.inspectDraft(draft,core.validateRecord);
+    saveBlob(JSON.stringify(draft,null,2),'application/json;charset=utf-8',
+      'CLB_NAVRH_K_PUBLIKACI_'+new Date().toISOString().slice(0,10)+'.json');
+    inform('Připraven neveřejný návrh: '+draft.topicCount+' témat, '+
+      draft.variantCount+' variant. Na GitHub ani Cloudflare se nic neodeslalo.');
+  }
   async function importFiles(files){
     if(state.student)return;
     const sources=Array.from(files||[]).filter(x=>x?.name&&/\.html?$/i.test(x.name));
@@ -409,10 +446,18 @@
     for(const file of sources){
       try{
         need(file.size>0&&file.size<=MAX_SOURCE,'FILE_TOO_LARGE');
-        const raw=await file.text();need(raw.length<=MAX_SOURCE,'FILE_TOO_LARGE');
+        need(global.crypto?.subtle,'SHA256_UNAVAILABLE');
+        const sourceBytes=await file.arrayBuffer();
+        need(sourceBytes.byteLength===file.size&&sourceBytes.byteLength<=MAX_SOURCE,'FILE_BYTES');
+        const originalSha=Array.from(new Uint8Array(await global.crypto.subtle.digest(
+          'SHA-256',sourceBytes)),b=>b.toString(16).padStart(2,'0')).join('');
+        let raw;try{raw=new TextDecoder('utf-8',{fatal:true}).decode(sourceBytes);}
+        catch{fail('INVALID_UTF8_SOURCE');}
         const rec=parseCard(raw,file.name);
+        rec.id=canonicalTopicId(rec.id);
+        rec.sourceMasterSha256=originalSha;
         need(state.records.size<MAX_RECORDS||state.records.has(rec.id),'LIBRARY_FULL');
-        rec.fingerprint=shortHash(raw);
+        rec.fingerprint=originalSha;
         const old=state.records.get(rec.id);
         if(old?.fingerprint===rec.fingerprint){results.push(file.name+': beze změny');continue;}
         if(old)updated++;else added++;
@@ -468,6 +513,7 @@
       $('backup-files').addEventListener('change',e=>{
         const file=e.target.files?.[0];if(file)void importBackup(file);e.target.value='';});
       $('export-backup').addEventListener('click',exportJson);
+      $('export-publication-draft')?.addEventListener('click',()=>void exportPublicationDraft(currentList()).catch(e=>inform(e.message,true)));
       $('export-all-html').addEventListener('click',()=>void exportPortable(currentList(),'teacher',
         'Conversation_Lab_Moje_Temata.html').catch(e=>inform(e.message,true)));
       const zone=$('upload-zone');
