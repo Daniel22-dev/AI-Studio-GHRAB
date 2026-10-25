@@ -411,7 +411,7 @@ check(libraryHtml.includes("Materiály dnes lokálně, později společně v př
 check(libraryHtml.includes('id="material-server-state"'), "Materialy nemaji pravdivy stav serveroveho sdileni.");
 check(libraryHtml.includes('id="server-shared-section"') && libraryHtml.includes("Ověřeno ve výuce") && libraryHtml.includes("Doporučeno komisí"), "Materialy nemaji pripraveny budouci komisni katalog a stavy kvality.");
 check(materialService.includes('config?.features?.schoolServerConnected === true') && materialService.includes('config?.features?.sharedMaterialLibrary === true'), "Material server adapter se muze aktivovat bez skutecneho serveroveho profilu.");
-check(materialService.includes("containsPersonalData === true"), "Serverove sdileni nema ochranu proti publikaci materialu s osobnimi udaji.");
+check(materialService.includes("inspectOutboundMaterial(material") && materialService.includes("validator: G.validateMaterialPackage"), "Serverove sdileni musi pouzivat uplny Material Flow PII a XSS preflight; pouhy boolean flag nestaci.");
 check(materialService.includes("publishToCommission") && materialService.includes("forkToWorkspace") && materialService.includes("recordQuality"), "Material server adapter nema pripraveny zakladni operace sdileni/verzovani/overeni.");
 const libraryJs = await text("src/library/library.js");
 const saveToStudio = await text("src/integration/save-to-studio.js");
@@ -457,6 +457,45 @@ try {
   }
   check(blocked, "GitHub profil neblokuje serverovou publikaci materialu.");
   check(materialFetchCalled === false, "GitHub profil se pokusil kontaktovat materialovy server.");
+  // Functional privacy regression: the future school-server adapter must
+  // reject unsafe material BEFORE any request, even if its schema passes.
+  // This test checks behaviour rather than hardcoding the obsolete
+  // provenance.containsPersonalData === true source expression.
+  const synthetic = {
+    schema: "ghrab-material-v1",
+    id: "synthetic-material",
+    title: "Synthetic English exercise",
+    provenance: { containsPersonalData: false },
+    content: { sourceText: "Public synthetic teaching text.", tasks: [] },
+  };
+  const schoolRepository = materialModule.createMaterialRepository({
+    VERSION: "0.21.255",
+    deploymentReady: Promise.resolve({
+      profile: "school-server",
+      studioBaseUrl: "https://example.school/ai-studio/",
+      apiBaseUrl: "https://example.school/api/v1/",
+      endpoints: { materials: "materials" },
+      features: { schoolServerConnected: true, sharedMaterialLibrary: true },
+    }),
+    validateMaterialPackage: () => ({ valid: true }),
+    t: (cs) => cs,
+  });
+  const violations = [
+    (m) => { delete m.provenance.containsPersonalData; },
+    (m) => { m.provenance.containsPersonalData = true; },
+    (m) => { m.content.meta = { class_list: [{ studentName: "Synthetic Student" }] }; },
+    (m) => { m.content.sourceText = "teacher@example.test"; },
+    (m) => { m.content.sourceText = "<img src=x onerror=alert(1)>"; },
+  ];
+  for (const violate of violations) {
+    const unsafe = JSON.parse(JSON.stringify(synthetic));
+    violate(unsafe);
+    let rejected = false;
+    try { await schoolRepository.publishToCommission(unsafe, "english"); }
+    catch (error) { rejected = error instanceof TypeError && /anonymizace/.test(error.message); }
+    check(rejected, "Material server prijal neanonymni obsah pred jakymkoli fetch.");
+  }
+  check(materialFetchCalled === false, "Kontrola anonymizace nesmi posilat studentska data do site.");
 } finally {
   globalThis.fetch = originalFetch;
 }
@@ -488,11 +527,15 @@ check(!builtServiceWorker.includes('"./assets/presentation/'), "Velke PR video n
 check(!demoHtml.includes("Jeden materiál. Tři výukové nástroje"), "Prezentace stale obsahuje stary technicky petikrokovy koncept.");
 
 const workflowJs = await text("src/workflow/workflow.js");
+const materialRegistry = JSON.parse(await text("src/config/material-flow-registry.json"));
+check(materialRegistry.schema === "ghrab-material-flow-registry-v1", "Material Flow Hub nema platny registry kontrakt.");
 for (const target of ["differentiator", "generator", "ludus"]) {
-  check(workflowJs.includes(`id: "${target}"`), `Workflow nema definovanou kompatibilitu ${target}.`);
+  check(materialRegistry.targets?.some((entry) => entry.id === target && entry.bridgeVersion === 2 && entry.importSchemas.includes("ghrab-material-v1")), `Material Flow registry neobsahuje importni kontrakt ${target}.`);
 }
-check(workflowJs.includes("G.createHandoff(app.id, material)"), "Workflow nevytvari platformni handoff.");
-check(workflowJs.includes('target.searchParams.set("studioHandoff", "1")'), "Workflow neoznacuje otevreni cilove aplikace handoff parametrem.");
+check(workflowJs.includes('loadMaterialFlowController(G)') && workflowJs.includes('materialFlowController.transport.prepare('), "Workflow nepouziva centralni deklarativni material router.");
+check(workflowJs.includes('targetUrl.searchParams.set("studioHandoff", "1")'), "Workflow neoznacuje otevreni cilove aplikace handoff parametrem.");
+const flowLibraryJs = await text('src/library/library.js');
+check(flowLibraryJs.includes('materialFlowDetails(G, materialFlowController, material'), "Katalog nenabizi centralni Pouzit dal UX.");
 
 // Functional contract test for the shared handoff v2: create -> validate -> peek -> consume.
 const consumerForPlatform = JSON.parse(await text("ghrab-platform.consumer.json"));

@@ -32,6 +32,19 @@ jobs:
           node scripts/verify-release-version-freshness.mjs
       - name: Verify read-only policy and negative cases
         run: node --test scripts/ci-p3-topology.test.mjs
+      - name: Verify synchronized platform registry and strict release-wave ecosystem
+        run: |
+          node scripts/sync-platform-consumers.mjs --check
+          node scripts/qa-ecosystem.mjs
+          node --input-type=module -e "import fs from 'node:fs';const c=JSON.parse(fs.readFileSync('ghrab-platform.consumer.json','utf8'));const m=JSON.parse(fs.readFileSync('src/manifest.webmanifest','utf8'));if(m.ghrab_platform.version!==c.platform.version||m.ghrab_platform.required_range!==c.platform.requiredRange)throw Error('PWA source platform metadata drift')"
+      - name: Stage 05 Material Flow source-contract regressions (non-browser)
+        run: |
+          node --test tests/stage05/material-flow.test.mjs
+          node --test tests/stage05/bridge-cross-app.test.mjs
+          node --test tests/stage05/uat-harness-contract.test.mjs
+          node --check tests/stage05/consumer-browser-uat.mjs
+          node --check scripts/test-platform-bootstrap-browser.mjs
+          node --check scripts/test-studio-ux.mjs
       - name: Audit nine release-wave apps and AI Studio
         env:
           GITHUB_TOKEN: ${{ github.token }}

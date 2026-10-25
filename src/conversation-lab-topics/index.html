@@ -1,0 +1,50 @@
+<!doctype html>
+<html lang="cs" data-theme="dark" data-mode="teacher">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<meta name="theme-color" content="#071421">
+<meta name="referrer" content="no-referrer">
+<meta name="description" content="Conversation Lab: konverzační témata – bezpečný hromadný import a přehrávání offline.">
+<title>Conversation Lab · Správce konverzačních témat</title>
+<link rel="stylesheet" href="./styles.css">
+</head>
+<body>
+<div class="app" id="clb-app">
+  <header class="topbar">
+    <div class="brand"><span class="brand-icon">CL<span>.</span></span><div><strong>Conversation Lab</strong><small>SPRÁVA KONVERZAČNÍCH TÉMAT</small></div></div>
+    <div class="top-links"><span class="storage-indicator" id="storage-indicator">Připravuji knihovnu…</span><button class="btn subtle" id="theme-toggle" type="button">☀ Světlý režim</button><a class="btn subtle" id="studio-return" href="../" hidden>← AI Studio</a></div>
+  </header>
+  <main>
+  <section class="hero" id="hero"><div class="hero-text"><div class="eyebrow">VAŠE KONVERZACE · NA JEDNOM MÍSTĚ</div><h1>Témata jednoduše.<br><em>Bez dalších aktualizací.</em></h1><p>Nahrajte své konverzační karty HTML. Aplikace si sama načte otázky pro jazyky EN, ES, DE a FR a úrovně A1–C2, vše zařadí do knihovny a otevře k výuce.</p><div class="hero-stats"><span><strong id="count-topics">0</strong> témat</span><span><strong id="count-variants">0</strong> variant</span><span><strong id="count-questions">0</strong> otázek</span></div></div><div class="hero-icon" aria-hidden="true"><span>EN</span><span>ES</span><span>DE</span><span>FR</span><b>∞</b></div></section>
+
+  <section class="upload-zone" id="upload-zone" data-teacher-only aria-label="Nahrání nových konverzačních témat">
+    <div class="upload-glyph" aria-hidden="true">↥</div>
+    <div class="upload-copy"><h2>Přidat nové konverzační karty</h2><p>Sem přetáhněte HTML soubory, nebo je vyberte najednou. Nové verze stejného tématu automaticky nahradí starší. Nic se neodesílá na internet.</p><p class="upload-hint">Podporováno: <strong>.html, .htm</strong> · 1 i více souborů · volitelně záloha <strong>.json</strong></p></div>
+    <div class="upload-actions"><button id="upload-trigger" class="btn primary" type="button">＋ Nahrát témata</button><input id="topic-files" type="file" accept=".html,.htm,text/html" multiple hidden><input id="backup-files" type="file" accept=".json,application/json" hidden><button id="backup-import-trigger" class="btn subtle" type="button">Obnovit zálohu</button></div>
+  </section>
+  <div id="notice" class="notice" role="status" aria-live="polite" hidden></div>
+
+  <section class="library" id="library">
+    <div class="section-heading"><div><span class="eyebrow">KNIHOVNA KONVERZACÍ</span><h2>Moje témata <span id="count-chip" class="count-chip">0</span></h2><p>Vyberte jazyk a úroveň. Téma můžete otevřít i bez připojení k internetu.</p></div>
+    <div class="library-controls"><label>Jazyk<select id="language-select"><option value="en">English</option><option value="es">Español</option><option value="de">Deutsch</option><option value="fr">Français</option></select></label><label>Úroveň<select id="cefr-select"><option>A1</option><option>A2</option><option>B1</option><option selected>B2</option><option>C1</option><option>C2</option></select></label></div></div>
+    <div class="library-toolbar"><label class="search-label"><span aria-hidden="true">⌕</span><input type="search" id="search" placeholder="Hledat mezi tématy…" autocomplete="off" aria-label="Hledat témata"></label><div class="toolbar-actions" data-teacher-only><button type="button" class="btn outline" id="export-all-html">⇩ Uložit knihovnu jako HTML</button><button type="button" class="btn outline" id="export-backup">⇩ Záloha JSON</button><button type="button" class="btn outline" id="export-publication-draft" title="Připravit neveřejný balíček pro kontrolu na GitHubu; bez automatického zveřejnění">⇧ Připravit veřejné vydání</button><a class="btn subtle" href="https://conversation-lab-ghrab.pages.dev/" target="_blank" rel="noopener noreferrer">Veřejná knihovna ↗</a></div></div>
+    <div class="topic-grid" id="topic-grid"></div>
+    <div id="library-empty" class="library-empty" hidden>Žádné téma neodpovídá vybranému filtru. Zkuste jiný jazyk, úroveň nebo nahrajte vlastní HTML.</div>
+  </section>
+  <section class="viewer" id="viewer" hidden>
+    <div class="viewer-nav"><button class="btn subtle" type="button" id="back-library">← Zpět do knihovny</button><span class="viewer-number" id="lesson-position"></span><button class="btn subtle" type="button" id="viewer-fullscreen">⛶ Celá obrazovka</button></div>
+    <div class="viewer-title"><div><span class="eyebrow" id="lesson-kicker">KONVERZAČNÍ LEKCE</span><h2 id="lesson-title"></h2><p id="lesson-hero"></p></div><div class="viewer-metadata"><span id="viewer-lang"></span><span id="viewer-cefr"></span><span>8 stanic</span></div></div>
+    <div class="lesson-goal" id="lesson-goal" hidden></div>
+    <details class="warmup"><summary>💬 Warm-up / Úvodní aktivita <span class="chevron">⌄</span></summary><p id="lesson-warmup"></p></details>
+    <nav class="station-tabs" id="station-tabs" aria-label="Konverzační stanice"></nav>
+    <section class="station-card"><header class="station-head"><div class="station-heading"><div class="station-index" id="station-index">01</div><div><div class="eyebrow">KONVERZAČNÍ STANICE</div><h3 id="station-title"></h3><p id="station-subtitle"></p></div></div><div class="timer" aria-label="Časovač pro konverzaci"><div class="timer-top"><span>⏱ ČASOVAČ</span><strong id="timer-face" role="timer">04:00</strong></div><div class="timer-actions"><label><span class="sr-only">Minuty</span><input id="timer-minutes" type="number" min="0" max="59" value="4" aria-label="Minuty"></label><span>:</span><label><span class="sr-only">Sekundy</span><input id="timer-seconds" type="number" min="0" max="59" value="0" aria-label="Sekundy"></label><button type="button" id="timer-start" class="timer-btn">▶ Start</button><button type="button" id="timer-reset" class="timer-btn subtle">↺</button></div></div></header><div class="station-layout"><div class="question-block"><span class="eyebrow">HLAVNÍ OTÁZKA</span><div id="main-question" class="main-question"></div><div class="follow-heading">Rozviňte diskusi</div><div id="follow-up-list" class="follow-up-list"></div></div><div class="prompts"><details class="prompt"><summary>💡 Jazyková podpora</summary><ul id="prompt-support"></ul></details><details class="prompt"><summary>↗ Výzva k zamyšlení</summary><p id="prompt-challenge"></p></details><details class="prompt"><summary>★ Náročnější úkol</summary><p id="prompt-stretch"></p></details></div></div><footer class="station-footer"><span id="station-progress">Stanice 1 z 8</span><div class="station-navigation"><button type="button" id="station-prev" class="btn subtle">← Předchozí</button><button type="button" id="station-next" class="btn primary">Další →</button></div></footer></section>
+    <div class="resources"><section class="resource-panel"><h3>📚 Užitečná slovní zásoba</h3><div id="vocabulary" class="resource-grid"></div></section><section class="resource-panel"><h3>✦ Speaking toolkit</h3><div id="toolkit" class="resource-grid"></div></section></div>
+  </section>
+  </main>
+  <footer class="footer"><span>Conversation Lab · Lokální správa konverzací</span><span>Nahrání karty je soukromé. Zveřejnění na Cloudflare je až samostatný kontrolovaný krok.</span></footer>
+</div>
+<script type="application/json" id="clb-seed">[]</script>
+<script src="./gate.js" type="module"></script>
+</body>
+</html>

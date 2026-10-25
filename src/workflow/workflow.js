@@ -1,4 +1,6 @@
 import { validateMaterialFile } from "../shared/material-validator.js";
+import { assessContent } from "../material-flow/material-flow.js";
+import { loadMaterialFlowController, reasonText } from "../material-flow/controller.js";
 const G = window.GHRAB;
 const $ = (selector) => document.querySelector(selector);
 const fields = {
@@ -19,6 +21,7 @@ const workspaceHost = $("#workspace-grid");
 const ludusResult = $("#ludus-compatibility");
 let currentId = "";
 let apps = [];
+let materialFlowController = null;
 const DRAFT_KEY = "ghrab.workflow.draft.v1";
 const SESSION_GENERATION_KEY = "ghrab.access.session-generation.v1";
 let draftTimer = 0;
@@ -306,14 +309,10 @@ function collectMaterial() {
       portalVersion: G.VERSION,
     },
     workflow: {
-      compatibleTargets: compatibility({
-        title: fields.title.value.trim(),
-        subject: fields.subject.value.trim(),
+      compatibleTargets: fields.private.checked ? contentCompatibleIds({
         objectives,
         content: { sourceText: fields.source.value.trim(), tasks },
-      })
-        .filter((x) => x.ready)
-        .map((x) => x.id),
+      }) : [],
     },
   };
 }
@@ -376,42 +375,43 @@ function validate(material) {
 }
 
 function compatibility(material) {
-  const tasks = material.content?.tasks || [];
-  const structured = tasks.filter((t) => t.prompt);
-  const ludus = structured.filter((t) =>
-    ["select", "truefalse", "short", "order"].includes(t.type),
+  if (!materialFlowController) return [];
+  return materialFlowController.assess(material).map((row) => ({
+    id: row.id,
+    ready: row.compatible,
+    reason: reasonText(G, row.reason),
+  }));
+}
+function contentCompatibleIds(material) {
+  if (!materialFlowController) return [];
+  return materialFlowController.registry.targets
+    .filter((entry) => assessContent(material, entry) === "compatible")
+    .map((entry) => entry.id);
+}
+function renderPendingHandoff() {
+  const host = $("#workflow-handoff-state");
+  if (!host) return;
+  const pending = materialFlowController?.transport?.pending();
+  host.replaceChildren();
+  if (!pending) return;
+  const line = document.createElement("p");
+  line.textContent = G.t(
+    `Čeká předání do aplikace ${pending.target}. Nový materiál jej nepřepíše.`,
+    `A handoff to ${pending.target} is pending. New material will not overwrite it.`,
   );
-  return [
-    {
-      id: "differentiator",
-      ready:
-        Boolean(material.content?.sourceText) &&
-        material.objectives?.length > 0,
-      reason: G.t(
-        "Potřebuje zdrojový obsah a výukový cíl.",
-        "Requires source content and a learning objective.",
-      ),
-    },
-    {
-      id: "generator",
-      ready:
-        Boolean(material.title) &&
-        Boolean(material.subject) &&
-        (Boolean(material.content?.sourceText) || structured.length > 0),
-      reason: G.t(
-        "Převezme název, skupinu, úroveň, látku a zdrojový obsah.",
-        "Takes title, group, level, topic and source content.",
-      ),
-    },
-    {
-      id: "ludus",
-      ready: ludus.length >= 3,
-      reason: G.t(
-        `Převoditelných úloh: ${ludus.length}. Pro smysluplnou hru jsou potřeba alespoň 3.`,
-        `Convertible tasks: ${ludus.length}. At least 3 are needed for a meaningful game.`,
-      ),
-    },
-  ];
+  host.append(line);
+  if (pending.sourceAppId === "ai-studio") {
+    const cancel = document.createElement("button");
+    cancel.type = "button";
+    cancel.className = "button danger";
+    cancel.textContent = G.t("Zrušit předání", "Cancel handoff");
+    cancel.addEventListener("click", () => {
+      if (materialFlowController?.transport?.cancelOwn()) {
+        renderPendingHandoff(); renderTargets();
+      }
+    });
+    host.append(cancel);
+  }
 }
 
 function renderValidation() {
@@ -472,7 +472,7 @@ function renderTargets() {
           location.href = "../access/";
         });
       } else {
-        button.disabled = !state.ready || !fields.private.checked;
+        button.disabled = !state.ready || !fields.private.checked || !materialFlowController?.transport;
         button.textContent = state.ready
           ? G.t("Připravit a otevřít", "Prepare and open")
           : G.t("Chybí podklady", "Missing inputs");
@@ -482,6 +482,7 @@ function renderTargets() {
       return item;
     }),
   );
+  renderPendingHandoff();
 }
 
 function makeLudusContent(material) {
@@ -623,7 +624,10 @@ function makeLudusContent(material) {
 
 function renderLudus() {
   const material = collectMaterial();
-  const state = compatibility(material).find((x) => x.id === "ludus");
+  const state = compatibility(material).find((x) => x.id === "ludus") || {
+    ready: false,
+    reason: G.t("Kontroluji kompatibilitu herního obsahu.", "Checking game content compatibility."),
+  };
   ludusResult.dataset.level = state.ready ? "green" : "orange";
   ludusResult.textContent = state.ready
     ? G.t(
@@ -652,73 +656,39 @@ function downloadJson(data, name) {
 function handoff(app) {
   const access = G.hasAppAccess(app.id);
   if (!access.enabled) {
-    G.showToast(
-      G.t(
-        "Tato aplikace není ve vašem přístupu odemčena.",
-        "This application is not unlocked in your access.",
-      ),
-    );
+    G.showToast(G.t("Přístup k aplikaci není aktivní.", "Application access is not enabled."));
     location.href = "../access/";
     return;
   }
   const material = collectMaterial();
-  const checks = validate(material);
-  if (checks.some((c) => !c.ok)) {
-    G.showToast(
-      G.t(
-        "Nejprve doplňte povinné údaje a potvrďte bezpečnost.",
-        "Complete required fields and confirm safety first.",
-      ),
-    );
+  if (validate(material).some((c) => !c.ok)) {
+    G.showToast(G.t("Doplňte povinné údaje a potvrďte anonymizaci.", "Complete required inputs and confirm anonymisation."));
+    return;
+  }
+  const row = materialFlowController?.assess(material).find((candidate) => candidate.id === app.id);
+  if (!row?.compatible || !materialFlowController?.transport) {
+    G.showToast(row ? reasonText(G, row.reason) : G.t("Cíl není kompatibilní.", "Target is not compatible."));
     return;
   }
   currentId = material.id;
-  let payload = null;
+  let handoff;
   try {
-    payload = G.createHandoff(app.id, material);
-  } catch {
-    G.showToast(
-      G.t(
-        "Předávku se nepodařilo uložit do místního úložiště. Zkontrolujte volné místo a zkuste to znovu.",
-        "The handoff could not be written to local storage. Check available space and try again.",
-      ),
-    );
+    handoff = materialFlowController.transport.prepare({ targetId: app.id, material, sourceAppVersion: G.VERSION });
+  } catch (error) {
+    G.showToast(error.message || G.t("Předání selhalo.", "Handoff failed."));
+    renderPendingHandoff();
     return;
   }
-  if (!payload) {
-    const pending = G.readHandoff();
-    G.showToast(
-      pending
-        ? G.t(
-            "Předchozí předávka stále čeká na vyzvednutí. Nejprve ji dokončete nebo otevřete cílovou aplikaci; nový materiál ji nepřepíše.",
-            "A previous handoff is still waiting to be collected. Finish it or open the target application first; the new material will not overwrite it.",
-          )
-        : G.t(
-            "Předávku se nepodařilo uložit do místního úložiště. Zkontrolujte volné místo a zkuste to znovu.",
-            "The handoff could not be written to local storage. Check available space and try again.",
-          ),
-    );
-    return;
+  if ($("#handoff-backup")?.checked) {
+    downloadJson(material, `${safeFileName(material.title)}-pro-${app.id}.ghrab.json`);
   }
-  if ($("#handoff-backup")?.checked)
-    downloadJson(
-      material,
-      `${safeFileName(material.title)}-pro-${app.id}.ghrab.json`,
-    );
-  G.recordPilotEvent({
-    type: "handoff",
-    appId: app.id,
-    estimatedMinutes: 5,
-  });
-  const target = new URL(app.launchUrl);
-  target.searchParams.set("studioHandoff", "1");
-  window.open(target.toString(), "_blank", "noopener,noreferrer");
-  G.showToast(
-    G.t(
-      `Předávka pro ${G.localised(app.name)} je připravena.`,
-      `Handoff for ${G.localised(app.name)} is ready.`,
-    ),
-  );
+  G.recordPilotEvent({ type: "handoff", appId: app.id, estimatedMinutes: 5 });
+  const targetUrl = new URL(handoff.launchUrl);
+  targetUrl.searchParams.set("studioHandoff", "1");
+  window.open(targetUrl.href, "_blank", "noopener,noreferrer");
+  G.showToast(G.t("Předání je připraveno.", "Handoff is ready."));
+  renderPendingHandoff();
+  renderTargets();
 }
 
 function saveWorkspace() {
@@ -1015,11 +985,25 @@ document.addEventListener("ghrab:language", () => {
 document
   .querySelector('[data-nav="workflow"]')
   ?.setAttribute("aria-current", "page");
-Promise.all([G.loadApps(), G.accessReady]).then(([loaded]) => {
-  apps = loaded.filter((app) => app.id !== "correspondence");
+Promise.all([G.accessReady, loadMaterialFlowController(G)]).then(([, controller]) => {
+  materialFlowController = controller;
+  const importTargetIds = new Set(controller.registry.targets.map((entry) => entry.id));
+  apps = controller.apps.filter((app) => importTargetIds.has(app.id));
   renderTargets();
-});
+  renderLudus();
+}).catch((error) => console.warn("Material Flow Hub unavailable", error));
 const pending = G.readHandoff();
+const selectedMaterial = (() => {
+  // Pass only an internal material ID to the editor, never material text via URL.
+  // One-time tab-local selection prevents accidentally reopening stale content.
+  try {
+    const key = "ghrab.ai-studio.material-flow.edit-selection.v1";
+    const id = sessionStorage.getItem(key);
+    sessionStorage.removeItem(key);
+    if (!id) return null;
+    return G.getWorkspace().find((row) => row.id === id) || null;
+  } catch { return null; }
+})();
 const draft = (() => {
   try {
     return JSON.parse(G.safeGetItem(DRAFT_KEY, "null"));
@@ -1027,7 +1011,10 @@ const draft = (() => {
     return null;
   }
 })();
-if (pending?.target === "workflow" && G.validMaterial(pending.material)) {
+if (selectedMaterial && G.validMaterial(selectedMaterial)) {
+  setMaterial(selectedMaterial);
+  lastSavedSignature = materialSignature(selectedMaterial);
+} else if (pending?.target === "workflow" && G.validMaterial(pending.material)) {
   setMaterial(pending.material);
   lastSavedSignature = materialSignature(pending.material);
 } else if (
@@ -1055,6 +1042,9 @@ setDraftStatus(
 );
 addEventListener("storage", (event) => {
   if (event.key === SESSION_GENERATION_KEY) handleSessionGenerationChange();
+  if (["ghrab.platform.handoff.v2", "ghrab.handoff.v1", "ghrab.workspace.v1", "ghrab.ai-studio.workspace.v1"].includes(event.key)) {
+    renderPendingHandoff(); renderTargets(); renderWorkspace();
+  }
 });
 addEventListener("pagehide", (event) => {
   if (!event.persisted || !sharedDeviceNow()) return;

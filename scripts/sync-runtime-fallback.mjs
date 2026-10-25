@@ -2,10 +2,16 @@
 import { readFile, writeFile } from "node:fs/promises";
 import path from "node:path";
 import { fileURLToPath } from "node:url";
+import { validateWavePlatformPins, isPinnedHistoricalDifferentiatorSnapshot } from "./release-wave-platform-policy.mjs";
 
 const root = path.resolve(path.dirname(fileURLToPath(import.meta.url)), "..");
 const configDir = path.join(root, "src", "config");
 const checkOnly = process.argv.includes("--check");
+const preSyncHistoricalCheck = process.argv.includes("--committed-presync-legacy");
+if (preSyncHistoricalCheck && !checkOnly) {
+  console.error("RUNTIME FALLBACK: FAIL — historical snapshot flag cannot refresh fallback");
+  process.exit(1);
+}
 const readJson = (name) => readFile(path.join(configDir, name), "utf8").then(JSON.parse);
 
 const [generated, fallback, wave, report] = await Promise.all([
@@ -41,6 +47,9 @@ if (report?.schema !== "ai-studio-sync-report-v1" || report?.generated !== true)
 const generatedById = mapUnique(generated, "id", "apps.generated");
 const fallbackById = mapUnique(fallback, "id", "apps.fallback");
 const waveById = mapUnique(wave?.applications, "id", "release-wave");
+let platformPins;
+try { platformPins = validateWavePlatformPins(wave); }
+catch (error) { fail(error.message); }
 const reportById = mapUnique(report?.sources, "id", "sync-report");
 
 if (!sameIds(generatedById, waveById) || !sameIds(generatedById, reportById))
@@ -57,10 +66,17 @@ for (const app of generated) {
   const source = reportById.get(app.id);
   if (waveApp?.version !== app.version)
     fail(`${app.id}: generated version ${app.version} does not match release-wave ${waveApp?.version || "?"}`);
-  if (app.platform?.platformVersion !== wave.platformVersion)
-    fail(`${app.id}: Platform version does not match release-wave`);
-  if (app.platform?.requiredPlatformRange !== wave.requiredPlatformRange)
-    fail(`${app.id}: required Platform range does not match release-wave`);
+  const approvedPin = platformPins.get(app.id);
+  if (!approvedPin) fail(`${app.id}: missing exact release-wave platform pin`);
+  // The last committed signed 1.1.2 fallback is checked BEFORE live sync.
+  // Only this read-only pre-sync step may accept the exact historical Diff pin.
+  // Any refresh or subsequent post-sync check requires the live 1.1.3 pin.
+  const historical = preSyncHistoricalCheck && isPinnedHistoricalDifferentiatorSnapshot(app);
+  if (!historical && app.platform?.platformVersion !== approvedPin.platformVersion)
+    fail(`${app.id}: Platform version does not match its exact release-wave pin`);
+  if (!historical && (app.platform?.requiredPlatformRange !== approvedPin.requiredPlatformRange ||
+      app.compatibility?.platformRange !== approvedPin.requiredPlatformRange))
+    fail(`${app.id}: required Platform/compatibility ranges do not match exact release-wave pin`);
   if (source?.ok !== true || !["deployment", "repository"].includes(source?.verification))
     fail(`${app.id}: source is not deployment/repository verified`);
   if (source?.version !== app.version)
