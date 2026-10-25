@@ -109,6 +109,8 @@ jobs:
         run: |
           npx playwright install --with-deps chromium
           node -e "console.log('CHROMIUM_PATH=' + require('playwright').chromium.executablePath())" >> "$GITHUB_ENV"
+      - name: Verify CLB Topic Manager production CSP, line length and offline export
+        run: node --test scripts/test-clb-topic-manager-prod-qa.mjs
       - name: Test GARP safe failure diagnostics (no secrets)
         run: node --test scripts/garp27/failure-diagnostics.test.mjs
       - name: Run GARP 2.7 FOUNDATION gate
