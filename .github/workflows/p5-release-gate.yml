@@ -96,7 +96,10 @@ jobs:
       - name: Verify declared deployment release identities
         run: node scripts/verify-deployment-release-identities.mjs
       - name: Verify committed release-wave against live sources
-        run: node scripts/sync-platform-consumers.mjs --check && node scripts/qa-ecosystem.mjs --require-source-verification
+        run: |
+          node --test scripts/test-platform-wave-policy.mjs
+          node scripts/sync-platform-consumers.mjs --check
+          node scripts/qa-ecosystem.mjs --require-source-verification
       - name: Refresh runtime fallback from all live-verified sources
         run: |
           npm run sync:fallback
