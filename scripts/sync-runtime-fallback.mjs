@@ -2,6 +2,7 @@
 import { readFile, writeFile } from "node:fs/promises";
 import path from "node:path";
 import { fileURLToPath } from "node:url";
+import { validateWavePlatformPins } from "./release-wave-platform-policy.mjs";
 
 const root = path.resolve(path.dirname(fileURLToPath(import.meta.url)), "..");
 const configDir = path.join(root, "src", "config");
@@ -41,6 +42,9 @@ if (report?.schema !== "ai-studio-sync-report-v1" || report?.generated !== true)
 const generatedById = mapUnique(generated, "id", "apps.generated");
 const fallbackById = mapUnique(fallback, "id", "apps.fallback");
 const waveById = mapUnique(wave?.applications, "id", "release-wave");
+let platformPins;
+try { platformPins = validateWavePlatformPins(wave); }
+catch (error) { fail(error.message); }
 const reportById = mapUnique(report?.sources, "id", "sync-report");
 
 if (!sameIds(generatedById, waveById) || !sameIds(generatedById, reportById))
@@ -57,10 +61,13 @@ for (const app of generated) {
   const source = reportById.get(app.id);
   if (waveApp?.version !== app.version)
     fail(`${app.id}: generated version ${app.version} does not match release-wave ${waveApp?.version || "?"}`);
-  if (app.platform?.platformVersion !== wave.platformVersion)
-    fail(`${app.id}: Platform version does not match release-wave`);
-  if (app.platform?.requiredPlatformRange !== wave.requiredPlatformRange)
-    fail(`${app.id}: required Platform range does not match release-wave`);
+  const approvedPin = platformPins.get(app.id);
+  if (!approvedPin) fail(`${app.id}: missing exact release-wave platform pin`);
+  if (app.platform?.platformVersion !== approvedPin.platformVersion)
+    fail(`${app.id}: Platform version does not match its exact release-wave pin`);
+  if (app.platform?.requiredPlatformRange !== approvedPin.requiredPlatformRange ||
+      app.compatibility?.platformRange !== approvedPin.requiredPlatformRange)
+    fail(`${app.id}: required Platform/compatibility ranges do not match exact release-wave pin`);
   if (source?.ok !== true || !["deployment", "repository"].includes(source?.verification))
     fail(`${app.id}: source is not deployment/repository verified`);
   if (source?.version !== app.version)
