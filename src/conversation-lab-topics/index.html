@@ -28,7 +28,7 @@
   <section class="library" id="library">
     <div class="section-heading"><div><span class="eyebrow">KNIHOVNA KONVERZACÍ</span><h2>Moje témata <span id="count-chip" class="count-chip">0</span></h2><p>Vyberte jazyk a úroveň. Téma můžete otevřít i bez připojení k internetu.</p></div>
     <div class="library-controls"><label>Jazyk<select id="language-select"><option value="en">English</option><option value="es">Español</option><option value="de">Deutsch</option><option value="fr">Français</option></select></label><label>Úroveň<select id="cefr-select"><option>A1</option><option>A2</option><option>B1</option><option selected>B2</option><option>C1</option><option>C2</option></select></label></div></div>
-    <div class="library-toolbar"><label class="search-label"><span aria-hidden="true">⌕</span><input type="search" id="search" placeholder="Hledat mezi tématy…" autocomplete="off" aria-label="Hledat témata"></label><div class="toolbar-actions" data-teacher-only><button type="button" class="btn outline" id="export-all-html">⇩ Uložit knihovnu jako HTML</button><button type="button" class="btn outline" id="export-backup">⇩ Záloha JSON</button></div></div>
+    <div class="library-toolbar"><label class="search-label"><span aria-hidden="true">⌕</span><input type="search" id="search" placeholder="Hledat mezi tématy…" autocomplete="off" aria-label="Hledat témata"></label><div class="toolbar-actions" data-teacher-only><button type="button" class="btn outline" id="export-all-html">⇩ Uložit knihovnu jako HTML</button><button type="button" class="btn outline" id="export-backup">⇩ Záloha JSON</button><button type="button" class="btn outline" id="export-publication-draft" title="Připravit neveřejný balíček pro kontrolu na GitHubu; bez automatického zveřejnění">⇧ Připravit veřejné vydání</button><a class="btn subtle" href="https://conversation-lab-ghrab.pages.dev/" target="_blank" rel="noopener noreferrer">Veřejná knihovna ↗</a></div></div>
     <div class="topic-grid" id="topic-grid"></div>
     <div id="library-empty" class="library-empty" hidden>Žádné téma neodpovídá vybranému filtru. Zkuste jiný jazyk, úroveň nebo nahrajte vlastní HTML.</div>
   </section>
@@ -42,7 +42,7 @@
     <div class="resources"><section class="resource-panel"><h3>📚 Užitečná slovní zásoba</h3><div id="vocabulary" class="resource-grid"></div></section><section class="resource-panel"><h3>✦ Speaking toolkit</h3><div id="toolkit" class="resource-grid"></div></section></div>
   </section>
   </main>
-  <footer class="footer"><span>Conversation Lab · Lokální správa konverzací</span><span>Vlastní výuková data se neodesílají na žádný server. Pro sdílení použijte export.</span></footer>
+  <footer class="footer"><span>Conversation Lab · Lokální správa konverzací</span><span>Nahrání karty je soukromé. Zveřejnění na Cloudflare je až samostatný kontrolovaný krok.</span></footer>
 </div>
 <script type="application/json" id="clb-seed">[]</script>
 <script src="./gate.js" type="module"></script>
