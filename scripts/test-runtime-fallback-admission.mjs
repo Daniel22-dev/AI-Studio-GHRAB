@@ -83,7 +83,10 @@ test('pre-sync legacy is read-only, applies only to exact committed Differentiat
     old.platform.platformVersion = BASELINE.platformVersion;
     old.platform.requiredPlatformRange = BASELINE.requiredPlatformRange;
     old.compatibility.platformRange = BASELINE.requiredPlatformRange;
-    f.fallback = structuredClone(f.generated);
+    const oldFallback = f.fallback.find(row => row.id === ONLY_EXCEPTION.id);
+    oldFallback.platform.platformVersion = BASELINE.platformVersion;
+    oldFallback.platform.requiredPlatformRange = BASELINE.requiredPlatformRange;
+    oldFallback.compatibility.platformRange = BASELINE.requiredPlatformRange;
     f.persist();
     assert.notEqual(f.run('--check').status, 0, 'stale 1.1.2 must fail strict current check');
     assert.equal(f.run('--check','--committed-presync-legacy').status, 0, 'exact old snapshot may be read-only audited');
