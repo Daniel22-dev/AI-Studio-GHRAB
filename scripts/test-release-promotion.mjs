@@ -12,6 +12,7 @@ import {
   validatePromotionPolicy,
   normalizeStudioBridge,
 } from "./release-promotion.mjs";
+import { validateWavePlatformPins } from "./release-wave-platform-policy.mjs";
 
 const root = path.resolve(path.dirname(fileURLToPath(import.meta.url)), "..");
 const actualPolicy = JSON.parse(readFileSync(path.join(root, "src", "config", "release-promotion-policy.json"), "utf8"));
@@ -233,6 +234,13 @@ for (const entry of actualPolicy.applications) {
   assert.ok(sourceConfig, `${entry.id}: source registry entry missing`);
   assert.ok(acceptedVersion, `${entry.id}: accepted release-wave baseline missing`);
   const current = structuredClone(registryApp);
+  // The committed fallback may still be on 1.1.2 before live sync; test the
+  // exact source-verified target wave for the sole explicit Diff exception.
+  if (entry.id === "differentiator") {
+    const pin = validateWavePlatformPins(actualWave).get(entry.id);
+    current.platform = {...current.platform, ...pin};
+    current.compatibility = {...current.compatibility, platformRange: pin.requiredPlatformRange};
+  }
   current.version = acceptedVersion;
   current.platform = { ...current.platform, cacheName: `ghrab-${entry.id}-v${acceptedVersion}` };
   const currentVsMinimum = compareVersions(current.version, entry.minimumVersion);
@@ -279,6 +287,9 @@ for (const entry of actualPolicy.applications) {
   const policy = actualEntries.get("differentiator");
   assert.ok(diff && source && policy);
   const candidate = structuredClone(diff);
+  const pin = validateWavePlatformPins(actualWave).get("differentiator");
+  candidate.platform = {...candidate.platform, ...pin};
+  candidate.compatibility = {...candidate.compatibility, platformRange: pin.requiredPlatformRange};
   candidate.version = "1.3.52";
   candidate.platform.cacheName = "ghrab-differentiator-v1.3.52";
   const report = {
