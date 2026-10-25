@@ -20,6 +20,8 @@ function fixture() {
   fs.mkdirSync(dir, { recursive: true });
   fs.mkdirSync(path.join(work, 'scripts'), { recursive: true });
   fs.copyFileSync(script, path.join(work, 'scripts/sync-runtime-fallback.mjs'));
+  fs.copyFileSync(path.join(root, 'scripts/release-wave-platform-policy.mjs'),
+    path.join(work, 'scripts/release-wave-platform-policy.mjs'));
   const app = id => ({
     id, version,
     publishedAt: '2026-10-13T07:07:35.000Z',
@@ -156,4 +158,42 @@ test('CI workflows verify committed snapshots, then refresh only after live veri
     assert.ok(source.includes('npm run sync:fallback') && source.includes('npm run qa:fallback'),
       `${relative}: verified refresh and strict equality gate must both remain present`);
   }
+});
+
+
+test('mixed Platform 1.1.3 is accepted only for reviewed Differentiator', () => {
+  const f = fixture();
+  try {
+    const app = f.generated[0];
+    app.id = 'differentiator'; app.version = '1.3.51';
+    app.platform.platformVersion = '1.1.3';
+    app.platform.requiredPlatformRange = '>=1.1.3 <2.0.0';
+    app.platform.cacheName = 'ghrab-differentiator-v1.3.51';
+    f.fallback[0] = structuredClone(app);
+    f.wave.applications[0] = {
+      id: 'differentiator', version: '1.3.51', platformVersion: '1.1.3',
+      requiredPlatformRange: '>=1.1.3 <2.0.0',
+    };
+    f.report.sources[0] = { id: 'differentiator', version: '1.3.51',
+      sourceVersion: '1.3.51', ok: true, verification: 'deployment' };
+    f.persist();
+    const accepted = f.run('--check');
+    assert.equal(accepted.status, 0, accepted.stdout + accepted.stderr);
+    f.wave.applications[0].requiredPlatformRange = '>=1.1.2 <2.0.0';
+    f.persist();
+    const rejected = f.run('--check');
+    assert.notEqual(rejected.status, 0);
+    assert.match(rejected.stderr + rejected.stdout, /invalid approved release-wave pin/);
+  } finally { f.dispose(); }
+});
+
+test('unreviewed app Platform upgrade is still rejected', () => {
+  const f = fixture();
+  try {
+    f.generated[1].platform.platformVersion = '1.1.3';
+    f.persist();
+    const result = f.run();
+    assert.notEqual(result.status, 0);
+    assert.match(result.stderr + result.stdout, /Platform version does not match release-wave/);
+  } finally { f.dispose(); }
 });
