@@ -59,7 +59,7 @@ jobs:
           npm run test:runtime-fallback
           npm run test:auto-patch-idempotence
           npm run test:release-identity-timing
-          npm run verify:release-version
+          node scripts/verify-release-version-freshness.mjs --content-only
       - name: Commit only source-derived artifacts on review branch
         shell: bash
         run: |
@@ -77,4 +77,5 @@ jobs:
           git config user.name "github-actions[bot]"
           git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
           git commit -m "chore(studio): source-verified E7 LUDUS registry 0.21.258"
+          npm run verify:release-version
           git push origin "HEAD:$REVIEW_BRANCH"
