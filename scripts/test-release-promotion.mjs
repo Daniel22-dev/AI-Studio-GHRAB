@@ -234,9 +234,9 @@ for (const entry of actualPolicy.applications) {
   assert.ok(sourceConfig, `${entry.id}: source registry entry missing`);
   assert.ok(acceptedVersion, `${entry.id}: accepted release-wave baseline missing`);
   const current = structuredClone(registryApp);
-  // The committed fallback may still be on 1.1.2 before live sync; test the
-  // exact source-verified target wave for the sole explicit Diff exception.
-  if (entry.id === "differentiator") {
+  // Exercise exact target-wave platform pins for both independently source-
+  // verified 1.1.3 releases; no generic platform drift is allowed.
+  if (entry.id === "differentiator" || entry.id === "ludus") {
     const pin = validateWavePlatformPins(actualWave).get(entry.id);
     current.platform = {...current.platform, ...pin};
     current.compatibility = {...current.compatibility, platformRange: pin.requiredPlatformRange};
@@ -274,10 +274,43 @@ for (const entry of actualPolicy.applications) {
     source: sourceConfig,
     sourceReport: report,
     policyEntry: entry,
-    wave: entry.id === "differentiator" ? actualWave : wave,
+    wave: entry.id === "differentiator" || entry.id === "ludus" ? actualWave : wave,
     enabled: true,
   });
   assert.equal(decision.status, "ELIGIBLE", `${entry.id}: reviewed baseline must allow a contract-identical next patch`);
+}
+
+// Both approved 1.1.3 pins must remain exact, including LUDUS 1.16.32.
+{
+  const original = actualApps.find(app => app.id === "ludus");
+  const source = actualSources.find(app => app.id === "ludus");
+  const policy = actualEntries.get("ludus");
+  assert.ok(original && source && policy);
+  const candidate = structuredClone(original);
+  const pin = validateWavePlatformPins(actualWave).get("ludus");
+  candidate.platform = {...candidate.platform, ...pin, cacheName: "ghrab-ludus-v1.16.33"};
+  candidate.compatibility = {...candidate.compatibility, platformRange: pin.requiredPlatformRange};
+  candidate.version = "1.16.33";
+  const report = {
+    id:"ludus",ok:true,verification:"deployment",
+    repository:source.repository,version:candidate.version,
+    sourceVersion:candidate.version,operationsWarning:null,
+    releaseIdentity:verifiedPatchAssuranceFixture("ludus",candidate.version),
+  };
+  const base = {
+    app:candidate,waveApp:{id:"ludus",version:"1.16.32"},
+    source,sourceReport:report,policyEntry:policy,wave:actualWave,enabled:true,
+  };
+  assert.equal(evaluateAutoPromotion(base).status,"ELIGIBLE");
+  const badPlatform=structuredClone(candidate);
+  badPlatform.platform.platformVersion="1.1.4";
+  assert.equal(evaluateAutoPromotion({...base,app:badPlatform}).reasonCode,"PLATFORM_VERSION");
+  const badRange=structuredClone(candidate);
+  badRange.compatibility.platformRange=">=1.1.2 <2.0.0";
+  assert.equal(evaluateAutoPromotion({...base,app:badRange}).reasonCode,"COMPATIBILITY_RANGE");
+  const badWave=structuredClone(actualWave);
+  badWave.applications.find(row=>row.id==="ludus").platformVersion="1.1.4";
+  assert.equal(evaluateAutoPromotion({...base,wave:badWave}).reasonCode,"PLATFORM_WAVE_PIN");
 }
 
 // The approved Differentiator 1.1.3 wave cannot be diluted by a forged input.
