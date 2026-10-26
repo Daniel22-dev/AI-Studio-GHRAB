@@ -458,8 +458,12 @@ const ludusSource = actualSources.find((item) => item.id === "ludus");
 assert.ok(ludusPolicy && ludusRegistry && ludusSource, "ludus: GARP 2.7 policy/source/registry fixture missing");
 {
   const app = structuredClone(ludusRegistry);
+  // Historical patch-assurance fixture intentionally models pre-E7 LUDUS
+  // on Platform 1.1.2. The approved 1.16.32 live pin remains 1.1.3 above.
   app.version = "1.16.29";
-  app.platform = { ...app.platform, cacheName: "ghrab-ludus-v1.16.29" };
+  app.platform = { ...app.platform, platformVersion: wave.platformVersion,
+    requiredPlatformRange: wave.requiredPlatformRange, cacheName: "ghrab-ludus-v1.16.29" };
+  app.compatibility = { ...app.compatibility, platformRange: wave.requiredPlatformRange };
   const report = {
     id: "ludus",
     ok: true,
