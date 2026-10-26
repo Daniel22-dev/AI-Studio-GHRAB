@@ -68,7 +68,7 @@ jobs:
           git add -u
           git diff --cached --name-only > "$RUNNER_TEMP/staged.txt"
           test -s "$RUNNER_TEMP/staged.txt"
-          if grep -Ev '^(src/config/|src/index.html$|src/manifest.webmanifest$|src/tests/error-reporter-adapter.js$|package.json$|package-lock.json$|ghrab-platform.consumer.json$|reporter-test.config.json$|qa/qa-manifest.json$|README.md$|BEZPECNOST.md$|AUTOMATIZACE-GITHUB.md$|RELEASE-CHECKLIST.md$|ARCHITEKTURA.md$|POSTUP-NAHRANI.md$|NAHRANI-NA-GITHUB.md$)' "$RUNNER_TEMP/staged.txt"; then
+          if grep -Ev '^(src/config/|src/index.html$|src/manifest.webmanifest$|src/tests/error-reporter-adapter.js$|package.json$|package-lock.json$|ghrab-platform.consumer.json$|reporter-test.config.json$|qa/qa-manifest.json$|README.md$|docs/INTEGRACE-APLIKACI.md$|src/integration/README.md$|BEZPECNOST.md$|AUTOMATIZACE-GITHUB.md$|RELEASE-CHECKLIST.md$|ARCHITEKTURA.md$|POSTUP-NAHRANI.md$|NAHRANI-NA-GITHUB.md$)' "$RUNNER_TEMP/staged.txt"; then
             echo "::error::Unexpected generated file, fail closed"
             exit 1
           fi
