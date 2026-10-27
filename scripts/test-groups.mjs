@@ -325,11 +325,12 @@ assert.equal(hostile.invalid.length, 2);
     permit: { sub, role: "teacher", exp: now + 3600 },
   });
   let access = principal("account-A");
+  const globalSyntheticIds = idFactory();
   const open = async () => createPrincipalGroupsSession({
     getSnapshot: () => access,
     storage: sharedBrowser,
     cryptoApi: webcrypto,
-    idFactory: idFactory(),
+    idFactory: globalSyntheticIds,
     eventTarget: null,
   });
   const a1 = await open();
@@ -338,6 +339,20 @@ assert.equal(hostile.invalid.length, 2);
   assert.deepEqual(a1.service.listGroups(), [], "v2 must not auto-import shared v1 data");
   const classA = a1.service.createGroup({ displayName: "Account A", schoolYear: "2026/27" });
   assert.equal(a1.service.getGroup(classA.groupId).displayName, "Account A");
+  const updatedRoster = a1.service.importRoster({
+    groupId: classA.groupId,
+    rawText: "Synthetic Student; synthetic@example.invalid",
+    expectedRevision: 1,
+  });
+  assert.equal(updatedRoster.group.members.length, 1);
+  const studentId = updatedRoster.group.members[0].memberId;
+  const linked = a1.service.listGroupMetadata("sortio");
+  assert.equal(linked[0].groupId, classA.groupId);
+  const essayProjection = a1.service.getRosterProjection(classA.groupId, "essay-evaluator");
+  assert.equal(essayProjection.members[0].memberId, studentId);
+  assert.equal(essayProjection.members[0].schoolEmail, "synthetic@example.invalid");
+  assert.equal(a1.service.getRosterProjection(classA.groupId, "generator-forms").members[0].memberId, studentId);
+  assert.ok(!Object.hasOwn(a1.service.getRosterProjection(classA.groupId, "lesson-hub"), "members"));
 
   access = principal("account-B");
   assert.throws(() => a1.service.listGroups(), /GROUP_ACCESS_DENIED/,
@@ -345,7 +360,10 @@ assert.equal(hostile.invalid.length, 2);
   const b = await open();
   assert.deepEqual(b.service.listGroups(), [], "second principal cannot read first principal's groups");
   const classB = b.service.createGroup({ displayName: "Account B", schoolYear: "2026/27" });
+  assert.notEqual(classA.groupId, classB.groupId, "test fixtures must use unique canonical IDs");
   assert.equal(b.service.listGroups()[0].groupId, classB.groupId);
+  assert.throws(() => b.service.getRosterProjection(classA.groupId, "essay-evaluator"), /GROUP_NOT_FOUND/,
+    "principal B cannot read principal A's canonical roster");
   assert.throws(() => a1.service.exportBackup(), /GROUP_ACCESS_DENIED/);
   const bBackup = b.service.exportBackup();
   assert.equal(bBackup.schema, "ghrab-teaching-groups-account-backup-v2");
@@ -362,6 +380,8 @@ assert.equal(hostile.invalid.length, 2);
   const a2 = await open();
   assert.equal(a2.service.listGroups()[0].groupId, classA.groupId,
     "new session for same identity preserves stable group ID");
+  assert.equal(a2.service.getRosterProjection(classA.groupId, "essay-evaluator").members[0].memberId, studentId,
+    "member IDs and consumer projection are preserved across sessions");
   const backup = a2.service.exportBackup();
   assert.equal(backup.store.groups[0].groupId, classA.groupId);
   assert.equal(backup.schema, "ghrab-teaching-groups-account-backup-v2");
