@@ -6,6 +6,8 @@ import {
   LocalGroupsProvider,
   createGroupsService,
   createGroupsPageAccessGate,
+  createPrincipalGroupsSession,
+  principalGroupsStorageKey,
   parseRosterText,
   validateTeachingGroup,
   rosterProjectionToCsv,
@@ -299,6 +301,86 @@ assert.equal(hostile.invalid.length, 2);
     "late queued UI rendering must fail closed after access revocation");
   assert.ok(js.includes("denyGroupsPage()"), "denied page must wipe personal data from the DOM");
   assert.ok(!js.includes("installGlobalGroupsApi"), "page must not export an unguarded service");
+}
+
+
+{
+  // Stage08 privacy migration path: new per-principal namespace is opt-in,
+  // preserves v1 data without silently transferring it to the next teacher.
+  const { webcrypto } = await import("node:crypto");
+  const sharedBrowser = new MemoryStorage();
+  const legacy = createGroupsService({
+    provider: new LocalGroupsProvider({ storage: sharedBrowser }),
+    idFactory: idFactory(),
+    eventTarget: null,
+  });
+  const original = legacy.createGroup({
+    displayName: "Legacy synthetic class", schoolYear: "2026/27",
+  });
+  const now = Math.floor(Date.now() / 1000);
+  const principal = (sub, mode = "signed-permit") => ({
+    ready: true,
+    valid: true,
+    mode,
+    permit: { sub, role: "teacher", exp: now + 3600 },
+  });
+  let access = principal("account-A");
+  const open = async () => createPrincipalGroupsSession({
+    getSnapshot: () => access,
+    storage: sharedBrowser,
+    cryptoApi: webcrypto,
+    idFactory: idFactory(),
+    eventTarget: null,
+  });
+  const a1 = await open();
+  assert.equal(a1.schema, "ghrab-groups-principal-session-v2");
+  assert.equal(a1.legacyStorePresent, true, "legacy v1 data should be flagged but not exposed");
+  assert.deepEqual(a1.service.listGroups(), [], "v2 must not auto-import shared v1 data");
+  const classA = a1.service.createGroup({ displayName: "Account A", schoolYear: "2026/27" });
+  assert.equal(a1.service.getGroup(classA.groupId).displayName, "Account A");
+
+  access = principal("account-B");
+  assert.throws(() => a1.service.listGroups(), /GROUP_ACCESS_DENIED/,
+    "a user switch permanently revokes old principal's v2 service");
+  const b = await open();
+  assert.deepEqual(b.service.listGroups(), [], "second principal cannot read first principal's groups");
+  const classB = b.service.createGroup({ displayName: "Account B", schoolYear: "2026/27" });
+  assert.equal(b.service.listGroups()[0].groupId, classB.groupId);
+  assert.throws(() => a1.service.exportBackup(), /GROUP_ACCESS_DENIED/);
+
+  access = principal("account-A");
+  assert.throws(() => b.service.getGroup(classB.groupId), /GROUP_ACCESS_DENIED/);
+  assert.throws(() => a1.service.getGroup(classA.groupId), /GROUP_ACCESS_DENIED/,
+    "revoked session must not re-open after switching back");
+  const a2 = await open();
+  assert.equal(a2.service.listGroups()[0].groupId, classA.groupId,
+    "new session for same identity preserves stable group ID");
+  const backup = a2.service.exportBackup();
+  assert.equal(backup.store.groups[0].groupId, classA.groupId);
+  assert.equal(legacy.listGroups()[0].groupId, original.groupId,
+    "v1 store must survive scoped operations without mutation");
+  const scopedAKey = await principalGroupsStorageKey({
+    subject: "account-A", cryptoApi: webcrypto,
+  });
+  const scopedBKey = await principalGroupsStorageKey({
+    subject: "account-B", cryptoApi: webcrypto,
+  });
+  const serverKey = await principalGroupsStorageKey({
+    subject: "account-A", mode: "server-session", cryptoApi: webcrypto,
+  });
+  assert.match(scopedAKey, /^ghrab\.ai-studio\.groups\.account\.v2\.[a-f0-9]{64}$/);
+  assert.notEqual(scopedAKey, scopedBKey);
+  assert.notEqual(scopedAKey, serverKey, "server-session migration is explicit");
+  assert.equal(scopedAKey.includes("account-A"), false, "identity must not appear in storage key");
+  assert.deepEqual(Object.keys(Object.fromEntries(sharedBrowser.map)).filter(k => k.startsWith("ghrab.ai-studio.groups.account.v2.")).length, 2);
+  assert.throws(() => principalGroupsStorageKey({ subject: " " }), /GROUP_SCOPE_IDENTITY_INVALID/);
+  await assert.rejects(principalGroupsStorageKey({ subject: " account-A ", cryptoApi: webcrypto }), /GROUP_SCOPE_IDENTITY_INVALID/);
+  await assert.rejects(principalGroupsStorageKey({ subject: "account-A", cryptoApi: {} }), /GROUP_SCOPE_CRYPTO_UNAVAILABLE/);
+  access = principal("account-C");
+  const brokenCryptoSession = createPrincipalGroupsSession({
+    getSnapshot: () => access, storage: sharedBrowser, cryptoApi: {},
+  });
+  await assert.rejects(brokenCryptoSession, /GROUP_SCOPE_CRYPTO_UNAVAILABLE/);
 }
 
 console.log("Moje skupiny v1: all contract, parser, privacy, recovery, projection and UI sanity tests PASS");
