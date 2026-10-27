@@ -1,7 +1,25 @@
 {
   "schema": "ai-studio-changelog-v1",
-  "current": "0.21.259",
+  "current": "0.21.260",
   "items": [
+    {
+      "version": "0.21.260",
+      "date": "2026-10-27",
+      "title": {
+        "cs": "Conversation Lab: bezztrátový import mluvních opor",
+        "en": "Conversation Lab: lossless import of speaking supports"
+      },
+      "changes": [
+        {
+          "cs": "Správce konverzačních témat přijímá tři nebo čtyři jazykové opory na stanici. U aktuální karty Jak se učit na testy zůstává čtvrtá opora zachována, bez úprav autorských otázek a bez automatické publikace.",
+          "en": "The Conversation Lab topic manager now accepts three or four speaking supports per station. A fourth support in the current How to Study for Tests card is preserved without modifying authored questions or publishing the content."
+        },
+        {
+          "cs": "Regresní testy kontrolují bezztrátový import, obnovu místní zálohy, odmítnutí páté opory i neplatných kontrolních znaků. Nová veřejná knihovna deseti témat stále vyžaduje samostatné pedagogické a podpisové vydávací brány.",
+          "en": "Regression coverage verifies lossless import and local-backup restore and rejects a fifth support or invalid control characters. Publishing the new ten-topic library remains subject to separate pedagogical and cryptographic release gates."
+        }
+      ]
+    },
     {
       "version": "0.21.259",
       "date": "2026-10-27",
