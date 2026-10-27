@@ -1,6 +1,6 @@
 # MOJE SKUPINY — account-scoped storage v2 (preproduction only)
 
-**State:** Proposed contract, NOT ENABLED for school rosters. Maintained on Studio DRAFT PR #336. GIT Stage08 PR #138 remains separate and DRAFT. Do not deploy/merge by treating isolated source tests as release approval.
+**State as of 27 October 2026:** V2 writer and verified readers are IMPLEMENTED IN DRAFT BRANCHES ONLY, **NOT DEPLOYED**. Studio [Draft PR #336](https://github.com/Daniel22-dev/AI-Studio-GHRAB/pull/336) contains the editor, verified consumer, namespace and tests. Certified GIT E8 [Draft PR #138](https://github.com/Daniel22-dev/generator-testu/pull/138) remains untouched; v2 is a separate dependent [Draft PR #139](https://github.com/Daniel22-dev/generator-testu/pull/139). Do not merge/deploy based on branch-only tests.
 
 ## Finding / threat model
 
@@ -10,7 +10,7 @@ This is student personal data. Use synthetic names and `.invalid` e-mail address
 
 ## Staged v2 technical contract
 
-New **opt-in** `createPrincipalGroupsSession({ getSnapshot, isPreview, storage, cryptoApi, ...})` in `src/groups/group-service.js`:
+**Enabled in the Draft Groups editor only** (never on production main/candidate). New `createPrincipalGroupsSession({ getSnapshot, isPreview, storage, cryptoApi, ...})` in `src/groups/group-service.js`:
 
 - Requires previously verified Studio access snapshot: valid and ready, supported role, nonempty stable `permit.sub`, no colleague preview, nonexpired permit.
 - Pins the principal and `signed-permit` / `server-session` mode for that page instance; if revoked or changed, the instance is permanently disabled.
@@ -22,17 +22,19 @@ New **opt-in** `createPrincipalGroupsSession({ getSnapshot, isPreview, storage, 
 
 **Crucial limitation:** SHA-256 is a deterministic *namespace*, not encryption. The original and v2 data remain plaintext in the browser origin. Same-origin scripts, browser developer tools, any malicious script or a different person with the same local browser profile can inspect storage outside this API. Browser-side scope pinning is not a substitute for backend account authorization or encryption with a secret unavailable to other users.
 
-## Cross-application dependency matrix (direct v1 consumers)
+## Cross-application v2 dependency matrix (all DRAFT / NO DEPLOY)
 
-| App | Existing integration | Required before enabling v2 |
+| Component | v2 staged branch / PR | Verified isolated evidence |
 | --- | --- | --- |
-| AI Studio / Moje skupiny | `src/groups/groups.js`, local v1 provider | Update to v2 gated session; render migration needed instead of silently importing legacy v1 |
-| SORTIO | `src/lazy/central-groups.js` | Switch to v2 authorized reader; verify canonical IDs/revisions and old link/merge behavior |
-| Hodnotitel maturitních slohů | `src/js/26-central-groups.js` | Switch to v2 reader; preserve supervised student-recipient pairing, archive status and distribution holds |
-| Lesson Hub | `src/integration/centralGroupsClient.js` | Switch to v2 metadata-only reader, preserve canonical link transactions |
-| GIT 7.1.102 Stage08 | `src/features/central-groups.js` in PR #138 | Switch to v2 reader with actual verified Studio principal; preserve full roster, codes, result-ledger separation and Strict Mode |
+| AI Studio / Moje skupiny | [PR #336](https://github.com/Daniel22-dev/AI-Studio-GHRAB/pull/336): `src/groups/groups.js` now uses guarded `createPrincipalGroupsSession()`; new `groups/verified-client.js` independently verifies signed Studio app access | [Studio isolated QA #40579603794](https://github.com/Daniel22-dev/AI-Studio-GHRAB/actions/runs/40579603794): 8/8 UI isolation + four cross-consumer projection checks PASS |
+| SORTIO | [PR #46](https://github.com/Daniel22-dev/SORTIO/pull/46): v2 signed consumer; no direct shared global/provider access | [Isolated QA #40577171072](https://github.com/Daniel22-dev/SORTIO/actions/runs/40577171072): PASS |
+| Hodnotitel maturitních slohů | [PR #53](https://github.com/Daniel22-dev/Hodnotitel-maturitnich-slohu/pull/53): verified v2 roster, recipient change hold unchanged | [Isolated QA #40577716974](https://github.com/Daniel22-dev/Hodnotitel-maturitnich-slohu/actions/runs/40577716974): 12/12 regression tests PASS |
+| Lesson Hub | [PR #24](https://github.com/Daniel22-dev/lesson-hub/pull/24): verified v2 metadata-only, never receives student roster | [Isolated QA #40576575826](https://github.com/Daniel22-dev/lesson-hub/actions/runs/40576575826): 61/61 tests PASS |
+| GIT 7.1.102 E8 | [PR #139](https://github.com/Daniel22-dev/generator-testu/pull/139): dependent v2 feature off the certified, untouched [PR #138](https://github.com/Daniel22-dev/generator-testu/pull/138) | [Isolated QA #40576735736](https://github.com/Daniel22-dev/generator-testu/actions/runs/40576735736): PASS |
 
-Do not switch only the Studio writer: doing so would make legacy consumers appear to have lost their groups. Do not leave a silent v1 fallback in updated consumers because it reintroduces cross-teacher exposure.
+**Integration coverage:** A synthetic Chromium test on the actual Studio `group-service.js` and `verified-client.js` creates one v2 group and reads projections as each consumer. It verifies identical `groupId/memberId` and revisions, no student e-mails for SORTIO, no roster for Lesson Hub, and explicit teacher switch denial. Its signed access control is stubbed: this is NOT full cross-repository browser UI, school account/UAT, cryptographic live permit proof, or server tenant isolation.
+
+**Release is atomic by policy:** no partial Studio writer cutover. All consumers must be promoted in a coordinated approved wave; old v1 groups cannot silently reappear through a fallback. Standalone branch success is not GARP/P5 release certification.
 
 ## Legacy migration: fail closed, no guessing ownership
 
@@ -44,9 +46,9 @@ Do not switch only the Studio writer: doing so would make legacy consumers appea
 
 ## Test/release gates
 
-Isolated Node regression tests: A vs B isolation via v2 service, role/expiry/account switch denial, stable IDs, legacy nondisclosure, mode transition and v2 scoped backup re-import; wrong scope/legacy archive rejection, crypto unavailable. Existing browser UI lock tests with synthetic data: 6/6 previously passed on exact source SHA `c81e65f`; they do not test v2 activation, real school accounts, or physical devices.
+Isolated Node regression tests: principal A vs B, role/expiry/account switch denial, stable IDs, legacy nondisclosure, mode transition, v2 scoped backup re-import, wrong-scope/legacy archive rejection and missing Web Crypto. Chromium Studio Groups UI: **8/8 PASS** on draft v2 writer; combined Studio writer-to-four-consumer projections: **4 positive checks PASS** in [run #40579603794](https://github.com/Daniel22-dev/AI-Studio-GHRAB/actions/runs/40579603794). The independent verified-client suite includes mocked positive access and unsigned-bundle rejection. Real signed teacher accounts, full cross-repo browser builds, iOS/iPadOS/Android and live Forms remain UNTESTED.
 
-**Blocking:** full final SHA CI/GARP/P5, safe candidate/main topology and version/logbook governance, all four external consumer updates, real Safari/iPad/Android teacher UAT, live Forms, a written school data ownership/migration decision and explicit owner authorization. Remove the temporary feature-only QA workflow before protected promotion.
+**Blocking:** full final SHA CI/GARP/P5, safe candidate/main topology and version/logbook governance, joint cross-app certification beyond isolated drafts, real Safari/iPad/Android teacher UAT, live Forms/Sheets and teacher-recipient checks, a written school data ownership/migration decision, server-grade confidentiality plan or enforceable isolated teacher browser profile policy, and explicit owner authorization. Remove the temporary feature-only QA workflow before protected promotion.
 
 **Interim policy:** No shared browser profiles with real pupil rosters. Enforce separate teacher-controlled profiles/devices, approved sensitive-backup storage and manual sign-out; do not claim full isolation from local attackers.
 
