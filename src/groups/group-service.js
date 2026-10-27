@@ -895,12 +895,41 @@ export async function createPrincipalGroupsSession({
   gate.requireAllowed();
   const provider = new LocalGroupsProvider({ storage, storageKey, onDiagnostic });
   const service = gate.protect(createGroupsService({ provider, idFactory, eventTarget }));
+  const scopeId = storageKey.slice("ghrab.ai-studio.groups.account.v2.".length);
+  // An account backup can only be restored to the namespace that exported it.
+  // Legacy v1 backups are deliberately not silently adopted by this API.
+  const scopedService = Object.assign(Object.create(null), service, {
+    exportBackup: () => {
+      const backup = service.exportBackup();
+      return {
+        schema: "ghrab-teaching-groups-account-backup-v2",
+        version: 2,
+        scopeId,
+        exportedAt: backup.exportedAt,
+        store: backup.store,
+      };
+    },
+    importBackup: (backup) => {
+      gate.requireAllowed();
+      if (!backup || typeof backup !== "object" || Array.isArray(backup) ||
+          Object.keys(backup).some((key) => !["schema", "version", "scopeId", "exportedAt", "store"].includes(key)) ||
+          backup.schema !== "ghrab-teaching-groups-account-backup-v2" ||
+          backup.version !== 2) {
+        throw new Error("GROUP_SCOPE_BACKUP_INVALID");
+      }
+      if (backup.scopeId !== scopeId) throw new Error("GROUP_SCOPE_BACKUP_OTHER_ACCOUNT");
+      return service.importBackup({
+        schema: BACKUP_SCHEMA, version: 1,
+        exportedAt: backup.exportedAt, store: backup.store,
+      });
+    },
+  });
   // The key is deliberately not exposed in this API. Service methods enforce
   // ongoing Studio access; use a new session after any principal change.
   return Object.freeze({
     schema: "ghrab-groups-principal-session-v2",
     legacyStorePresent,
-    service,
+    service: Object.freeze(scopedService),
   });
 }
 
