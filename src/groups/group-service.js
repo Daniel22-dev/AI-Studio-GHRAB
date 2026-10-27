@@ -796,11 +796,14 @@ export function createGroupsPageAccessGate({
         !snapshot?.valid ||
         typeof permit?.sub !== "string" ||
         !permit.sub.trim() ||
+        permit.sub !== permit.sub.trim() ||
         !allowedRoles.has(permit.role) ||
         isPreview() ||
         (expiresAt !== null && (!Number.isFinite(expiresAt) || expiresAt <= nowSeconds()))
       ) return null;
-      return permit.sub;
+      const mode = snapshot.mode || "signed-permit";
+      if (!["signed-permit", "server-session"].includes(mode)) return null;
+      return mode + "\u0000" + permit.sub;
     } catch {
       return null;
     }
@@ -836,6 +839,69 @@ export function createGroupsPageAccessGate({
     return Object.freeze(guarded);
   };
   return Object.freeze({ allowed, requireAllowed, protect });
+}
+
+/**
+ * Account-scoped browser profile namespace (v2, opt-in until every consumer
+ * has migrated). Hashing a key does NOT encrypt its contents or create an
+ * origin-wide security boundary: same-origin scripts can still read storage.
+ * Legacy shared rosters are never copied or assigned to a principal silently.
+ */
+export async function principalGroupsStorageKey({
+  subject,
+  mode = "signed-permit",
+  cryptoApi = globalThis.crypto,
+} = {}) {
+  if (typeof subject !== "string" || subject !== subject.trim() ||
+      !subject || subject.length > 512 || /[\\u0000-\\u001f\\u007f]/.test(subject) ||
+      !["signed-permit", "server-session"].includes(mode)) {
+    throw new Error("GROUP_SCOPE_IDENTITY_INVALID");
+  }
+  if (!cryptoApi?.subtle || typeof cryptoApi.subtle.digest !== "function") {
+    throw new Error("GROUP_SCOPE_CRYPTO_UNAVAILABLE");
+  }
+  const encoded = new TextEncoder().encode("ghrab-teaching-groups-scope-v2\\u0000" + mode + "\\u0000" + subject);
+  const bytes = new Uint8Array(await cryptoApi.subtle.digest("SHA-256", encoded));
+  if (bytes.length !== 32) throw new Error("GROUP_SCOPE_CRYPTO_INVALID");
+  const hex = [...bytes].map((byte) => byte.toString(16).padStart(2, "0")).join("");
+  return "ghrab.ai-studio.groups.account.v2." + hex;
+}
+
+export async function createPrincipalGroupsSession({
+  getSnapshot,
+  isPreview = () => false,
+  storage = globalThis.localStorage,
+  cryptoApi = globalThis.crypto,
+  idFactory = secureId,
+  eventTarget = defaultEventTarget(),
+  onDiagnostic = () => {},
+} = {}) {
+  const gate = createGroupsPageAccessGate({ getSnapshot, isPreview });
+  gate.requireAllowed();
+  const snapshot = getSnapshot();
+  const subject = snapshot.permit.sub;
+  const mode = snapshot.mode || "signed-permit";
+  const storageKey = await principalGroupsStorageKey({ subject, mode, cryptoApi });
+  gate.requireAllowed();
+  if (!storage || typeof storage.getItem !== "function" || typeof storage.setItem !== "function") {
+    throw new Error("GROUP_SCOPE_STORAGE_UNAVAILABLE");
+  }
+  let legacyStorePresent;
+  try {
+    legacyStorePresent = storage.getItem(STORAGE_KEY) !== null;
+  } catch {
+    throw new Error("GROUP_SCOPE_STORAGE_UNAVAILABLE");
+  }
+  gate.requireAllowed();
+  const provider = new LocalGroupsProvider({ storage, storageKey, onDiagnostic });
+  const service = gate.protect(createGroupsService({ provider, idFactory, eventTarget }));
+  // The key is deliberately not exposed in this API. Service methods enforce
+  // ongoing Studio access; use a new session after any principal change.
+  return Object.freeze({
+    schema: "ghrab-groups-principal-session-v2",
+    legacyStorePresent,
+    service,
+  });
 }
 
 export function installGlobalGroupsApi(options = {}) {
