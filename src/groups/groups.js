@@ -41,9 +41,15 @@ async function startGroupsPage() {
     denyGroupsPage();
     return;
   }
-  document.addEventListener("ghrab:access-changed", () => {
+  const invalidateIfNeeded = () => {
     if (!accessGate.allowed()) denyGroupsPage();
+  };
+  document.addEventListener("ghrab:access-changed", invalidateIfNeeded);
+  document.addEventListener("visibilitychange", () => {
+    if (!document.hidden) invalidateIfNeeded();
   });
+  window.addEventListener("focus", invalidateIfNeeded);
+  window.addEventListener("pageshow", invalidateIfNeeded);
 
 
 const $ = (selector, root = document) => root.querySelector(selector);
