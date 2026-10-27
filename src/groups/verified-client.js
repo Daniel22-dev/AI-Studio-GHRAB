@@ -15,6 +15,54 @@ import { createPrincipalGroupsSession } from "./group-service.js";
 const CONSUMERS = new Set([
   "ai-studio", "sortio", "essay-evaluator", "lesson-hub", "generator",
 ]);
+/**
+ * Least-privilege public API for cooperating consumers.
+ * This limits accidental cross-app disclosure; same-origin JavaScript can
+ * still import underlying localStorage modules or lie about its appId.
+ * Genuine malicious-code isolation requires server-side app identity checks.
+ */
+function bindConsumerService(service, appId) {
+  if (service?.schema !== "ghrab-groups-service-v1" ||
+      service.contractVersion !== 1) {
+    throw new Error("GROUP_CONSUMER_SERVICE_INVALID");
+  }
+  const projection = Object.freeze({
+    "ai-studio": null,
+    "sortio": "sortio",
+    "essay-evaluator": "essay-evaluator",
+    "lesson-hub": null,
+    "generator": "generator-forms",
+  });
+  if (!Object.hasOwn(projection, appId)) throw new Error("GROUP_CONSUMER_NOT_ALLOWED");
+  const expectedProjection = projection[appId];
+  const reader = Object.create(null);
+  Object.assign(reader, {
+    schema: "ghrab-groups-service-v1",
+    contractVersion: 1,
+    listGroupMetadata(requestedAppId, options) {
+      if (requestedAppId !== appId) throw new Error("GROUP_CONSUMER_BINDING_DENIED");
+      return service.listGroupMetadata(appId, options);
+    },
+  });
+  if (expectedProjection) {
+    reader.getRosterProjection = (groupId, requestedProjectionId) => {
+      if (requestedProjectionId !== expectedProjection) {
+        throw new Error("GROUP_CONSUMER_PROJECTION_DENIED");
+      }
+      return service.getRosterProjection(groupId, expectedProjection);
+    };
+  }
+  // SORTIO owns an explicit teacher-confirmed operation creating central
+  // groups from a local IS roster. Other readers must remain read-only.
+  if (appId === "sortio") {
+    for (const method of ["parseRoster","createGroup","importRoster","getRevision","subscribe"]) {
+      if (typeof service[method] !== "function") throw new Error("GROUP_CONSUMER_SERVICE_INVALID");
+      reader[method] = (...args) => service[method](...args);
+    }
+  }
+  return Object.freeze(reader);
+}
+
 const PREVIEW_KEY = "ghrab.ai-studio.role-preview.v1";
 let accessPromise = null;
 
@@ -79,6 +127,6 @@ export async function openVerifiedGroupsV2(appId) {
     schema: "ghrab-groups-verified-consumer-v2",
     consumerAppId: appId,
     legacyStorePresent: session.legacyStorePresent,
-    service: session.service,
+    service: bindConsumerService(session.service, appId),
   });
 }

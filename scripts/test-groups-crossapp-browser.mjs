@@ -66,7 +66,12 @@ try{
     const sm=sortio.service.getRosterProjection(created.groupId,"sortio").members;
     const em=essay.service.getRosterProjection(created.groupId,"essay-evaluator").members;
     const gm=generator.service.getRosterProjection(created.groupId,"generator-forms").members;
-    const lp=lesson.service.getRosterProjection(created.groupId,"lesson-hub");
+    const lessonHasRosterMethod=typeof lesson.service.getRosterProjection==="function";
+    const lessonHasFullGroupMethod=typeof lesson.service.getGroup==="function";
+    const sortioHasCreate=typeof sortio.service.createGroup==="function";
+    const essayHasCreate=typeof essay.service.createGroup==="function";
+    let sortioProjectionBlocked=false;
+    try{sortio.service.getRosterProjection(created.groupId,"essay-evaluator")}catch(e){sortioProjectionBlocked=e.message==="GROUP_CONSUMER_PROJECTION_DENIED"}
     const lm=lesson.service.listGroupMetadata("lesson-hub");
     const before={
       groupId:created.groupId,memberId,
@@ -74,7 +79,7 @@ try{
       revision:imported.group.revision,lessonRevision:lm[0].revision,
       sortioHasStatus:Object.hasOwn(sm[0],"status"),
       sortioHasEmail:Object.hasOwn(sm[0],"schoolEmail"),
-      lessonHasMembers:Object.hasOwn(lp,"members"),
+      lessonHasRosterMethod,lessonHasFullGroupMethod,sortioHasCreate,essayHasCreate,sortioProjectionBlocked,
       lessonMetadataMembers:Object.hasOwn(lm[0],"members"),
       essayEmail:em[0].schoolEmail,
     };
@@ -84,14 +89,18 @@ try{
     let revoked=false;
     try{writer.listGroups()}catch(e){revoked=e.message==="GROUP_ACCESS_DENIED";}
     const second=await openVerifiedGroupsV2("essay-evaluator");
-    return {before,revoked,bGroups:second.service.listGroups().length,
+    return {before,revoked,bGroups:second.service.listGroupMetadata("essay-evaluator").length,
       verifierBootCount:globalThis.__authBoots};
   });
   assert.deepEqual(result.before.projectedIds,Array(3).fill(result.before.memberId));
   assert.equal(result.before.lessonRevision,result.before.revision);
   assert.equal(result.before.sortioHasStatus,true);
   assert.equal(result.before.sortioHasEmail,false);
-  assert.equal(result.before.lessonHasMembers,false);
+  assert.equal(result.before.lessonHasRosterMethod,false);
+  assert.equal(result.before.lessonHasFullGroupMethod,false);
+  assert.equal(result.before.sortioHasCreate,true);
+  assert.equal(result.before.essayHasCreate,false);
+  assert.equal(result.before.sortioProjectionBlocked,true);
   assert.equal(result.before.lessonMetadataMembers,false);
   assert.equal(result.before.essayEmail,"synthetic@example.invalid");
   assert.equal(result.revoked,true);
