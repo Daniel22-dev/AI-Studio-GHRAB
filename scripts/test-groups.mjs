@@ -106,6 +106,11 @@ assert.equal(hostile.invalid.length, 2);
   const boris = secondImport.group.members.find((m) => m.memberId === borisId);
   assert.equal(alice.memberId, aliceId, "identity remains stable across member update");
   assert.equal(boris.status, "archived", "removed member is archived, not deleted");
+  const generatorFiltered = service.getRosterProjection(created.groupId, "generator-forms");
+  assert.ok(generatorFiltered.members.every(member => member.memberId !== borisId),
+    "GIT code-distribution view excludes archived members");
+  assert.ok(generatorFiltered.members.every(member => !Object.hasOwn(member, "status")),
+    "GIT does not need archival status in the active-only code roster");
   const sortioWithArchived = service.getRosterProjection(created.groupId, "sortio");
   const projectedBoris = sortioWithArchived.members.find((m) => m.memberId === borisId);
   assert.equal(projectedBoris?.status, "archived", "SORTIO projection includes archived members for non-destructive sync");
@@ -134,6 +139,14 @@ assert.equal(hostile.invalid.length, 2);
   assert.ok(!Object.hasOwn(lessonHub, "members"), "Lesson Hub projection contains metadata only");
   const generator = service.getRosterProjection(created.groupId, "generator");
   assert.ok(!Object.hasOwn(generator, "members"), "generator seam exists without roster exposure");
+  const generatorForms = service.getRosterProjection(created.groupId, "generator-forms");
+  assert.equal(generatorForms.consumerAppId, "generator-forms");
+  assert.equal(generatorForms.contract, "ghrab-roster-projection-v1");
+  assert.equal(generatorForms.group.groupId, created.groupId);
+  assert.ok(generatorForms.members.every(member =>
+    Object.keys(member).every(key => ["memberId", "name", "schoolEmail"].includes(key))));
+  assert.ok(generatorForms.members.every(member => Object.hasOwn(member, "schoolEmail")));
+  assert.ok(generatorForms.members.every(member => !Object.hasOwn(member, "code")));
   assert.throws(() => service.getRosterProjection(created.groupId, "unknown-app"), /GROUP_CONSUMER_NOT_ALLOWED/);
 
   const events = [];
