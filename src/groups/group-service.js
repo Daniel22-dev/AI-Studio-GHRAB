@@ -779,11 +779,17 @@ export function createGroupsPageAccessGate({
   if (typeof getSnapshot !== "function" || typeof isPreview !== "function") {
     throw new Error("GROUP_ACCESS_CONFIG_INVALID");
   }
-  const allowedRoles = new Set(["teacher", "operator", "admin"]);
   const readAuthorized = () => {
     try {
       const snapshot = getSnapshot();
       const permit = snapshot?.permit;
+      const allowedRoles = new Set([
+        "teacher",
+        ...(Array.isArray(snapshot?.policy?.administratorRoles)
+          ? snapshot.policy.administratorRoles : ["admin"]),
+        ...(Array.isArray(snapshot?.policy?.operatorRoles)
+          ? snapshot.policy.operatorRoles : ["operator"]),
+      ]);
       const expiresAt = permit?.exp == null ? null : Number(permit.exp);
       if (
         !snapshot?.ready ||
