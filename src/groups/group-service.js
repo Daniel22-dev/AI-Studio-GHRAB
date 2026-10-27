@@ -853,14 +853,14 @@ export async function principalGroupsStorageKey({
   cryptoApi = globalThis.crypto,
 } = {}) {
   if (typeof subject !== "string" || subject !== subject.trim() ||
-      !subject || subject.length > 512 || /[\\u0000-\\u001f\\u007f]/.test(subject) ||
+      !subject || subject.length > 512 || /[\u0000-\u001f\u007f]/.test(subject) ||
       !["signed-permit", "server-session"].includes(mode)) {
     throw new Error("GROUP_SCOPE_IDENTITY_INVALID");
   }
   if (!cryptoApi?.subtle || typeof cryptoApi.subtle.digest !== "function") {
     throw new Error("GROUP_SCOPE_CRYPTO_UNAVAILABLE");
   }
-  const encoded = new TextEncoder().encode("ghrab-teaching-groups-scope-v2\\u0000" + mode + "\\u0000" + subject);
+  const encoded = new TextEncoder().encode("ghrab-teaching-groups-scope-v2\u0000" + mode + "\u0000" + subject);
   const bytes = new Uint8Array(await cryptoApi.subtle.digest("SHA-256", encoded));
   if (bytes.length !== 32) throw new Error("GROUP_SCOPE_CRYPTO_INVALID");
   const hex = [...bytes].map((byte) => byte.toString(16).padStart(2, "0")).join("");
