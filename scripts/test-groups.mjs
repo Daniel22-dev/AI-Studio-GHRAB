@@ -5,6 +5,7 @@ import { fileURLToPath } from "node:url";
 import {
   LocalGroupsProvider,
   createGroupsService,
+  createGroupsPageAccessGate,
   parseRosterText,
   validateTeachingGroup,
   rosterProjectionToCsv,
@@ -222,6 +223,77 @@ assert.equal(hostile.invalid.length, 2);
   assert.ok(!/recordEvent|telemetry|errorReporter|queryString/i.test(serviceSource), "group service has no telemetry/reporting transport");
   assert.ok(appSource.includes('link.dataset.groupsAccess = ""'), "My Groups navigation uses a dedicated capability marker");
   assert.ok(appSource.includes("const teachingGroups = Boolean(teacher || admin || operator);"), "My Groups is available to teacher, admin and operator roles without broadening generic teacher-only UI");
+}
+
+{
+  // My Groups may mount only after the real Studio permit/session is validated.
+  const now = 1800000000;
+  const teacher = (sub = "teacher-A", role = "teacher") => ({
+    ready: true,
+    valid: true,
+    permit: { sub, role, exp: now + 3600 },
+  });
+  let active = teacher();
+  let preview = false;
+  const makeGate = () => createGroupsPageAccessGate({
+    getSnapshot: () => active,
+    isPreview: () => preview,
+    nowSeconds: () => now,
+  });
+  const gate = makeGate();
+  const { service } = serviceFixture();
+  const protectedService = gate.protect(service);
+  assert.equal(protectedService.schema, service.schema);
+  assert.equal(protectedService.listGroups().length, 0);
+  const created = protectedService.createGroup({
+    displayName: "Synthetic group",
+    schoolYear: "2026/27",
+  });
+  assert.equal(protectedService.getGroup(created.groupId).groupId, created.groupId);
+  assert.ok(Object.isFrozen(protectedService));
+
+  active = teacher("teacher-B");
+  assert.equal(gate.allowed(), false, "different teacher must invalidate the open page");
+  assert.throws(() => protectedService.listGroups(), /GROUP_ACCESS_DENIED/);
+  active = teacher("teacher-A");
+  assert.throws(() => protectedService.getGroup(created.groupId), /GROUP_ACCESS_DENIED/,
+    "a revoked view cannot be reactivated by returning to its old principal");
+
+  active = teacher();
+  preview = true;
+  assert.throws(makeGate, /GROUP_ACCESS_DENIED/, "colleague preview is never an authenticated teacher");
+  preview = false;
+  for (const invalid of [
+    { ready: false, valid: true, permit: teacher().permit },
+    { ready: true, valid: false, permit: teacher().permit },
+    { ready: true, valid: true, permit: { ...teacher().permit, sub: "" } },
+    teacher("synthetic", "student"),
+    { ready: true, valid: true, permit: { ...teacher().permit, exp: now } },
+  ]) {
+    active = invalid;
+    assert.throws(makeGate, /GROUP_ACCESS_DENIED/);
+  }
+  active = teacher("teacher-C", "operator");
+  assert.equal(makeGate().allowed(), true, "authorized deputy/operator role is supported");
+  active = teacher("teacher-D", "admin");
+  assert.equal(makeGate().allowed(), true, "authorized administrator role is supported");
+  active = { ready: true, valid: true, permit: { sub: "server-teacher", role: "teacher" } };
+  assert.equal(makeGate().allowed(), true, "verified server session need not carry an explicit expiry");
+  assert.throws(() => createGroupsPageAccessGate(), /GROUP_ACCESS_CONFIG_INVALID/);
+}
+
+{
+  const js = await readFile(path.join(root, "src/groups/groups.js"), "utf8");
+  assert.ok(js.indexOf("await studio.accessReady") >= 0);
+  assert.ok(js.indexOf("await studio.accessReady") < js.indexOf("const provider = new LocalGroupsProvider("),
+    "group provider must not mount or read browser rosters before the signed access gate");
+  assert.match(js, /accessGate\.protect\(createGroupsService\(\{ provider \}\)\)/,
+    "global group API must expose only the access-checked facade");
+  assert.match(js, /ghrab:access-changed/, "revocation must invalidate the visible group page");
+  assert.match(js, /function render\(\) \{\s*if \(!accessGate\.allowed\(\)\)/,
+    "late queued UI rendering must fail closed after access revocation");
+  assert.ok(js.includes("denyGroupsPage()"), "denied page must wipe personal data from the DOM");
+  assert.ok(!js.includes("installGlobalGroupsApi"), "page must not export an unguarded service");
 }
 
 console.log("Moje skupiny v1: all contract, parser, privacy, recovery, projection and UI sanity tests PASS");
