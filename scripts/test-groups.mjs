@@ -347,6 +347,13 @@ assert.equal(hostile.invalid.length, 2);
   const classB = b.service.createGroup({ displayName: "Account B", schoolYear: "2026/27" });
   assert.equal(b.service.listGroups()[0].groupId, classB.groupId);
   assert.throws(() => a1.service.exportBackup(), /GROUP_ACCESS_DENIED/);
+  const bBackup = b.service.exportBackup();
+  assert.equal(bBackup.schema, "ghrab-teaching-groups-account-backup-v2");
+  assert.equal(bBackup.version, 2);
+  assert.equal(typeof bBackup.scopeId, "string");
+  assert.throws(() => b.service.importBackup(legacy.exportBackup()), /GROUP_SCOPE_BACKUP_INVALID/,
+    "unbound legacy backups must never auto-migrate to a principal");
+
 
   access = principal("account-A");
   assert.throws(() => b.service.getGroup(classB.groupId), /GROUP_ACCESS_DENIED/);
@@ -357,6 +364,14 @@ assert.equal(hostile.invalid.length, 2);
     "new session for same identity preserves stable group ID");
   const backup = a2.service.exportBackup();
   assert.equal(backup.store.groups[0].groupId, classA.groupId);
+  assert.equal(backup.schema, "ghrab-teaching-groups-account-backup-v2");
+  assert.notEqual(backup.scopeId, bBackup.scopeId);
+  assert.throws(() => a2.service.importBackup(bBackup), /GROUP_SCOPE_BACKUP_OTHER_ACCOUNT/,
+    "signed-in teacher must reject a backup bound to another account");
+  assert.throws(() => a2.service.importBackup(legacy.exportBackup()), /GROUP_SCOPE_BACKUP_INVALID/,
+    "legacy v1 archive is not silently adopted");
+  assert.equal(a2.service.importBackup(backup).groups?.length ?? a2.service.listGroups().length, 1);
+
   assert.equal(legacy.listGroups()[0].groupId, original.groupId,
     "v1 store must survive scoped operations without mutation");
   const scopedAKey = await principalGroupsStorageKey({
