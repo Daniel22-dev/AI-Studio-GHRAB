@@ -77,7 +77,7 @@
             ['title','subtitle','main','challenge','stretch'].every(k=>textOk(station[k]))&&
             Array.isArray(station.questions)&&station.questions.length===3&&
             station.questions.every(textOk)&&
-            Array.isArray(station.support)&&station.support.length===3&&
+            Array.isArray(station.support)&&[3,4].includes(station.support.length)&&
             station.support.every(textOk),'STATION_CONTENT');
           if(station.explanations!==undefined){
             need(Array.isArray(station.explanations)&&station.explanations.length===3&&
@@ -300,6 +300,13 @@
     $('station-title').textContent=part.title;
     $('station-subtitle').textContent=part.subtitle;
     $('main-question').textContent=part.main;
+    const scenario=part.scenario||'';
+    $('station-scenario-text').textContent=scenario;
+    $('station-scenario-wrap').hidden=!scenario;
+    const mainContext=part.mainExplain||part.mainExplanation||'';
+    $('main-context-text').textContent=mainContext;
+    $('main-context-details').hidden=!mainContext;
+    $('main-context-details').open=false;
     const follow=$('follow-up-list');follow.replaceChildren();
     for(let i=0;i<3;i++){
       const row=el('div','follow-row');row.append(el('span','follow-num',String(i+1)));

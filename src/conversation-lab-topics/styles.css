@@ -482,6 +482,14 @@ font-weight:850;
 line-height:1.25;
 letter-spacing:-.03em;
 margin:12px 0 25px}
+.station-scenario{margin:-8px 0 18px;
+ padding:12px 14px;border-left:3px solid var(--accent);
+ background:var(--surface);border-radius:9px}
+.station-scenario p{margin:5px 0 0;white-space:pre-line;overflow-wrap:anywhere}
+.station-main-context{margin:-8px 0 18px;padding:9px 12px;
+ border:1px solid var(--line);border-radius:10px}
+.station-main-context summary{cursor:pointer;font-weight:750}
+.station-main-context p{margin:8px 0 0;color:var(--muted);white-space:pre-line}
 .follow-heading{font-size:.78rem;
 color:var(--muted);
 font-weight:850;
