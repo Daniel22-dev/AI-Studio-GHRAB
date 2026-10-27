@@ -107,6 +107,7 @@ assert.equal(hostile.invalid.length, 2);
   assert.equal(alice.memberId, aliceId, "identity remains stable across member update");
   assert.equal(boris.status, "archived", "removed member is archived, not deleted");
   const generatorFiltered = service.getRosterProjection(created.groupId, "generator-forms");
+  assert.equal(generatorFiltered.members.length, 2, "GIT code distribution includes exactly the two active members");
   assert.ok(generatorFiltered.members.every(member => member.memberId !== borisId),
     "GIT code-distribution view excludes archived members");
   assert.ok(generatorFiltered.members.every(member => !Object.hasOwn(member, "status")),
