@@ -766,6 +766,72 @@ export function createGroupsService({ provider = new LocalGroupsProvider(), idFa
   return Object.freeze(api);
 }
 
+/**
+ * Defence-in-depth for the My Groups UI, not a localStorage tenant boundary.
+ * The signed permit/session is verified by Studio's access-control module.
+ * A revoked or replaced principal permanently invalidates this page instance.
+ */
+export function createGroupsPageAccessGate({
+  getSnapshot,
+  isPreview = () => false,
+  nowSeconds = () => Math.floor(Date.now() / 1000),
+} = {}) {
+  if (typeof getSnapshot !== "function" || typeof isPreview !== "function") {
+    throw new Error("GROUP_ACCESS_CONFIG_INVALID");
+  }
+  const allowedRoles = new Set(["teacher", "operator", "admin"]);
+  const readAuthorized = () => {
+    try {
+      const snapshot = getSnapshot();
+      const permit = snapshot?.permit;
+      const expiresAt = permit?.exp == null ? null : Number(permit.exp);
+      if (
+        !snapshot?.ready ||
+        !snapshot?.valid ||
+        typeof permit?.sub !== "string" ||
+        !permit.sub.trim() ||
+        !allowedRoles.has(permit.role) ||
+        isPreview() ||
+        (expiresAt !== null && (!Number.isFinite(expiresAt) || expiresAt <= nowSeconds()))
+      ) return null;
+      return permit.sub;
+    } catch {
+      return null;
+    }
+  };
+  const subject = readAuthorized();
+  if (!subject) throw new Error("GROUP_ACCESS_DENIED");
+  let invalidated = false;
+  const allowed = () => {
+    if (invalidated) return false;
+    if (readAuthorized() !== subject) {
+      invalidated = true;
+      return false;
+    }
+    return true;
+  };
+  const requireAllowed = () => {
+    if (!allowed()) throw new Error("GROUP_ACCESS_DENIED");
+  };
+  const protect = (service) => {
+    requireAllowed();
+    if (!service || typeof service !== "object" || service.schema !== "ghrab-groups-service-v1") {
+      throw new Error("GROUP_ACCESS_SERVICE_INVALID");
+    }
+    const guarded = Object.create(null);
+    for (const [key, value] of Object.entries(service)) {
+      Object.defineProperty(guarded, key, {
+        enumerable: true,
+        value: typeof value === "function"
+          ? (...args) => { requireAllowed(); return value(...args); }
+          : value,
+      });
+    }
+    return Object.freeze(guarded);
+  };
+  return Object.freeze({ allowed, requireAllowed, protect });
+}
+
 export function installGlobalGroupsApi(options = {}) {
   const service = createGroupsService(options);
   const existing = globalThis.GHRAB_GROUPS;
