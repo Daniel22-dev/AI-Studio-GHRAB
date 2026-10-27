@@ -150,6 +150,62 @@ try {
     assert.ok(!(await page.locator("body").innerText()).includes("Synthetic Pupil"));
   });
 
+  await verify("G07 Web Crypto v2 isolates browser-profile account sessions and backups", async () => {
+    const page = await openScenario({ access: authorized() });
+    await page.locator("#groups-detail").getByText("Synthetic Pupil").waitFor();
+    const result = await page.evaluate(async () => {
+      const mod = await import("/AI-Studio-GHRAB/groups/group-service.js");
+      const a = await mod.createPrincipalGroupsSession({
+        getSnapshot: () => window.__syntheticAccess,
+      });
+      const legacyPresent = a.legacyStorePresent;
+      const beforeA = a.service.listGroups().length;
+      const groupA = a.service.createGroup({
+        displayName: "Private Account A", schoolYear: "2026/27",
+      });
+      const exportA = a.service.exportBackup();
+      window.__syntheticAccess = {
+        ready: true, valid: true,
+        permit: { sub: "teacher-B", role: "teacher", exp: Math.floor(Date.now() / 1000) + 3600 },
+      };
+      let revokedA = false;
+      try { a.service.listGroups(); } catch (e) { revokedA = e.message === "GROUP_ACCESS_DENIED"; }
+      const b = await mod.createPrincipalGroupsSession({
+        getSnapshot: () => window.__syntheticAccess,
+      });
+      const beforeB = b.service.listGroups().length;
+      const groupB = b.service.createGroup({
+        displayName: "Private Account B", schoolYear: "2026/27",
+      });
+      let foreignRejected = false;
+      try { b.service.importBackup(exportA); }
+      catch (e) { foreignRejected = e.message === "GROUP_SCOPE_BACKUP_OTHER_ACCOUNT"; }
+      window.__syntheticAccess = {
+        ready: true, valid: true,
+        permit: { sub: "teacher-A", role: "teacher", exp: Math.floor(Date.now() / 1000) + 3600 },
+      };
+      const a2 = await mod.createPrincipalGroupsSession({
+        getSnapshot: () => window.__syntheticAccess,
+      });
+      return {
+        legacyPresent, beforeA, beforeB, revokedA, foreignRejected,
+        sameId: a2.service.getGroup(groupA.groupId)?.groupId === groupA.groupId,
+        bName: groupB.displayName,
+        backupSchema: exportA.schema,
+        aName: a2.service.listGroups()[0]?.displayName,
+      };
+    });
+    assert.equal(result.legacyPresent, true);
+    assert.equal(result.beforeA, 0);
+    assert.equal(result.beforeB, 0);
+    assert.equal(result.revokedA, true);
+    assert.equal(result.foreignRejected, true);
+    assert.equal(result.sameId, true);
+    assert.equal(result.aName, "Private Account A");
+    assert.equal(result.bName, "Private Account B");
+    assert.equal(result.backupSchema, "ghrab-teaching-groups-account-backup-v2");
+  });
+
   assert.deepEqual(errors, [], "browser must not have any uncaught page errors");
   console.log(JSON.stringify({
     suite: "Groups UI access guard, synthetic browser",
