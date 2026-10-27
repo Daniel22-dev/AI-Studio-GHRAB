@@ -1,4 +1,50 @@
-import { LocalGroupsProvider, installGlobalGroupsApi } from "./group-service.js";
+import { LocalGroupsProvider, createGroupsPageAccessGate, createGroupsService } from "./group-service.js";
+
+/* An unauthenticated page must not render a remembered browser-profile roster.
+   This guards the UI/service facade, not raw same-origin browser storage. */
+function denyGroupsPage() {
+  for (const dialog of document.querySelectorAll("dialog")) {
+    try { if (dialog.open) dialog.close(); } catch { /* Already closed. */ }
+    dialog.remove();
+  }
+  const main = document.querySelector("main");
+  if (!main) return;
+  const section = document.createElement("section");
+  section.className = "page-hero shell access-denied-page";
+  section.setAttribute("role", "alert");
+  const title = document.createElement("h1");
+  title.textContent = "Moje skupiny jsou uzamčeny";
+  const description = document.createElement("p");
+  description.textContent = "Pro práci se seznamy žáků je nutné platné oprávnění učitele. Na sdíleném počítači používejte vlastní profil prohlížeče; místní úložiště není odděleno mezi účty.";
+  const link = document.createElement("a");
+  link.className = "button primary";
+  link.href = "../access/";
+  link.textContent = "Otevřít Můj přístup";
+  section.append(title, description, link);
+  main.replaceChildren(section);
+}
+
+async function startGroupsPage() {
+  const studio = globalThis.GHRAB;
+  if (!studio?.accessReady || typeof studio.getAccessSnapshot !== "function") {
+    denyGroupsPage();
+    return;
+  }
+  try { await studio.accessReady; } catch { denyGroupsPage(); return; }
+  let accessGate;
+  try {
+    accessGate = createGroupsPageAccessGate({
+      getSnapshot: () => studio.getAccessSnapshot(),
+      isPreview: () => Boolean(studio.isColleaguePreview?.()),
+    });
+  } catch {
+    denyGroupsPage();
+    return;
+  }
+  document.addEventListener("ghrab:access-changed", () => {
+    if (!accessGate.allowed()) denyGroupsPage();
+  });
+
 
 const $ = (selector, root = document) => root.querySelector(selector);
 const diagnostics = [];
@@ -40,7 +86,17 @@ const provider = new LocalGroupsProvider({
     renderDiagnostic();
   },
 });
-const groups = installGlobalGroupsApi({ provider });
+const groups = accessGate.protect(createGroupsService({ provider }));
+if (Object.prototype.hasOwnProperty.call(globalThis, "GHRAB_GROUPS")) {
+  denyGroupsPage();
+  return;
+}
+Object.defineProperty(globalThis, "GHRAB_GROUPS", {
+  value: groups,
+  configurable: false,
+  enumerable: true,
+  writable: false,
+});
 
 function renderDiagnostic() {
   const box = $("#groups-diagnostic");
@@ -146,6 +202,7 @@ function renderDetail() {
 }
 
 function render() {
+  if (!accessGate.allowed()) { denyGroupsPage(); return; }
   document.querySelectorAll("[data-group-filter]").forEach((node) => node.classList.toggle("is-active", node.dataset.groupFilter === filter));
   renderList(); renderDiagnostic();
 }
@@ -273,3 +330,7 @@ $("#groups-backup-file").addEventListener("change", (event) => { const file = ev
 document.querySelectorAll("[data-lang]").forEach((node) => node.addEventListener("click", () => setTimeout(render, 0)));
 
 render();
+
+}
+
+void startGroupsPage().catch(() => denyGroupsPage());
