@@ -7,7 +7,7 @@ import os from 'node:os';
 import path from 'node:path';
 import { spawnSync } from 'node:child_process';
 import { fileURLToPath } from 'node:url';
-import { BASELINE, ONLY_EXCEPTION } from './release-wave-platform-policy.mjs';
+import { BASELINE, ONLY_EXCEPTION, LUDUS_EXCEPTION } from './release-wave-platform-policy.mjs';
 
 const root = path.resolve(path.dirname(fileURLToPath(import.meta.url)), '..');
 const script = path.join(root, 'scripts/sync-runtime-fallback.mjs');
@@ -26,10 +26,10 @@ function fixture() {
   fs.copyFileSync(path.join(root,'scripts/release-wave-platform-policy.mjs'),
     path.join(work,'scripts/release-wave-platform-policy.mjs'));
   const app = id => {
-    const isDiff = id === ONLY_EXCEPTION.id;
-    const expectedVersion = isDiff ? ONLY_EXCEPTION.version : version;
-    const platform = isDiff ? ONLY_EXCEPTION.platformVersion : platformVersion;
-    const range = isDiff ? ONLY_EXCEPTION.requiredPlatformRange : requiredPlatformRange;
+    const reviewed = id === ONLY_EXCEPTION.id ? ONLY_EXCEPTION : id === LUDUS_EXCEPTION.id ? LUDUS_EXCEPTION : null;
+    const expectedVersion = reviewed ? reviewed.version : version;
+    const platform = reviewed ? reviewed.platformVersion : platformVersion;
+    const range = reviewed ? reviewed.requiredPlatformRange : requiredPlatformRange;
     return {
       id, version: expectedVersion,
       publishedAt: '2026-10-13T07:07:35.000Z',
@@ -43,7 +43,7 @@ function fixture() {
     schema: 'ghrab-platform-release-wave-v1', wave: BASELINE.wave,
     status: 'candidate', platformVersion, requiredPlatformRange,
     applications: generated.map(({ id, version }) =>
-      id === ONLY_EXCEPTION.id ? { ...ONLY_EXCEPTION } : { id, version }),
+      id === ONLY_EXCEPTION.id ? { ...ONLY_EXCEPTION } : id === LUDUS_EXCEPTION.id ? { ...LUDUS_EXCEPTION } : { id, version }),
     policy: { requireSourceVerificationForDeploy: true, allowSnapshotForDeploy: false },
   };
   const report = {
@@ -92,6 +92,22 @@ test('pre-sync legacy is read-only, applies only to exact committed Differentiat
     assert.equal(f.run('--check','--committed-presync-legacy').status, 0, 'exact old snapshot may be read-only audited');
     assert.notEqual(f.run('--committed-presync-legacy').status, 0, 'historical flag must never refresh');
     assert.equal(f.read('apps.fallback.json').find(row=>row.id===ONLY_EXCEPTION.id).platform.platformVersion,'1.1.2');
+  } finally { f.dispose(); }
+});
+
+test('LUDUS 1.1.2 downgrade is never grandfathered by historical pre-sync check', () => {
+  const f = fixture();
+  try {
+    for (const rows of [f.generated, f.fallback]) {
+      const ludus = rows.find(row => row.id === LUDUS_EXCEPTION.id);
+      ludus.platform.platformVersion = BASELINE.platformVersion;
+      ludus.platform.requiredPlatformRange = BASELINE.requiredPlatformRange;
+      ludus.compatibility.platformRange = BASELINE.requiredPlatformRange;
+    }
+    f.persist();
+    assert.notEqual(f.run('--check').status, 0);
+    assert.notEqual(f.run('--check','--committed-presync-legacy').status, 0);
+    assert.equal(f.read('apps.fallback.json').find(row=>row.id==='ludus').platform.platformVersion,'1.1.2');
   } finally { f.dispose(); }
 });
 

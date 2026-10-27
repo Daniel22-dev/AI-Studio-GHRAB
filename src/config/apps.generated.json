@@ -416,7 +416,7 @@
       "cs": "LUDUS",
       "en": "LUDUS"
     },
-    "version": "1.16.31",
+    "version": "1.16.32",
     "status": {
       "cs": "Ověřováno v pilotu",
       "en": "Being validated in pilot"
@@ -453,16 +453,17 @@
       "canonical-branding",
       "storage-namespace-v1",
       "artifact-envelope-v1",
-      "suite-session-lifecycle-v1"
+      "suite-session-lifecycle-v1",
+      "material-flow-outbound"
     ],
     "compatibility": {
       "studioMinVersion": "0.5.1",
       "materialSchema": "ghrab-material-v1",
       "studioBridge": "2.0",
       "platformContract": "ghrab-platform-v1",
-      "platformRange": ">=1.1.2 <2.0.0"
+      "platformRange": ">=1.1.3 <2.0.0"
     },
-    "publishedAt": "2026-10-09T17:33:57.534Z",
+    "publishedAt": "2026-10-26T17:10:45.146Z",
     "aiCore": {
       "schema": "ghrab-ai-app-integration-v1",
       "status": "integrated-p1",
@@ -486,16 +487,16 @@
     "platform": {
       "schema": "ghrab-platform-app-integration-v1",
       "contract": "ghrab-platform-v1",
-      "requiredPlatformRange": ">=1.1.2 <2.0.0",
-      "platformVersion": "1.1.2",
+      "requiredPlatformRange": ">=1.1.3 <2.0.0",
+      "platformVersion": "1.1.3",
       "brandVersion": "1.0.0",
       "themeContract": "ghrab-theme-v1",
       "swContract": 1,
       "studioBridge": "ghrab-studio-handoff-v2",
       "artifactEnvelope": "ghrab-artifact-envelope-v1",
       "storagePrefix": "ghrab.ludus.",
-      "cacheName": "ghrab-ludus-v1.16.31",
-      "requiredRange": ">=1.1.2 <2.0.0",
+      "cacheName": "ghrab-ludus-v1.16.32",
+      "requiredRange": ">=1.1.3 <2.0.0",
       "storageContract": "ghrab-storage-namespace-v1",
       "bridgeContract": "ghrab-studio-handoff-v2",
       "artifactContract": "ghrab-artifact-envelope-v1",
@@ -506,7 +507,7 @@
     "assurance": {
       "schema": "ghrab-patch-assurance-v1",
       "evidenceManifestUrl": "https://daniel22-dev.github.io/Ludus/patch-assurance.json",
-      "evidenceManifestSha256": "f28475e894ebae90095e3bb5b0d1e61fc24348ec3e9424e12e950a1130e61e34"
+      "evidenceManifestSha256": "7a7035d8f4d91bc422abe640c97abbbba24d1af39dfc8cda059d0ef05b6460fb"
     }
   },
   {
