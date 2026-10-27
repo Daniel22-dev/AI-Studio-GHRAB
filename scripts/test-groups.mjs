@@ -373,7 +373,7 @@ assert.equal(hostile.invalid.length, 2);
   assert.notEqual(scopedAKey, serverKey, "server-session migration is explicit");
   assert.equal(scopedAKey.includes("account-A"), false, "identity must not appear in storage key");
   assert.deepEqual(Object.keys(Object.fromEntries(sharedBrowser.map)).filter(k => k.startsWith("ghrab.ai-studio.groups.account.v2.")).length, 2);
-  assert.throws(() => principalGroupsStorageKey({ subject: " " }), /GROUP_SCOPE_IDENTITY_INVALID/);
+  await assert.rejects(principalGroupsStorageKey({ subject: " " }), /GROUP_SCOPE_IDENTITY_INVALID/);
   await assert.rejects(principalGroupsStorageKey({ subject: " account-A ", cryptoApi: webcrypto }), /GROUP_SCOPE_IDENTITY_INVALID/);
   await assert.rejects(principalGroupsStorageKey({ subject: "account-A", cryptoApi: {} }), /GROUP_SCOPE_CRYPTO_UNAVAILABLE/);
   access = principal("account-C");
