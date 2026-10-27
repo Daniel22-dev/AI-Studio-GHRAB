@@ -1,7 +1,21 @@
 {
   "schema": "ai-studio-changelog-v1",
-  "current": "0.21.258",
+  "current": "0.21.259",
   "items": [
+    {
+      "version": "0.21.259",
+      "date": "2026-10-27",
+      "title": {
+        "cs": "Etapa 8: bezpečné napojení GIT na Moje skupiny",
+        "en": "Stage 8: scoped GIT integration with My Groups"
+      },
+      "changes": [
+        {
+          "cs": "Zaveden samostatný aktivní consumer generator-forms s projekcí jména a školního e-mailu pro oprávněnou přípravu kódů učitelem v GIT. Původní metadata-only consumer generator zůstává nezměněn; výsledky ani přístupové kódy se neukládají do centrální služby. Nasazení GIT zůstává podmíněno ověřením.",
+          "en": "Added an active-only, name-and-school-email generator-forms projection for authorized teacher code distribution in GIT. The existing metadata-only generator consumer remains unchanged; scores and codes are never written to the central service. GIT rollout remains separately gated by validation."
+        }
+      ]
+    },
     {
       "version": "0.21.258",
       "date": "2026-10-26",
