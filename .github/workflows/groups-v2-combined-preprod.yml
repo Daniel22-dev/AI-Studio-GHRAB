@@ -1,0 +1,43 @@
+name: My Groups v2 combined integration QA (NO DEPLOY)
+on:
+  push:
+    branches:
+      - feature/groups-v2-integrated-preprod-20261027
+permissions:
+  contents: read
+jobs:
+  combined-source-tests:
+    name: scoped-groups-combined
+    runs-on: ubuntu-latest
+    timeout-minutes: 40
+    steps:
+      - uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683
+        with:
+          persist-credentials: false
+      - uses: actions/setup-node@49933ea5288caeca8642d1e84afbd3f7d6820020
+        with:
+          node-version: '22'
+      - name: Verify exact source and Node regression suite
+        shell: bash
+        run: |
+          set -euo pipefail
+          test "$(git rev-parse HEAD)" = "$GITHUB_SHA"
+          node --check src/groups/group-service.js
+          node --check src/groups/groups.js
+          node --check src/groups/legacy-migration.js
+          node --check src/groups/verified-client.js
+          node --check scripts/test-groups-legacy-migration.mjs
+          node --check scripts/test-groups-legacy-migration-browser.mjs
+          node --check scripts/test-groups-crossapp-browser.mjs
+          npm run test:groups
+          node scripts/test-groups-legacy-migration.mjs
+      - name: Install pinned browser dependencies
+        run: |
+          npm ci --ignore-scripts --no-audit --no-fund --registry=https://registry.npmjs.org
+          npx playwright install --with-deps chromium
+      - name: Verify browser roster, app capability and legacy migration together
+        run: |
+          node scripts/test-groups-access-browser.mjs
+          node scripts/test-groups-verified-client-browser.mjs
+          node scripts/test-groups-crossapp-browser.mjs
+          node scripts/test-groups-legacy-migration-browser.mjs
