@@ -13,6 +13,7 @@ const CONSUMER_RULES = Object.freeze({
   "essay-evaluator": Object.freeze({ members: "name-email" }),
   "lesson-hub": Object.freeze({ members: "none" }),
   generator: Object.freeze({ members: "none", futureOnly: true }),
+  "generator-forms": Object.freeze({ members: "name-email" }),
 });
 
 function nowIso() {
