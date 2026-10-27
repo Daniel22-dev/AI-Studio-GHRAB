@@ -292,10 +292,18 @@ assert.equal(hostile.invalid.length, 2);
 {
   const js = await readFile(path.join(root, "src/groups/groups.js"), "utf8");
   assert.ok(js.indexOf("await studio.accessReady") >= 0);
-  assert.ok(js.indexOf("await studio.accessReady") < js.indexOf("const provider = new LocalGroupsProvider("),
-    "group provider must not mount or read browser rosters before the signed access gate");
-  assert.match(js, /accessGate\.protect\(createGroupsService\(\{ provider \}\)\)/,
-    "global group API must expose only the access-checked facade");
+  assert.ok(js.indexOf("await studio.accessReady") < js.indexOf("await createPrincipalGroupsSession("),
+    "account-scoped group service must not mount before signed Studio authorization");
+  assert.match(js, /await createPrincipalGroupsSession\(/,
+    "My Groups writer must use account-scoped verified v2 session");
+  assert.match(js, /const groups = scoped\.service;/,
+    "global group API must expose only the verified v2 facade");
+  assert.ok(!js.includes("new LocalGroupsProvider("), "v1 shared browser provider must not mount");
+  assert.ok(!js.includes("createGroupsService({ provider })"), "v1 consumer fallback forbidden");
+  assert.match(js, /legacyStorePresent = scoped\.legacyStorePresent/,
+    "old v1 groups must signal review without automatic migration");
+  assert.match(js, /ai-studio-moje-skupiny-ucet-v2-/,
+    "account-scoped v2 backup file must be distinguished from v1");
   assert.match(js, /ghrab:access-changed/, "revocation must invalidate the visible group page");
   assert.match(js, /function render\(\) \{\s*if \(!accessGate\.allowed\(\)\)/,
     "late queued UI rendering must fail closed after access revocation");
