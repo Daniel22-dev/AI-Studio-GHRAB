@@ -77,7 +77,7 @@
             ['title','subtitle','main','challenge','stretch'].every(k=>textOk(station[k]))&&
             Array.isArray(station.questions)&&station.questions.length===3&&
             station.questions.every(textOk)&&
-            Array.isArray(station.support)&&station.support.length===3&&
+            Array.isArray(station.support)&&[3,4].includes(station.support.length)&&
             station.support.every(textOk),'STATION_CONTENT');
           if(station.explanations!==undefined){
             need(Array.isArray(station.explanations)&&station.explanations.length===3&&
