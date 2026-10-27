@@ -2,6 +2,7 @@
 /* Synthetic browser validation of the My Groups UI guard. Not real school UAT. */
 import assert from "node:assert/strict";
 import { readFileSync } from "node:fs";
+import { createHash } from "node:crypto";
 import { chromium } from "playwright";
 
 const origin = "https://groups-guard.example";
@@ -33,6 +34,8 @@ const store = {
     }],
   }],
 };
+const accountKey = subject => "ghrab.ai-studio.groups.account.v2." +
+  createHash("sha256").update("ghrab-teaching-groups-scope-v2\u0000signed-permit\u0000" + subject).digest("hex");
 const authorized = (sub = "teacher-A") => ({
   ready: true, valid: true,
   permit: { sub, role: "teacher", exp: now + 3600 },
@@ -52,8 +55,9 @@ async function openScenario({ access, preview = false }) {
   contexts.push(context);
   const page = await context.newPage();
   page.on("pageerror", error => errors.push(error.message));
-  await page.addInitScript(({ access, preview, store }) => {
+  await page.addInitScript(({ access, preview, store, scopedKey }) => {
     localStorage.setItem("ghrab.ai-studio.groups.v1", JSON.stringify(store));
+    localStorage.setItem(scopedKey, JSON.stringify(store));
     window.__syntheticAccess = access;
     window.__syntheticPreview = preview;
     window.GHRAB = {
@@ -61,7 +65,7 @@ async function openScenario({ access, preview = false }) {
       getAccessSnapshot: () => window.__syntheticAccess,
       isColleaguePreview: () => window.__syntheticPreview,
     };
-  }, { access, preview, store });
+  }, { access, preview, store, scopedKey: accountKey("teacher-A") });
   await page.route(origin + "/**", async route => {
     const pathname = new URL(route.request().url()).pathname;
     const source = sources.get(pathname);
@@ -151,8 +155,8 @@ try {
   });
 
   await verify("G07 Web Crypto v2 isolates browser-profile account sessions and backups", async () => {
-    const page = await openScenario({ access: authorized() });
-    await page.locator("#groups-detail").getByText("Synthetic Pupil").waitFor();
+    const page = await openScenario({ access: authorized("teacher-C") });
+    await page.waitForFunction(() => window.GHRAB_GROUPS?.schema === "ghrab-groups-service-v1");
     const result = await page.evaluate(async () => {
       const mod = await import("/AI-Studio-GHRAB/groups/group-service.js");
       const a = await mod.createPrincipalGroupsSession({
@@ -166,7 +170,7 @@ try {
       const exportA = a.service.exportBackup();
       window.__syntheticAccess = {
         ready: true, valid: true,
-        permit: { sub: "teacher-B", role: "teacher", exp: Math.floor(Date.now() / 1000) + 3600 },
+        permit: { sub: "teacher-D", role: "teacher", exp: Math.floor(Date.now() / 1000) + 3600 },
       };
       let revokedA = false;
       try { a.service.listGroups(); } catch (e) { revokedA = e.message === "GROUP_ACCESS_DENIED"; }
@@ -182,7 +186,7 @@ try {
       catch (e) { foreignRejected = e.message === "GROUP_SCOPE_BACKUP_OTHER_ACCOUNT"; }
       window.__syntheticAccess = {
         ready: true, valid: true,
-        permit: { sub: "teacher-A", role: "teacher", exp: Math.floor(Date.now() / 1000) + 3600 },
+        permit: { sub: "teacher-C", role: "teacher", exp: Math.floor(Date.now() / 1000) + 3600 },
       };
       const a2 = await mod.createPrincipalGroupsSession({
         getSnapshot: () => window.__syntheticAccess,
@@ -204,6 +208,14 @@ try {
     assert.equal(result.aName, "Private Account A");
     assert.equal(result.bName, "Private Account B");
     assert.equal(result.backupSchema, "ghrab-teaching-groups-account-backup-v2");
+  });
+
+  await verify("G08 a different verified teacher cannot see another account's seeded roster", async () => {
+    const page = await openScenario({ access: authorized("teacher-B") });
+    await page.waitForFunction(() => window.GHRAB_GROUPS?.schema === "ghrab-groups-service-v1");
+    assert.ok(!(await page.locator("body").innerText()).includes("Synthetic Pupil"));
+    assert.equal(await page.evaluate(() => window.GHRAB_GROUPS.listGroups().length), 0);
+    assert.equal(await page.evaluate(() => !!localStorage.getItem("ghrab.ai-studio.groups.v1")), true);
   });
 
   assert.deepEqual(errors, [], "browser must not have any uncaught page errors");
