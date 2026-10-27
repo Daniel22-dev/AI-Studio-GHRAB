@@ -8,7 +8,7 @@ permissions:
 jobs:
   migration-guard:
     runs-on: ubuntu-latest
-    timeout-minutes: 15
+    timeout-minutes: 35
     steps:
       - uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683
         with:
@@ -16,12 +16,19 @@ jobs:
       - uses: actions/setup-node@49933ea5288caeca8642d1e84afbd3f7d6820020
         with:
           node-version: '22'
-      - name: Exact SHA and validation tests
+      - name: Exact SHA, tests and existing group contract
         shell: bash
         run: |
           set -euo pipefail
           test "$(git rev-parse HEAD)" = "$GITHUB_SHA"
           node --check src/groups/legacy-migration.js
           node --check scripts/test-groups-legacy-migration.mjs
+          node --check scripts/test-groups-legacy-migration-browser.mjs
           node scripts/test-groups-legacy-migration.mjs
           npm run test:groups
+      - name: Install pinned browser test dependencies
+        run: |
+          npm ci --ignore-scripts --no-audit --no-fund --registry=https://registry.npmjs.org
+          npx playwright install --with-deps chromium
+      - name: Synthetic Web Crypto browser migration verification
+        run: node scripts/test-groups-legacy-migration-browser.mjs
