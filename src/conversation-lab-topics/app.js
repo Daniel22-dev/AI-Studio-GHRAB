@@ -300,6 +300,13 @@
     $('station-title').textContent=part.title;
     $('station-subtitle').textContent=part.subtitle;
     $('main-question').textContent=part.main;
+    const scenario=part.scenario||'';
+    $('station-scenario-text').textContent=scenario;
+    $('station-scenario-wrap').hidden=!scenario;
+    const mainContext=part.mainExplain||part.mainExplanation||'';
+    $('main-context-text').textContent=mainContext;
+    $('main-context-details').hidden=!mainContext;
+    $('main-context-details').open=false;
     const follow=$('follow-up-list');follow.replaceChildren();
     for(let i=0;i<3;i++){
       const row=el('div','follow-row');row.append(el('span','follow-num',String(i+1)));

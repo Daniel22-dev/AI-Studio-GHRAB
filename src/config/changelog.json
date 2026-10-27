@@ -17,6 +17,10 @@
         {
           "cs": "Regresní testy kontrolují bezztrátový import, obnovu místní zálohy, odmítnutí páté opory i neplatných kontrolních znaků. Nová veřejná knihovna deseti témat stále vyžaduje samostatné pedagogické a podpisové vydávací brány.",
           "en": "Regression coverage verifies lossless import and local-backup restore and rejects a fifth support or invalid control characters. Publishing the new ten-topic library remains subject to separate pedagogical and cryptographic release gates."
+        },
+        {
+          "cs": "Přehrávač zobrazuje také autorské modelové situace a kontext hlavní otázky (mainExplain/mainExplanation) jako bezpečný text. Při přechodu mezi stanicemi se nenechává kontext předchozí stanice. Veřejná 0.11.0 zůstává nedotčená.",
+          "en": "The topic viewer also displays authored scenarios and main-question context (mainExplain/mainExplanation) as inert text. Navigating between stations clears the previous station's context. The public 0.11.0 release remains unchanged."
         }
       ]
     },
