@@ -277,6 +277,11 @@ assert.equal(hostile.invalid.length, 2);
   assert.equal(makeGate().allowed(), true, "authorized deputy/operator role is supported");
   active = teacher("teacher-D", "admin");
   assert.equal(makeGate().allowed(), true, "authorized administrator role is supported");
+  active = {
+    ...teacher("teacher-E", "school-administrator"),
+    policy: { administratorRoles: ["school-administrator"], operatorRoles: ["operator"] },
+  };
+  assert.equal(makeGate().allowed(), true, "signed policy-defined administrator role is supported");
   active = { ready: true, valid: true, permit: { sub: "server-teacher", role: "teacher" } };
   assert.equal(makeGate().allowed(), true, "verified server session need not carry an explicit expiry");
   assert.throws(() => createGroupsPageAccessGate(), /GROUP_ACCESS_CONFIG_INVALID/);
