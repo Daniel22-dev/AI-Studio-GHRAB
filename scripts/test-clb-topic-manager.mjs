@@ -84,6 +84,6 @@ test('four optional student speaking supports survive static import and local ba
  five.content.en.levels.A1.stations[0].support.push('A fifth forbidden support');
  assert.throws(()=>core.validateRecord(five),/STATION_CONTENT/);
  const unsafe=structuredClone(record);
- unsafe.content.en.levels.A1.stations[0].support[3]='\\u0000invalid';
+ unsafe.content.en.levels.A1.stations[0].support[3]='\u0000invalid';
  assert.throws(()=>core.validateRecord(unsafe),/STATION_CONTENT/);
 });
