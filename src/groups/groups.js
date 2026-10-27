@@ -1,4 +1,4 @@
-import { LocalGroupsProvider, createGroupsPageAccessGate, createGroupsService } from "./group-service.js";
+import { createGroupsPageAccessGate, createPrincipalGroupsSession } from "./group-service.js";
 
 /* An unauthenticated page must not render a remembered browser-profile roster.
    This guards the UI/service facade, not raw same-origin browser storage. */
@@ -82,17 +82,32 @@ function displayError(error) {
     ROSTER_EMPTY: tr("V seznamu nebyl rozpoznán žádný platný student.", "No valid student was recognized in the roster."),
     ROSTER_IMPORT_TOO_LARGE: tr("Vložený seznam je příliš velký.", "The pasted roster is too large."),
     GROUP_STORAGE_WRITE_FAILED: tr("Data se nepodařilo bezpečně uložit v tomto prohlížeči.", "The data could not be safely stored in this browser."),
+    GROUP_SCOPE_BACKUP_INVALID: tr("Záloha není ověřený formát v2 pro tento účet. Starší zálohy vyžadují kontrolovaný převod.", "The backup is not the v2 account format. Older backups need a controlled migration."),
+    GROUP_SCOPE_BACKUP_OTHER_ACCOUNT: tr("Označení účtu v záloze se neshoduje. Zkontrolujte původ zálohy.", "The account scope label in the backup does not match. Verify its origin."),
+    GROUP_ACCESS_DENIED: tr("Vaše oprávnění se změnilo. Otevřete Moje skupiny znovu.", "Your access changed. Reopen My Groups."),
+
   };
   return messages[code] || tr("Operaci se nepodařilo dokončit.", "The operation could not be completed.");
 }
 
-const provider = new LocalGroupsProvider({
-  onDiagnostic(detail) {
-    diagnostics.push(detail?.code || "GROUP_STORAGE_DIAGNOSTIC");
-    renderDiagnostic();
-  },
-});
-const groups = accessGate.protect(createGroupsService({ provider }));
+let legacyStorePresent = false;
+let scoped;
+try {
+  scoped = await createPrincipalGroupsSession({
+    getSnapshot: () => studio.getAccessSnapshot(),
+    isPreview: () => Boolean(studio.isColleaguePreview?.()),
+    onDiagnostic(detail) {
+      diagnostics.push(detail?.code || "GROUP_STORAGE_DIAGNOSTIC");
+      renderDiagnostic();
+    },
+  });
+  accessGate.requireAllowed(); // Reject an account switch while SHA-256 is computed.
+} catch {
+  denyGroupsPage();
+  return;
+}
+legacyStorePresent = scoped.legacyStorePresent;
+const groups = scoped.service;
 if (Object.prototype.hasOwnProperty.call(globalThis, "GHRAB_GROUPS")) {
   denyGroupsPage();
   return;
@@ -107,9 +122,13 @@ Object.defineProperty(globalThis, "GHRAB_GROUPS", {
 function renderDiagnostic() {
   const box = $("#groups-diagnostic");
   if (!box) return;
-  if (!diagnostics.length) { box.hidden = true; box.textContent = ""; return; }
+  if (!diagnostics.length && !legacyStorePresent) {
+    box.hidden = true; box.textContent = ""; return;
+  }
   box.hidden = false;
-  box.textContent = tr("Úložiště skupin hlásí problém. Zkontrolujte, zda prohlížeč neblokuje místní úložiště; osobní údaje nejsou součástí diagnostiky.", "Group storage reports a problem. Check whether the browser blocks local storage; personal data is not included in diagnostics.");
+  box.textContent = diagnostics.length
+    ? tr("Úložiště skupin hlásí problém. Zkontrolujte, zda prohlížeč neblokuje místní úložiště; osobní údaje nejsou součástí diagnostiky.", "Group storage reports a problem. Check whether the browser blocks local storage; personal data is not included in diagnostics.")
+    : tr("V tomto prohlížeči jsou i starší společné skupiny. Nejsou automaticky přiřazeny vašemu účtu; jejich převod musí být výslovně ověřen.", "This browser also contains older shared groups. They are not assigned to your account; migration requires explicit ownership review.");
 }
 
 function renderList() {
@@ -298,7 +317,7 @@ function downloadJson(name, data) {
 function exportBackup() {
   const backup = groups.exportBackup();
   const date = new Date().toISOString().slice(0, 10);
-  downloadJson(`ai-studio-moje-skupiny-${date}.json`, backup);
+  downloadJson(`ai-studio-moje-skupiny-ucet-v2-${date}.json`, backup);
 }
 
 async function importBackupFile(file) {
