@@ -250,6 +250,17 @@ for (const sourceOnlyDoc of [
   "integration/VERIFY-INTEGRATION.md",
   "integration/SAVE-TO-STUDIO.md",
   "ai-core/releases/1.0.0/README.md",
+  // Developer examples and server-only setup templates have no browser
+  // runtime imports. Keep their authoritative files in src/ and git, not in
+  // the production download. Do not modify P5 or performance thresholds.
+  "integration/README.md",
+  "integration/essay-evaluator-access-bootstrap.example.js",
+  "integration/correspondence-access-bootstrap.example.js",
+  "integration/differentiator-access-bootstrap.example.js",
+  "integration/generator-access-bootstrap.example.js",
+  "integration/ludus-access-bootstrap.example.js",
+  "integration/protected-bootstrap.example.js",
+  "config/deployment.school-server.example.json",
 ]) {
   await rm(path.join(dist, sourceOnlyDoc), { force: true });
 }
