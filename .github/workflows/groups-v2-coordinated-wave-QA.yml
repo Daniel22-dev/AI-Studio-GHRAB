@@ -1,0 +1,80 @@
+name: Groups v2 coordinated registry source verification (NO DEPLOY, NONCERTIFYING)
+on:
+  push:
+    branches:
+      - qa/groups-v2-coordinated-wave-20261028
+permissions:
+  contents: read
+jobs:
+  cross-platform:
+    name: exact Studio source registry and groups on ${{ matrix.os }}
+    runs-on: ${{ matrix.os }}
+    timeout-minutes: 25
+    strategy:
+      fail-fast: false
+      matrix:
+        os: [ubuntu-24.04, windows-2022]
+    steps:
+      - name: Checkout immutable Studio source (NOT QA commit)
+        uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683
+        with:
+          ref: 1e8b3674815767dcb9c67d6a536d62a2e3b9d4e4
+          fetch-depth: 0
+          persist-credentials: false
+      - name: Node 22
+        uses: actions/setup-node@49933ea5288caeca8642d1e84afbd3f7d6820020
+        with:
+          node-version: '22'
+      - name: Verify exact-source and consumer version/cache matrix
+        shell: bash
+        run: |
+          set -euo pipefail
+          test "$(git rev-parse HEAD)" = "1e8b3674815767dcb9c67d6a536d62a2e3b9d4e4"
+          node -e "const r=require('./src/config/platform-consumers.json');for(const [id,v] of [['sortio','1.1.24'],['lesson-hub','1.2.28'],['essay-evaluator','1.5.32']]){const x=r.find(y=>y.id===id);if(x?.version!==v||x?.cacheName!==('ghrab-'+id+'-v'+v))process.exit(1)}console.log('PASS exact planned consumer versions/cache names')"
+          test ! -e .github/workflows/groups-v2-release-admission-isolated.yml
+      - name: Check version governance and groups regressions
+        shell: bash
+        run: |
+          set -euo pipefail
+          node --test scripts/test-changelog-policy.mjs
+          npm run verify:release-version
+          npm run test:groups
+          node scripts/test-groups-legacy-migration.mjs
+  full-studio:
+    name: actual Studio P5/GARP27 on immutable source (NONCERTIFYING)
+    runs-on: ubuntu-24.04
+    timeout-minutes: 75
+    steps:
+      - name: Checkout immutable Studio source
+        uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683
+        with:
+          ref: 1e8b3674815767dcb9c67d6a536d62a2e3b9d4e4
+          persist-credentials: false
+          fetch-depth: 0
+      - name: Node 22
+        uses: actions/setup-node@49933ea5288caeca8642d1e84afbd3f7d6820020
+        with:
+          node-version: '22'
+          cache: npm
+      - name: Install locked npm and browser
+        shell: bash
+        run: |
+          set -euo pipefail
+          test "$(git rev-parse HEAD)" = "1e8b3674815767dcb9c67d6a536d62a2e3b9d4e4"
+          npm ci --ignore-scripts --no-audit --no-fund --registry=https://registry.npmjs.org
+          npx playwright install --with-deps chromium
+          node -e "console.log('CHROMIUM_PATH='+require('playwright').chromium.executablePath())" >> "$GITHUB_ENV"
+      - name: Run complete Studio source release tests
+        shell: bash
+        env:
+          GHRAB_SOURCE_COMMIT: 1e8b3674815767dcb9c67d6a536d62a2e3b9d4e4
+          GHRAB_SOURCE_REPOSITORY: Daniel22-dev/AI-Studio-GHRAB
+          GHRAB_RELEASE_STAGE: PREP-VALIDATION
+        run: |
+          set -euo pipefail
+          npm run format:check
+          npm run qa:garp27:foundation
+          npm run qa:p5:ci
+          npm run test:studio-ux
+      - name: Reaffirm non-deployment scope
+        run: echo 'NO MERGE NO DEPLOY NONCERTIFYING SOURCE SHA PINNED SCHOOL UAT PENDING'
