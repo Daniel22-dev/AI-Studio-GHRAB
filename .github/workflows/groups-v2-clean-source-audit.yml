@@ -1,0 +1,57 @@
+name: Groups v2 clean release source diagnostic (NO DEPLOY - NONCERTIFYING)
+on:
+  push:
+    branches:
+      - qa/groups-v2-clean-source-20261028
+
+permissions:
+  contents: read
+
+jobs:
+  clean-groups:
+    name: clean Studio 0.21.260 groups on ${{ matrix.os }}
+    runs-on: ${{ matrix.os }}
+    timeout-minutes: 25
+    strategy:
+      fail-fast: false
+      matrix:
+        os: [ubuntu-24.04, windows-2022]
+    steps:
+      - name: Checkout immutable clean Studio source
+        uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683
+        with:
+          ref: 55f7eb35e213706f4802dd5ef16a891b0588566f
+          fetch-depth: 0
+          persist-credentials: false
+      - name: Set up locked Node version
+        uses: actions/setup-node@49933ea5288caeca8642d1e84afbd3f7d6820020
+        with:
+          node-version: '22'
+      - name: Verify immutable clean source and removed temporary CI
+        shell: bash
+        run: |
+          set -euo pipefail
+          test "$(git rev-parse HEAD)" = "55f7eb35e213706f4802dd5ef16a891b0588566f"
+          test ! -e .github/workflows/groups-ui-access-preprod.yml
+          test ! -e .github/workflows/groups-v2-combined-preprod.yml
+          test ! -e .github/workflows/groups-v2-real-consumers-preprod.yml
+          test ! -e .github/workflows/groups-v2-release-admission-isolated.yml
+          test "$(node -p 'require("./package.json").version')" = "0.21.260"
+          echo "SOURCE=55f7eb35e213706f4802dd5ef16a891b0588566f"
+          echo "WORKFLOW_EVENT_SHA=$GITHUB_SHA (separate QA-only branch)"
+      - name: Verify release version and logbook policy
+        shell: bash
+        run: |
+          set -euo pipefail
+          node --test scripts/test-changelog-policy.mjs
+          npm run verify:release-version
+      - name: Execute canonical groups v2 contracts and migration regressions
+        shell: bash
+        run: |
+          set -euo pipefail
+          node --check src/groups/group-service.js
+          node --check src/groups/groups.js
+          node --check src/groups/legacy-migration.js
+          node --check src/groups/verified-client.js
+          npm run test:groups
+          node scripts/test-groups-legacy-migration.mjs
