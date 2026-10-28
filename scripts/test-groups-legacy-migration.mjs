@@ -79,4 +79,70 @@ await assert.rejects(prepare(invalid,other),/GROUP_MIGRATION_SOURCE_INVALID|GROU
 const unsafe=structuredClone(backup);
 unsafe.store.groups[0].members[0].constructor="constructor-injection";
 await assert.rejects(prepare(unsafe,other),/GROUP_MIGRATION_UNSAFE_KEYS|GROUP_ACCESS_DENIED/);
+
+// Regression M01: if a new group appears during async digest, the migration
+// must reject it rather than overwrite the target's new content.
+{
+  const raceStorage = new Storage();
+  let raceSnapshot = {
+    ready:true,valid:true,mode:"signed-permit",
+    permit:{sub:"teacher-race",role:"teacher",exp:now+3600},
+  };
+  const raceSession = await createPrincipalGroupsSession({
+    getSnapshot:()=>raceSnapshot,storage:raceStorage,
+    cryptoApi:webcrypto,idFactory,eventTarget:null,
+  });
+  let digestCalls = 0;
+  const racingCrypto = {
+    subtle: {
+      async digest(algorithm,data) {
+        digestCalls++;
+        if (digestCalls === 2) raceSession.service.createGroup({
+          displayName:"Parallel synthetic group",schoolYear:"2026/27",
+        });
+        return webcrypto.subtle.digest(algorithm,data);
+      },
+    },
+  };
+  const racing = await prepareLegacyGroupsMigration({
+    sourceBackup:backup,targetSession:raceSession,cryptoApi:racingCrypto,
+  });
+  const raceApproval = {
+    ...approval, reviewedSourceDigest:racing.summary.sourceDigest,
+    reviewedTargetScope:racing.summary.targetScope,
+  };
+  await assert.rejects(racing.commit(raceApproval),/GROUP_MIGRATION_TARGET_NOT_EMPTY/,
+    "a concurrent group write must not be overwritten after async hashing");
+  assert.equal(raceSession.service.listGroups()[0].displayName,"Parallel synthetic group");
+  await assert.rejects(racing.commit(raceApproval),/GROUP_MIGRATION_ALREADY_USED/,
+    "failed approved attempts must require a new review");
+  assert.equal(digestCalls,2);
+}
+
+// Regression M02: simultaneous commits of the same reviewed preview must
+// never both pass while an asynchronous signature/hash check is underway.
+{
+  const parallelStorage = new Storage();
+  const snapshot = {
+    ready:true,valid:true,mode:"signed-permit",
+    permit:{sub:"teacher-parallel",role:"teacher",exp:now+3600},
+  };
+  const parallelSession = await createPrincipalGroupsSession({
+    getSnapshot:()=>snapshot,storage:parallelStorage,
+    cryptoApi:webcrypto,idFactory,eventTarget:null,
+  });
+  const prepared = await prepareLegacyGroupsMigration({
+    sourceBackup:backup,targetSession:parallelSession,cryptoApi:webcrypto,
+  });
+  const permit = {...approval,
+    reviewedSourceDigest:prepared.summary.sourceDigest,
+    reviewedTargetScope:prepared.summary.targetScope,
+  };
+  const first = prepared.commit(permit);
+  await assert.rejects(prepared.commit(permit),/GROUP_MIGRATION_ALREADY_USED/);
+  const success = await first;
+  assert.equal(success.verified,true);
+  assert.equal(parallelSession.service.getGroup(grp.groupId).revision,2);
+}
+
 console.log("PASS: reviewed legacy migration, stable IDs, rejection cases, no v1 mutation; NO school ownership proof");

@@ -29,6 +29,7 @@ jobs:
           node --check scripts/test-groups-legacy-migration.mjs
           node --check scripts/test-groups-legacy-migration-browser.mjs
           node --check scripts/test-groups-crossapp-browser.mjs
+          node --check scripts/test-groups-real-access-browser.mjs
           npm run test:groups
           node scripts/test-groups-legacy-migration.mjs
       - name: Install pinned browser dependencies
@@ -41,3 +42,4 @@ jobs:
           node scripts/test-groups-verified-client-browser.mjs
           node scripts/test-groups-crossapp-browser.mjs
           node scripts/test-groups-legacy-migration-browser.mjs
+          node scripts/test-groups-real-access-browser.mjs
