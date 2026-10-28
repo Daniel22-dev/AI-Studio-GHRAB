@@ -59,6 +59,9 @@ jobs:
           node --check external/essay/src/js/26-central-groups.js
           node --check external/lesson/src/integration/centralGroupsClient.js
           node --check external/git/src/features/central-groups.js
+          node --check src/groups/group-service.js
+          node --check scripts/test-groups.mjs
+          npm run test:groups
       - name: Install pinned browser dependencies
         shell: bash
         run: |
