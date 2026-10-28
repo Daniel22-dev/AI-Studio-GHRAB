@@ -124,7 +124,7 @@
   {
     "id": "essay-evaluator",
     "name": "Hodnotitel maturitních slohů",
-    "version": "1.5.31",
+    "version": "1.5.32",
     "slug": "hodnotitel-slohu",
     "paths": {
       "app": "https://daniel22-dev.github.io/Hodnotitel-maturitnich-slohu/",
@@ -154,7 +154,7 @@
       "performanceContract": "ghrab-performance-v1",
       "moduleContract": "ghrab-lazy-modules-v1"
     },
-    "cacheName": "ghrab-essay-evaluator-v1.5.31",
+    "cacheName": "ghrab-essay-evaluator-v1.5.32",
     "theme": {
       "supported": [
         "light",
@@ -292,7 +292,7 @@
   {
     "id": "sortio",
     "name": "SORTIO – Výukový panel",
-    "version": "1.1.23",
+    "version": "1.1.24",
     "slug": "sortio",
     "paths": {
       "app": "https://daniel22-dev.github.io/SORTIO/",
@@ -322,7 +322,7 @@
       "performanceContract": "ghrab-performance-v1",
       "moduleContract": "ghrab-lazy-modules-v1"
     },
-    "cacheName": "ghrab-sortio-v1.1.23",
+    "cacheName": "ghrab-sortio-v1.1.24",
     "theme": {
       "supported": [
         "light",
@@ -336,7 +336,7 @@
   {
     "id": "lesson-hub",
     "name": "Lesson Hub",
-    "version": "1.2.27",
+    "version": "1.2.28",
     "slug": "lesson-hub",
     "paths": {
       "app": "https://daniel22-dev.github.io/lesson-hub/",
@@ -365,7 +365,7 @@
       "performanceContract": "ghrab-performance-v1",
       "moduleContract": "ghrab-lazy-modules-v1"
     },
-    "cacheName": "ghrab-lesson-hub-v1.2.27",
+    "cacheName": "ghrab-lesson-hub-v1.2.28",
     "theme": {
       "supported": [
         "light",
