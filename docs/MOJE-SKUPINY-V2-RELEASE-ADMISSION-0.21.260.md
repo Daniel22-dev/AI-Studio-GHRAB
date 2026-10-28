@@ -1,4 +1,4 @@
-# MOJE SKUPINY v2 — předprodukční návrh vydání 0.21.260
+# MOJE SKUPINY v2 — čistý předprodukční návrh vydání 0.21.260
 
 **UPOZORNĚNÍ: NEJDE O SOUHLAS S NASAZENÍM.** Tento soubor popisuje neprodukční sestavení určené ke kontrole.
 
@@ -8,7 +8,7 @@
 - SORTIO PR #46: `bd4581265f72c51904754bd8299dd419c77717b6`.
 - Hodnotitel maturitních slohů PR #53: `8211c730b4fd48e8af3e99c13b1d7ec1765ca485`.
 - Lesson Hub PR #24: `f7355364c7604f7c16887a4b6d6a665bc7d9c475`.
-- GIT PR #139: `a3fd61885552c03d12b83c3a8a16ec8af4a9e762`, závisí na dosud nezveřejněném PR #138.
+- GIT: sjednocený Stage08 + ověřená čtečka v2 v PR #138 na `b6255c847931885fb5b57ccb795485920cee1132` (úplné izolované E10/P5 3/3 PASS); čistý návrh vydání PR #141 na `9ae2a93aef91c37cdfb23f36245d6bfa8717bdc2` (S83 na Linuxu i Windows 2/2 PASS, plná vydávací certifikace stále chybí). Historické samostatné PR #139 je překonané a nesmí být nasazováno.
 
 Dřívější neprodukční testy těchto skutečných modulů: XR01–XR09, 9/9 PASS (Studio Actions #40657496005). Přístup byl v mezirepozitářovém testu simulovaný. Samostatné S01–S10 prověřily odmítání padělaného oprávnění skutečným ověřovacím modulem, nikoli skutečné školní SSO.
 
@@ -17,8 +17,8 @@ Dřívější neprodukční testy těchto skutečných modulů: XR01–XR09, 9/9
 - Pracovní verze `0.21.260` konzistentně povýšena podle `scripts/bump-patch-version.mjs`, mimo produkční větve.
 - Doplněn česko-anglický release logbook `src/config/changelog.json`. Generovaný `CHANGELOG.md` se ručně neupravuje.
 - Původní tři dočasné testovací workflow byly odebrány z návrhu vydání; historické důkazy zůstávají u původních SHA.
-- Dočasná izolovaná CI `.github/workflows/groups-v2-release-admission-isolated.yml` slouží výhradně pro předprodukční kontrolu GARP/P5. Před finálním povýšením musí být odstraněna a nový konečný SHA znovu otestován chráněnou cestou.
-- Nezměněno: `candidate`, `main`, GitHub Pages, produkční GIT, reálná data žáků.
+- V této navazující čisté větvi byla odstraněna poslední dočasná izolovaná CI `.github/workflows/groups-v2-release-admission-isolated.yml`. Úspěšný úplný GARP/P5 běh se vztahuje k původnímu návrhu PR #341 na `05ae47af29e3267cfa77b1061ece0d4c33116321`, **nikoli** automaticky k novému SHA. Konečný commit se musí nezávisle otestovat chráněnou cestou.
+- Nezměněno: `candidate`, `main`, GitHub Pages, produkční GIT, reálná data žáků. Čistý návrh zůstává DRAFT / NO MERGE / NO DEPLOY.
 
 ## Zbývající povinné kroky – NO-GO
 
