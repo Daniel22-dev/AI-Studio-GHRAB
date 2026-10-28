@@ -41,7 +41,7 @@ const validFakeServer={
 const browser=await chromium.launch({headless:true});
 let passed=0;
 async function scenario(name,{mode="signed-permit",token=null,tamperBundle=false,
-  tamperSignature=false,serverStatus=200,serverResponse=null}={},assertResult){
+  tamperSignature=false,serverStatus=200,serverResponse=null,exerciseLogout=false}={},assertResult){
   const context=await browser.newContext();
   const page=await context.newPage();
   const pageErrors=[];
@@ -76,24 +76,35 @@ async function scenario(name,{mode="signed-permit",token=null,tamperBundle=false
   });
   try{
     await page.goto(origin+root);
-    const result=await page.evaluate(async()=>{
+    const result=await page.evaluate(async(exerciseLogout)=>{
       const {openVerifiedGroupsV2}=await import("/AI-Studio-GHRAB/groups/verified-client.js");
       const {getAccessSnapshot}=await import("/AI-Studio-GHRAB/access/access-control.js");
-      let error=null,consumer=null,methods=[];
+      let error=null,consumer=null,methods=[],opened=null;
       try{
         const ready=await openVerifiedGroupsV2("essay-evaluator");
+        opened=ready;
         consumer=ready.schema;
         methods=Object.keys(ready.service);
       }catch(e){error=String(e?.message||e)}
+      let revokedAfterLogout=null,subsequentOpenDenied=null;
+      if(exerciseLogout && opened){
+        const {endAccessSession}=await import("/AI-Studio-GHRAB/access/access-control.js");
+        endAccessSession({broadcast:false});
+        try{opened.service.listGroupMetadata("essay-evaluator");revokedAfterLogout=false}
+        catch(e){revokedAfterLogout=e.message==="GROUP_ACCESS_DENIED"}
+        try{await openVerifiedGroupsV2("essay-evaluator");subsequentOpenDenied=false}
+        catch(e){subsequentOpenDenied=e.message==="GROUP_ACCESS_DENIED"}
+      }
       const state=getAccessSnapshot();
       return {
-        error,consumer,methods,ready:state.ready,valid:state.valid,
+        error,consumer,methods,revokedAfterLogout,subsequentOpenDenied,
+        ready:state.ready,valid:state.valid,
         reason:state.reason,connectionState:state.connectionState,
         revocationCheckMode:state.revocationCheckMode,
         policySchema:state.policy?.schema||null,
         localRosterKeys:Object.keys(localStorage).filter(k=>k.startsWith("ghrab.ai-studio.groups.account.v2.")).length,
       };
-    });
+    },exerciseLogout);
     assert.deepEqual(pageErrors,[],name+" must produce no uncaught errors");
     assertResult(result);
     console.log("PASS "+name+" / "+result.reason+" / "+(result.error||result.consumer));
@@ -156,6 +167,14 @@ try{
     assert.ok(r.methods.includes("getRosterProjection"));
     assert.equal(r.methods.includes("createGroup"),false);
     assert.equal(r.methods.includes("importBackup"),false);
+  });
+  await scenario("S10 session logout revokes already issued client facade",{
+    mode:"server-session",serverResponse:validFakeServer,exerciseLogout:true,
+  },r=>{
+    assert.equal(r.consumer,"ghrab-groups-verified-consumer-v2");
+    assert.equal(r.revokedAfterLogout,true);
+    assert.equal(r.subsequentOpenDenied,true);
+    assert.equal(r.valid,false);assert.equal(r.reason,"session-required");
   });
   console.log(JSON.stringify({
     suite:"real Studio access-control integration, no real credentials",
