@@ -124,12 +124,17 @@ export async function prepareLegacyGroupsMigration({
   const commit = async (approval) => {
     if (consumed) throw migrationError("GROUP_MIGRATION_ALREADY_USED");
     assertApproval(approval,summary);
+    // Consume before the first await: concurrent commit calls cannot both write.
+    // After an accepted attempt, any failure requires a new reviewed preview.
+    consumed = true;
     const targetNow = requireTarget(targetSession);
     if (targetNow.scopeId !== targetScope) throw migrationError("GROUP_MIGRATION_TARGET_CHANGED");
     const currentSourceDigest = await sha256Hex(JSON.stringify(immutableSource.store), cryptoApi);
     if (currentSourceDigest !== sourceDigest) throw migrationError("GROUP_MIGRATION_SOURCE_CHANGED");
-    // Once attempted, retry only after explicit review; storage writes are not assumed atomic across failures.
-    consumed = true;
+    // Data may have changed while Web Crypto yielded to the event loop.
+    // Recheck immediately before the synchronous import (best effort across tabs).
+    const targetBeforeWrite = requireTarget(targetSession);
+    if (targetBeforeWrite.scopeId !== targetScope) throw migrationError("GROUP_MIGRATION_TARGET_CHANGED");
     targetSession.service.importBackup({
       schema: TARGET_SCHEMA,
       version:2,
