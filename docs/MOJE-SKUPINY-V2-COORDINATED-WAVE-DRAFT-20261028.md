@@ -12,7 +12,13 @@
 | Lesson Hub | 1.2.28 | [dependent #27](https://github.com/Daniel22-dev/lesson-hub/pull/27) |
 | Hodnotitel maturitních slohů | 1.5.32 | [dependent #55](https://github.com/Daniel22-dev/Hodnotitel-maturitnich-slohu/pull/55) |
 
-Registry `src/config/platform-consumers.json` was updated only for the three consumer `version` and `cacheName` fields. Platform contract `1.1.2`, Student roster data, SSO, historical group IDs, public manifests and runtime logic remain unchanged.
+**Authoritativní registr se v tomto návrhu NEMĚNÍ.** `src/config/platform-consumers.json` musí odpovídat `src/config/apps.generated.json` a jeho obsah je odvozován výhradně ze skutečně ověřených manifestů aplikací.
+
+Nové verze 1.1.24, 1.2.28 a 1.5.32 jsou pouze **cílová matice vydávací vlny**, nikoli tvrzení o současném nasazení. Předčasný pokus o aktualizaci registru byl vrácen po fail-closed kontrole `sync-platform-consumers.mjs --check` a GARP 2.7; kopie aktuálně ověřených verzí v portálu i PWA cache zůstávají zachovány.
+
+Registr se aktualizuje až oficiální synchronizací zdrojových či publikovaných manifestů a prokazatelnou kontrolou release identit. Nepřepisovat ručně `apps.generated.json` nebo `sync-report.json` za účelem zelených testů; obsahují informace o skutečně ověřených verzích a vydaných artefaktech.
+
+Platform contract `1.1.2`, student roster, SSO, historické group IDs a stávající runtime logika zůstávají nedotčené.
 
 ## Release admission — hard NO-GO before all approvals
 
