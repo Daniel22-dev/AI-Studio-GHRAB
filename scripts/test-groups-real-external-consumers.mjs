@@ -114,6 +114,10 @@ try{
     catch(e){wrongProjectionDenied=e.message==="GROUP_CONSUMER_PROJECTION_DENIED"}
     const noDirectStudentEmailInLesson = !JSON.stringify(lessonMeta).includes("example.invalid");
     const noStudentEmailInSortio = !JSON.stringify(sortioRoster).includes("example.invalid");
+    const subscriberEvents=[];
+    const unsubscribeSortio=sortio.subscribe(detail=>subscriberEvents.push(detail));
+    const {principalGroupsStorageKey}=await import("/AI-Studio-GHRAB/groups/group-service.js");
+    const oldAccountKey=await principalGroupsStorageKey({subject:"synthetic-teacher-A"});
     // Same-origin browser profile, different signed principal. Every previously
     // opened external service must stop returning the previous teacher's data.
     globalThis.__verifiedSnapshot={
@@ -121,6 +125,11 @@ try{
       permit:{...globalThis.__verifiedSnapshot.permit,sub:"synthetic-teacher-B"},
     };
     document.dispatchEvent(new Event("ghrab:access-changed"));
+    // Simulate another tab updating the ORIGINAL account-scoped storage key.
+    // The old Sortio callback must no longer receive that account's group ID.
+    window.dispatchEvent(new StorageEvent("storage",{key:oldAccountKey,storageArea:localStorage}));
+    const revokedSubscriberSilent=subscriberEvents.length===0;
+    unsubscribeSortio();
     const expectRevoked=async op=>{
       try{await op();return false}catch(e){return e?.message==="GROUP_ACCESS_DENIED"}
     };
@@ -133,7 +142,7 @@ try{
     const {openVerifiedGroupsV2}=await import("/AI-Studio-GHRAB/groups/verified-client.js");
     const freshB=await openVerifiedGroupsV2("essay-evaluator");
     return {before,wrongProjectionDenied,noDirectStudentEmailInLesson,
-      noStudentEmailInSortio,stale,lessonAfterSwitch,
+      noStudentEmailInSortio,stale,lessonAfterSwitch,revokedSubscriberSilent,
       bGroups:freshB.service.listGroupMetadata("essay-evaluator").length,
       bHasNoRoster:freshB.service.listGroupMetadata("essay-evaluator").every(g=>g.groupId!==groupId)};
   },baseline.groupId);
@@ -160,6 +169,8 @@ try{
   assert.equal(b.verifiedInitialisations,1,"one real Studio verified-client initialization");
   assert.deepEqual(result.stale,{sortio:true,essay:true,git:true},
     "all previously opened direct service clients must fail closed on account switch");
+  assert.equal(result.revokedSubscriberSilent,true,
+    "stale SORTIO change subscriber must not receive another account's group events");
   assert.deepEqual(result.lessonAfterSwitch,[],"Lesson Hub opens a new empty principal scope");
   assert.equal(result.bGroups,0);
   assert.equal(result.bHasNoRoster,true);
@@ -171,7 +182,8 @@ try{
   console.log("PASS XR06 wrong-app projection refusal and restricted capabilities");
   console.log("PASS XR07 stale external facades denied after principal switch");
   console.log("PASS XR08 fresh next-teacher scope has no prior pupils");
-  console.log(JSON.stringify({status:"PASS",checks:8,
+  console.log("PASS XR09 stale SORTIO group subscriber receives no cross-account event");
+  console.log(JSON.stringify({status:"PASS",checks:9,
     actualExternalConsumerSource:true,exactPrSources:true,
     mockSignedAccess:true,liveSchoolSSO:false,
     fullAppUIUat:false,physicalDeviceUat:false,serverTenantIsolation:false}));
