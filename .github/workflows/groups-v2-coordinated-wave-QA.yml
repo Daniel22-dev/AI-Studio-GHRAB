@@ -18,7 +18,7 @@ jobs:
       - name: Checkout immutable Studio source (NOT QA commit)
         uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683
         with:
-          ref: 1e8b3674815767dcb9c67d6a536d62a2e3b9d4e4
+          ref: 8f370866ce53ca65562907052d870abdf60168e3
           fetch-depth: 0
           persist-credentials: false
       - name: Node 22
@@ -29,8 +29,9 @@ jobs:
         shell: bash
         run: |
           set -euo pipefail
-          test "$(git rev-parse HEAD)" = "1e8b3674815767dcb9c67d6a536d62a2e3b9d4e4"
-          node -e "const r=require('./src/config/platform-consumers.json');for(const [id,v] of [['sortio','1.1.24'],['lesson-hub','1.2.28'],['essay-evaluator','1.5.32']]){const x=r.find(y=>y.id===id);if(x?.version!==v||x?.cacheName!==('ghrab-'+id+'-v'+v))process.exit(1)}console.log('PASS exact planned consumer versions/cache names')"
+          test "$(git rev-parse HEAD)" = "8f370866ce53ca65562907052d870abdf60168e3"
+          node -e "const r=require('./src/config/platform-consumers.json');for(const [id,v] of [['sortio','1.1.23'],['lesson-hub','1.2.27'],['essay-evaluator','1.5.31']]){const x=r.find(y=>y.id===id);if(x?.version!==v||x?.cacheName!==('ghrab-'+id+'-v'+v))process.exit(1)}console.log('PASS actual verified live consumer versions/cache names')"
+          node -e "const t=require('fs').readFileSync('docs/MOJE-SKUPINY-V2-COORDINATED-WAVE-DRAFT-20261028.md','utf8');for(const s of ['1.1.24','1.2.28','1.5.32','DRAFT / NO MERGE / NO DEPLOY'])if(!t.includes(s))process.exit(1);console.log('PASS future wave documented only, no live claims')"
           test ! -e .github/workflows/groups-v2-release-admission-isolated.yml
       - name: Check version governance and groups regressions
         shell: bash
@@ -48,7 +49,7 @@ jobs:
       - name: Checkout immutable Studio source
         uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683
         with:
-          ref: 1e8b3674815767dcb9c67d6a536d62a2e3b9d4e4
+          ref: 8f370866ce53ca65562907052d870abdf60168e3
           persist-credentials: false
           fetch-depth: 0
       - name: Node 22
@@ -60,14 +61,14 @@ jobs:
         shell: bash
         run: |
           set -euo pipefail
-          test "$(git rev-parse HEAD)" = "1e8b3674815767dcb9c67d6a536d62a2e3b9d4e4"
+          test "$(git rev-parse HEAD)" = "8f370866ce53ca65562907052d870abdf60168e3"
           npm ci --ignore-scripts --no-audit --no-fund --registry=https://registry.npmjs.org
           npx playwright install --with-deps chromium
           node -e "console.log('CHROMIUM_PATH='+require('playwright').chromium.executablePath())" >> "$GITHUB_ENV"
       - name: Run complete Studio source release tests
         shell: bash
         env:
-          GHRAB_SOURCE_COMMIT: 1e8b3674815767dcb9c67d6a536d62a2e3b9d4e4
+          GHRAB_SOURCE_COMMIT: 8f370866ce53ca65562907052d870abdf60168e3
           GHRAB_SOURCE_REPOSITORY: Daniel22-dev/AI-Studio-GHRAB
           GHRAB_RELEASE_STAGE: PREP-VALIDATION
         run: |
