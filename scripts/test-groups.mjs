@@ -253,6 +253,27 @@ assert.equal(hostile.invalid.length, 2);
   });
   assert.equal(protectedService.getGroup(created.groupId).groupId, created.groupId);
   assert.ok(Object.isFrozen(protectedService));
+  // A subscribed callback must not outlive the teacher's verified identity.
+  // The raw service simulates same-origin code writing to the old account's
+  // provider while a former consumer callback is still registered.
+  const received = [];
+  const unsubscribe = protectedService.subscribe((detail) => received.push(detail));
+  const validEvent = service.createGroup({
+    displayName: "Synthetic event for account A", schoolYear: "2026/27",
+  });
+  assert.equal(received.length, 1);
+  assert.equal(received[0].groupId, validEvent.groupId);
+
+  active = teacher("teacher-B");
+  const afterSwitch = service.createGroup({
+    displayName: "Synthetic event after account change", schoolYear: "2026/27",
+  });
+  assert.notEqual(afterSwitch.groupId, validEvent.groupId);
+  assert.equal(received.length, 1, "revoked subscribers must never observe subsequent group identifiers");
+  unsubscribe(); // Safe even after automatic invalidation.
+  active = teacher("teacher-A");
+  service.createGroup({ displayName: "Synthetic event after return", schoolYear: "2026/27" });
+  assert.equal(received.length, 1, "revoked listener must not reactivate after identity returns");
 
   active = teacher("teacher-B");
   assert.equal(gate.allowed(), false, "different teacher must invalidate the open page");
