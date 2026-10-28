@@ -832,7 +832,31 @@ export function createGroupsPageAccessGate({
       Object.defineProperty(guarded, key, {
         enumerable: true,
         value: typeof value === "function"
-          ? (...args) => { requireAllowed(); return value(...args); }
+          ? key === "subscribe"
+            ? (listener) => {
+                requireAllowed();
+                if (typeof listener !== "function") return value(listener);
+                let unsubscribe = null;
+                let ended = false;
+                const safeListener = (detail) => {
+                  if (ended) return;
+                  if (!allowed()) {
+                    ended = true;
+                    unsubscribe?.();
+                    unsubscribe = null;
+                    return;
+                  }
+                  listener(detail);
+                };
+                unsubscribe = value(safeListener);
+                return () => {
+                  if (ended) return;
+                  ended = true;
+                  unsubscribe?.();
+                  unsubscribe = null;
+                };
+              }
+            : (...args) => { requireAllowed(); return value(...args); }
           : value,
       });
     }
