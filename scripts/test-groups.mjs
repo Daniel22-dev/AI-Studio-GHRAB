@@ -38,6 +38,9 @@ function createSampleGroup(service) {
   return service.createGroup({ displayName: "1A4 · AJ", schoolYear: "2026/27", subject: "Anglický jazyk", grade: "1. ročník" });
 }
 
+assert.throws(() => createGroupsService(), /GROUP_EXPLICIT_PROVIDER_REQUIRED/,
+  "unscoped createGroupsService() must not expose legacy v1 to previous consumer versions");
+
 const parser = parseRosterText([
   "Jméno; E-mail",
   "Alice Novak; alice.novak@example.edu",

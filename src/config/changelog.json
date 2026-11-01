@@ -25,6 +25,10 @@
         {
           "cs": "Povinné testy P5 a lokální sada npm test nově spouštějí také syntetické kontroly Moje skupiny v2: ověřenou čtečku, kontrolovaný převod v1, přístupový guard, projekce aplikací, zneplatnění při změně učitele a negativní scénáře skutečného přístupového modulu. Reálné školní SSO a samostatný mezirepozitářový test zůstávají zvláštními branami.",
           "en": "The mandatory P5 gate and local npm test now also exercise synthetic My Groups v2 coverage: verified client, controlled v1 migration, UI guard, consumer projections, teacher-switch revocation and real access-module negative scenarios. Genuine school SSO and independent cross-repository source testing remain separate admission requirements."
+        },
+        {
+          "cs": "Přechodové zabezpečení: staré moduly aplikací nesmějí automaticky otevřít společné úložiště Moje skupiny v1 přes bezparametrické createGroupsService(). Služba nyní vyžaduje výslovný provider; současné v2 relace zůstávají beze změny. Omezení neznamená izolaci stejného prohlížečového profilu ani schválení převodu dat.",
+          "en": "Mixed-version hardening: legacy consumers can no longer implicitly open origin-wide My Groups v1 through parameterless createGroupsService(). Callers must supply an explicit provider; verified v2 sessions are unchanged. This is not same-browser-profile tenant isolation or authorization to migrate data."
         }
       ]
     },
