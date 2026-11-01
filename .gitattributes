@@ -1,0 +1,7 @@
+# Release documentation must have byte-identical checked-out line endings across Linux and Windows.
+README.md text eol=lf
+BEZPECNOST.md text eol=lf
+POSTUP-NAHRANI.md text eol=lf
+NAHRANI-NA-GITHUB.md text eol=lf
+docs/INTEGRACE-APLIKACI.md text eol=lf
+src/integration/README.md text eol=lf
