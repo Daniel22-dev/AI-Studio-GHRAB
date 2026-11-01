@@ -1,0 +1,50 @@
+name: Real old Studio SW cache regression (RISK reproduction, synthetic / NO DEPLOY)
+on:
+  push:
+    branches:
+      - qa/groups-v2-stale-sw-cache-risk-20261101
+permissions:
+  contents: read
+jobs:
+  real-sw-stale-code-risk:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 30
+    steps:
+      - name: Checkout QA-only harness on top of reviewed Studio
+        uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683
+        with:
+          ref: ${{ github.sha }}
+          fetch-depth: 0
+          persist-credentials: false
+      - name: Checkout exact old Studio source
+        uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683
+        with:
+          repository: Daniel22-dev/AI-Studio-GHRAB
+          ref: cdbb1987aacdd0c0442717696384b5864b830bee
+          path: external/studio-old
+          fetch-depth: 0
+          persist-credentials: false
+      - name: Verify actual old and new source identities, runtime unchanged
+        shell: bash
+        run: |
+          set -euo pipefail
+          test "$(git rev-parse HEAD)" = "$GITHUB_SHA"
+          test "$(git -C external/studio-old rev-parse HEAD)" = "cdbb1987aacdd0c0442717696384b5864b830bee"
+          git merge-base --is-ancestor 1051be23b41cc7d63058f803c7f5b308a3f7f72c HEAD
+          changed="$(git diff --name-only 1051be23b41cc7d63058f803c7f5b308a3f7f72c HEAD | LC_ALL=C sort)"
+          expected="$(printf '%s\n' .github/workflows/groups-v2-stale-sw-risk-qa.yml scripts/test-groups-v2-stale-sw-risk-browser.mjs | LC_ALL=C sort)"
+          test "$changed" = "$expected"
+          node --check scripts/test-groups-v2-stale-sw-risk-browser.mjs
+      - uses: actions/setup-node@49933ea5288caeca8642d1e84afbd3f7d6820020
+        with:
+          node-version: 22.22.2
+          cache: npm
+      - name: Install locked Playwright and Chromium
+        shell: bash
+        run: |
+          set -euo pipefail
+          npm ci --ignore-scripts --no-audit --no-fund --registry=https://registry.npmjs.org
+          node node_modules/playwright/cli.js install --with-deps chromium
+      - name: Reproduce old service worker cached source despite new source published, then verify explicit activation recovery
+        shell: bash
+        run: node scripts/test-groups-v2-stale-sw-risk-browser.mjs
