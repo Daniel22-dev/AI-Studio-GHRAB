@@ -13,7 +13,7 @@ jobs:
       - name: Checkout exact Studio follow-on source
         uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683
         with:
-          ref: 018faac4bbb65c4bd5f9cf6fa9a4575bd34ce061
+          ref: b61679cf04b6eef0657e01a3040f2a0e829393ba
           fetch-depth: 0
           persist-credentials: false
       - name: Checkout exact external/sortio module source
@@ -52,7 +52,7 @@ jobs:
         shell: bash
         run: |
           set -euo pipefail
-          test "$(git rev-parse HEAD)" = "018faac4bbb65c4bd5f9cf6fa9a4575bd34ce061"
+          test "$(git rev-parse HEAD)" = "b61679cf04b6eef0657e01a3040f2a0e829393ba"
           test ! -e .github/workflows/groups-v2-exact-five-source-qa.yml
           test "$(git -C external/sortio rev-parse HEAD)" = "f3bd4568bfc68f841592cd12f2b034a33ec60516"
           test "$(git -C external/essay rev-parse HEAD)" = "53ed38686939071432f4f877734f3fd313c27f76"
