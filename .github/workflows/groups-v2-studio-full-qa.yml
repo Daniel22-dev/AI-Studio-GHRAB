@@ -17,7 +17,7 @@ jobs:
     steps:
       - uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683
         with:
-          ref: b534ad66f5b76eb7e8862129cc300ba8fab46ccd
+          ref: 1051be23b41cc7d63058f803c7f5b308a3f7f72c
           fetch-depth: 0
           persist-credentials: false
       - uses: actions/setup-node@49933ea5288caeca8642d1e84afbd3f7d6820020
@@ -27,7 +27,7 @@ jobs:
         shell: bash
         run: |
           set -euo pipefail
-          test "$(git rev-parse HEAD)" = "b534ad66f5b76eb7e8862129cc300ba8fab46ccd"
+          test "$(git rev-parse HEAD)" = "1051be23b41cc7d63058f803c7f5b308a3f7f72c"
           test ! -e .github/workflows/groups-v2-studio-full-qa.yml
           test "$(node -p 'require("./package.json").version')" = '0.21.260'
       - name: Locked clean dependencies
@@ -48,7 +48,7 @@ jobs:
     steps:
       - uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683
         with:
-          ref: b534ad66f5b76eb7e8862129cc300ba8fab46ccd
+          ref: 1051be23b41cc7d63058f803c7f5b308a3f7f72c
           fetch-depth: 0
           persist-credentials: false
       - uses: actions/setup-node@49933ea5288caeca8642d1e84afbd3f7d6820020
@@ -59,7 +59,7 @@ jobs:
         shell: bash
         run: |
           set -euo pipefail
-          test "$(git rev-parse HEAD)" = "b534ad66f5b76eb7e8862129cc300ba8fab46ccd"
+          test "$(git rev-parse HEAD)" = "1051be23b41cc7d63058f803c7f5b308a3f7f72c"
           test ! -e .github/workflows/groups-v2-studio-full-qa.yml
           echo 'Run event SHA identifies separate QA branch; this is source-only NONCERTIFYING'
       - name: Locked npm install
@@ -76,7 +76,7 @@ jobs:
       - name: GARP 2.7 Foundation and full P5 without any publishing
         shell: bash
         env:
-          GHRAB_SOURCE_COMMIT: b534ad66f5b76eb7e8862129cc300ba8fab46ccd
+          GHRAB_SOURCE_COMMIT: 1051be23b41cc7d63058f803c7f5b308a3f7f72c
         run: |
           set -euo pipefail
           npm run qa:garp27:foundation
