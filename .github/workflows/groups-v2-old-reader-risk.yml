@@ -46,8 +46,8 @@ jobs:
         run: |
           set -euo pipefail
           test "$(git rev-parse HEAD)" = "$GITHUB_SHA"
-          git merge-base --is-ancestor b534ad66f5b76eb7e8862129cc300ba8fab46ccd HEAD
-          changed="$(git diff --name-only b534ad66f5b76eb7e8862129cc300ba8fab46ccd HEAD | LC_ALL=C sort)"
+          git merge-base --is-ancestor 1051be23b41cc7d63058f803c7f5b308a3f7f72c HEAD
+          changed="$(git diff --name-only 1051be23b41cc7d63058f803c7f5b308a3f7f72c HEAD | LC_ALL=C sort)"
           expected="$(printf '%s\n' .github/workflows/groups-v2-old-reader-risk.yml scripts/test-groups-v2-legacy-reader-risk-browser.mjs | LC_ALL=C sort)"
           test "$changed" = "$expected"
           test "$(git -C external/sortio-old rev-parse HEAD)" = "662cdcad6ae1fbc57d985408beabeeb97fc1a38f"
