@@ -1,0 +1,97 @@
+name: Groups v2 Studio immutable-source complete diagnostic (NO DEPLOY, NOT CERTIFICATION)
+on:
+  push:
+    branches:
+      - qa/groups-v2-clean-full-cert-20261101
+permissions:
+  contents: read
+jobs:
+  groups-cross-os:
+    name: Studio clean source / Groups / version on ${{ matrix.os }}
+    runs-on: ${{ matrix.os }}
+    timeout-minutes: 35
+    strategy:
+      fail-fast: false
+      matrix:
+        os: [ubuntu-24.04, windows-2022]
+    steps:
+      - uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683
+        with:
+          ref: 55f7eb35e213706f4802dd5ef16a891b0588566f
+          fetch-depth: 0
+          persist-credentials: false
+      - uses: actions/setup-node@49933ea5288caeca8642d1e84afbd3f7d6820020
+        with:
+          node-version: 22.22.2
+      - name: Exact source SHA, clean source and release version
+        shell: bash
+        run: |
+          set -euo pipefail
+          test "$(git rev-parse HEAD)" = "55f7eb35e213706f4802dd5ef16a891b0588566f"
+          test ! -e .github/workflows/groups-v2-studio-full-qa.yml
+          test "$(node -p 'require("./package.json").version')" = '0.21.260'
+      - name: Locked clean dependencies
+        run: npm ci --ignore-scripts --no-audit --no-fund --registry=https://registry.npmjs.org
+      - name: Groups, version policy and security syntax regressions
+        shell: bash
+        run: |
+          set -euo pipefail
+          node --test scripts/test-changelog-policy.mjs
+          npm run verify:release-version
+          npm run test:groups
+          npm run qa:doc-versions
+          npm run test:release-identity-timing
+  complete-standalone-source-gates:
+    name: Studio P5/GARP 2.7 source diagnostic, not protected promotion
+    runs-on: ubuntu-24.04
+    timeout-minutes: 90
+    steps:
+      - uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683
+        with:
+          ref: 55f7eb35e213706f4802dd5ef16a891b0588566f
+          fetch-depth: 0
+          persist-credentials: false
+      - uses: actions/setup-node@49933ea5288caeca8642d1e84afbd3f7d6820020
+        with:
+          node-version: 22.22.2
+          cache: npm
+      - name: Fail closed on wrong source or workflow contamination
+        shell: bash
+        run: |
+          set -euo pipefail
+          test "$(git rev-parse HEAD)" = "55f7eb35e213706f4802dd5ef16a891b0588566f"
+          test ! -e .github/workflows/groups-v2-studio-full-qa.yml
+          echo 'Run event SHA identifies separate QA branch; this is source-only NONCERTIFYING'
+      - name: Locked npm install
+        run: npm ci --ignore-scripts --no-audit --no-fund --registry=https://registry.npmjs.org
+      - name: Assert pinned audit tool versions
+        shell: bash
+        run: |
+          node -e "if(require('./node_modules/playwright/package.json').version!=='1.61.1'||require('./node_modules/axe-core/package.json').version!=='4.12.1')process.exit(1)"
+      - name: Install pinned headless Chromium
+        shell: bash
+        run: |
+          npx playwright install --with-deps chromium
+          node -e "console.log('CHROMIUM_PATH='+require('playwright').chromium.executablePath())" >> "$GITHUB_ENV"
+      - name: GARP 2.7 Foundation and full P5 without any publishing
+        shell: bash
+        env:
+          GHRAB_SOURCE_COMMIT: 55f7eb35e213706f4802dd5ef16a891b0588566f
+        run: |
+          set -euo pipefail
+          npm run qa:garp27:foundation
+          npm run qa:p5:ci
+          npm run test:studio-ux
+      - name: Retain test logs as diagnostic evidence only
+        if: always()
+        uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
+        with:
+          name: studio-v2-clean-source-noncert-${{ github.run_id }}
+          retention-days: 14
+          if-no-files-found: warn
+          path: |
+            dist/qa-p5-*.json
+            dist/qa-p3-browser-report.json
+            dist/quality-report.json
+            qa-results/
+            audit-evidence/garp27-current/
