@@ -1,0 +1,68 @@
+name: Old v1 readers versus new Studio security negative QA (NO DEPLOY)
+on:
+  push:
+    branches:
+      - qa/groups-v2-old-reader-risk-20261101
+permissions:
+  contents: read
+jobs:
+  legacy-readers-no-v1-exposure:
+    name: mixed-release privacy risk detection, fail on shared v1 reads
+    runs-on: ubuntu-24.04
+    timeout-minutes: 35
+    steps:
+      - name: Checkout QA-only security test with exact Studio runtime sources
+        uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683
+        with:
+          ref: ${{ github.sha }}
+          fetch-depth: 0
+          persist-credentials: false
+      - name: Checkout old external/sortio-old immutable SHA
+        uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683
+        with:
+          repository: Daniel22-dev/SORTIO
+          ref: 662cdcad6ae1fbc57d985408beabeeb97fc1a38f
+          path: external/sortio-old
+          fetch-depth: 0
+          persist-credentials: false
+      - name: Checkout old external/lesson-old immutable SHA
+        uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683
+        with:
+          repository: Daniel22-dev/lesson-hub
+          ref: c49db0f14e44fad52d0050a08d3e642e2a956fcb
+          path: external/lesson-old
+          fetch-depth: 0
+          persist-credentials: false
+      - name: Checkout old external/essay-old immutable SHA
+        uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683
+        with:
+          repository: Daniel22-dev/Hodnotitel-maturitnich-slohu
+          ref: 1046c7996903111b70b5f8f6f1c6bd552d2e000a
+          path: external/essay-old
+          fetch-depth: 0
+          persist-credentials: false
+      - name: Exact-source attestations and no runtime changes in QA branch
+        shell: bash
+        run: |
+          set -euo pipefail
+          test "$(git rev-parse HEAD)" = "$GITHUB_SHA"
+          git merge-base --is-ancestor b61679cf04b6eef0657e01a3040f2a0e829393ba HEAD
+          changed="$(git diff --name-only b61679cf04b6eef0657e01a3040f2a0e829393ba HEAD | LC_ALL=C sort)"
+          expected="$(printf '%s\n' .github/workflows/groups-v2-old-reader-risk.yml scripts/test-groups-v2-legacy-reader-risk-browser.mjs | LC_ALL=C sort)"
+          test "$changed" = "$expected"
+          test "$(git -C external/sortio-old rev-parse HEAD)" = "662cdcad6ae1fbc57d985408beabeeb97fc1a38f"
+          test "$(git -C external/lesson-old rev-parse HEAD)" = "c49db0f14e44fad52d0050a08d3e642e2a956fcb"
+          test "$(git -C external/essay-old rev-parse HEAD)" = "1046c7996903111b70b5f8f6f1c6bd552d2e000a"
+      - uses: actions/setup-node@49933ea5288caeca8642d1e84afbd3f7d6820020
+        with:
+          node-version: 22.22.2
+          cache: npm
+      - name: Install locked Chromium and test dependencies
+        shell: bash
+        run: |
+          set -euo pipefail
+          npm ci --ignore-scripts --no-audit --no-fund --registry=https://registry.npmjs.org
+          node node_modules/playwright/cli.js install --with-deps chromium
+      - name: Fail test if old consumer can read synthetic teacher-A v1 after teacher-B switch
+        shell: bash
+        run: node scripts/test-groups-v2-legacy-reader-risk-browser.mjs
