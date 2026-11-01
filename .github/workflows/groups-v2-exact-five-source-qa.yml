@@ -13,7 +13,7 @@ jobs:
       - name: Checkout exact Studio follow-on source
         uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683
         with:
-          ref: b61679cf04b6eef0657e01a3040f2a0e829393ba
+          ref: 1051be23b41cc7d63058f803c7f5b308a3f7f72c
           fetch-depth: 0
           persist-credentials: false
       - name: Checkout exact external/sortio module source
@@ -28,7 +28,7 @@ jobs:
         uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683
         with:
           repository: Daniel22-dev/Hodnotitel-maturitnich-slohu
-          ref: 53ed38686939071432f4f877734f3fd313c27f76
+          ref: c958a0a6b0580623608a83f2609f89eb6e72f9af
           path: external/essay
           fetch-depth: 0
           persist-credentials: false
@@ -52,10 +52,10 @@ jobs:
         shell: bash
         run: |
           set -euo pipefail
-          test "$(git rev-parse HEAD)" = "b61679cf04b6eef0657e01a3040f2a0e829393ba"
+          test "$(git rev-parse HEAD)" = "1051be23b41cc7d63058f803c7f5b308a3f7f72c"
           test ! -e .github/workflows/groups-v2-exact-five-source-qa.yml
           test "$(git -C external/sortio rev-parse HEAD)" = "f3bd4568bfc68f841592cd12f2b034a33ec60516"
-          test "$(git -C external/essay rev-parse HEAD)" = "53ed38686939071432f4f877734f3fd313c27f76"
+          test "$(git -C external/essay rev-parse HEAD)" = "c958a0a6b0580623608a83f2609f89eb6e72f9af"
           test "$(git -C external/lesson rev-parse HEAD)" = "60b9cf8adff4e764baead5123197981c86cc7eee"
           test "$(git -C external/git rev-parse HEAD)" = "9ae2a93aef91c37cdfb23f36245d6bfa8717bdc2"
       - uses: actions/setup-node@49933ea5288caeca8642d1e84afbd3f7d6820020
