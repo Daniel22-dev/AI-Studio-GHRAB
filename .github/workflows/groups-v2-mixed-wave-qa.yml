@@ -1,0 +1,84 @@
+name: Groups v2 mixed-version fail-closed browser QA (NO DEPLOY / SYNTHETIC)
+on:
+  push:
+    branches:
+      - qa/groups-v2-mixed-wave-20261101
+permissions:
+  contents: read
+jobs:
+  old-studio-vs-new-readers:
+    name: mixed-version old Studio rejection (browser / no deploy)
+    runs-on: ubuntu-24.04
+    timeout-minutes: 35
+    steps:
+      - name: Checkout exact new Studio SHA (QA runner lives separately)
+        uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683
+        with:
+          ref: b61679cf04b6eef0657e01a3040f2a0e829393ba
+          fetch-depth: 0
+          persist-credentials: false
+      - name: Checkout external/studio-old exact reviewed SHA
+        uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683
+        with:
+          repository: Daniel22-dev/AI-Studio-GHRAB
+          ref: cdbb1987aacdd0c0442717696384b5864b830bee
+          path: external/studio-old
+          fetch-depth: 0
+          persist-credentials: false
+      - name: Checkout external/sortio exact reviewed SHA
+        uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683
+        with:
+          repository: Daniel22-dev/SORTIO
+          ref: f3bd4568bfc68f841592cd12f2b034a33ec60516
+          path: external/sortio
+          fetch-depth: 0
+          persist-credentials: false
+      - name: Checkout external/lesson exact reviewed SHA
+        uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683
+        with:
+          repository: Daniel22-dev/lesson-hub
+          ref: 60b9cf8adff4e764baead5123197981c86cc7eee
+          path: external/lesson
+          fetch-depth: 0
+          persist-credentials: false
+      - name: Checkout external/essay exact reviewed SHA
+        uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683
+        with:
+          repository: Daniel22-dev/Hodnotitel-maturitnich-slohu
+          ref: c958a0a6b0580623608a83f2609f89eb6e72f9af
+          path: external/essay
+          fetch-depth: 0
+          persist-credentials: false
+      - name: Checkout external/git exact reviewed SHA
+        uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683
+        with:
+          repository: Daniel22-dev/generator-testu
+          ref: 9ae2a93aef91c37cdfb23f36245d6bfa8717bdc2
+          path: external/git
+          fetch-depth: 0
+          persist-credentials: false
+      - name: Require immutable Sha identity and old Studio missing v2 module
+        shell: bash
+        run: |
+          set -euo pipefail
+          test "$(git rev-parse HEAD)" = "b61679cf04b6eef0657e01a3040f2a0e829393ba"
+          test ! -e .github/workflows/groups-v2-mixed-wave-qa.yml
+          test "$(git -C external/studio-old rev-parse HEAD)" = "cdbb1987aacdd0c0442717696384b5864b830bee"
+          test ! -e external/studio-old/src/groups/verified-client.js
+          test "$(git -C external/sortio rev-parse HEAD)" = "f3bd4568bfc68f841592cd12f2b034a33ec60516"
+          test "$(git -C external/lesson rev-parse HEAD)" = "60b9cf8adff4e764baead5123197981c86cc7eee"
+          test "$(git -C external/essay rev-parse HEAD)" = "c958a0a6b0580623608a83f2609f89eb6e72f9af"
+          test "$(git -C external/git rev-parse HEAD)" = "9ae2a93aef91c37cdfb23f36245d6bfa8717bdc2"
+      - uses: actions/setup-node@49933ea5288caeca8642d1e84afbd3f7d6820020
+        with:
+          node-version: 22.22.2
+          cache: npm
+      - name: Install locked browser dependencies and Chromium
+        shell: bash
+        run: |
+          set -euo pipefail
+          npm ci --ignore-scripts --no-audit --no-fund --registry=https://registry.npmjs.org
+          node node_modules/playwright/cli.js install --with-deps chromium
+      - name: Run synthetic mixed-wave fail-closed browser test
+        shell: bash
+        run: node scripts/test-groups-v2-mixed-version-browser.mjs
