@@ -21,6 +21,10 @@
         {
           "cs": "Neprodukční testy ověřily skutečné moduly čtyř aplikací a odmítnutí přístupu i oznámení po změně učitele. Vydání zůstává podmíněno úplným P5/GARP, prověřením finálního commitu, školním UAT a výslovným schválením vlastníka.",
           "en": "Nonproduction tests covered the four actual application modules and denied stale data access or notifications after changing teachers. Release remains gated by full P5/GARP, final-commit verification, school UAT and explicit owner approval."
+        },
+        {
+          "cs": "Povinné testy P5 a lokální sada npm test nově spouštějí také syntetické kontroly Moje skupiny v2: ověřenou čtečku, kontrolovaný převod v1, přístupový guard, projekce aplikací, zneplatnění při změně učitele a negativní scénáře skutečného přístupového modulu. Reálné školní SSO a samostatný mezirepozitářový test zůstávají zvláštními branami.",
+          "en": "The mandatory P5 gate and local npm test now also exercise synthetic My Groups v2 coverage: verified client, controlled v1 migration, UI guard, consumer projections, teacher-switch revocation and real access-module negative scenarios. Genuine school SSO and independent cross-repository source testing remain separate admission requirements."
         }
       ]
     },
