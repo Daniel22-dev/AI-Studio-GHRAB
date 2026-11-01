@@ -1,0 +1,86 @@
+name: Groups v2 five-source real module crossapp QA (SYNTHETIC ONLY / NO DEPLOY)
+on:
+  push:
+    branches:
+      - qa/groups-v2-5app-exact-source-20261101
+permissions:
+  contents: read
+jobs:
+  crossapp-exact-source:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 60
+    steps:
+      - name: Checkout exact Studio follow-on source
+        uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683
+        with:
+          ref: 018faac4bbb65c4bd5f9cf6fa9a4575bd34ce061
+          fetch-depth: 0
+          persist-credentials: false
+      - name: Checkout exact external/sortio module source
+        uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683
+        with:
+          repository: Daniel22-dev/SORTIO
+          ref: f3bd4568bfc68f841592cd12f2b034a33ec60516
+          path: external/sortio
+          fetch-depth: 0
+          persist-credentials: false
+      - name: Checkout exact external/essay module source
+        uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683
+        with:
+          repository: Daniel22-dev/Hodnotitel-maturitnich-slohu
+          ref: 53ed38686939071432f4f877734f3fd313c27f76
+          path: external/essay
+          fetch-depth: 0
+          persist-credentials: false
+      - name: Checkout exact external/lesson module source
+        uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683
+        with:
+          repository: Daniel22-dev/lesson-hub
+          ref: 60b9cf8adff4e764baead5123197981c86cc7eee
+          path: external/lesson
+          fetch-depth: 0
+          persist-credentials: false
+      - name: Checkout exact external/git module source
+        uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683
+        with:
+          repository: Daniel22-dev/generator-testu
+          ref: 9ae2a93aef91c37cdfb23f36245d6bfa8717bdc2
+          path: external/git
+          fetch-depth: 0
+          persist-credentials: false
+      - name: Assert all five exact commit IDs and reject QA-workflow contamination
+        shell: bash
+        run: |
+          set -euo pipefail
+          test "$(git rev-parse HEAD)" = "018faac4bbb65c4bd5f9cf6fa9a4575bd34ce061"
+          test ! -e .github/workflows/groups-v2-exact-five-source-qa.yml
+          test "$(git -C external/sortio rev-parse HEAD)" = "f3bd4568bfc68f841592cd12f2b034a33ec60516"
+          test "$(git -C external/essay rev-parse HEAD)" = "53ed38686939071432f4f877734f3fd313c27f76"
+          test "$(git -C external/lesson rev-parse HEAD)" = "60b9cf8adff4e764baead5123197981c86cc7eee"
+          test "$(git -C external/git rev-parse HEAD)" = "9ae2a93aef91c37cdfb23f36245d6bfa8717bdc2"
+      - uses: actions/setup-node@49933ea5288caeca8642d1e84afbd3f7d6820020
+        with:
+          node-version: 22.22.2
+          cache: npm
+      - name: Install locked audit dependencies
+        run: npm ci --ignore-scripts --no-audit --no-fund --registry=https://registry.npmjs.org
+      - name: Check trusted browser package pins
+        run: node -e "if(require('./node_modules/playwright/package.json').version!=='1.61.1'||require('./node_modules/axe-core/package.json').version!=='4.12.1')process.exit(1)"
+      - name: Install pinned Chromium headless browser
+        shell: bash
+        run: |
+          node node_modules/playwright/cli.js install --with-deps chromium
+          node -e "console.log('CHROMIUM_PATH='+require('playwright').chromium.executablePath())" >> "$GITHUB_ENV"
+      - name: Run v1 regression, v2 policy, migration, browser and REAL source consumers
+        shell: bash
+        run: |
+          set -euo pipefail
+          npm run test:groups
+          node scripts/test-groups-verified-client-browser.mjs
+          node scripts/test-groups-legacy-migration.mjs
+          node scripts/test-groups-access-browser.mjs
+          node scripts/test-groups-crossapp-browser.mjs
+          node scripts/test-groups-legacy-migration-browser.mjs
+          node scripts/test-groups-real-access-browser.mjs
+          node scripts/test-groups-real-external-consumers.mjs
+          echo 'Five immutable sources checked. Test account permits/server response are synthetic or mocked; school SSO and real pupils NOT TESTED.'
