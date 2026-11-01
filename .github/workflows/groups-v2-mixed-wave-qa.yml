@@ -11,10 +11,10 @@ jobs:
     runs-on: ubuntu-24.04
     timeout-minutes: 35
     steps:
-      - name: Checkout exact new Studio SHA (QA runner lives separately)
+      - name: Checkout isolated QA script with unchanged reviewed Studio runtime sources
         uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683
         with:
-          ref: b61679cf04b6eef0657e01a3040f2a0e829393ba
+          ref: ${{ github.sha }}
           fetch-depth: 0
           persist-credentials: false
       - name: Checkout external/studio-old exact reviewed SHA
@@ -61,8 +61,11 @@ jobs:
         shell: bash
         run: |
           set -euo pipefail
-          test "$(git rev-parse HEAD)" = "b61679cf04b6eef0657e01a3040f2a0e829393ba"
-          test ! -e .github/workflows/groups-v2-mixed-wave-qa.yml
+          test "$(git rev-parse HEAD)" = "$GITHUB_SHA"
+          git merge-base --is-ancestor b61679cf04b6eef0657e01a3040f2a0e829393ba HEAD
+          changed="$(git diff --name-only b61679cf04b6eef0657e01a3040f2a0e829393ba HEAD | LC_ALL=C sort)"
+          expected="$(printf '%s\n' .github/workflows/groups-v2-mixed-wave-qa.yml scripts/test-groups-v2-mixed-version-browser.mjs | LC_ALL=C sort)"
+          test "$changed" = "$expected"
           test "$(git -C external/studio-old rev-parse HEAD)" = "cdbb1987aacdd0c0442717696384b5864b830bee"
           test ! -e external/studio-old/src/groups/verified-client.js
           test "$(git -C external/sortio rev-parse HEAD)" = "f3bd4568bfc68f841592cd12f2b034a33ec60516"
