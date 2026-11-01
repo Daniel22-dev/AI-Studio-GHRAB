@@ -27,7 +27,7 @@ try {
   const result=await page.evaluate(async()=>{
     const groups=await import("/AI-Studio-GHRAB/groups/group-service.js");
     const migration=await import("/AI-Studio-GHRAB/groups/legacy-migration.js");
-    const old=groups.createGroupsService();
+    const old=groups.createGroupsService({provider:new groups.LocalGroupsProvider()});
     const created=old.createGroup({displayName:"Synthetic Czech class",schoolYear:"2026/27"});
     const withRoster=old.importRoster({
       groupId:created.groupId,expectedRevision:created.revision,

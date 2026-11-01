@@ -562,7 +562,11 @@ function defaultEventTarget() {
   return typeof EventTarget === "function" ? new EventTarget() : null;
 }
 
-export function createGroupsService({ provider = new LocalGroupsProvider(), idFactory = secureId, eventTarget = defaultEventTarget() } = {}) {
+export function createGroupsService({ provider, idFactory = secureId, eventTarget = defaultEventTarget() } = {}) {
+  // Never auto-bind the origin-wide v1 store. Old consumers must fail closed.
+  // This guard prevents accidental v1 re-use; same-origin storage still needs
+  // school-approved browser profile isolation or a server-side tenant boundary.
+  if (!provider) throw new Error("GROUP_EXPLICIT_PROVIDER_REQUIRED");
   const listeners = new Set();
   const emit = (detail) => {
     const safeDetail = {
