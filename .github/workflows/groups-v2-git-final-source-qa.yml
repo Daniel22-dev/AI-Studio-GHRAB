@@ -51,6 +51,12 @@ jobs:
           node scripts/check-stage08-results.mjs
           node scripts/check-csp.mjs
           node --test tests/stage09-material.test.mjs
+      - name: Diagnose exact GIT GARP 2.7 architecture before browser provisioning
+        run: |
+          npm run build
+          node scripts/garp27/architecture-integrity.mjs
+        env:
+          GARP27_EXTERNAL_TRUST_SHA256: ec7aa8abbc4a4a915627f569eaa69b3a8da56155565b955814263bead2061006
       - name: Install real pinned Playwright Chromium and OS dependencies
         run: npx playwright install --with-deps chromium
       - name: Export GIT-local Chromium executable path
