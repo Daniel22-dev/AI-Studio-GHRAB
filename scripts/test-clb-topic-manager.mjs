@@ -66,3 +66,45 @@ test('no backend, bearer token, eval, or teaching credentials in manager app sou
  assert.ok(!js.includes('Authorization: Bearer'));
  assert.ok(!js.includes('cloudflareApiToken'));
 });
+
+test('four optional student speaking supports survive static import and local backup',()=>{
+ const fourth='My next test is on Friday. What about yours?';
+ const extended={...fakeStation,support:[...fakeStation.support,fourth]};
+ const level={...fakeLevel,stations:Array.from({length:8},()=>({...extended}))};
+ const raw='<!doctype html><script>const CONTENT = '+JSON.stringify({
+   en:{ui:{title:'Studying for tests'},levels:{A1:level}}
+ })+';const CZ_GLOSSARY = {};</script>';
+ const record=core.parseCard(raw,'study-skills.html');
+ assert.equal(record.content.en.levels.A1.stations[0].support.length,4);
+ assert.equal(record.content.en.levels.A1.stations[0].support[3],fourth);
+ const backup=JSON.stringify({schema:'ghrab-clb-local-library-v1',items:[record]});
+ const restored=core.restoreBackup(backup);
+ assert.equal(restored[0].content.en.levels.A1.stations[7].support[3],fourth);
+ const five=structuredClone(record);
+ five.content.en.levels.A1.stations[0].support.push('A fifth forbidden support');
+ assert.throws(()=>core.validateRecord(five),/STATION_CONTENT/);
+ const unsafe=structuredClone(record);
+ unsafe.content.en.levels.A1.stations[0].support[3]='\u0000invalid';
+ assert.throws(()=>core.validateRecord(unsafe),/STATION_CONTENT/);
+});
+
+test('optional authored main context and scenarios are retained and rendered as inert text',()=>{
+ const title='A debate with background context';
+ const extra={...fakeStation,mainExplain:'<img src=x onerror=alert(1)>',
+   scenario:'Two fictional classmates disagree.'};
+ const shaped={...fakeLevel,stations:Array.from({length:8},()=>({...extra}))};
+ const raw='<!doctype html><script>const CONTENT = '+JSON.stringify({
+   en:{ui:{title},levels:{B2:shaped}}
+ })+';const CZ_GLOSSARY = {};</script>';
+ const parsed=core.parseCard(raw,'discussion.html');
+ assert.equal(parsed.content.en.levels.B2.stations[0].mainExplain,extra.mainExplain);
+ assert.equal(parsed.content.en.levels.B2.stations[0].scenario,extra.scenario);
+ const escaped=core.safeSeedText(parsed.content);
+ assert.ok(!escaped.includes('<img'));
+ for(const id of ['station-scenario-wrap','station-scenario-text',
+   'main-context-details','main-context-text'])assert.ok(page.includes('id="'+id+'"'));
+ for(const field of ['part.scenario','part.mainExplain','part.mainExplanation'])
+   assert.ok(js.includes(field),field);
+ assert.ok(js.includes("$('main-context-text').textContent=mainContext;"));
+ assert.ok(js.includes("$('station-scenario-text').textContent=scenario;"));
+});
