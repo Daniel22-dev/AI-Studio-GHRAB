@@ -32,3 +32,14 @@ export function studioPortalDestination(app, base) {
   }
   return `${base}app/?${params.toString()}`;
 }
+
+/** Pinned, unsigned public catalog. This is a teacher-UI navigation target,
+ * not a replacement for the signed 0.11 student release or its QR links. */
+export const CLB_012_PILOT_URL = 'https://conversation-lab-012-pilot.danikin35.workers.dev/';
+
+/** Route the main Studio CTA to the approved 0.12 catalog while checking the
+ * existing signed legacy manifest contract first. All other apps are unchanged. */
+export function studioPrimaryPortalDestination(app, base) {
+  const originalDestination = studioPortalDestination(app, base);
+  return app.id === 'conversation-lab' ? CLB_012_PILOT_URL : originalDestination;
+}

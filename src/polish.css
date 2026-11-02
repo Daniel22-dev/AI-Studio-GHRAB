@@ -3444,17 +3444,17 @@ button.colleague-preview-choice:focus-visible {
   .colleague-preview-banner-actions { justify-content: flex-start; }
 }
 
-/* The optional CLB 0.12 public pilot never replaces the signed 0.11 CTA. */
-.portal-card-bottom.has-clb-012-pilot {
+/* CLB primary opens the 0.12 catalog; signed 0.11 stays optional. */
+.portal-card-bottom.has-clb-version-switch {
   flex-wrap: wrap;
   gap: 8px;
 }
-.portal-card-bottom .clb-012-pilot-link {
+.portal-card-bottom .clb-011-legacy-link {
   background: transparent;
   font-size: 0.8rem;
 }
 @media (max-width: 440px) {
-  .portal-card-bottom.has-clb-012-pilot > * {
+  .portal-card-bottom.has-clb-version-switch > * {
     flex: 1 1 100%;
   }
 }
