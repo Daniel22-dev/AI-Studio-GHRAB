@@ -1,3 +1,5 @@
+import { createGroupsWriteTransaction } from "./write-transaction.js";
+
 const GROUP_SCHEMA = "ghrab-teaching-group-v1";
 const STORE_SCHEMA = "ghrab-teaching-groups-store-v1";
 const BACKUP_SCHEMA = "ghrab-teaching-groups-backup-v1";
@@ -139,14 +141,17 @@ export function validateGroupsStore(store) {
 }
 
 export class LocalGroupsProvider {
-  constructor({ storage = globalThis.localStorage, storageKey = STORAGE_KEY, onDiagnostic = () => {} } = {}) {
+  constructor({ storage = globalThis.localStorage, storageKey = STORAGE_KEY, onDiagnostic = () => {}, writeGuard = null } = {}) {
     if (!storage || typeof storage.getItem !== "function" || typeof storage.setItem !== "function") {
       throw new Error("GROUP_STORAGE_UNAVAILABLE");
     }
     this.storage = storage;
     this.storageKey = storageKey;
     this.onDiagnostic = typeof onDiagnostic === "function" ? onDiagnostic : () => {};
+    this.writeGuard = typeof writeGuard === "function" ? writeGuard : null;
     this.lastGood = null;
+    this.readFault = null;
+    this.hadDurableStore = false;
   }
 
   read() {
@@ -154,12 +159,19 @@ export class LocalGroupsProvider {
     try {
       raw = this.storage.getItem(this.storageKey);
     } catch {
+      this.readFault = "GROUP_STORAGE_READ_FAILED";
       this.onDiagnostic({ code: "GROUP_STORAGE_READ_FAILED" });
       return clone(this.lastGood || emptyStore());
     }
-    if (!raw) {
+    if (raw === null || raw === undefined) {
+      if (this.hadDurableStore) {
+        this.readFault = "GROUP_STORAGE_MISSING_AFTER_PERSISTENCE";
+        this.onDiagnostic({ code: this.readFault });
+        return clone(this.lastGood || emptyStore());
+      }
       const store = emptyStore();
       this.lastGood = clone(store);
+      this.readFault = null;
       return store;
     }
     try {
@@ -167,36 +179,57 @@ export class LocalGroupsProvider {
       const validation = validateGroupsStore(parsed);
       if (!validation.ok) throw new Error("INVALID_GROUP_STORE");
       this.lastGood = clone(parsed);
+      this.readFault = null;
+      this.hadDurableStore = true;
       return clone(parsed);
     } catch {
+      this.readFault = "GROUP_STORAGE_CORRUPT";
       this.onDiagnostic({ code: "GROUP_STORAGE_CORRUPT" });
       return clone(this.lastGood || emptyStore());
     }
   }
 
-  write(store) {
+  write(store, { allowRecovery = false } = {}) {
+    // Browser-profile scope: cooperative single-origin Web Lock, not server isolation.
+    if (this.writeGuard && !this.writeGuard()) throw new Error("GROUP_WRITE_LOCK_REQUIRED");
+    if (this.readFault && !allowRecovery) throw new Error(this.readFault === "GROUP_STORAGE_CORRUPT" ? "GROUP_STORAGE_CORRUPT_WRITE_BLOCKED" : "GROUP_STORAGE_UNVERIFIED_WRITE_BLOCKED");
     const validation = validateGroupsStore(store);
     if (!validation.ok) throw new Error(`GROUP_STORE_VALIDATION_FAILED:${validation.errors.join(",")}`);
     const serialised = JSON.stringify(store);
     try {
+      const previousRaw = this.storage.getItem(this.storageKey);
+      if (!allowRecovery && previousRaw !== null && previousRaw !== undefined) {
+        let healthy = false;
+        try { healthy = validateGroupsStore(JSON.parse(previousRaw)).ok; } catch {}
+        if (!healthy) throw new Error("GROUP_STORAGE_CORRUPT_WRITE_BLOCKED");
+      }
       this.storage.setItem(this.storageKey, serialised);
       const verifyRaw = this.storage.getItem(this.storageKey);
-      const verify = JSON.parse(verifyRaw || "null");
+      if (verifyRaw !== serialised) throw new Error("GROUP_STORAGE_VERIFY_FAILED");
+      const verify = JSON.parse(verifyRaw);
       if (!validateGroupsStore(verify).ok) throw new Error("GROUP_STORAGE_VERIFY_FAILED");
       this.lastGood = clone(verify);
+      this.readFault = null;
+      this.hadDurableStore = true;
       return clone(verify);
     } catch (error) {
+      if (error?.message === "GROUP_STORAGE_CORRUPT_WRITE_BLOCKED") {
+        this.onDiagnostic({ code: "GROUP_STORAGE_CORRUPT_WRITE_BLOCKED" });
+        throw error;
+      }
       this.onDiagnostic({ code: error?.message === "GROUP_STORAGE_VERIFY_FAILED" ? "GROUP_STORAGE_VERIFY_FAILED" : "GROUP_STORAGE_WRITE_FAILED" });
       throw new Error("GROUP_STORAGE_WRITE_FAILED");
     }
   }
 
   exportBackup() {
+    const store = this.read();
+    if (this.readFault) throw new Error("GROUP_BACKUP_SOURCE_UNAVAILABLE");
     return {
       schema: BACKUP_SCHEMA,
       version: 1,
       exportedAt: nowIso(),
-      store: this.read(),
+      store,
     };
   }
 
@@ -206,7 +239,8 @@ export class LocalGroupsProvider {
     }
     const validation = validateGroupsStore(backup.store);
     if (!validation.ok) throw new Error("GROUP_BACKUP_STORE_INVALID");
-    return this.write({ ...clone(backup.store), updatedAt: nowIso() });
+    // Schema validated and owner-scope checked before guarded recovery.
+    return this.write({ ...clone(backup.store), updatedAt: nowIso() }, { allowRecovery: true });
   }
 }
 
@@ -410,8 +444,10 @@ export function parseRosterText(raw) {
   const acc = createRosterAccumulator();
   const lines = text.split(/\r?\n/).map((line) => line.trim()).filter(Boolean);
   let header = null;
+  let examinedLineCount = 0;
   for (const line of lines) {
     if (acc.entries.length >= MAX_MEMBERS_PER_GROUP) break;
+    examinedLineCount += 1;
     if (looksLikeHeader(line)) {
       header = detectRosterHeader(line);
       continue;
@@ -425,7 +461,7 @@ export function parseRosterText(raw) {
     invalid: acc.invalid,
     duplicates: acc.duplicates,
     totalSegments: acc.segments,
-    truncated: acc.entries.length >= MAX_MEMBERS_PER_GROUP && lines.length > MAX_MEMBERS_PER_GROUP,
+    truncated: examinedLineCount < lines.length,
     limits: { maxEntries: MAX_MEMBERS_PER_GROUP, maxChars: MAX_IMPORT_CHARS },
   };
 }
@@ -562,7 +598,11 @@ function defaultEventTarget() {
   return typeof EventTarget === "function" ? new EventTarget() : null;
 }
 
-export function createGroupsService({ provider = new LocalGroupsProvider(), idFactory = secureId, eventTarget = defaultEventTarget() } = {}) {
+export function createGroupsService({ provider, idFactory = secureId, eventTarget = defaultEventTarget() } = {}) {
+  // Never auto-bind the origin-wide v1 store. Old consumers must fail closed.
+  // This guard prevents accidental v1 re-use; same-origin storage still needs
+  // school-approved browser profile isolation or a server-side tenant boundary.
+  if (!provider) throw new Error("GROUP_EXPLICIT_PROVIDER_REQUIRED");
   const listeners = new Set();
   const emit = (detail) => {
     const safeDetail = {
@@ -634,6 +674,36 @@ export function createGroupsService({ provider = new LocalGroupsProvider(), idFa
       return clone(group);
     },
 
+    // One durable commit, even if a browser later refuses a subsequent write.
+    createGroupWithRoster({ input, rawText } = {}) {
+      const parsed = parseRosterText(rawText);
+      if (parsed.truncated) throw new Error("ROSTER_IMPORT_TRUNCATED");
+      if (parsed.invalid.length || parsed.duplicates.length) throw new Error("ROSTER_IMPORT_INVALID");
+      if (!parsed.entries.length) throw new Error("ROSTER_EMPTY");
+      const store = provider.read();
+      if (store.groups.length >= MAX_GROUPS) throw new Error("GROUP_LIMIT_EXCEEDED");
+      const metadata = cleanGroupInput(input);
+      const timestamp = nowIso();
+      const initial = {
+        schema: GROUP_SCHEMA, groupId: idFactory("grp"), revision: 1,
+        ...metadata, status: "active", createdAt: timestamp,
+        updatedAt: timestamp, members: [],
+      };
+      const plan = buildRosterPlan(initial, parsed, { replace: true, idFactory });
+      if (!plan.hasChanges || plan.added.length !== parsed.entries.length)
+        throw new Error("ROSTER_IMPORT_INCOMPLETE");
+      const group = { ...initial, members: plan.nextMembers };
+      const validation = validateTeachingGroup(group);
+      if (!validation.ok) throw new Error(`GROUP_VALIDATION_FAILED:${validation.errors.join(",")}`);
+      store.groups.push(group);
+      writeStore(store, { kind: "created", groupId: group.groupId, revision: group.revision });
+      return clone({ group, parsed, diff: {
+        added: plan.added, changed: plan.changed, restored: plan.restored,
+        removed: plan.removed, unchangedCount: plan.unchanged.length,
+        hasChanges: plan.hasChanges,
+      } });
+    },
+
     updateGroup(groupId, patch = {}, { expectedRevision = null } = {}) {
       const store = provider.read();
       const group = findGroupOrThrow(store, groupId);
@@ -685,6 +755,7 @@ export function createGroupsService({ provider = new LocalGroupsProvider(), idFa
       const group = findGroupOrThrow(store, groupId);
       if (expectedRevision != null && group.revision !== expectedRevision) throw new Error("GROUP_REVISION_CONFLICT");
       const parsed = parseRosterText(rawText);
+      if (parsed.truncated) throw new Error("ROSTER_IMPORT_TRUNCATED");
       if (!parsed.entries.length) throw new Error("ROSTER_EMPTY");
       const plan = buildRosterPlan(group, parsed, { replace, idFactory });
       if (!plan.hasChanges) {
@@ -764,6 +835,212 @@ export function createGroupsService({ provider = new LocalGroupsProvider(), idFa
   }
 
   return Object.freeze(api);
+}
+
+/**
+ * Defence-in-depth for the My Groups UI, not a localStorage tenant boundary.
+ * The signed permit/session is verified by Studio's access-control module.
+ * A revoked or replaced principal permanently invalidates this page instance.
+ */
+export function createGroupsPageAccessGate({
+  getSnapshot,
+  isPreview = () => false,
+  nowSeconds = () => Math.floor(Date.now() / 1000),
+} = {}) {
+  if (typeof getSnapshot !== "function" || typeof isPreview !== "function") {
+    throw new Error("GROUP_ACCESS_CONFIG_INVALID");
+  }
+  const readAuthorized = () => {
+    try {
+      const snapshot = getSnapshot();
+      const permit = snapshot?.permit;
+      const allowedRoles = new Set([
+        "teacher",
+        ...(Array.isArray(snapshot?.policy?.administratorRoles)
+          ? snapshot.policy.administratorRoles : ["admin"]),
+        ...(Array.isArray(snapshot?.policy?.operatorRoles)
+          ? snapshot.policy.operatorRoles : ["operator"]),
+      ]);
+      const expiresAt = permit?.exp == null ? null : Number(permit.exp);
+      if (
+        !snapshot?.ready ||
+        !snapshot?.valid ||
+        typeof permit?.sub !== "string" ||
+        !permit.sub.trim() ||
+        permit.sub !== permit.sub.trim() ||
+        !allowedRoles.has(permit.role) ||
+        isPreview() ||
+        (expiresAt !== null && (!Number.isFinite(expiresAt) || expiresAt <= nowSeconds()))
+      ) return null;
+      const mode = snapshot.mode || "signed-permit";
+      if (!["signed-permit", "server-session"].includes(mode)) return null;
+      return mode + "\u0000" + permit.sub;
+    } catch {
+      return null;
+    }
+  };
+  const subject = readAuthorized();
+  if (!subject) throw new Error("GROUP_ACCESS_DENIED");
+  let invalidated = false;
+  const allowed = () => {
+    if (invalidated) return false;
+    if (readAuthorized() !== subject) {
+      invalidated = true;
+      return false;
+    }
+    return true;
+  };
+  const requireAllowed = () => {
+    if (!allowed()) throw new Error("GROUP_ACCESS_DENIED");
+  };
+  const protect = (service) => {
+    requireAllowed();
+    if (!service || typeof service !== "object" || service.schema !== "ghrab-groups-service-v1") {
+      throw new Error("GROUP_ACCESS_SERVICE_INVALID");
+    }
+    const guarded = Object.create(null);
+    for (const [key, value] of Object.entries(service)) {
+      Object.defineProperty(guarded, key, {
+        enumerable: true,
+        value: typeof value === "function"
+          ? key === "subscribe"
+            ? (listener) => {
+                requireAllowed();
+                if (typeof listener !== "function") return value(listener);
+                let unsubscribe = null;
+                let ended = false;
+                const safeListener = (detail) => {
+                  if (ended) return;
+                  if (!allowed()) {
+                    ended = true;
+                    unsubscribe?.();
+                    unsubscribe = null;
+                    return;
+                  }
+                  listener(detail);
+                };
+                unsubscribe = value(safeListener);
+                return () => {
+                  if (ended) return;
+                  ended = true;
+                  unsubscribe?.();
+                  unsubscribe = null;
+                };
+              }
+            : (...args) => { requireAllowed(); return value(...args); }
+          : value,
+      });
+    }
+    return Object.freeze(guarded);
+  };
+  return Object.freeze({ allowed, requireAllowed, protect });
+}
+
+/**
+ * Account-scoped browser profile namespace (v2, opt-in until every consumer
+ * has migrated). Hashing a key does NOT encrypt its contents or create an
+ * origin-wide security boundary: same-origin scripts can still read storage.
+ * Legacy shared rosters are never copied or assigned to a principal silently.
+ */
+export async function principalGroupsStorageKey({
+  subject,
+  mode = "signed-permit",
+  cryptoApi = globalThis.crypto,
+} = {}) {
+  if (typeof subject !== "string" || subject !== subject.trim() ||
+      !subject || subject.length > 512 || /[\u0000-\u001f\u007f]/.test(subject) ||
+      !["signed-permit", "server-session"].includes(mode)) {
+    throw new Error("GROUP_SCOPE_IDENTITY_INVALID");
+  }
+  if (!cryptoApi?.subtle || typeof cryptoApi.subtle.digest !== "function") {
+    throw new Error("GROUP_SCOPE_CRYPTO_UNAVAILABLE");
+  }
+  const encoded = new TextEncoder().encode("ghrab-teaching-groups-scope-v2\u0000" + mode + "\u0000" + subject);
+  const bytes = new Uint8Array(await cryptoApi.subtle.digest("SHA-256", encoded));
+  if (bytes.length !== 32) throw new Error("GROUP_SCOPE_CRYPTO_INVALID");
+  const hex = [...bytes].map((byte) => byte.toString(16).padStart(2, "0")).join("");
+  return "ghrab.ai-studio.groups.account.v2." + hex;
+}
+
+export async function createPrincipalGroupsSession({
+  getSnapshot,
+  isPreview = () => false,
+  storage = globalThis.localStorage,
+  cryptoApi = globalThis.crypto,
+  idFactory = secureId,
+  eventTarget = defaultEventTarget(),
+  onDiagnostic = () => {},
+  lockManager = globalThis.navigator?.locks,
+} = {}) {
+  const gate = createGroupsPageAccessGate({ getSnapshot, isPreview });
+  gate.requireAllowed();
+  const snapshot = getSnapshot();
+  const subject = snapshot.permit.sub;
+  const mode = snapshot.mode || "signed-permit";
+  const storageKey = await principalGroupsStorageKey({ subject, mode, cryptoApi });
+  gate.requireAllowed();
+  if (!storage || typeof storage.getItem !== "function" || typeof storage.setItem !== "function") {
+    throw new Error("GROUP_SCOPE_STORAGE_UNAVAILABLE");
+  }
+  let legacyStorePresent;
+  try {
+    legacyStorePresent = storage.getItem(STORAGE_KEY) !== null;
+  } catch {
+    throw new Error("GROUP_SCOPE_STORAGE_UNAVAILABLE");
+  }
+  gate.requireAllowed();
+  let inWriteLock = false;
+  const provider = new LocalGroupsProvider({
+    storage, storageKey, onDiagnostic, writeGuard: () => inWriteLock,
+  });
+  const service = gate.protect(createGroupsService({ provider, idFactory, eventTarget }));
+  const scopeId = storageKey.slice("ghrab.ai-studio.groups.account.v2.".length);
+  const runWriteTransaction = createGroupsWriteTransaction({
+    scopeId, lockManager,
+    assertAllowed: () => gate.requireAllowed(),
+    onEnter: () => { inWriteLock = true; },
+    onExit: () => { inWriteLock = false; },
+  });
+  // An account backup can only be restored to the namespace that exported it.
+  // Legacy v1 backups are deliberately not silently adopted by this API.
+  let scopedService;
+  scopedService = Object.assign(Object.create(null), service, {
+    withWriteLock: (action) => {
+      if (typeof action !== "function") throw new TypeError("GROUP_WRITE_ACTION_REQUIRED");
+      return runWriteTransaction(() => action(scopedService));
+    },
+    exportBackup: () => {
+      const backup = service.exportBackup();
+      return {
+        schema: "ghrab-teaching-groups-account-backup-v2",
+        version: 2,
+        scopeId,
+        exportedAt: backup.exportedAt,
+        store: backup.store,
+      };
+    },
+    importBackup: (backup) => {
+      gate.requireAllowed();
+      if (!backup || typeof backup !== "object" || Array.isArray(backup) ||
+          Object.keys(backup).some((key) => !["schema", "version", "scopeId", "exportedAt", "store"].includes(key)) ||
+          backup.schema !== "ghrab-teaching-groups-account-backup-v2" ||
+          backup.version !== 2) {
+        throw new Error("GROUP_SCOPE_BACKUP_INVALID");
+      }
+      if (backup.scopeId !== scopeId) throw new Error("GROUP_SCOPE_BACKUP_OTHER_ACCOUNT");
+      return service.importBackup({
+        schema: BACKUP_SCHEMA, version: 1,
+        exportedAt: backup.exportedAt, store: backup.store,
+      });
+    },
+  });
+  // The key is deliberately not exposed in this API. Service methods enforce
+  // ongoing Studio access; use a new session after any principal change.
+  return Object.freeze({
+    schema: "ghrab-groups-principal-session-v2",
+    legacyStorePresent,
+    service: Object.freeze(scopedService),
+  });
 }
 
 export function installGlobalGroupsApi(options = {}) {

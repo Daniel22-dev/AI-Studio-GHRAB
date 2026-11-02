@@ -39,13 +39,13 @@ const transforms = {
   'README.md': (text) => text.replace(/^- Registr Studia je synchronizován s verzemi .*$/m, `- Registr Studia je synchronizován s verzemi ${summary}.`),
   'BEZPECNOST.md': (text) => text.replace(/^Ochranný bootstrap je integrován v .*?(?= Běžný vstupní bod)/m, bootstrapSentence),
   'POSTUP-NAHRANI.md': (text) => text.replace(/^Nejprve musí být nasazeny .*?(?= Jejich lokální reportér)/m, `Nejprve musí být nasazeny ${summary}.`),
-  'NAHRANI-NA-GITHUB.md': (text) => text.replace(/^1\. Korespondenční asistent .*?^8\. Generátor interaktivních testů .*$/ms, uploadList),
+  'NAHRANI-NA-GITHUB.md': (text) => text.replace(/^1\. Korespondenční asistent [^\r\n]*[\s\S]*?^8\. Generátor interaktivních testů [^\r\n]*/m, uploadList),
   'docs/INTEGRACE-APLIKACI.md': (text) => text
     .replace(/^# Integrace samostatných aplikací — AI Studio .*$/m, '# Integrace samostatných aplikací — aktuální registr')
     .replace(/^Integrace je dokončena v .*?(?= Ochrana se nevztahuje)/m, integrationSentence),
   'src/integration/README.md': (text) => text
     .replace(/^## Stav ve verzi .*$/m, '## Aktuální stav registru')
-    .replace(/^- Generátor interaktivních testů .*?^- Lesson Hub .*?\.$/ms, integrationList),
+    .replace(/^- Generátor interaktivních testů [^\r\n]*[\s\S]*?^- Lesson Hub [^\r\n]*?(?=\r?$)/m, integrationList),
 };
 
 let changed = 0;
