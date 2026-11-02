@@ -1,4 +1,5 @@
 import assert from "node:assert/strict";
+import { createMockGroupsLockManager } from "./test-groups-lock-helper.mjs";
 import { webcrypto } from "node:crypto";
 import {
   LocalGroupsProvider,createGroupsService,createPrincipalGroupsSession,
@@ -12,6 +13,7 @@ class Storage {
   removeItem(k){this.map.delete(k)}
 }
 const storage=new Storage();
+const lockManager=createMockGroupsLockManager();
 let id=0;
 const idFactory=prefix=>prefix+"_"+String(++id).padStart(12,"0");
 const legacy=createGroupsService({
@@ -30,7 +32,7 @@ let current={
   permit:{sub:"teacher-A",role:"teacher",exp:now+3600},
 };
 const open=()=>createPrincipalGroupsSession({
-  getSnapshot:()=>current,storage,cryptoApi:webcrypto,idFactory,eventTarget:null,
+  getSnapshot:()=>current,storage,cryptoApi:webcrypto,idFactory,eventTarget:null,lockManager,
 });
 const target=await open();
 const prepare=(sourceBackup=backup,session=target)=>prepareLegacyGroupsMigration({
@@ -90,16 +92,16 @@ await assert.rejects(prepare(unsafe,other),/GROUP_MIGRATION_UNSAFE_KEYS|GROUP_AC
   };
   const raceSession = await createPrincipalGroupsSession({
     getSnapshot:()=>raceSnapshot,storage:raceStorage,
-    cryptoApi:webcrypto,idFactory,eventTarget:null,
+    cryptoApi:webcrypto,idFactory,eventTarget:null,lockManager,
   });
   let digestCalls = 0;
   const racingCrypto = {
     subtle: {
       async digest(algorithm,data) {
         digestCalls++;
-        if (digestCalls === 2) raceSession.service.createGroup({
+        if (digestCalls === 2) await raceSession.service.withWriteLock(tx => tx.createGroup({
           displayName:"Parallel synthetic group",schoolYear:"2026/27",
-        });
+        }));
         return webcrypto.subtle.digest(algorithm,data);
       },
     },
@@ -129,7 +131,7 @@ await assert.rejects(prepare(unsafe,other),/GROUP_MIGRATION_UNSAFE_KEYS|GROUP_AC
   };
   const parallelSession = await createPrincipalGroupsSession({
     getSnapshot:()=>snapshot,storage:parallelStorage,
-    cryptoApi:webcrypto,idFactory,eventTarget:null,
+    cryptoApi:webcrypto,idFactory,eventTarget:null,lockManager,
   });
   const prepared = await prepareLegacyGroupsMigration({
     sourceBackup:backup,targetSession:parallelSession,cryptoApi:webcrypto,

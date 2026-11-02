@@ -289,6 +289,7 @@ const requiredCacheFiles = [
   "./integration/conversation-lab/portal-route.js",
   // Stage05 static dependency of app.js: required for offline portal reload.
   "./material-flow/material-flow.js",
+  "./integration/save-to-studio.js",
   "./styles.css",
   "./polish.css",
   "./portal-card-hotfix.css",

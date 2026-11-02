@@ -164,9 +164,9 @@ try {
       });
       const legacyPresent = a.legacyStorePresent;
       const beforeA = a.service.listGroups().length;
-      const groupA = a.service.createGroup({
+      const groupA = await a.service.withWriteLock(tx => tx.createGroup({
         displayName: "Private Account A", schoolYear: "2026/27",
-      });
+      }));
       const exportA = a.service.exportBackup();
       window.__syntheticAccess = {
         ready: true, valid: true,
@@ -178,11 +178,11 @@ try {
         getSnapshot: () => window.__syntheticAccess,
       });
       const beforeB = b.service.listGroups().length;
-      const groupB = b.service.createGroup({
+      const groupB = await b.service.withWriteLock(tx => tx.createGroup({
         displayName: "Private Account B", schoolYear: "2026/27",
-      });
+      }));
       let foreignRejected = false;
-      try { b.service.importBackup(exportA); }
+      try { await b.service.withWriteLock(tx => tx.importBackup(exportA)); }
       catch (e) { foreignRejected = e.message === "GROUP_SCOPE_BACKUP_OTHER_ACCOUNT"; }
       window.__syntheticAccess = {
         ready: true, valid: true,

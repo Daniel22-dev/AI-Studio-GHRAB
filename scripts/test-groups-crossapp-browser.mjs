@@ -53,10 +53,13 @@ try{
   await page.waitForFunction(()=>globalThis.GHRAB_GROUPS?.schema==="ghrab-groups-service-v1");
   const result=await page.evaluate(async()=>{
     const writer=globalThis.GHRAB_GROUPS;
-    const created=writer.createGroup({displayName:"Synthetic English",
-      schoolYear:"2026/27",subject:"English",grade:"Year 1"});
-    const imported=writer.importRoster({groupId:created.groupId,
-      rawText:"Synthetic Pupil; synthetic@example.invalid",expectedRevision:created.revision});
+    const {created,imported}=await writer.withWriteLock(tx=>{
+      const created=tx.createGroup({displayName:"Synthetic English",
+        schoolYear:"2026/27",subject:"English",grade:"Year 1"});
+      const imported=tx.importRoster({groupId:created.groupId,
+        rawText:"Synthetic Pupil; synthetic@example.invalid",expectedRevision:created.revision});
+      return {created,imported};
+    });
     const memberId=imported.group.members[0].memberId;
     const {openVerifiedGroupsV2}=await import("/AI-Studio-GHRAB/groups/verified-client.js");
     const sortio=await openVerifiedGroupsV2("sortio");
@@ -69,6 +72,8 @@ try{
     const lessonHasRosterMethod=typeof lesson.service.getRosterProjection==="function";
     const lessonHasFullGroupMethod=typeof lesson.service.getGroup==="function";
     const sortioHasCreate=typeof sortio.service.createGroup==="function";
+    if(typeof sortio.service.withWriteLock!=="function")throw Error("SORTIO_LOCK_MISSING");
+    if(typeof essay.service.withWriteLock==="function")throw Error("ESSAY_WRITE_EXPOSED");
     const essayHasCreate=typeof essay.service.createGroup==="function";
     let sortioProjectionBlocked=false;
     try{sortio.service.getRosterProjection(created.groupId,"essay-evaluator")}catch(e){sortioProjectionBlocked=e.message==="GROUP_CONSUMER_PROJECTION_DENIED"}
