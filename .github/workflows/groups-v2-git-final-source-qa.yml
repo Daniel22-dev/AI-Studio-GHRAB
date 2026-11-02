@@ -22,14 +22,14 @@ jobs:
         uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683 # v4.2.2
         with:
           repository: Daniel22-dev/generator-testu
-          ref: 268bea95b8637b2013321b7788d3eb7bc7eb8fa2
+          ref: 480980d79aecd90b54ca27ed39a615e18cd594fa
           fetch-depth: 0
           persist-credentials: false
       - name: Verify original GIT source identity and strict workflow inventory
         shell: bash
         run: |
           set -euo pipefail
-          test "$(git rev-parse HEAD)" = '268bea95b8637b2013321b7788d3eb7bc7eb8fa2'
+          test "$(git rev-parse HEAD)" = '480980d79aecd90b54ca27ed39a615e18cd594fa'
           test "$(git status --porcelain)" = ''
           test "$(git ls-tree -r --name-only HEAD .github/workflows | grep -Ec '[.]ya?ml$')" = 11
           test ! -e .github/workflows/groups-v2-full-preprod-gate.yml
@@ -46,6 +46,11 @@ jobs:
         run: |
           node -e "const p=require('./node_modules/axe-core/package.json');if(p.version!=='4.12.1')process.exit(1)"
           node -e "const p=require('./node_modules/playwright/package.json');if(p.version!=='1.61.1')process.exit(1)"
+      - name: Verify full Stage08 ledger + Stage09 ESM CSP gates before browser provisioning
+        run: |
+          node scripts/check-stage08-results.mjs
+          node scripts/check-csp.mjs
+          node --test tests/stage09-material.test.mjs
       - name: Install real pinned Playwright Chromium and OS dependencies
         run: npx playwright install --with-deps chromium
       - name: Export GIT-local Chromium executable path
@@ -68,7 +73,7 @@ jobs:
         shell: bash
         run: |
           set -euo pipefail
-          test "$(git rev-parse HEAD)" = '268bea95b8637b2013321b7788d3eb7bc7eb8fa2'
+          test "$(git rev-parse HEAD)" = '480980d79aecd90b54ca27ed39a615e18cd594fa'
           echo "This is an independent source QA job in Daniel22-dev/AI-Studio-GHRAB, NOT the official GIT P5/E10 release workflow."
           echo "No deployment or real pupil data, no candidate/main writes."
 
