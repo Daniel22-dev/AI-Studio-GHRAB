@@ -1,0 +1,52 @@
+name: My Groups v2 isolated preproduction CI (NO DEPLOY)
+
+on:
+  pull_request:
+    branches: [candidate]
+    paths:
+      - 'src/groups/**'
+      - 'scripts/test-groups*'
+      - 'scripts/build.mjs'
+      - 'package.json'
+      - '.github/workflows/moje-skupiny-v2-preprod-ci.yml'
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+concurrency:
+  group: moje-skupiny-v2-${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  groups-integrity:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 35
+    steps:
+      - name: Checkout source without persistent Git credentials
+        uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683 # v4.2.2
+        with:
+          persist-credentials: false
+      - name: Set up pinned Node
+        uses: actions/setup-node@49933ea5288caeca8642d1e84afbd3f7d6820020 # v4.4.0
+        with:
+          node-version: 22.22.2
+          cache: npm
+      - name: Install locked dependencies
+        run: npm ci --ignore-scripts --no-audit --no-fund --registry=https://registry.npmjs.org
+      - name: Verify core source syntax
+        run: |
+          node --check src/groups/group-service.js
+          node --check src/groups/verified-client.js
+          node --check src/groups/legacy-migration.js
+          node --check src/groups/groups.js
+          node --check src/groups/write-transaction.js
+          node --check scripts/test-groups-v2-atomic-recovery.mjs
+      - name: Test Groups v1 compatibility and v2 write guards
+        run: npm run test:groups
+      - name: Build Studio including offline cache integrity
+        run: npm run build
+      - name: Install Chromium for browser-based Groups v2 UAT
+        run: npx playwright install --with-deps chromium
+      - name: Test scoped groups, migration, cross-app projections and recovery
+        run: npm run test:groups:v2
