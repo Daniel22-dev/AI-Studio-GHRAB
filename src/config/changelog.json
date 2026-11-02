@@ -1,7 +1,25 @@
 {
   "schema": "ai-studio-changelog-v1",
-  "current": "0.21.259",
+  "current": "0.21.261",
   "items": [
+    {
+      "version": "0.21.261",
+      "date": "2026-11-02",
+      "title": {
+        "cs": "Conversation Lab 0.12 – samostatný veřejný pilot v AI Studiu",
+        "en": "Conversation Lab 0.12 – isolated public pilot shortcut in AI Studio"
+      },
+      "changes": [
+        {
+          "cs": "Na existující kartě Conversation Lab přibyla samostatná volba pro otevření pedagogicky schváleného veřejného pilotu s deseti tématy a 240 jazykovými variantami. Původní podepsaná verze 0.11.0 a její vstupní tlačítko zůstávají beze změny.",
+          "en": "The existing Conversation Lab tile gains a separate shortcut to the author-approved public pilot containing ten topics and 240 language-level variants. The original signed 0.11.0 release and its launch button remain unchanged."
+        },
+        {
+          "cs": "Odkaz se zobrazuje pouze po ověření učitelského oprávnění mimo náhled kolegy, v nové kartě bez tokenů a referreru. Jde o veřejný nepodepsaný pilot, nikoliv o vydání certifikované ES256/P5.",
+          "en": "The shortcut appears only after verifying teacher access outside colleague preview, and opens in a new tab without tokens or referrer. This public pilot is not an ES256/P5-certified release."
+        }
+      ]
+    },
     {
       "version": "0.21.259",
       "date": "2026-10-27",

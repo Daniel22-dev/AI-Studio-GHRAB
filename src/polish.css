@@ -3443,3 +3443,18 @@ button.colleague-preview-choice:focus-visible {
   .colleague-preview-choice-grid { grid-template-columns: 1fr; }
   .colleague-preview-banner-actions { justify-content: flex-start; }
 }
+
+/* The optional CLB 0.12 public pilot never replaces the signed 0.11 CTA. */
+.portal-card-bottom.has-clb-012-pilot {
+  flex-wrap: wrap;
+  gap: 8px;
+}
+.portal-card-bottom .clb-012-pilot-link {
+  background: transparent;
+  font-size: 0.8rem;
+}
+@media (max-width: 440px) {
+  .portal-card-bottom.has-clb-012-pilot > * {
+    flex: 1 1 100%;
+  }
+}
