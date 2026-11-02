@@ -89,7 +89,7 @@ test('CLB pilot shortcut is gated by signed Studio access, not shown in colleagu
   assert.ok(card.indexOf('if (access.enabled) {') < card.indexOf('pilot.href = CLB_012_PILOT_URL'));
   assert.ok(card.indexOf('actions.append(launch)') < card.indexOf('actions.append(pilot)'));
   assert.ok(card.includes('actions.classList.add("has-clb-012-pilot")'));
-  assert.doesNotMatch(card, /pilot\\.href\\s*\\+|permit=.*pilot|token=.*pilot/);
+  assert.doesNotMatch(card, /pilot\.href\s*\+|permit=.*pilot|token=.*pilot/);
 });
 
 test('topic manager links to the same public pilot without credentials or referrer', async () => {
@@ -98,18 +98,18 @@ test('topic manager links to the same public pilot without credentials or referr
   const start = src.indexOf(marker);
   assert.ok(start >= 0);
   const toolbar = src.slice(start, src.indexOf('</div>', start));
-  assert.match(toolbar, /href="https:\/\/conversation-lab-012-pilot\\.danikin35\\.workers\\.dev\//);
+  assert.match(toolbar, /href="https:\/\/conversation-lab-012-pilot\.danikin35\.workers\.dev\//);
   assert.match(toolbar, /target="_blank"/);
   assert.match(toolbar, /rel="noopener noreferrer"/);
   assert.match(toolbar, /referrerpolicy="no-referrer"/);
-  assert.match(toolbar, /Pilot 0\\.12/);
-  assert.match(toolbar, /href="https:\/\/conversation-lab-ghrab\\.pages\\.dev\//);
+  assert.match(toolbar, /Pilot 0\.12/);
+  assert.match(toolbar, /href="https:\/\/conversation-lab-ghrab\.pages\.dev\//);
 });
 
 test('pilot CTA is responsive; signed 0.11 Studio registry and release data remain untouched', async () => {
   const css = await readFile(new URL('../src/polish.css', import.meta.url), 'utf8');
-  assert.match(css, /\\.portal-card-bottom\\.has-clb-012-pilot\\s*\\{[^}]*flex-wrap:\\s*wrap/s);
-  assert.match(css, /@media \\(max-width:\\s*440px\\)/);
+  assert.match(css, /\.portal-card-bottom\.has-clb-012-pilot\s*\{[^}]*flex-wrap:\s*wrap/s);
+  assert.match(css, /@media \(max-width:\s*440px\)/);
   const list = JSON.parse(await readFile(new URL('../src/config/apps.generated.json', import.meta.url), 'utf8'));
   const app = list.find(x => x.id === 'conversation-lab');
   assert.equal(app.version, '0.11.0');
