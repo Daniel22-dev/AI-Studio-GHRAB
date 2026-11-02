@@ -1,7 +1,25 @@
 {
   "schema": "ai-studio-changelog-v1",
-  "current": "0.21.262",
+  "current": "0.21.263",
   "items": [
+    {
+      "version": "0.21.263",
+      "date": "2026-11-02",
+      "title": {
+        "cs": "Conversation Lab – bezztrátový import opor a autorského kontextu",
+        "en": "Conversation Lab – lossless speaking supports and authored context"
+      },
+      "changes": [
+        {
+          "cs": "Správce konverzačních témat přijímá tři nebo čtyři jazykové opory na stanici. Čtvrtou oporu karty Jak se učit na testy zachovává při importu i zálohování, ale odmítá pátou oporu a nepovolené řídicí znaky.",
+          "en": "The Topic Manager accepts three or four speaking supports per station, preserves the fourth support in How to Study for Tests through import and backup, and rejects a fifth support or invalid control characters."
+        },
+        {
+          "cs": "Volitelný autorský scénář a vysvětlení hlavní otázky se zobrazují jako bezpečný text a při změně stanice se vyčistí. Nové regresní kontroly jsou připraveny pro P3/P5. Podepsaná verze 0.11.0 a veřejný pilot 0.12 zůstávají nezměněné.",
+          "en": "Optional authored scenarios and main-question explanations are rendered as inert text and reset on station change. New regressions are prepared for P3/P5. The signed 0.11.0 release and public 0.12 pilot remain unchanged."
+        }
+      ]
+    },
     {
       "version": "0.21.262",
       "date": "2026-11-02",
