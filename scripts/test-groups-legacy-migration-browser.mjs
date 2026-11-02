@@ -10,6 +10,7 @@ const origin="https://groups-migration.example";
 const base="/AI-Studio-GHRAB/";
 const source=new Map([
   [base+"groups/group-service.js",readFileSync("src/groups/group-service.js","utf8")],
+  [base+"groups/write-transaction.js",readFileSync("src/groups/write-transaction.js","utf8")],
   [base+"groups/legacy-migration.js",readFileSync("src/groups/legacy-migration.js","utf8")],
 ]);
 const browser=await chromium.launch({headless:true});

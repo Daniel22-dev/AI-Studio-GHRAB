@@ -15,6 +15,7 @@ const signature=JSON.parse(read("src/config/access-config-bundle.sig.json"));
 const assets=new Map([
   [root+"groups/verified-client.js",["text/javascript",read("src/groups/verified-client.js")]],
   [root+"groups/group-service.js",["text/javascript",read("src/groups/group-service.js")]],
+  [root+"groups/write-transaction.js",["text/javascript",read("src/groups/write-transaction.js")]],
   [root+"access/access-control.js",["text/javascript",read("src/access/access-control.js")]],
   [root+"config/deployment-baked.js",["text/javascript",read("src/config/deployment-baked.js")]],
 ]);

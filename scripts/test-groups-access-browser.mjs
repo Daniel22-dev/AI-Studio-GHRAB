@@ -45,6 +45,7 @@ const sources = new Map([
   [root + "groups/", { type: "text/html", body: read("src/groups/index.html") }],
   [root + "groups/groups.js", { type: "text/javascript", body: read("src/groups/groups.js") }],
   [root + "groups/group-service.js", { type: "text/javascript", body: read("src/groups/group-service.js") }],
+  [root + "groups/write-transaction.js", { type: "text/javascript", body: read("src/groups/write-transaction.js") }],
 ]);
 const errors = [], checks = [];
 const browser = await chromium.launch({ headless: true });

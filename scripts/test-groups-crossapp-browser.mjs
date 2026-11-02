@@ -18,6 +18,7 @@ const assets=new Map([
   [prefix+"groups/",["text/html",read("src/groups/index.html")]],
   [prefix+"groups/groups.js",["text/javascript",read("src/groups/groups.js")]],
   [prefix+"groups/group-service.js",["text/javascript",read("src/groups/group-service.js")]],
+  [prefix+"groups/write-transaction.js",["text/javascript",read("src/groups/write-transaction.js")]],
   [prefix+"groups/verified-client.js",["text/javascript",read("src/groups/verified-client.js")]],
   [prefix+"access/access-control.js",["text/javascript",authStub]],
 ]);
