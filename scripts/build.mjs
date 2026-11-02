@@ -166,12 +166,9 @@ for (const localApp of localApps) {
   if (existingIndex >= 0) runtimeApps[existingIndex] = localApp;
   else runtimeApps.push(localApp);
 }
-// The committed source registry remains human-readable. The deployed JSON
-// stores identical data with insignificant whitespace removed. This preserves
-// the strict P5 production payload budget without dropping any app metadata.
 await writeFile(
   path.join(dist, "config", "apps.generated.json"),
-  JSON.stringify(runtimeApps) + "\n",
+  JSON.stringify(runtimeApps, null, 2) + "\n",
   "utf8",
 );
 const aiCoreRegistry = JSON.parse(
@@ -278,6 +275,25 @@ for (const file of await walk(dist)) {
   if (compacted.length < content.length) await writeFile(file, compacted, "utf8");
 }
 
+// Shrink only distributed copies of the Groups v2 modules. The committed
+// source is byte-for-byte unchanged and remains readable. This is strictly
+// leading indentation removal, with a fail-closed guard for multiline strings
+// or escaped line continuations whose whitespace could be meaningful.
+for (const relative of [
+  "groups/group-service.js",
+  "groups/groups.js",
+  "groups/verified-client.js",
+  "groups/write-transaction.js",
+]) {
+  const target = path.join(dist, relative);
+  const original = await readFile(target, "utf8");
+  const lines = original.split(/\r?\n/);
+  if (lines.some((line) => (line.split('`').length - 1) % 2 !== 0 || /\\[ \t]*$/.test(line))) {
+    throw new Error(`Refusing Groups v2 whitespace compaction with multiline literal: ${relative}`);
+  }
+  const compacted = original.replace(/^[ \t]+(?=\S)/gm, "");
+  if (compacted.length < original.length) await writeFile(target, compacted, "utf8");
+}
 const allCacheFiles = (await walk(dist))
   .filter((file) => file !== path.join(dist, "sw.js"))
   .map((file) => `./${path.relative(dist, file).split(path.sep).join("/")}`)
