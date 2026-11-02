@@ -34,6 +34,7 @@ import {
   inspectPermitToken,
 } from "./access/access-control.js";
 const VERSION = "__APP_VERSION__";
+const CLB_012_PILOT_URL = "https://conversation-lab-012-pilot.danikin35.workers.dev/";
 const deploymentReady = loadDeploymentConfig({ appId: "ai-studio" });
 const root = document.documentElement;
 const page = document.body.dataset.page || "home";
@@ -2485,6 +2486,30 @@ function portalAppCard(app, index, permissions) {
       });
     }
     actions.append(launch);
+    // The unsigned 0.12 pilot is a separate, publicly readable destination.
+    // The existing signed 0.11 teacher launch remains the primary action.
+    // Never show this shortcut for locked, preview or unavailable apps.
+    if (
+      app.id === "conversation-lab" &&
+      !previewMode &&
+      canLaunchForOperationalStatus(operationalStatus)
+    ) {
+      const pilot = el(
+        "a",
+        "portal-unlock-button clb-012-pilot-link",
+        t("Pilot 0.12 · 10 témat ↗", "Pilot 0.12 · 10 topics ↗"),
+      );
+      pilot.href = CLB_012_PILOT_URL;
+      pilot.target = "_blank";
+      pilot.rel = "noopener noreferrer";
+      pilot.referrerPolicy = "no-referrer";
+      pilot.title = t(
+        "Veřejný testovací web, nikoli podepsané vydání 0.11",
+        "Public pilot, separate from the signed 0.11 release",
+      );
+      actions.classList.add("has-clb-012-pilot");
+      actions.append(pilot);
+    }
   } else {
     const details = el(
       "a",
