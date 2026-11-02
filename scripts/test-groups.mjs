@@ -1,4 +1,5 @@
 import assert from "node:assert/strict";
+import { createMockGroupsLockManager } from "./test-groups-lock-helper.mjs";
 import { readFile } from "node:fs/promises";
 import path from "node:path";
 import { fileURLToPath } from "node:url";
@@ -341,6 +342,7 @@ assert.equal(hostile.invalid.length, 2);
   // preserves v1 data without silently transferring it to the next teacher.
   const { webcrypto } = await import("node:crypto");
   const sharedBrowser = new MemoryStorage();
+  const lockManager = createMockGroupsLockManager();
   const legacy = createGroupsService({
     provider: new LocalGroupsProvider({ storage: sharedBrowser }),
     idFactory: idFactory(),
@@ -364,18 +366,20 @@ assert.equal(hostile.invalid.length, 2);
     cryptoApi: webcrypto,
     idFactory: globalSyntheticIds,
     eventTarget: null,
+    lockManager,
   });
   const a1 = await open();
   assert.equal(a1.schema, "ghrab-groups-principal-session-v2");
   assert.equal(a1.legacyStorePresent, true, "legacy v1 data should be flagged but not exposed");
   assert.deepEqual(a1.service.listGroups(), [], "v2 must not auto-import shared v1 data");
-  const classA = a1.service.createGroup({ displayName: "Account A", schoolYear: "2026/27" });
+  assert.throws(() => a1.service.createGroup({ displayName: "Unsafe", schoolYear: "2026/27" }), /GROUP_WRITE_LOCK_REQUIRED/);
+  const classA = await a1.service.withWriteLock(tx => tx.createGroup({ displayName: "Account A", schoolYear: "2026/27" }));
   assert.equal(a1.service.getGroup(classA.groupId).displayName, "Account A");
-  const updatedRoster = a1.service.importRoster({
+  const updatedRoster = await a1.service.withWriteLock(tx => tx.importRoster({
     groupId: classA.groupId,
     rawText: "Synthetic Student; synthetic@example.invalid",
     expectedRevision: 1,
-  });
+  }));
   assert.equal(updatedRoster.group.members.length, 1);
   const studentId = updatedRoster.group.members[0].memberId;
   const linked = a1.service.listGroupMetadata("sortio");
@@ -391,7 +395,7 @@ assert.equal(hostile.invalid.length, 2);
     "a user switch permanently revokes old principal's v2 service");
   const b = await open();
   assert.deepEqual(b.service.listGroups(), [], "second principal cannot read first principal's groups");
-  const classB = b.service.createGroup({ displayName: "Account B", schoolYear: "2026/27" });
+  const classB = await b.service.withWriteLock(tx => tx.createGroup({ displayName: "Account B", schoolYear: "2026/27" }));
   assert.notEqual(classA.groupId, classB.groupId, "test fixtures must use unique canonical IDs");
   assert.equal(b.service.listGroups()[0].groupId, classB.groupId);
   assert.throws(() => b.service.getRosterProjection(classA.groupId, "essay-evaluator"), /GROUP_NOT_FOUND/,
@@ -401,7 +405,7 @@ assert.equal(hostile.invalid.length, 2);
   assert.equal(bBackup.schema, "ghrab-teaching-groups-account-backup-v2");
   assert.equal(bBackup.version, 2);
   assert.equal(typeof bBackup.scopeId, "string");
-  assert.throws(() => b.service.importBackup(legacy.exportBackup()), /GROUP_SCOPE_BACKUP_INVALID/,
+  await assert.rejects(b.service.withWriteLock(tx => tx.importBackup(legacy.exportBackup())), /GROUP_SCOPE_BACKUP_INVALID/,
     "unbound legacy backups must never auto-migrate to a principal");
 
 
@@ -418,11 +422,11 @@ assert.equal(hostile.invalid.length, 2);
   assert.equal(backup.store.groups[0].groupId, classA.groupId);
   assert.equal(backup.schema, "ghrab-teaching-groups-account-backup-v2");
   assert.notEqual(backup.scopeId, bBackup.scopeId);
-  assert.throws(() => a2.service.importBackup(bBackup), /GROUP_SCOPE_BACKUP_OTHER_ACCOUNT/,
+  await assert.rejects(a2.service.withWriteLock(tx => tx.importBackup(bBackup)), /GROUP_SCOPE_BACKUP_OTHER_ACCOUNT/,
     "signed-in teacher must reject a backup bound to another account");
-  assert.throws(() => a2.service.importBackup(legacy.exportBackup()), /GROUP_SCOPE_BACKUP_INVALID/,
+  await assert.rejects(a2.service.withWriteLock(tx => tx.importBackup(legacy.exportBackup())), /GROUP_SCOPE_BACKUP_INVALID/,
     "legacy v1 archive is not silently adopted");
-  assert.equal(a2.service.importBackup(backup).groups?.length ?? a2.service.listGroups().length, 1);
+  assert.equal((await a2.service.withWriteLock(tx => tx.importBackup(backup))).groups?.length ?? a2.service.listGroups().length, 1);
 
   assert.equal(legacy.listGroups()[0].groupId, original.groupId,
     "v1 store must survive scoped operations without mutation");
@@ -450,4 +454,25 @@ assert.equal(hostile.invalid.length, 2);
   await assert.rejects(brokenCryptoSession, /GROUP_SCOPE_CRYPTO_UNAVAILABLE/);
 }
 
+// Revision and roster-truncation must fail closed across tabs.
+{
+  const { service } = serviceFixture();
+  const original = createSampleGroup(service);
+  const staleRevision = original.revision;
+  const competingEdit = service.updateGroup(original.groupId, { grade: "B" }, { expectedRevision: staleRevision });
+  assert.equal(competingEdit.revision, staleRevision + 1);
+  assert.throws(() => service.updateGroup(original.groupId, { subject: "stale form" },
+    { expectedRevision: staleRevision }), /GROUP_REVISION_CONFLICT/);
+  const lines = Array.from({ length: 500 }, (_, i) => `Synthetic Student ${i + 1}; student${i + 1}@example.invalid`);
+  assert.equal(parseRosterText(["Jméno; E-mail", ...lines].join("\n")).truncated, false);
+  const over500 = ["Jméno; E-mail", ...lines, "Student 501; student501@example.invalid"].join("\n");
+  assert.equal(service.previewRosterImport(original.groupId, over500).parsed.truncated, true);
+  const before = service.exportBackup().store;
+  assert.throws(() => service.importRoster({ groupId: original.groupId,
+    rawText: over500, replace: true, expectedRevision: competingEdit.revision }), /ROSTER_IMPORT_TRUNCATED/);
+  assert.deepEqual(service.exportBackup().store, before);
+  const ui = await readFile(path.join(root, "src/groups/groups.js"), "utf8");
+  assert.ok(ui.includes('dataset.expectedRevision = group ? String(group.revision) : ""'));
+  assert.ok(ui.includes('|| rosterPreview.parsed.truncated;'));
+}
 console.log("Moje skupiny v1: all contract, parser, privacy, recovery, projection and UI sanity tests PASS");
