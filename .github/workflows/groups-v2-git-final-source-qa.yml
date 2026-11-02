@@ -1,0 +1,76 @@
+name: Groups v2 GIT exact-source independent E10 and P5 QA (NONCERTIFYING, NO DEPLOY)
+
+on:
+  push:
+    branches: ['qa/moje-skupiny-git-exact-source-20261102']
+    paths: ['.github/workflows/groups-v2-git-final-source-qa.yml']
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+concurrency:
+  group: groups-v2-git-readonly-${{ github.ref }}
+  cancel-in-progress: false
+
+jobs:
+  independent-git-source-audit:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 120
+    steps:
+      - name: Read-only checkout of immutable approved GIT Draft SHA with full history
+        uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683 # v4.2.2
+        with:
+          repository: Daniel22-dev/generator-testu
+          ref: b7dcbd9f28e11aae31a91b12c9125fdd48a7e326
+          fetch-depth: 0
+          persist-credentials: false
+      - name: Verify original GIT source identity and strict workflow inventory
+        shell: bash
+        run: |
+          set -euo pipefail
+          test "$(git rev-parse HEAD)" = 'b7dcbd9f28e11aae31a91b12c9125fdd48a7e326'
+          test "$(git status --porcelain)" = ''
+          test "$(git ls-tree -r --name-only HEAD .github/workflows | grep -Ec '[.]ya?ml$')" = 11
+          test ! -e .github/workflows/groups-v2-full-preprod-gate.yml
+          test ! -e .github/workflows/stage09-material-preprod-ci.yml
+          test -f security/release-readiness-e10.json
+      - name: Set up exact Node 22 runtime (this is not a GIT-repo official workflow)
+        uses: actions/setup-node@49933ea5288caeca8642d1e84afbd3f7d6820020 # v4.4.0
+        with:
+          node-version: 22.22.2
+          cache: npm
+      - name: Install locked dependencies without scripts
+        run: npm ci --ignore-scripts --no-audit --no-fund --registry=https://registry.npmjs.org
+      - name: Verify pinned audit tool versions
+        run: |
+          node -e "const p=require('./node_modules/axe-core/package.json');if(p.version!=='4.12.1')process.exit(1)"
+          node -e "const p=require('./node_modules/playwright/package.json');if(p.version!=='1.61.1')process.exit(1)"
+      - name: Install real pinned Playwright Chromium and OS dependencies
+        run: npx playwright install --with-deps chromium
+      - name: Export GIT-local Chromium executable path
+        shell: bash
+        run: echo "CHROMIUM_PATH=$(node -e "process.stdout.write(require('playwright').chromium.executablePath())")" >> "$GITHUB_ENV"
+      - name: Run source and S83 regressions against original GIT bytes
+        run: npm test
+        env:
+          GARP27_EXTERNAL_TRUST_SHA256: ec7aa8abbc4a4a915627f569eaa69b3a8da56155565b955814263bead2061006
+      - name: Run independent GARP 2.7 security foundation
+        run: npm run qa:garp27:foundation
+        env:
+          GARP27_EXTERNAL_TRUST_SHA256: ec7aa8abbc4a4a915627f569eaa69b3a8da56155565b955814263bead2061006
+      - name: Run full P5 native source-chain without cross-repository certification claim
+        run: npm run qa:p5:ci
+        env:
+          GARP27_EXTERNAL_TRUST_SHA256: ec7aa8abbc4a4a915627f569eaa69b3a8da56155565b955814263bead2061006
+      - name: Confirm tested GIT source SHA was never changed
+        if: always()
+        shell: bash
+        run: |
+          set -euo pipefail
+          test "$(git rev-parse HEAD)" = 'b7dcbd9f28e11aae31a91b12c9125fdd48a7e326'
+          echo "This is an independent source QA job in Daniel22-dev/AI-Studio-GHRAB, NOT the official GIT P5/E10 release workflow."
+          echo "No deployment or real pupil data, no candidate/main writes."
+
+# Independent source test only. GitHub event provenance belongs to Daniel22-dev/AI-Studio-GHRAB,
+# so NEVER claim this run as a native GIT certification or signed school UAT.
