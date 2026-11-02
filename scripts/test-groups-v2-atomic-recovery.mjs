@@ -41,7 +41,7 @@ const backup=a.service.exportBackup();
 const priorWrites=storage.writes;
 await assert.rejects(a.service.withWriteLock(tx=>tx.createGroupWithRoster({input,rawText:''})),/ROSTER_EMPTY/);
 await assert.rejects(a.service.withWriteLock(tx=>tx.createGroupWithRoster({input,rawText:'Alice Example\nAlice Example'})),/ROSTER_IMPORT_INVALID/);
-const tooMany=Array.from({length:501},(_,i)=>'Student '+(i+1)+' Example').join('\n');
+const tooMany=Array.from({length:501},(_,i)=>'Synthetic Student '+(i+1)+'; synthetic'+(i+1)+'@example.invalid').join('\n');
 assert.equal(parseRosterText(tooMany).truncated,true);
 await assert.rejects(a.service.withWriteLock(tx=>tx.createGroupWithRoster({input,rawText:tooMany})),/ROSTER_IMPORT_TRUNCATED/);
 assert.equal(storage.writes,priorWrites);
