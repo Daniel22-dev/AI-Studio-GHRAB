@@ -166,9 +166,12 @@ for (const localApp of localApps) {
   if (existingIndex >= 0) runtimeApps[existingIndex] = localApp;
   else runtimeApps.push(localApp);
 }
+// The committed source registry remains human-readable. The deployed JSON
+// stores identical data with insignificant whitespace removed. This preserves
+// the strict P5 production payload budget without dropping any app metadata.
 await writeFile(
   path.join(dist, "config", "apps.generated.json"),
-  JSON.stringify(runtimeApps, null, 2) + "\n",
+  JSON.stringify(runtimeApps) + "\n",
   "utf8",
 );
 const aiCoreRegistry = JSON.parse(
