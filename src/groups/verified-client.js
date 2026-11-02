@@ -55,10 +55,15 @@ function bindConsumerService(service, appId) {
   // SORTIO owns an explicit teacher-confirmed operation creating central
   // groups from a local IS roster. Other readers must remain read-only.
   if (appId === "sortio") {
-    for (const method of ["parseRoster","createGroup","importRoster","getRevision","subscribe"]) {
+    for (const method of ["parseRoster","createGroup","createGroupWithRoster","importRoster","getRevision","subscribe"]) {
       if (typeof service[method] !== "function") throw new Error("GROUP_CONSUMER_SERVICE_INVALID");
       reader[method] = (...args) => service[method](...args);
     }
+    if (typeof service.withWriteLock !== "function") throw new Error("GROUP_CONSUMER_SERVICE_INVALID");
+    reader.withWriteLock = (action) => {
+      if (typeof action !== "function") throw new TypeError("GROUP_WRITE_ACTION_REQUIRED");
+      return service.withWriteLock(() => action(reader));
+    };
   }
   return Object.freeze(reader);
 }

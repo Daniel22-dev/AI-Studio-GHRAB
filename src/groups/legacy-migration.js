@@ -63,7 +63,8 @@ async function sha256Hex(text, cryptoApi) {
 function requireTarget(session) {
   if (session?.schema !== "ghrab-groups-principal-session-v2" ||
       !session.service || typeof session.service.exportBackup !== "function" ||
-      typeof session.service.importBackup !== "function") {
+      typeof session.service.importBackup !== "function" ||
+      typeof session.service.withWriteLock !== "function") {
     throw migrationError("GROUP_MIGRATION_TARGET_UNVERIFIED");
   }
   const existing = session.service.exportBackup(); // Also checks pinned access.
@@ -131,18 +132,19 @@ export async function prepareLegacyGroupsMigration({
     if (targetNow.scopeId !== targetScope) throw migrationError("GROUP_MIGRATION_TARGET_CHANGED");
     const currentSourceDigest = await sha256Hex(JSON.stringify(immutableSource.store), cryptoApi);
     if (currentSourceDigest !== sourceDigest) throw migrationError("GROUP_MIGRATION_SOURCE_CHANGED");
-    // Data may have changed while Web Crypto yielded to the event loop.
-    // Recheck immediately before the synchronous import (best effort across tabs).
-    const targetBeforeWrite = requireTarget(targetSession);
-    if (targetBeforeWrite.scopeId !== targetScope) throw migrationError("GROUP_MIGRATION_TARGET_CHANGED");
-    targetSession.service.importBackup({
-      schema: TARGET_SCHEMA,
-      version:2,
-      scopeId:targetScope,
-      exportedAt:immutableSource.exportedAt,
-      store:immutableSource.store,
+    // Re-check and import under one exclusive write lock.
+    const imported = await targetSession.service.withWriteLock(() => {
+      const targetBeforeWrite = requireTarget(targetSession);
+      if (targetBeforeWrite.scopeId !== targetScope) throw migrationError("GROUP_MIGRATION_TARGET_CHANGED");
+      targetSession.service.importBackup({
+        schema: TARGET_SCHEMA,
+        version:2,
+        scopeId:targetScope,
+        exportedAt:immutableSource.exportedAt,
+        store:immutableSource.store,
+      });
+      return targetSession.service.exportBackup();
     });
-    const imported = targetSession.service.exportBackup();
     if (imported.scopeId !== targetScope ||
         JSON.stringify(imported.store.groups) !== JSON.stringify(immutableSource.store.groups)) {
       throw migrationError("GROUP_MIGRATION_VERIFY_FAILED");
