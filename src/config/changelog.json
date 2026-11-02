@@ -1,7 +1,25 @@
 {
   "schema": "ai-studio-changelog-v1",
-  "current": "0.21.261",
+  "current": "0.21.262",
   "items": [
+    {
+      "version": "0.21.262",
+      "date": "2026-11-02",
+      "title": {
+        "cs": "Conversation Lab – Spustit aplikaci otevírá karty 0.12",
+        "en": "Conversation Lab – Launch application opens the 0.12 cards"
+      },
+      "changes": [
+        {
+          "cs": "Hlavní tlačítko Spustit aplikaci a spuštění kliknutím nebo klávesnicí nyní přímo otevírají katalog deseti pedagogicky schválených konverzačních karet 0.12 (EN/ES/DE/FR, A1–C2). Přístup učitele CLB-01, režim náhledu a dostupnost aplikace nadále rozhodují před spuštěním.",
+          "en": "The primary Launch application button and keyboard/card activation now open the author-approved 0.12 catalog of ten conversation-card topics (EN/ES/DE/FR, A1–C2). Existing CLB-01 teacher access, preview mode and availability remain launch prerequisites."
+        },
+        {
+          "cs": "Původní podepsaná 0.11.0 zůstává dostupná z vedlejšího odkazu s vlastní kontrolou učitelského oprávnění a podpisu. Karty 0.12 se otevírají na samostatné veřejné adrese s no-referrer; podpisy 0.11, studentská QR a registry ostatních aplikací zůstávají nezměněné. Pilot 0.12 zůstává veřejným nepodepsaným obsahem.",
+          "en": "The original signed 0.11.0 release remains accessible via a secondary link with its own teacher entitlement and signature checks. The public 0.12 catalog opens without a referrer; 0.11 receipts, student QR and all other app registries remain unchanged. The 0.12 pilot itself remains publicly readable and unsigned."
+        }
+      ]
+    },
     {
       "version": "0.21.261",
       "date": "2026-11-02",

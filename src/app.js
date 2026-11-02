@@ -1,4 +1,4 @@
-import { studioPortalDestination } from "./integration/conversation-lab/portal-route.js";
+import { studioPortalDestination, studioPrimaryPortalDestination } from "./integration/conversation-lab/portal-route.js";
 import { sanitizePilotEvent, sanitizePilotEventList } from "./privacy/pilot-event.js";
 import { validateMaterialPackage } from "./shared/material-validator.js";
 import { createWorkspaceAdapter, inspectOutboundMaterial } from "./material-flow/material-flow.js";
@@ -34,7 +34,6 @@ import {
   inspectPermitToken,
 } from "./access/access-control.js";
 const VERSION = "__APP_VERSION__";
-const CLB_012_PILOT_URL = "https://conversation-lab-012-pilot.danikin35.workers.dev/";
 const deploymentReady = loadDeploymentConfig({ appId: "ai-studio" });
 const root = document.documentElement;
 const page = document.body.dataset.page || "home";
@@ -1965,7 +1964,7 @@ function portalLaunchOverlay(app, delay, onCancel = () => {}) {
   return { skip, setPhase: applyPhase, finish };
 }
 function embeddedApplicationUrl(app) {
-  return studioPortalDestination(app, base);
+  return studioPrimaryPortalDestination(app, base);
 }
 function portalGatewayScrollTarget(zone) {
   const rect = zone.getBoundingClientRect();
@@ -2084,6 +2083,19 @@ function launchApp(app, article) {
     cinematic.setPhase("complete");
     const destination = embeddedApplicationUrl(app);
     cleanup();
+    if (app.id === "conversation-lab") {
+      // A same-tab native anchor preserves no-referrer on the public 0.12 hop.
+      // Signed 0.11 remains accessible via the secondary same-origin link.
+      const outbound = document.createElement("a");
+      outbound.href = destination;
+      outbound.rel = "noreferrer noopener";
+      outbound.referrerPolicy = "no-referrer";
+      outbound.style.display = "none";
+      document.body.append(outbound);
+      outbound.click();
+      outbound.remove();
+      return;
+    }
     window.location.assign(destination);
   };
 
@@ -2403,13 +2415,28 @@ function portalAppCard(app, index, permissions) {
   const operationalButton = createOperationalStatusButton(app.id, localised(app.name));
   if (operationalButton) headActions.append(operationalButton);
   headActions.append(
-    el("span", "chip version-chip", `v${app.version}`),
+    el(
+      "span",
+      "chip version-chip",
+      app.id === "conversation-lab"
+        ? t("pilot 0.12 / archiv 0.11", "pilot 0.12 / legacy 0.11")
+        : `v${app.version}`,
+    ),
     createAccessLockIndicator(access, app.id),
   );
   head.append(identity, headActions);
 
   const title = el("h2", "", localised(app.name));
-  const description = el("p", "portal-card-description", localised(app.description));
+  const description = el(
+    "p",
+    "portal-card-description",
+    app.id === "conversation-lab"
+      ? t(
+          "Spustit aplikaci otevře nové konverzační karty 0.12 (10 témat, úrovně A1–C2). Původní podepsaná 0.11 je dostupná zvlášť.",
+          "Launch application opens the new 0.12 conversation cards (10 topics, CEFR A1–C2). The signed 0.11 version remains available separately.",
+        )
+      : localised(app.description),
+  );
   const notes = el("div", "portal-card-notes");
   if (!access.enabled) {
     notes.append(
@@ -2486,29 +2513,27 @@ function portalAppCard(app, index, permissions) {
       });
     }
     actions.append(launch);
-    // The unsigned 0.12 pilot is a separate, publicly readable destination.
-    // The existing signed 0.11 teacher launch remains the primary action.
-    // Never show this shortcut for locked, preview or unavailable apps.
+    // Launch application now routes to the public 0.12 card catalog.
+    // The signed 0.11 MASTER stays separately accessible behind its own
+    // original same-origin teacher-entry crypto and CLB-01 gates.
     if (
       app.id === "conversation-lab" &&
       !previewMode &&
       canLaunchForOperationalStatus(operationalStatus)
     ) {
-      const pilot = el(
+      const legacy = el(
         "a",
-        "portal-unlock-button clb-012-pilot-link",
-        t("Pilot 0.12 · 10 témat ↗", "Pilot 0.12 · 10 topics ↗"),
+        "portal-unlock-button clb-011-legacy-link",
+        t("Původní 0.11 ↗", "Original 0.11 ↗"),
       );
-      pilot.href = CLB_012_PILOT_URL;
-      pilot.target = "_blank";
-      pilot.rel = "noopener noreferrer";
-      pilot.referrerPolicy = "no-referrer";
-      pilot.title = t(
-        "Veřejný testovací web, nikoli podepsané vydání 0.11",
-        "Public pilot, separate from the signed 0.11 release",
+      legacy.href = studioPortalDestination(app, base);
+      legacy.rel = "noopener noreferrer";
+      legacy.title = t(
+        "Původní podepsaná verze se 3 tématy pro učitele",
+        "Previously signed three-topic teacher release",
       );
-      actions.classList.add("has-clb-012-pilot");
-      actions.append(pilot);
+      actions.classList.add("has-clb-version-switch");
+      actions.append(legacy);
     }
   } else {
     const details = el(
