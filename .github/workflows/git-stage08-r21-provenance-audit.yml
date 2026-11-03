@@ -1,4 +1,4 @@
-name: GIT R24 AST-preserving JS size benchmark (AUDIT ONLY)
+name: GIT R25 original PNG metadata check (READ ONLY)
 on:
   push:
     branches:
@@ -6,66 +6,36 @@ on:
 permissions:
   contents: read
 jobs:
-  benchmark:
+  png-metadata:
     runs-on: ubuntu-latest
-    timeout-minutes: 25
+    timeout-minutes: 10
     steps:
-      - name: Exact read-only GIT source
-        uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683
+      - uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683
         with:
           repository: Daniel22-dev/generator-testu
           ref: ca660f34c40e7203c29d3120bb10b9c29ec0837e
-          fetch-depth: 0
           persist-credentials: false
-          path: source
-      - name: Node 22
-        uses: actions/setup-node@49933ea5288caeca8642d1e84afbd3f7d6820020
-        with:
-          node-version: '22'
-      - name: Locked dependencies and original build
-        working-directory: source
+          path: src
+      - name: Check source image ancillary chunks
+        working-directory: src
         run: |
-          npm ci --ignore-scripts --no-audit --no-fund --registry=https://registry.npmjs.org
-          npm run build
-      - name: Measure verified AST-identical deployed JS compaction in memory
-        working-directory: source
-        shell: bash
-        run: |
-          set -euo pipefail
-          test "$(git rev-parse HEAD)" = "ca660f34c40e7203c29d3120bb10b9c29ec0837e"
           node --input-type=module <<'NODE'
           import fs from 'node:fs';
-          import {parse,tokenizer} from 'acorn';
-          const src=fs.readFileSync('scripts/build.mjs','utf8');
-          const start=src.indexOf('function stripJsComments('),end=src.indexOf('function splitGeneratorAssistant(');
-          if(start<0||end<start)throw Error('Canonical JS compactor boundary unavailable');
-          const methods=new Function('parse','tokenizer','fail',src.slice(start,end)+'\nreturn {tight:compactJsWhitespaceTight};');
-          const {tight}=methods(parse,tokenizer,message=>{throw Error(message)});
-          const targets=[
-            ['dist/vendor/acorn.js','script'],
-            ['dist/features/generator-assistant.js','script'],
-            ['dist/features/stage09-material.js','module'],
-            ['dist/features/stage09-save-to-studio-local.js','module'],
-            ['dist/manual/navigation-context.js','script'],
-            ['dist/manual/pdf-download.js','script'],
-            ['dist/tools/GIT-ROZESILANI-KODU.gs','script'],
-            ['dist/ghrab/ghrab-platform.js','script']
-          ];
-          let total=0;
-          for(const [file,kind] of targets){
-            const raw=fs.readFileSync(file,'utf8');
-            try{
-              const compact=tight(raw,file,kind);
-              const savings=Buffer.byteLength(raw)-Buffer.byteLength(compact);
-              total+=Math.max(0,savings);
-              console.log(JSON.stringify({file,sourceBytes:Buffer.byteLength(raw),
-                sameAst:true,compactedBytes:Buffer.byteLength(compact),saving:savings}));
-            }catch(e){
-              console.log(JSON.stringify({file,sameAst:false,reason:String(e.message).slice(0,180)}));
+          const paths=['public/icons/icon-512.png','public/icons/icon-maskable-512.png',
+            'public/icons/icon-192.png','public/icons/apple-touch-icon.png',
+            'public/assets/brand/school-logo.png'];
+          for(const path of paths){
+            const b=fs.readFileSync(path);
+            if(b.subarray(0,8).toString('hex')!=='89504e470d0a1a0a')throw Error('Not PNG');
+            let off=8,parts=[];
+            while(off+12<=b.length){
+              const n=b.readUInt32BE(off),type=b.toString('ascii',off+4,off+8);
+              parts.push({type,n});
+              off+=12+n;
+              if(type==='IEND')break;
             }
+            console.log(JSON.stringify({path,byteLength:b.length,
+              types:parts.map(x=>x.type),ancillary:parts.filter(x=>/^(iCCP|gAMA|sRGB|cHRM|sBIT|eXIf|tEXt|iTXt|zTXt|pHYs)$/.test(x.type))}));
           }
-          console.log(JSON.stringify({schema:'git-r24-ast-size-benchmark-v1',totalPotentialSaving:total,
-            pngPixelsExactPotentialSaving:14176,neededTotal:21194,
-            maxPotentialCombined:14176+total,sourceModified:false}));
           NODE
-          test -z "$(git status --porcelain --untracked-files=no)"
+          test "$(git rev-parse HEAD)" = "ca660f34c40e7203c29d3120bb10b9c29ec0837e"
