@@ -1,0 +1,124 @@
+name: GIT 7.1.102 independent exact-source P5 and Journey (NO DEPLOY)
+
+# Independent cross-repository diagnostic only. Not protected native GIT certification.
+# No source modifications, public read-only checkout, tokens or production deploy.
+on:
+  pull_request:
+    branches: [candidate]
+    paths:
+      - '.github/workflows/git-7-1-102-independent-audit.yml'
+
+permissions:
+  contents: read
+
+concurrency:
+  group: independent-git-audit-${{ github.event.pull_request.number }}
+  cancel-in-progress: true
+
+env:
+  EXPECTED_GIT_SHA: 46f80fc98ef7da20e66a4b081324c91865ae413f
+  GARP27_EXTERNAL_TRUST_SHA256: ec7aa8abbc4a4a915627f569eaa69b3a8da56155565b955814263bead2061006
+
+jobs:
+  independent-p5:
+    if: github.event.pull_request.head.ref == 'audit/git-7-1-102-independent-p5-20261103' && github.event.pull_request.head.repo.full_name == github.repository
+    runs-on: ubuntu-24.04
+    timeout-minutes: 90
+    steps:
+      - name: Checkout exact immutable public GIT source (read-only)
+        uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683 # v4.2.2
+        with:
+          repository: Daniel22-dev/generator-testu
+          ref: 46f80fc98ef7da20e66a4b081324c91865ae413f
+          fetch-depth: 0
+          persist-credentials: false
+          path: reviewed-git
+      - name: Assert checked-out GIT SHA and clean original tree
+        working-directory: reviewed-git
+        shell: bash
+        run: |
+          set -euo pipefail
+          test "$(git rev-parse HEAD)" = "$EXPECTED_GIT_SHA"
+          test -z "$(git status --porcelain)"
+          node -p "'Audited GIT version: ' + require('./package.json').version"
+          git rev-parse HEAD
+          git rev-parse HEAD^{tree}
+      - name: Install pinned Node.js
+        uses: actions/setup-node@49933ea5288caeca8642d1e84afbd3f7d6820020 # v4.4.0
+        with:
+          node-version: 22.22.2
+          cache: npm
+          cache-dependency-path: reviewed-git/package-lock.json
+      - name: Install audited locked dependencies without lifecycle execution
+        working-directory: reviewed-git
+        run: npm ci --ignore-scripts --no-audit --no-fund --registry=https://registry.npmjs.org
+      - name: Install pinned Chromium for actual browser tests
+        working-directory: reviewed-git
+        run: npx playwright install --with-deps chromium
+      - name: Assert school security and Stage08 source contracts
+        working-directory: reviewed-git
+        run: |
+          npm run check:stage08-groups
+          npm run check:stage08-results
+          npm run check:s83-ci-portability
+          npm run check:redteam-e10
+      - name: Run original GIT full P5 CI without modifying its source
+        working-directory: reviewed-git
+        run: npm run qa:p5:ci
+
+  independent-journey:
+    if: github.event.pull_request.head.ref == 'audit/git-7-1-102-independent-p5-20261103' && github.event.pull_request.head.repo.full_name == github.repository
+    runs-on: ubuntu-24.04
+    timeout-minutes: 70
+    steps:
+      - name: Checkout exact immutable public GIT source (read-only)
+        uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683 # v4.2.2
+        with:
+          repository: Daniel22-dev/generator-testu
+          ref: 46f80fc98ef7da20e66a4b081324c91865ae413f
+          fetch-depth: 0
+          persist-credentials: false
+          path: reviewed-git
+      - name: Assert checked-out original SHA
+        working-directory: reviewed-git
+        shell: bash
+        run: |
+          set -euo pipefail
+          test "$(git rev-parse HEAD)" = "$EXPECTED_GIT_SHA"
+          test -z "$(git status --porcelain)"
+      - name: Install pinned Node.js
+        uses: actions/setup-node@49933ea5288caeca8642d1e84afbd3f7d6820020 # v4.4.0
+        with:
+          node-version: 22.22.2
+          cache: npm
+          cache-dependency-path: reviewed-git/package-lock.json
+      - name: Install locked dependencies
+        working-directory: reviewed-git
+        run: npm ci --ignore-scripts --no-audit --no-fund --registry=https://registry.npmjs.org
+      - name: Install real Chromium and configure executable
+        working-directory: reviewed-git
+        shell: bash
+        run: |
+          npx playwright install --with-deps chromium
+          echo "CHROMIUM_EXECUTABLE=$(node -e "process.stdout.write(require('playwright').chromium.executablePath())")" >> "$GITHUB_ENV"
+      - name: Install separately pinned Python audit dependencies
+        working-directory: reviewed-git
+        shell: bash
+        run: |
+          python3 -m venv "$RUNNER_TEMP/git-review-venv"
+          "$RUNNER_TEMP/git-review-venv/bin/pip" install --disable-pip-version-check -r audit/requirements-audit.txt
+      - name: Build original GIT without publishing
+        working-directory: reviewed-git
+        run: npm run build
+      - name: Execute full teacher, student and verifier journey suites
+        working-directory: reviewed-git
+        shell: bash
+        run: |
+          rm -rf audit/evidence
+          mkdir -p audit/evidence
+          "$RUNNER_TEMP/git-review-venv/bin/python" audit/run_audit.py \
+            --suite journey_suite --suite state_transition_suite --suite config_extra_suite \
+            --suite feature_suite --suite integration_suite --suite identity_suite --suite wizard_suite
+
+# No release/publish step. A success here does NOT count as a native protected
+# GitHub Actions run in generator-testu, nor as school SSO, UAT or owner approval.
