@@ -475,6 +475,6 @@ assert.equal(hostile.invalid.length, 2);
   assert.deepEqual(service.exportBackup().store, before);
   const ui = await readFile(path.join(root, "src/groups/groups.js"), "utf8");
   assert.ok(ui.includes('dataset.expectedRevision = group ? String(group.revision) : ""'));
-  assert.ok(ui.includes('|| rosterPreview.parsed.truncated;'));
+  assert.ok(ui.includes("rosterPreview.parsed.truncated") && ui.includes("rosterPreview.parsed.invalid.length") && ui.includes("rosterPreview.parsed.duplicates.length"), "UI must block truncated, invalid and duplicate rosters");
 }
 console.log("Moje skupiny v1: all contract, parser, privacy, recovery, projection and UI sanity tests PASS");
