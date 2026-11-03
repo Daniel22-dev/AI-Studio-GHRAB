@@ -1,90 +1,53 @@
-name: GIT R29 full P5 and teacher-student journeys (EXTERNAL AUDIT ONLY)
+name: GIT R29 original cumulative E10 external diagnostic (NO DEPLOY)
 on:
   push:
     branches: [audit/git-stage08-r21-provenance-20261103]
 permissions:
   contents: read
 jobs:
-  original-p5-diagnostic:
+  e10-diagnostic:
     runs-on: ubuntu-24.04
     timeout-minutes: 90
     steps:
-      - name: Immutable checkout of GIT candidate
+      - name: Exact checked-out GIT QA source
         uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683
         with:
           repository: Daniel22-dev/generator-testu
           ref: 5813206c7dab2d01eb8c9be793fde73300feccbd
           fetch-depth: 0
           persist-credentials: false
-          path: git-reviewed
-      - name: Pinned Node 22
+          path: audited
+      - name: Original Node 22
         uses: actions/setup-node@49933ea5288caeca8642d1e84afbd3f7d6820020
         with:
           node-version: '22'
-      - name: Install original locked tools and real Chromium
-        working-directory: git-reviewed
+      - name: Install locked tools and pinned Chromium
+        working-directory: audited
         run: |
           npm ci --ignore-scripts --no-audit --no-fund --registry=https://registry.npmjs.org
           npx playwright install --with-deps chromium
-      - name: Verify original immutable source SHA
-        working-directory: git-reviewed
-        run: |
-          test "$(git rev-parse HEAD)" = "5813206c7dab2d01eb8c9be793fde73300feccbd"
-          test -z "$(git status --porcelain --untracked-files=no)"
-      - name: Run full original GIT P5 without cross-repository event SHA
-        working-directory: git-reviewed
+      - name: Execute original GIT E10 chain (not protected native CI)
+        working-directory: audited
         shell: bash
         env:
           GARP27_EXTERNAL_TRUST_SHA256: ec7aa8abbc4a4a915627f569eaa69b3a8da56155565b955814263bead2061006
         run: |
           set -euo pipefail
-          env -u GITHUB_SHA npm run qa:p5:ci
           test "$(git rev-parse HEAD)" = "5813206c7dab2d01eb8c9be793fde73300feccbd"
-          test -z "$(git status --porcelain --untracked-files=no)"
-      - name: Report immutable source on success or failure
+          # The event SHA belongs to the AI Studio audit repository. Never
+          # substitute it for a GIT certifier SHA. This remains external QA.
+          env -u GITHUB_SHA npm run qa:redteam:ci
+          test "$(git rev-parse HEAD)" = "5813206c7dab2d01eb8c9be793fde73300feccbd"
+      - name: Capture native source identity after any result
         if: always()
-        working-directory: git-reviewed
+        working-directory: audited
         run: |
-          echo "Expected audited GIT SHA: 5813206c7dab2d01eb8c9be793fde73300feccbd"
-          echo "Actual audited GIT SHA: $(git rev-parse HEAD)"
-          git status --porcelain --untracked-files=no | head -15
-  original-journey-diagnostic:
-    runs-on: ubuntu-24.04
-    timeout-minutes: 70
-    steps:
-      - name: Immutable read-only GIT source
-        uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683
-        with:
-          repository: Daniel22-dev/generator-testu
-          ref: 5813206c7dab2d01eb8c9be793fde73300feccbd
-          fetch-depth: 0
-          persist-credentials: false
-          path: git-reviewed
-      - name: Setup pinned Node 22
-        uses: actions/setup-node@49933ea5288caeca8642d1e84afbd3f7d6820020
-        with:
-          node-version: '22'
-      - name: Pinned dependencies and browser
-        working-directory: git-reviewed
-        run: |
-          npm ci --ignore-scripts --no-audit --no-fund --registry=https://registry.npmjs.org
-          npx playwright install --with-deps chromium
-      - name: Install declared Python audit tools into isolated venv
-        working-directory: git-reviewed
-        shell: bash
-        run: |
-          python3 -m venv "$RUNNER_TEMP/git-r29-audit"
-          "$RUNNER_TEMP/git-r29-audit/bin/pip" install --disable-pip-version-check -r audit/requirements-audit.txt
-      - name: Build exact reviewed source and run all original teacher/student Journeys
-        working-directory: git-reviewed
-        shell: bash
-        run: |
-          set -euo pipefail
-          test "$(git rev-parse HEAD)" = "5813206c7dab2d01eb8c9be793fde73300feccbd"
-          npm run build
-          rm -rf audit/evidence
-          mkdir -p audit/evidence
-          "$RUNNER_TEMP/git-r29-audit/bin/python" audit/run_audit.py \
-            --suite journey_suite --suite state_transition_suite --suite config_extra_suite \
-            --suite feature_suite --suite integration_suite --suite identity_suite --suite wizard_suite
-          test "$(git rev-parse HEAD)" = "5813206c7dab2d01eb8c9be793fde73300feccbd"
+          echo "Exact reviewed GIT SHA: $(git rev-parse HEAD)"
+          git status --porcelain --untracked-files=no | head -20
+          node --input-type=module <<'NODE'
+          import fs from 'node:fs';
+          const f='qa-results/redteam-e10-ci-run.json';
+          if(fs.existsSync(f)){const x=JSON.parse(fs.readFileSync(f,'utf8'));console.log(JSON.stringify({
+            version:x.version,status:x.status,sourceUnchanged:x.sourceUnchanged,
+            steps:x.results?.map(y=>({command:y.command,pass:y.pass,exitCode:y.exitCode,log:y.log}))},null,2))}
+          NODE
