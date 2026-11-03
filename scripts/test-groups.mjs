@@ -329,8 +329,12 @@ assert.equal(hostile.invalid.length, 2);
   assert.ok(!js.includes("createGroupsService({ provider })"), "v1 consumer fallback forbidden");
   assert.match(js, /legacyStorePresent = scoped\.legacyStorePresent/,
     "old v1 groups must signal review without automatic migration");
-  assert.match(js, /ai-studio-moje-skupiny-ucet-v2-/,
-    "account-scoped v2 backup file must be distinguished from v1");
+  assert.match(js, /ai-studio-moje-skupiny-sifrovana-v2-/,
+    "account-scoped v2 backups must use the encrypted filename");
+  assert.match(js, /encryptGroupsBackup\(backup,password\)/,
+    "no plaintext backup download: Web Crypto envelope is mandatory");
+  assert.doesNotMatch(js, /downloadJson\(`ai-studio-moje-skupiny-ucet-v2-/,
+    "legacy plaintext file export must not return");
   assert.match(js, /ghrab:access-changed/, "revocation must invalidate the visible group page");
   assert.match(js, /function render\(\) \{\s*if \(!accessGate\.allowed\(\)\)/,
     "late queued UI rendering must fail closed after access revocation");
