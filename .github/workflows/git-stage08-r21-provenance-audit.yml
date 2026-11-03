@@ -94,51 +94,33 @@ jobs:
           test "$(git rev-parse HEAD)" = "ca660f34c40e7203c29d3120bb10b9c29ec0837e"
           test -z "$(git status --porcelain --untracked-files=no)"
 
-  full-p5-source-diagnostic:
+  stage08-v2-real-chromium:
     runs-on: ubuntu-latest
-    timeout-minutes: 90
+    timeout-minutes: 25
     steps:
-      - name: Checkout exact GIT commit, read-only
-        uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683 # v4
+      - name: Checkout exact GIT committed source
+        uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683
         with:
           repository: Daniel22-dev/generator-testu
           ref: ca660f34c40e7203c29d3120bb10b9c29ec0837e
           fetch-depth: 0
           persist-credentials: false
           path: inspected-git
-      - name: Set Node 22
-        uses: actions/setup-node@49933ea5288caeca8642d1e84afbd3f7d6820020 # v4
+      - name: Setup pinned Node 22
+        uses: actions/setup-node@49933ea5288caeca8642d1e84afbd3f7d6820020
         with:
           node-version: '22'
-      - name: Install pinned lockfile and Chromium
+      - name: Install original lockfile and pinned Chromium
         working-directory: inspected-git
         run: |
           npm ci --ignore-scripts --no-audit --no-fund --registry=https://registry.npmjs.org
           npx playwright install --with-deps chromium
-      - name: Check exact source before full P5
-        working-directory: inspected-git
-        run: |
-          test "$(git rev-parse HEAD)" = "ca660f34c40e7203c29d3120bb10b9c29ec0837e"
-          test -z "$(git status --porcelain --untracked-files=no)"
-      - name: Run original full GIT P5 sequence as an external diagnostic
+      - name: Execute Stage08 v2 browser with mocked authorized Studio transport
         working-directory: inspected-git
         shell: bash
-        env:
-          GARP27_EXTERNAL_TRUST_SHA256: ec7aa8abbc4a4a915627f569eaa69b3a8da56155565b955814263bead2061006
         run: |
           set -euo pipefail
-          # External GitHub event SHA belongs to AI Studio, NOT to checked-out GIT.
-          # Do not forge it. Exact GIT checkout is asserted independently.
-          env -u GITHUB_SHA npm run qa:p5:ci
+          test "$(git rev-parse HEAD)" = "ca660f34c40e7203c29d3120bb10b9c29ec0837e"
+          node scripts/check-stage08-v2-browser.mjs
           test "$(git rev-parse HEAD)" = "ca660f34c40e7203c29d3120bb10b9c29ec0837e"
           test -z "$(git status --porcelain --untracked-files=no)"
-      - name: Preserve source identity diagnostic on success or failure
-        if: always()
-        working-directory: inspected-git
-        shell: bash
-        run: |
-          echo "EXPECTED SOURCE: ca660f34c40e7203c29d3120bb10b9c29ec0837e"
-          echo "OBSERVED SOURCE: $(git rev-parse HEAD)"
-          git log -1 --pretty='format:%H %s'
-          echo
-          git status --porcelain --untracked-files=no | head -25
