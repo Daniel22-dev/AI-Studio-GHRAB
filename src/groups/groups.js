@@ -57,6 +57,7 @@ const diagnostics = [];
 let selectedGroupId = null;
 let filter = "active";
 let rosterPreview = null;
+let recoveryMode = false;
 
 function language() { return document.documentElement.lang === "en" ? "en" : "cs"; }
 function tr(cs, en) { return language() === "en" ? en : cs; }
@@ -75,7 +76,13 @@ function button(text, className, action) {
 function activeMembers(group) { return group.members.filter((member) => member.status === "active"); }
 function displayError(error) {
   const code = String(error?.message || error || "UNKNOWN").split(":")[0];
+  if (code.startsWith("ROSTER_IDENTITY_")) return tr("Ověřte identity žáků v importu.", "Verify student identities in this import.");
+  if (code === "GROUP_STORAGE_RECOVERY_REQUIRED") enterRecoveryMode();
   const messages = {
+    GROUP_STORAGE_RECOVERY_REQUIRED: tr("Poškozené skupiny jsou uzamčeny. Obnovte ověřenou zálohu.", "Damaged groups are locked. Restore a verified backup."),
+    GROUP_RECOVERY_SNAPSHOT_EXISTS: tr("Původní záchranná kopie již existuje. Kontaktujte správce.", "Original quarantine copy already exists. Contact an administrator."),
+    GROUP_RECOVERY_PRESERVE_FAILED: tr("Původní data nelze uchovat. Obnova zastavena.", "Original bytes could not be preserved. Recovery blocked."),
+    GROUP_STORAGE_STALE_WRITE: tr("Data se mezitím změnila jinde.", "Data changed in another tab."),
     GROUP_DISPLAY_NAME_REQUIRED: tr("Zadejte název skupiny.", "Enter a group name."),
     GROUP_SCHOOL_YEAR_INVALID: tr("Školní rok zadejte např. 2026/27.", "Enter the school year, e.g. 2026/27."),
     GROUP_REVISION_CONFLICT: tr("Skupina se mezitím změnila. Načtěte nový náhled a potvrďte jej znovu.", "The group changed in the meantime. Refresh the preview and confirm it again."),
@@ -128,6 +135,11 @@ Object.defineProperty(globalThis, "GHRAB_GROUPS", {
 function renderDiagnostic() {
   const box = $("#groups-diagnostic");
   if (!box) return;
+  if (recoveryMode) {
+    box.hidden = false;
+    box.textContent = tr("Poškozená evidence je uzamčená. Obnovte ověřenou zálohu.", "Roster locked. Restore a verified backup.");
+    return;
+  }
   if (!diagnostics.length && !legacyStorePresent) {
     box.hidden = true; box.textContent = ""; return;
   }
@@ -232,10 +244,44 @@ function renderDetail() {
   container.append(rosterHead); renderRosterTable(group, container); root.append(container);
 }
 
+function enterRecoveryMode() {
+  if (!accessGate.allowed()) return denyGroupsPage();
+  recoveryMode = true;
+  selectedGroupId = null;
+  rosterPreview = null;
+  for (const dialog of document.querySelectorAll("dialog")) {
+    try { if (dialog.open) dialog.close(); } catch { /* Best-effort close before scrubbing. */ }
+    for (const field of dialog.querySelectorAll("input, textarea")) field.value = "";
+    for (const node of dialog.querySelectorAll("#roster-preview, .groups-form-error")) node.replaceChildren();
+    if (dialog.dataset) {
+      dialog.dataset.groupId = "";
+      dialog.dataset.expectedRevision = "";
+    }
+  }
+  const list = $("#groups-list");
+  const detail = $("#groups-detail");
+  list?.replaceChildren();
+  detail?.replaceChildren();
+  const message = el("p", "groups-help", tr("Skupiny jsou uzamčeny. Data nemažte; pro obnovu použijte ověřenou zálohu.", "Groups locked. Do not erase data; restore from a verified backup."));
+  message.setAttribute("role", "alert");
+  list?.append(message);
+  for (const node of document.querySelectorAll("[data-group-filter], #group-create, #groups-backup-export")) node.disabled = true;
+  $("#groups-backup-import").disabled = false;
+  renderDiagnostic();
+}
+
 function render() {
   if (!accessGate.allowed()) { denyGroupsPage(); return; }
-  document.querySelectorAll("[data-group-filter]").forEach((node) => node.classList.toggle("is-active", node.dataset.groupFilter === filter));
-  renderList(); renderDiagnostic();
+  try {
+    document.querySelectorAll("[data-group-filter]").forEach((node) => node.classList.toggle("is-active", node.dataset.groupFilter === filter));
+    renderList();
+    recoveryMode = false;
+    for (const node of document.querySelectorAll("[data-group-filter], #group-create, #groups-backup-export")) node.disabled = false;
+    renderDiagnostic();
+  } catch (error) {
+    if (error?.message !== "GROUP_STORAGE_RECOVERY_REQUIRED") throw error;
+    enterRecoveryMode();
+  }
 }
 
 function setFormError(selector, message = "") { const box = $(selector); box.textContent = message; box.hidden = !message; }
@@ -291,6 +337,7 @@ function renderRosterPreview(preview) {
     root.append(box);
   } else root.append(el("p", "groups-help", tr("Vložený seznam nevyvolá žádnou změnu.", "The pasted roster produces no changes.")));
   if (preview.parsed.truncated) root.append(el("p", "groups-form-error", tr("Seznam dosáhl bezpečnostního limitu 500 studentů.", "The roster reached the safety limit of 500 students.")));
+  if (preview.parsed.invalid.length || preview.parsed.duplicates.length) root.append(el("p", "groups-form-error", tr("Opravte neplatné a duplicitní řádky. Import je pozastaven.", "Correct invalid and duplicate rows before importing.")));
 }
 
 function openRosterDialog(group) {
@@ -310,7 +357,7 @@ function previewRoster() {
     const groupId = $("#roster-dialog").dataset.groupId;
     rosterPreview = groups.previewRosterImport(groupId, $("#roster-input").value, { replace: $("#roster-replace").checked });
     renderRosterPreview(rosterPreview);
-    $("#roster-confirm-button").disabled = rosterPreview.parsed.entries.length === 0 || !rosterPreview.diff.hasChanges || rosterPreview.parsed.truncated;
+    $("#roster-confirm-button").disabled = rosterPreview.parsed.entries.length === 0 || !rosterPreview.diff.hasChanges || rosterPreview.parsed.truncated || rosterPreview.parsed.invalid.length > 0 || rosterPreview.parsed.duplicates.length > 0;
   } catch (error) {
     rosterPreview = null; $("#roster-confirm-button").disabled = true; setFormError("#roster-form-error", displayError(error));
   }
@@ -328,9 +375,22 @@ function exportBackup() {
 }
 
 async function importBackupFile(file) {
-  if (!file) return;
-  if (!globalThis.confirm(tr("Tato operace nahradí současnou centrální evidenci obsahem zálohy. Pokračovat?", "This operation replaces the current central group data with the backup. Continue?"))) return;
-  try { const parsed = JSON.parse(await file.text()); await groups.withWriteLock(tx => tx.importBackup(parsed)); selectedGroupId = null; filter = "active"; render(); } catch (error) { globalThis.alert(displayError(error)); }
+  if (!file || !globalThis.confirm(tr("Nahradit skupiny ověřenou zálohou?", "Replace groups with a verified backup?"))) return;
+  try {
+    const backup = JSON.parse(await file.text());
+    try {
+      await groups.withWriteLock(tx => tx.importBackup(backup));
+    } catch (error) {
+      if (error?.message !== "GROUP_STORAGE_RECOVERY_REQUIRED") throw error;
+      if (!globalThis.confirm(tr("Obnova nejprve uchová původní poškozená data a až poté nahraje zálohu. Ověřte její původ a potvrďte obnovu.", "Recovery first preserves original damaged bytes, then restores the verified backup. Confirm?"))) return;
+      await groups.withWriteLock(tx => tx.importBackup(backup, { confirmRecovery: true }));
+    }
+    selectedGroupId = null;
+    filter = "active";
+    render();
+  } catch (error) {
+    globalThis.alert(displayError(error));
+  }
 }
 
 $("#group-create").addEventListener("click", () => openGroupDialog());
