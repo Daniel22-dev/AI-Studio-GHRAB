@@ -1,7 +1,29 @@
 {
   "schema": "ai-studio-changelog-v1",
-  "current": "0.21.263",
+  "current": "0.21.264",
   "items": [
+    {
+      "version": "0.21.264",
+      "date": "2026-11-03",
+      "title": {
+        "cs": "Moje skupiny v2 – předprodukční integrace bezpečné evidence",
+        "en": "My Groups v2 – preproduction integration of secure rosters"
+      },
+      "changes": [
+        {
+          "cs": "Předprodukční integrace skupin do aktuálního AI Studia: oddělení podle přihlášeného učitele v lokálním úložišti prohlížeče, ověřovaný přístup a transakční zámky. Nejde o šifrování ani serverově garantovanou izolaci.",
+          "en": "Preproduction integration of account-scoped browser-local teaching groups with verified access and coordinated write locks. Browser namespaces are neither encryption nor server-enforced tenant isolation."
+        },
+        {
+          "cs": "Oprava záměn identit studentů, atomický import, odmítnutí neplatných a duplicitních řádků a bezpečná obnova poškozených dat s uchováním původního obsahu.",
+          "en": "Protection against student identity confusion, atomic imports, rejection of invalid and duplicate rows, and fail-closed recovery preserving original damaged storage bytes."
+        },
+        {
+          "cs": "Přidány předprodukční testy na skutečném Chromium a úplná kontrola P5/GARP. Produkční nasazení a migrace školních dat jsou odloženy do školního UAT a výslovného schválení.",
+          "en": "Preproduction tests now cover real Chromium and the complete P5/GARP chain. Production deployment and school-data migration remain blocked pending school UAT and explicit approval."
+        }
+      ]
+    },
     {
       "version": "0.21.263",
       "date": "2026-11-02",
