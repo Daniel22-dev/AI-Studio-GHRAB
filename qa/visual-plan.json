@@ -198,6 +198,42 @@
           "selector": ".nav-toggle"
         }
       ]
+    },
+    {
+      "id": "studio-header-navigation-en",
+      "name": "English role-aware desktop navigation without collision",
+      "url": "/index.html",
+      "expectedText": "Applications",
+      "mustVisible": [
+        ".site-header",
+        ".nav-toggle",
+        ".main-nav.open"
+      ],
+      "viewports": [
+        {
+          "width": 1366,
+          "height": 900
+        },
+        {
+          "width": 1649,
+          "height": 928
+        }
+      ],
+      "steps": [
+        {
+          "action": "clickIfVisible",
+          "selector": "#studio-startup-skip",
+          "timeout": 5000
+        },
+        {
+          "action": "click",
+          "selector": ".segmented [data-lang='en']"
+        },
+        {
+          "action": "click",
+          "selector": ".nav-toggle"
+        }
+      ]
     }
   ]
 }
