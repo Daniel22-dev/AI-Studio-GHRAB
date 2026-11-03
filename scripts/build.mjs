@@ -250,6 +250,17 @@ for (const sourceOnlyDoc of [
   "integration/VERIFY-INTEGRATION.md",
   "integration/SAVE-TO-STUDIO.md",
   "ai-core/releases/1.0.0/README.md",
+  // Developer examples and server-only setup templates have no browser
+  // runtime imports. Keep their authoritative files in src/ and git, not in
+  // the production download. Do not modify P5 or performance thresholds.
+  "integration/README.md",
+  "integration/essay-evaluator-access-bootstrap.example.js",
+  "integration/correspondence-access-bootstrap.example.js",
+  "integration/differentiator-access-bootstrap.example.js",
+  "integration/generator-access-bootstrap.example.js",
+  "integration/ludus-access-bootstrap.example.js",
+  "integration/protected-bootstrap.example.js",
+  "config/deployment.school-server.example.json",
 ]) {
   await rm(path.join(dist, sourceOnlyDoc), { force: true });
 }
@@ -264,6 +275,25 @@ for (const file of await walk(dist)) {
   if (compacted.length < content.length) await writeFile(file, compacted, "utf8");
 }
 
+// Shrink only distributed copies of the Groups v2 modules. The committed
+// source is byte-for-byte unchanged and remains readable. This is strictly
+// leading indentation removal, with a fail-closed guard for multiline strings
+// or escaped line continuations whose whitespace could be meaningful.
+for (const relative of [
+  "groups/group-service.js",
+  "groups/groups.js",
+  "groups/verified-client.js",
+  "groups/write-transaction.js",
+]) {
+  const target = path.join(dist, relative);
+  const original = await readFile(target, "utf8");
+  const lines = original.split(/\r?\n/);
+  if (lines.some((line) => (line.split('`').length - 1) % 2 !== 0 || /\\[ \t]*$/.test(line))) {
+    throw new Error(`Refusing Groups v2 whitespace compaction with multiline literal: ${relative}`);
+  }
+  const compacted = original.replace(/^[ \t]+(?=\S)/gm, "");
+  if (compacted.length < original.length) await writeFile(target, compacted, "utf8");
+}
 const allCacheFiles = (await walk(dist))
   .filter((file) => file !== path.join(dist, "sw.js"))
   .map((file) => `./${path.relative(dist, file).split(path.sep).join("/")}`)
@@ -278,6 +308,7 @@ const requiredCacheFiles = [
   "./integration/conversation-lab/portal-route.js",
   // Stage05 static dependency of app.js: required for offline portal reload.
   "./material-flow/material-flow.js",
+  "./integration/save-to-studio.js",
   "./styles.css",
   "./polish.css",
   "./portal-card-hotfix.css",
