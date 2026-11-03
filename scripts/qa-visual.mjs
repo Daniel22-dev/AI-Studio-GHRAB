@@ -448,6 +448,9 @@ async function runVisualCase(scenario, viewport) {
       if (scenario.url === "/index.html") {
         await page.addInitScript(
           ({ language }) => {
+            // Test-only override: the QA HTTP harness replaces localStorage
+            // independently, so select the language before Studio bootstraps.
+            document.documentElement.dataset.forceLanguage = language === "en" ? "en" : "cs";
             try {
               localStorage.setItem("ghrab.startup-intro.seen.v1", "seen");
               // Navigation is tested after the normal first-run installation choice.
