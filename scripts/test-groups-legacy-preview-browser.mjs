@@ -69,6 +69,11 @@ try {
   });
   await page.getByText(/Soubor není platná záloha skupin V1/).waitFor();
   await page.locator("#groups-legacy-dialog [data-dialog-close]").last().click();
+  await page.waitForFunction(()=>{
+    const dialog=document.querySelector("#groups-legacy-dialog");
+    const output=document.querySelector("#groups-legacy-preview");
+    return !dialog?.open && output?.textContent?.trim()==="";
+  });
   assert.equal(await page.locator("#groups-legacy-preview").innerText(),"");
   assert.equal(await page.locator("#groups-legacy-dialog").evaluate(x=>x.open),false);
   assert.deepEqual(errors,[]);
