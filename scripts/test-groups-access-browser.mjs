@@ -46,6 +46,9 @@ const sources = new Map([
   [root + "groups/groups.js", { type: "text/javascript", body: read("src/groups/groups.js") }],
   [root + "groups/group-service.js", { type: "text/javascript", body: read("src/groups/group-service.js") }],
   [root + "groups/write-transaction.js", { type: "text/javascript", body: read("src/groups/write-transaction.js") }],
+  [root + "groups/groups.css", { type: "text/css", body: read("src/groups/groups.css") }],
+  [root + "styles.css", { type: "text/css", body: read("src/styles.css") }],
+  [root + "polish.css", { type: "text/css", body: read("src/polish.css") }],
 ]);
 const errors = [], checks = [];
 const browser = await chromium.launch({ headless: true });
@@ -217,6 +220,105 @@ try {
     assert.ok(!(await page.locator("body").innerText()).includes("Synthetic Pupil"));
     assert.equal(await page.evaluate(() => window.GHRAB_GROUPS.listGroups().length), 0);
     assert.equal(await page.evaluate(() => !!localStorage.getItem("ghrab.ai-studio.groups.v1")), true);
+  });
+
+
+  await verify("G09 cross-tab corruption closes roster preview and removes displayed pupil data", async () => {
+    const page = await openScenario({ access: authorized() });
+    await page.locator("#groups-detail").getByText("Synthetic Pupil").waitFor();
+    await page.getByRole("button", { name: "Import / aktualizace z IS" }).click();
+    await page.locator("#roster-input").fill("Pilot New Pupil; pilot-new@example.invalid");
+    await page.locator("#roster-preview-button").click();
+    await page.getByText("Pilot New Pupil").waitFor();
+    const result = await page.evaluate(() => {
+      const key = Object.keys(localStorage).find(k => k.startsWith("ghrab.ai-studio.groups.account.v2."));
+      if (!key) throw new Error("NO_SCOPE_KEY");
+      const previous = localStorage.getItem(key);
+      localStorage.setItem(key, "{synthetic-corrupt");
+      window.dispatchEvent(new StorageEvent("storage", {
+        key, oldValue: previous, newValue: "{synthetic-corrupt", storageArea: localStorage,
+      }));
+      let errorCode = "ALLOWED";
+      try { window.GHRAB_GROUPS.listGroups(); } catch (error) { errorCode = error.message; }
+      return {
+        errorCode, unchangedBytes: localStorage.getItem(key) === "{synthetic-corrupt",
+        pupilVisible: document.body.innerText.includes("Synthetic Pupil"),
+        previewVisible: document.body.innerText.includes("Pilot New Pupil"),
+        draftText: document.querySelector("#roster-input").value,
+        stalePreviewCount: document.querySelector("#roster-preview").childElementCount,
+        dialogOpen: document.querySelector("#roster-dialog").open,
+        createDisabled: document.querySelector("#group-create").disabled,
+        exportDisabled: document.querySelector("#groups-backup-export").disabled,
+        restoreAvailable: !document.querySelector("#groups-backup-import").disabled,
+        diagnosticText: document.querySelector("#groups-diagnostic").textContent,
+      };
+    });
+    assert.equal(result.errorCode, "GROUP_STORAGE_RECOVERY_REQUIRED");
+    assert.equal(result.unchangedBytes, true);
+    assert.equal(result.pupilVisible, false);
+    assert.equal(result.previewVisible, false);
+    assert.equal(result.draftText, "");
+    assert.equal(result.stalePreviewCount, 0);
+    assert.equal(result.dialogOpen, false);
+    assert.equal(result.createDisabled, true);
+    assert.equal(result.exportDisabled, true);
+    assert.equal(result.restoreAvailable, true);
+    assert.ok(result.diagnosticText.includes("Poškozená"));
+  });
+
+  await verify("G10 healthy cross-tab update invalidates stale editor and rerenders new revision", async () => {
+    const page = await openScenario({ access: authorized() });
+    await page.locator("#groups-detail").getByText("Synthetic Pupil").waitFor();
+    await page.getByRole("button", { name: "Import / aktualizace z IS" }).click();
+    await page.locator("#roster-input").fill("Pilot Draft Student; draft@example.invalid");
+    await page.locator("#roster-preview-button").click();
+    await page.getByText("Pilot Draft Student").waitFor();
+    const changed = await page.evaluate(() => {
+      const key = Object.keys(localStorage).find(k => k.startsWith("ghrab.ai-studio.groups.account.v2."));
+      const before = localStorage.getItem(key);
+      const store = JSON.parse(before);
+      store.groups[0].displayName = "Synthetic Class Updated";
+      store.groups[0].revision++;
+      store.groups[0].updatedAt = new Date().toISOString();
+      store.updatedAt = new Date().toISOString();
+      const after = JSON.stringify(store);
+      localStorage.setItem(key, after);
+      window.dispatchEvent(new StorageEvent("storage", {
+        key, oldValue: before, newValue: after, storageArea: localStorage,
+      }));
+      return {
+        title: document.querySelector("#groups-detail h2")?.textContent,
+        dialogOpen: document.querySelector("#roster-dialog").open,
+        draftText: document.querySelector("#roster-input").value,
+        previewCount: document.querySelector("#roster-preview").childElementCount,
+        confirmDisabled: document.querySelector("#roster-confirm-button").disabled,
+        newRevision: window.GHRAB_GROUPS.listGroups()[0].revision,
+      };
+    });
+    assert.equal(changed.title, "Synthetic Class Updated");
+    assert.equal(changed.dialogOpen, false);
+    assert.equal(changed.draftText, "");
+    assert.equal(changed.previewCount, 0);
+    assert.equal(changed.confirmDisabled, true);
+    assert.equal(changed.newRevision, 2);
+  });
+
+  await verify("G11 real-CSS Chromium viewport smoke across phone, tablet and desktop widths", async () => {
+    const page = await openScenario({ access: authorized() });
+    await page.locator("#groups-detail").getByText("Synthetic Pupil").waitFor();
+    for (const size of [{ width: 360, height: 800 }, { width: 390, height: 844 },
+      { width: 768, height: 1024 }, { width: 1366, height: 768 }]) {
+      await page.setViewportSize(size);
+      const result = await page.evaluate(() => ({
+        viewport: window.innerWidth,
+        documentWidth: document.documentElement.scrollWidth,
+        listVisible: document.querySelector("#groups-list").getBoundingClientRect().width > 0,
+        detailVisible: document.querySelector("#groups-detail").getBoundingClientRect().width > 0,
+      }));
+      assert.ok(result.listVisible && result.detailVisible, JSON.stringify({ size, result }));
+      assert.ok(result.documentWidth <= result.viewport + 2,
+        "Unexpected global horizontal overflow: " + JSON.stringify({ size, result }));
+    }
   });
 
   assert.deepEqual(errors, [], "browser must not have any uncaught page errors");
