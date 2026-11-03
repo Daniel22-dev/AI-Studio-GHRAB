@@ -1,4 +1,4 @@
-name: GIT Stage08 R21 provenance isolation (AUDIT ONLY, NO DEPLOY)
+name: GIT Stage08 R22 dist size audit (SYNTHETIC ONLY, NO DEPLOY)
 on:
   push:
     branches:
@@ -6,99 +6,11 @@ on:
 permissions:
   contents: read
 jobs:
-  diagnose:
-    runs-on: ubuntu-latest
-    timeout-minutes: 35
-    steps:
-      - name: Checkout exact GIT source commit
-        uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683 # v4
-        with:
-          repository: Daniel22-dev/generator-testu
-          ref: ca660f34c40e7203c29d3120bb10b9c29ec0837e
-          fetch-depth: 0
-          persist-credentials: false
-          path: inspected-git
-      - name: Install pinned Node toolchain
-        uses: actions/setup-node@49933ea5288caeca8642d1e84afbd3f7d6820020 # v4
-        with:
-          node-version: '22'
-      - name: Install locked test dependencies
-        working-directory: inspected-git
-        run: npm ci --ignore-scripts --no-audit --no-fund --registry=https://registry.npmjs.org
-      - name: Initial exact-head verification
-        working-directory: inspected-git
-        shell: bash
-        run: |
-          set -euo pipefail
-          echo "Audit event GITHUB_SHA (AI Studio): $GITHUB_SHA"
-          echo "Audited GIT checkout SHA: $(git rev-parse HEAD)"
-          test "$(git rev-parse HEAD)" = "ca660f34c40e7203c29d3120bb10b9c29ec0837e"
-          test -z "$(git status --porcelain --untracked-files=no)"
-      - name: Re-run early S83 orchestration and Stage08 without mutations
-        working-directory: inspected-git
-        shell: bash
-        run: |
-          set -euo pipefail
-          npm run check:ci-orchestration
-          echo "HEAD after orchestration: $(git rev-parse HEAD)"
-          test "$(git rev-parse HEAD)" = "ca660f34c40e7203c29d3120bb10b9c29ec0837e"
-          npm run check:stage08-groups
-          npm run check:stage08-results
-          echo "HEAD after Stage08: $(git rev-parse HEAD)"
-          test "$(git rev-parse HEAD)" = "ca660f34c40e7203c29d3120bb10b9c29ec0837e"
-      - name: R21 snapshot after preflight
-        if: always()
-        working-directory: inspected-git
-        shell: bash
-        run: |
-          echo "After preflight HEAD: $(git rev-parse HEAD)"
-          git log -1 --pretty='format:%H %s'
-          echo
-          git status --porcelain --untracked-files=no | head -20
-      - name: Run original build and note HEAD exactly
-        working-directory: inspected-git
-        shell: bash
-        run: |
-          set -euo pipefail
-          npm run qa:lock
-          echo "HEAD after qa:lock: $(git rev-parse HEAD)"
-          test "$(git rev-parse HEAD)" = "ca660f34c40e7203c29d3120bb10b9c29ec0837e"
-          npm run qa:garp23
-          echo "HEAD after qa:garp23: $(git rev-parse HEAD)"
-          test "$(git rev-parse HEAD)" = "ca660f34c40e7203c29d3120bb10b9c29ec0837e"
-          npm run build
-          echo "HEAD after original npm run build: $(git rev-parse HEAD)"
-          test "$(git rev-parse HEAD)" = "ca660f34c40e7203c29d3120bb10b9c29ec0837e"
-      - name: R21 snapshot after build
-        if: always()
-        working-directory: inspected-git
-        shell: bash
-        run: |
-          echo "After build HEAD: $(git rev-parse HEAD)"
-          git log -1 --pretty='format:%H %s'
-          echo
-          git status --porcelain --untracked-files=no | head -20
-      - name: Install pinned Chromium for original S1 browser runtime
-        working-directory: inspected-git
-        run: npx playwright install --with-deps chromium
-      - name: Run S1 locally with external event SHA excluded from Git provenance
-        working-directory: inspected-git
-        shell: bash
-        run: |
-          set -euo pipefail
-          test "$(git rev-parse HEAD)" = "ca660f34c40e7203c29d3120bb10b9c29ec0837e"
-          # This is a diagnostic, not an official native GIT CI certificate.
-          # GitHub's GITHUB_SHA belongs to the AI Studio audit workflow.
-          env -u GITHUB_SHA npm run check:s1-recovery-browser
-          echo "HEAD after S1: $(git rev-parse HEAD)"
-          test "$(git rev-parse HEAD)" = "ca660f34c40e7203c29d3120bb10b9c29ec0837e"
-          test -z "$(git status --porcelain --untracked-files=no)"
-
-  stage08-v2-real-chromium:
+  distribution-audit:
     runs-on: ubuntu-latest
     timeout-minutes: 25
     steps:
-      - name: Checkout exact GIT committed source
+      - name: Checkout exact GIT source
         uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683
         with:
           repository: Daniel22-dev/generator-testu
@@ -106,21 +18,58 @@ jobs:
           fetch-depth: 0
           persist-credentials: false
           path: inspected-git
-      - name: Setup pinned Node 22
+      - name: Pin Node 22
         uses: actions/setup-node@49933ea5288caeca8642d1e84afbd3f7d6820020
         with:
           node-version: '22'
-      - name: Install original lockfile and pinned Chromium
+      - name: Install only locked dependencies
+        working-directory: inspected-git
+        run: npm ci --ignore-scripts --no-audit --no-fund --registry=https://registry.npmjs.org
+      - name: Build exact immutable source; never deploy
         working-directory: inspected-git
         run: |
-          npm ci --ignore-scripts --no-audit --no-fund --registry=https://registry.npmjs.org
-          npx playwright install --with-deps chromium
-      - name: Execute Stage08 v2 browser with mocked authorized Studio transport
+          test "$(git rev-parse HEAD)" = "ca660f34c40e7203c29d3120bb10b9c29ec0837e"
+          npm run build
+          test "$(git rev-parse HEAD)" = "ca660f34c40e7203c29d3120bb10b9c29ec0837e"
+      - name: Print size offenders and whitespace data (read only)
         working-directory: inspected-git
         shell: bash
         run: |
           set -euo pipefail
-          test "$(git rev-parse HEAD)" = "ca660f34c40e7203c29d3120bb10b9c29ec0837e"
-          node scripts/check-stage08-v2-browser.mjs
-          test "$(git rev-parse HEAD)" = "ca660f34c40e7203c29d3120bb10b9c29ec0837e"
-          test -z "$(git status --porcelain --untracked-files=no)"
+          node --input-type=module <<'NODE'
+          import fs from 'node:fs';
+          import path from 'node:path';
+          const root='dist',out=[];
+          function walk(dir){
+            for(const item of fs.readdirSync(dir,{withFileTypes:true})){
+              const p=path.join(dir,item.name);
+              if(item.isDirectory())walk(p);
+              else if(item.isFile())out.push({file:p.slice(root.length+1).replaceAll('\\','/'),bytes:fs.statSync(p).size});
+            }
+          }
+          walk(root);
+          out.sort((a,b)=>b.bytes-a.bytes);
+          const excluded=new Set(['quality-report.json','config/quality-manifest.json']);
+          const actual=out.filter(x=>!excluded.has(x.file));
+          const sum=x=>x.reduce((n,r)=>n+r.bytes,0);
+          const entry=fs.readFileSync('dist/index.html','utf8');
+          const manual=fs.readFileSync('dist/manual/index.html','utf8');
+          const whitespace=txt=>({
+            bytes:Buffer.byteLength(txt),
+            lines:txt.split('\n').length,
+            indentationBytes:(txt.match(/^[ \t]+/gm)||[]).reduce((n,s)=>n+s.length,0),
+            intertagWhitespaceBytes:(txt.match(/>\s+</g)||[]).reduce((n,s)=>n+s.length-2,0)
+          });
+          const optional=out.filter(x=>x.file.startsWith('features/')||x.file.startsWith('manual/')||x.file.startsWith('access/'));
+          console.log(JSON.stringify({
+            schema:'ghrab-git-r22-dist-readonly-v1',
+            source:'ca660f34c40e7203c29d3120bb10b9c29ec0837e',
+            distBytes:sum(actual),
+            budget:2806000,
+            overBy:sum(actual)-2806000,
+            topFiles:out.slice(0,45),
+            options:optional.slice(0,30),
+            entry:whitespace(entry),
+            manual:whitespace(manual)
+          },null,2));
+          NODE
