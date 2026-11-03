@@ -1,4 +1,4 @@
-name: GIT R25 original PNG metadata check (READ ONLY)
+name: GIT R26 lossless quality admission (AUDIT ONLY, NO DEPLOY)
 on:
   push:
     branches:
@@ -6,36 +6,68 @@ on:
 permissions:
   contents: read
 jobs:
-  png-metadata:
+  quality:
     runs-on: ubuntu-latest
-    timeout-minutes: 10
+    timeout-minutes: 35
     steps:
-      - uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683
+      - name: Checkout immutable GIT release draft
+        uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683
         with:
           repository: Daniel22-dev/generator-testu
-          ref: ca660f34c40e7203c29d3120bb10b9c29ec0837e
+          ref: 27cd0fe049a415f431cfd94b4fce5401a11f54ea
+          fetch-depth: 0
           persist-credentials: false
-          path: src
-      - name: Check source image ancillary chunks
-        working-directory: src
+          path: source
+      - name: Install pinned Node 22
+        uses: actions/setup-node@49933ea5288caeca8642d1e84afbd3f7d6820020
+        with:
+          node-version: '22'
+      - name: Locked dependencies and original build
+        working-directory: source
         run: |
+          npm ci --ignore-scripts --no-audit --no-fund --registry=https://registry.npmjs.org
+          test "$(git rev-parse HEAD)" = "27cd0fe049a415f431cfd94b4fce5401a11f54ea"
+          npm run build
+          test "$(git rev-parse HEAD)" = "27cd0fe049a415f431cfd94b4fce5401a11f54ea"
+      - name: Run original P3 dist size, quality and Stage08 safety checks
+        working-directory: source
+        run: |
+          node scripts/qa-p3-quality.mjs
+          npm run check:stage08-groups
+          npm run check:stage08-results
+          npm run test:stage09
+          node scripts/check-csp.mjs
+      - name: Independently confirm five image RGB(A) pixel and ICC byte identities
+        working-directory: source
+        shell: bash
+        run: |
+          set -euo pipefail
           node --input-type=module <<'NODE'
           import fs from 'node:fs';
-          const paths=['public/icons/icon-512.png','public/icons/icon-maskable-512.png',
-            'public/icons/icon-192.png','public/icons/apple-touch-icon.png',
-            'public/assets/brand/school-logo.png'];
-          for(const path of paths){
-            const b=fs.readFileSync(path);
-            if(b.subarray(0,8).toString('hex')!=='89504e470d0a1a0a')throw Error('Not PNG');
-            let off=8,parts=[];
-            while(off+12<=b.length){
-              const n=b.readUInt32BE(off),type=b.toString('ascii',off+4,off+8);
-              parts.push({type,n});
-              off+=12+n;
-              if(type==='IEND')break;
+          import assert from 'node:assert/strict';
+          import {PNG} from 'pngjs';
+          const files=['icons/icon-512.png','icons/icon-maskable-512.png',
+            'icons/icon-192.png','icons/apple-touch-icon.png','assets/brand/school-logo.png'];
+          let totalSaved=0;
+          const icc=bytes=>{
+            let at=8,out=[];
+            while(at+12<=bytes.length){
+              const len=bytes.readUInt32BE(at),name=bytes.toString('ascii',at+4,at+8);
+              if(name==='iCCP')out.push(bytes.subarray(at,at+len+12));
+              at+=len+12;if(name==='IEND')break;
             }
-            console.log(JSON.stringify({path,byteLength:b.length,
-              types:parts.map(x=>x.type),ancillary:parts.filter(x=>/^(iCCP|gAMA|sRGB|cHRM|sBIT|eXIf|tEXt|iTXt|zTXt|pHYs)$/.test(x.type))}));
+            return out;
+          };
+          for(const file of files){
+            const src=fs.readFileSync('public/'+file),dst=fs.readFileSync('dist/'+file);
+            const a=PNG.sync.read(src),b=PNG.sync.read(dst);
+            assert.equal(a.width,b.width);assert.equal(a.height,b.height);
+            assert.ok(Buffer.from(a.data).equals(Buffer.from(b.data)),file+' pixel mismatch');
+            assert.deepEqual(icc(src),icc(dst),file+' ICC profile mismatch');
+            assert.ok(dst.length<src.length,file+' failed to shrink');
+            totalSaved+=src.length-dst.length;
           }
+          console.log(JSON.stringify({status:'PASS',pixelAndICCParity:files.length,bytesSaved:totalSaved}));
           NODE
-          test "$(git rev-parse HEAD)" = "ca660f34c40e7203c29d3120bb10b9c29ec0837e"
+          test "$(git rev-parse HEAD)" = "27cd0fe049a415f431cfd94b4fce5401a11f54ea"
+          test -z "$(git status --porcelain --untracked-files=no)"
