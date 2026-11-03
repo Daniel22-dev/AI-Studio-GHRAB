@@ -445,7 +445,7 @@ async function runVisualCase(scenario, viewport) {
         route.fulfill({ status: 200, contentType: "text/css", body: "" }),
       );
 
-      if (scenario.id === "studio-home") {
+      if (scenario.url === "/index.html") {
         await page.addInitScript(
           ({ version }) => {
             try {
