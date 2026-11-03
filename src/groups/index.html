@@ -75,10 +75,10 @@
           <div>
             <strong data-cs="Seznamy obsahují osobní údaje studentů" data-en="Rosters contain student personal data">Seznamy obsahují osobní údaje studentů</strong>
             <p
-              data-cs="Jména a školní e-maily se neodesílají do telemetrie. Nová záloha je šifrovaná heslem; staré nešifrované soubory chraňte jako osobní údaje."
-              data-en="Names and school emails are not sent to telemetry. New backups are password-encrypted; protect old plaintext files as personal data."
+              data-cs="Nové zálohy jsou šifrované. Staré JSON chraňte."
+              data-en="New backups encrypted. Protect old plaintext JSON."
             >
-              Jména a školní e-maily se neodesílají do telemetrie. Nová záloha je šifrovaná heslem; staré nešifrované soubory chraňte jako osobní údaje.
+              Nové zálohy jsou šifrované. Staré JSON chraňte.
             </p>
           </div>
         </aside>
@@ -168,16 +168,17 @@
       </form>
     </dialog>
 
-    <dialog id="groups-backup-secret-dialog" class="groups-dialog" aria-labelledby="groups-backup-secret-title">
-      <form method="dialog" id="groups-backup-secret-form">
-        <h2 id="groups-backup-secret-title">Heslo zálohy</h2>
-        <p class="groups-help" data-cs="Použijte jedinečnou frázi nejméně 16 znaků. Zapomenuté heslo nelze obnovit; přihlášení školy jej nenahradí." data-en="Use a unique phrase of at least 16 characters. Lost passwords cannot be recovered by school sign-in.">Použijte jedinečnou frázi nejméně 16 znaků. Zapomenuté heslo nelze obnovit; přihlášení školy jej nenahradí.</p>
-        <label class="groups-roster-field"><span data-cs="Heslo zálohy" data-en="Backup password">Heslo zálohy</span><input id="groups-secret-input" type="password" autocomplete="new-password" minlength="16" maxlength="512" required /></label>
-        <label class="groups-roster-field" id="groups-secret-repeat-wrap"><span data-cs="Zopakovat heslo" data-en="Repeat password">Zopakovat heslo</span><input id="groups-secret-repeat" type="password" autocomplete="new-password" maxlength="512" /></label>
-        <p id="groups-secret-error" class="groups-form-error" role="alert"></p>
-        <div class="groups-dialog-actions"><button type="button" class="groups-button groups-button-secondary" data-dialog-close data-cs="Zrušit" data-en="Cancel">Zrušit</button><button type="submit" class="groups-button groups-button-primary" data-cs="Pokračovat" data-en="Continue">Pokračovat</button></div>
-      </form>
-    </dialog>
+<dialog id="groups-backup-secret-dialog" class="groups-dialog" aria-labelledby="groups-backup-secret-title">
+<form method="dialog" id="groups-backup-secret-form">
+<h2 id="groups-backup-secret-title">Heslo zálohy</h2>
+<p class="groups-help" data-cs="Unikátní heslo min. 16 znaků. Ztracené heslo nelze obnovit." data-en="Unique password, 16+ characters. Lost passwords cannot be recovered.">Unikátní heslo min. 16 znaků. Ztracené heslo nelze obnovit.</p>
+<label class="groups-roster-field"><span data-cs="Heslo" data-en="Password">Heslo</span><input id="groups-secret-input" type="password" autocomplete="new-password" minlength="16" maxlength="512" required></label>
+<label class="groups-roster-field" id="groups-secret-repeat-wrap"><span data-cs="Znovu" data-en="Repeat">Znovu</span><input id="groups-secret-repeat" type="password" autocomplete="new-password" maxlength="512"></label>
+<p id="groups-secret-error" class="groups-form-error" role="alert"></p>
+<div class="groups-dialog-actions"><button type="button" class="groups-button groups-button-secondary" data-dialog-close data-cs="Zrušit" data-en="Cancel">Zrušit</button>
+<button type="submit" class="groups-button groups-button-primary" data-cs="Pokračovat" data-en="Continue">Pokračovat</button></div>
+</form>
+</dialog>
 
     <footer class="site-footer">
       <div class="shell-wide footer-inner"><div><strong>AI Studio GHRAB</strong><p data-cs="Autor a vývojový garant: Daniel Baláž · Školní projekt Gymnázia, Ostrava-Hrabůvka · verze __APP_VERSION__" data-en="Author and development guarantor: Daniel Baláž · School project of Gymnázium, Ostrava-Hrabůvka · version __APP_VERSION__">Autor a vývojový garant: Daniel Baláž · Školní projekt Gymnázia, Ostrava-Hrabůvka · verze __APP_VERSION__</p></div></div>
