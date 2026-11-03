@@ -57,6 +57,7 @@ const diagnostics = [];
 let selectedGroupId = null;
 let filter = "active";
 let rosterPreview = null;
+let rosterApproval = null;
 let legacyPreviewSequence = 0;
 let recoveryMode = false;
 
@@ -102,6 +103,7 @@ function displayError(error) {
     GROUP_MIGRATION_SOURCE_INVALID: tr("Soubor není platná záloha skupin V1.", "The file is not a valid V1 groups backup."),
     GROUP_MIGRATION_SOURCE_TOO_LARGE: tr("Záloha přesahuje povolenou velikost.", "The backup exceeds the permitted size."),
     GROUP_MIGRATION_UNSAFE_KEYS: tr("Záloha obsahuje nepovolenou strukturu.", "The backup contains unsafe keys."),
+    ROSTER_REVIEW_CHANGED: tr("Seznam nebo nastavení se od náhledu změnily. Nic nebylo uloženo; zkontrolujte nový náhled.", "The roster or options changed after the preview. Nothing was saved; review a fresh preview."),
     GROUP_ACCESS_DENIED: tr("Vaše oprávnění se změnilo. Otevřete Moje skupiny znovu.", "Your access changed. Reopen My Groups."),
 
   };
@@ -143,6 +145,7 @@ groups.subscribe(detail => {
   if (detail.kind !== "external-storage-change") return;
   if (!accessGate.allowed()) { denyGroupsPage(); return; }
   rosterPreview = null;
+  rosterApproval = null;
   legacyPreviewSequence += 1;
   $("#groups-legacy-preview")?.replaceChildren();
   for (const dialog of document.querySelectorAll("dialog")) {
@@ -276,6 +279,7 @@ function enterRecoveryMode() {
   recoveryMode = true;
   selectedGroupId = null;
   rosterPreview = null;
+  rosterApproval = null;
   for (const dialog of document.querySelectorAll("dialog")) {
     try { if (dialog.open) dialog.close(); } catch { /* Best-effort close before scrubbing. */ }
     for (const field of dialog.querySelectorAll("input, textarea")) field.value = "";
@@ -369,6 +373,7 @@ function renderRosterPreview(preview) {
 
 function openRosterDialog(group) {
   rosterPreview = null;
+  rosterApproval = null;
   $("#roster-input").value = "";
   $("#roster-replace").checked = true;
   $("#roster-confirm-button").disabled = true;
@@ -382,11 +387,14 @@ function previewRoster() {
   setFormError("#roster-form-error");
   try {
     const groupId = $("#roster-dialog").dataset.groupId;
-    rosterPreview = groups.previewRosterImport(groupId, $("#roster-input").value, { replace: $("#roster-replace").checked });
+    const rawText = $("#roster-input").value;
+    const replace = $("#roster-replace").checked;
+    rosterPreview = groups.previewRosterImport(groupId, rawText, { replace });
+    rosterApproval = Object.freeze({ groupId, rawText, replace, revision: rosterPreview.currentRevision });
     renderRosterPreview(rosterPreview);
     $("#roster-confirm-button").disabled = rosterPreview.parsed.entries.length === 0 || !rosterPreview.diff.hasChanges || rosterPreview.parsed.truncated || rosterPreview.parsed.invalid.length > 0 || rosterPreview.parsed.duplicates.length > 0;
   } catch (error) {
-    rosterPreview = null; $("#roster-confirm-button").disabled = true; setFormError("#roster-form-error", displayError(error));
+    rosterPreview = null; rosterApproval = null; $("#roster-confirm-button").disabled = true; setFormError("#roster-form-error", displayError(error));
   }
 }
 
@@ -475,22 +483,55 @@ $("#group-form").addEventListener("submit", async (event) => {
   } catch (error) { setFormError("#group-form-error", displayError(error)); }
 });
 $("#roster-preview-button").addEventListener("click", previewRoster);
-$("#roster-input").addEventListener("input", () => { rosterPreview = null; $("#roster-confirm-button").disabled = true; $("#roster-preview").replaceChildren(); });
-$("#roster-replace").addEventListener("change", () => { rosterPreview = null; $("#roster-confirm-button").disabled = true; $("#roster-preview").replaceChildren(); });
+$("#roster-input").addEventListener("input", () => { rosterPreview = null; rosterApproval = null; $("#roster-confirm-button").disabled = true; $("#roster-preview").replaceChildren(); });
+$("#roster-replace").addEventListener("change", () => { rosterPreview = null; rosterApproval = null; $("#roster-confirm-button").disabled = true; $("#roster-preview").replaceChildren(); });
 $("#roster-form").addEventListener("submit", async (event) => {
   event.preventDefault(); setFormError("#roster-form-error");
-  if (!rosterPreview) { previewRoster(); return; }
+  if (!rosterPreview || !rosterApproval) { previewRoster(); return; }
+  const approved = rosterApproval;
+  const reviewed = rosterPreview;
+  // Recheck on click AND after the asynchronous browser write-lock wait.
+  // Explicit teacher confirmation is tied to the exact text, options and group.
+  const requireUnchangedReview = () => {
+    accessGate.requireAllowed();
+    if (!$("#roster-dialog")?.open ||
+        $("#roster-dialog").dataset.groupId !== approved.groupId ||
+        $("#roster-input").value !== approved.rawText ||
+        $("#roster-replace").checked !== approved.replace ||
+        reviewed.groupId !== approved.groupId ||
+        reviewed.replace !== approved.replace ||
+        reviewed.currentRevision !== approved.revision ||
+        !reviewed.diff.hasChanges || !reviewed.parsed.entries.length ||
+        reviewed.parsed.truncated || reviewed.parsed.invalid.length ||
+        reviewed.parsed.duplicates.length) {
+      throw new Error("ROSTER_REVIEW_CHANGED");
+    }
+  };
   try {
-    const pendingPreview = rosterPreview;
-    const pendingText = $("#roster-input").value;
-    const pendingReplace = $("#roster-replace").checked;
+    requireUnchangedReview();
     $("#roster-confirm-button").disabled = true;
-    const result = await groups.withWriteLock(tx => tx.importRoster({
-      groupId: pendingPreview.groupId, rawText: pendingText,
-      replace: pendingReplace, expectedRevision: pendingPreview.currentRevision,
-    }));
-    selectedGroupId = result.group.groupId; closeDialog($("#roster-dialog")); rosterPreview = null; render();
-  } catch (error) { setFormError("#roster-form-error", displayError(error)); $("#roster-confirm-button").disabled = true; rosterPreview = null; }
+    const result = await groups.withWriteLock(tx => {
+      requireUnchangedReview();
+      return tx.importRoster({
+        groupId: approved.groupId, rawText: approved.rawText,
+        replace: approved.replace, expectedRevision: approved.revision,
+      });
+    });
+    selectedGroupId = result.group.groupId;
+    closeDialog($("#roster-dialog"));
+    rosterPreview = null; rosterApproval = null; render();
+  } catch (error) {
+    rosterPreview = null; rosterApproval = null;
+    const node = $("#roster-form-error");
+    if (node) setFormError("#roster-form-error", displayError(error));
+    const button = $("#roster-confirm-button");
+    if (button) button.disabled = true;
+  }
+});
+$("#roster-dialog").addEventListener("close", () => {
+  rosterPreview = null; rosterApproval = null;
+  $("#roster-preview").replaceChildren();
+  $("#roster-input").value = "";
 });
 $("#groups-backup-export").addEventListener("click", exportBackup);
 $("#groups-backup-import").addEventListener("click", () => $("#groups-backup-file").click());
