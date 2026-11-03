@@ -1,0 +1,41 @@
+name: GIT Stage08 R20 immutable source review (NO DEPLOY)
+on:
+  push:
+    branches:
+      - audit/git-stage08-r20-exact-source-20261103
+permissions:
+  contents: read
+jobs:
+  synthetic-source-review:
+    runs-on: ubuntu-latest
+    timeout-minutes: 25
+    steps:
+      - name: Checkout exact GIT source, no credentials
+        uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683 # v4
+        with:
+          repository: Daniel22-dev/generator-testu
+          ref: ca660f34c40e7203c29d3120bb10b9c29ec0837e
+          fetch-depth: 0
+          persist-credentials: false
+          path: reviewed-git
+      - name: Verify immutable HEAD and clean source
+        working-directory: reviewed-git
+        run: |
+          test "$(git rev-parse HEAD)" = "ca660f34c40e7203c29d3120bb10b9c29ec0837e"
+          test -z "$(git status --porcelain --untracked-files=no)"
+      - name: Install pinned Node 22
+        uses: actions/setup-node@49933ea5288caeca8642d1e84afbd3f7d6820020 # v4
+        with:
+          node-version: '22'
+      - name: Locked dependency installation, no lifecycle scripts
+        working-directory: reviewed-git
+        run: npm ci --ignore-scripts --no-audit --no-fund --registry=https://registry.npmjs.org
+      - name: Run Stage08 R20 real source and private-result tests
+        working-directory: reviewed-git
+        run: |
+          node --check src/features/central-groups.js
+          node --check scripts/check-stage08-groups.mjs
+          node scripts/check-stage08-groups.mjs
+          node scripts/check-stage08-results.mjs
+          test "$(git rev-parse HEAD)" = "ca660f34c40e7203c29d3120bb10b9c29ec0837e"
+          test -z "$(git status --porcelain --untracked-files=no)"
