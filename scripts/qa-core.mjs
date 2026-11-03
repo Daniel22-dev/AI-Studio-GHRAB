@@ -209,7 +209,7 @@ export async function startStaticServer(rootDir, { deploymentBasePath = "" } = {
   return { server, baseUrl: `http://127.0.0.1:${a.port}` };
 }
 
-export async function setLocalDocument(page, rootDir, urlPath, baseUrl) {
+export async function setLocalDocument(page, rootDir, urlPath, baseUrl, initialStorage = {}) {
   const clean =
     String(urlPath || "/index.html")
       .split("?")[0]
@@ -218,9 +218,9 @@ export async function setLocalDocument(page, rootDir, urlPath, baseUrl) {
   if ((await stat(target)).isDirectory())
     target = path.join(target, "index.html");
   if (!(await exists(target))) throw new Error(`Chybí lokální dokument ${clean}`);
-  await page.addInitScript(() => {
-    const makeStorage = () => {
-      const values = new Map();
+  await page.addInitScript((bootstrapStorage) => {
+    const makeStorage = (seed = {}) => {
+      const values = new Map(Object.entries(seed).map(([key, value]) => [String(key), String(value)]));
       return {
         get length() { return values.size; },
         key(i) { return [...values.keys()][i] ?? null; },
@@ -233,7 +233,7 @@ export async function setLocalDocument(page, rootDir, urlPath, baseUrl) {
     try {
       Object.defineProperty(window, "localStorage", {
         configurable: true,
-        value: makeStorage(),
+        value: makeStorage(bootstrapStorage),
       });
     } catch {}
     try {
@@ -252,7 +252,7 @@ export async function setLocalDocument(page, rootDir, urlPath, baseUrl) {
         },
       });
     }
-  });
+  }, initialStorage);
   const url = new URL(`/${clean}`, baseUrl).href;
   await page.goto(url, { waitUntil: "load", timeout: 20000 });
   return target;
