@@ -447,12 +447,13 @@ async function runVisualCase(scenario, viewport) {
 
       if (scenario.url === "/index.html") {
         await page.addInitScript(
-          ({ version }) => {
+          ({ language }) => {
             try {
               localStorage.setItem("ghrab.startup-intro.seen.v1", "seen");
+              localStorage.setItem("ghrab.language", language === "en" ? "en" : "cs");
             } catch {}
           },
-          { version: manifest.version },
+          { language: scenario.language === "en" ? "en" : "cs" },
         );
       }
       await setLocalDocument(page, serveRoot, scenario.url, baseUrl);
