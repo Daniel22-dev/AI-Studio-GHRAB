@@ -57,6 +57,7 @@ const diagnostics = [];
 let selectedGroupId = null;
 let filter = "active";
 let rosterPreview = null;
+let legacyPreviewSequence = 0;
 let recoveryMode = false;
 
 function language() { return document.documentElement.lang === "en" ? "en" : "cs"; }
@@ -97,6 +98,10 @@ function displayError(error) {
     GROUP_BACKUP_SOURCE_UNAVAILABLE: tr("Nelze exportovat zálohu z neověřených nebo poškozených dat.", "Cannot export backup from unverified or corrupted data."),
     GROUP_SCOPE_BACKUP_INVALID: tr("Záloha není ověřený formát v2 pro tento účet. Starší zálohy vyžadují kontrolovaný převod.", "The backup is not the v2 account format. Older backups need a controlled migration."),
     GROUP_SCOPE_BACKUP_OTHER_ACCOUNT: tr("Označení účtu v záloze se neshoduje. Zkontrolujte původ zálohy.", "The account scope label in the backup does not match. Verify its origin."),
+    GROUP_MIGRATION_TARGET_NOT_EMPTY: tr("Náhled převodu vyžaduje prázdnou cílovou evidenci V2. Stávající skupiny zůstaly nedotčeny.", "Migration preflight requires an empty V2 destination. Existing groups were not changed."),
+    GROUP_MIGRATION_SOURCE_INVALID: tr("Soubor není platná záloha skupin V1.", "The file is not a valid V1 groups backup."),
+    GROUP_MIGRATION_SOURCE_TOO_LARGE: tr("Záloha přesahuje povolenou velikost.", "The backup exceeds the permitted size."),
+    GROUP_MIGRATION_UNSAFE_KEYS: tr("Záloha obsahuje nepovolenou strukturu.", "The backup contains unsafe keys."),
     GROUP_ACCESS_DENIED: tr("Vaše oprávnění se změnilo. Otevřete Moje skupiny znovu.", "Your access changed. Reopen My Groups."),
 
   };
@@ -138,6 +143,8 @@ groups.subscribe(detail => {
   if (detail.kind !== "external-storage-change") return;
   if (!accessGate.allowed()) { denyGroupsPage(); return; }
   rosterPreview = null;
+  legacyPreviewSequence += 1;
+  $("#groups-legacy-preview")?.replaceChildren();
   for (const dialog of document.querySelectorAll("dialog")) {
     try { if (dialog.open) closeDialog(dialog); } catch { /* Continue scrubbing. */ }
     for (const field of dialog.querySelectorAll("input, textarea")) field.value = "";
@@ -285,7 +292,7 @@ function enterRecoveryMode() {
   const message = el("p", "groups-help", tr("Skupiny jsou uzamčeny. Data nemažte; pro obnovu použijte ověřenou zálohu.", "Groups locked. Do not erase data; restore from a verified backup."));
   message.setAttribute("role", "alert");
   list?.append(message);
-  for (const node of document.querySelectorAll("[data-group-filter], #group-create, #groups-backup-export")) node.disabled = true;
+  for (const node of document.querySelectorAll("[data-group-filter], #group-create, #groups-backup-export, #groups-legacy-open")) node.disabled = true;
   $("#groups-backup-import").disabled = false;
   renderDiagnostic();
 }
@@ -296,7 +303,7 @@ function render() {
     document.querySelectorAll("[data-group-filter]").forEach((node) => node.classList.toggle("is-active", node.dataset.groupFilter === filter));
     renderList();
     recoveryMode = false;
-    for (const node of document.querySelectorAll("[data-group-filter], #group-create, #groups-backup-export")) node.disabled = false;
+    for (const node of document.querySelectorAll("[data-group-filter], #group-create, #groups-backup-export, #groups-legacy-open")) node.disabled = false;
     renderDiagnostic();
   } catch (error) {
     if (error?.message !== "GROUP_STORAGE_RECOVERY_REQUIRED") throw error;
@@ -413,6 +420,46 @@ async function importBackupFile(file) {
   }
 }
 
+
+// Read-only V1 backup preflight. No transfer, commit, storage writes, telemetry or upload.
+async function previewLegacyBackupFile(file) {
+  const ticket = ++legacyPreviewSequence;
+  const dialog = $("#groups-legacy-dialog");
+  const output = $("#groups-legacy-preview");
+  output.replaceChildren();
+  if (!file || !dialog.open) return;
+  output.textContent = tr("Kontroluji soubor pouze v tomto prohlížeči…", "Checking the file locally…");
+  try {
+    accessGate.requireAllowed();
+    if (file.size > 12 * 1024 * 1024) throw new Error("GROUP_MIGRATION_SOURCE_TOO_LARGE");
+    const sourceBackup = JSON.parse(await file.text());
+    accessGate.requireAllowed();
+    if (ticket !== legacyPreviewSequence || !dialog.open) return;
+    const { prepareLegacyGroupsMigration } = await import("./legacy-migration.js");
+    const { summary } = await prepareLegacyGroupsMigration({ sourceBackup, targetSession: scoped });
+    accessGate.requireAllowed();
+    if (ticket !== legacyPreviewSequence || !dialog.open) return;
+    // Do not expose student names, addresses, IDs, fingerprints or the original file.
+    output.replaceChildren(
+      el("strong", "", tr("Kontrola zálohy V1 proběhla", "V1 backup preflight passed")),
+      el("p", "groups-help", tr("Skupin: ", "Groups: ") + summary.groupCount +
+        tr(" · Studentů: ", " · Students: ") + summary.memberCount),
+      el("p", "groups-help", tr(
+        "NIC NEBYLO PŘEVEDENO ANI ULOŽENO. Skutečný převod vyžaduje ověření vlastníka, šifrovanou zálohu a schválení školou.",
+        "NOTHING WAS MIGRATED OR SAVED. Real migration requires owner verification, an encrypted backup and school approval."))
+    );
+  } catch (error) {
+    if (ticket !== legacyPreviewSequence || !dialog.open) return;
+    output.replaceChildren(el("p", "groups-form-error", error instanceof SyntaxError
+      ? tr("Neplatný JSON soubor.", "Invalid JSON file.") : displayError(error)));
+  }
+}
+function openLegacyPreview() {
+  ++legacyPreviewSequence;
+  $("#groups-legacy-preview").replaceChildren();
+  $("#groups-legacy-file").value = "";
+  showDialog($("#groups-legacy-dialog"));
+}
 $("#group-create").addEventListener("click", () => openGroupDialog());
 document.querySelectorAll("[data-group-filter]").forEach((node) => node.addEventListener("click", () => { filter = node.dataset.groupFilter; selectedGroupId = null; render(); }));
 document.querySelectorAll("[data-dialog-close]").forEach((node) => node.addEventListener("click", () => closeDialog(node.closest("dialog"))));
@@ -448,6 +495,9 @@ $("#roster-form").addEventListener("submit", async (event) => {
 $("#groups-backup-export").addEventListener("click", exportBackup);
 $("#groups-backup-import").addEventListener("click", () => $("#groups-backup-file").click());
 $("#groups-backup-file").addEventListener("change", (event) => { const file = event.target.files?.[0]; event.target.value = ""; void importBackupFile(file); });
+$("#groups-legacy-open").addEventListener("click", openLegacyPreview);
+$("#groups-legacy-file").addEventListener("change", (event) => { const file = event.target.files?.[0]; event.target.value = ""; void previewLegacyBackupFile(file); });
+$("#groups-legacy-dialog").addEventListener("close", () => { ++legacyPreviewSequence; $("#groups-legacy-preview").replaceChildren(); $("#groups-legacy-file").value = ""; });
 document.querySelectorAll("[data-lang]").forEach((node) => node.addEventListener("click", () => setTimeout(render, 0)));
 
 render();

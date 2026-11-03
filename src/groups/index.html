@@ -95,6 +95,7 @@
             </div>
             <button type="button" class="groups-button groups-button-secondary" id="groups-backup-export" data-cs="Záloha JSON" data-en="JSON backup">Záloha JSON</button>
             <button type="button" class="groups-button groups-button-secondary" id="groups-backup-import" data-cs="Obnovit zálohu" data-en="Restore backup">Obnovit zálohu</button>
+            <button type="button" class="groups-button groups-button-secondary" id="groups-legacy-open" data-cs="Prověřit zálohu V1" data-en="Check V1 backup">Prověřit zálohu V1</button>
             <button type="button" class="groups-button groups-button-primary" id="group-create" data-cs="+ Nová skupina" data-en="+ New group">+ Nová skupina</button>
             <input type="file" id="groups-backup-file" accept="application/json,.json" hidden />
           </div>
@@ -142,6 +143,27 @@
           <button type="button" class="groups-button groups-button-secondary" data-dialog-close data-cs="Zrušit" data-en="Cancel">Zrušit</button>
           <button type="button" class="groups-button groups-button-secondary" id="roster-preview-button" data-cs="Zkontrolovat změny" data-en="Preview changes">Zkontrolovat změny</button>
           <button type="submit" class="groups-button groups-button-primary" id="roster-confirm-button" disabled data-cs="Potvrdit import" data-en="Confirm import">Potvrdit import</button>
+        </div>
+      </form>
+    </dialog>
+
+    <dialog id="groups-legacy-dialog" class="groups-dialog" aria-labelledby="groups-legacy-title">
+      <form method="dialog">
+        <div class="groups-dialog-head">
+          <div>
+            <p class="eyebrow" data-cs="POUZE KONTROLNÍ NÁHLED" data-en="READ-ONLY PREFLIGHT">POUZE KONTROLNÍ NÁHLED</p>
+            <h2 id="groups-legacy-title" data-cs="Zkontrolovat starou zálohu V1" data-en="Review an old V1 backup">Zkontrolovat starou zálohu V1</h2>
+          </div>
+          <button type="button" class="groups-icon-button" data-dialog-close aria-label="Zavřít">×</button>
+        </div>
+        <p class="groups-help" data-cs="Jen pro smyšlená data. Vyberte dříve exportovaný JSON V1. Kontrola probíhá místně, nic nepřevádí ani nezapisuje. Cílová evidence V2 musí být prázdná. Skutečný převod vyžaduje ověření vlastníka školou." data-en="Fictional data only. Choose a V1 JSON backup. The local check never migrates or writes data; the V2 destination must be empty. Real migration requires school-verified ownership.">Jen pro smyšlená data. Vyberte dříve exportovaný JSON V1. Kontrola probíhá místně, nic nepřevádí ani nezapisuje. Cílová evidence V2 musí být prázdná. Skutečný převod vyžaduje ověření vlastníka školou.</p>
+        <label class="groups-roster-field">
+          <span data-cs="Soubor zálohy V1 (.json)" data-en="V1 backup file (.json)">Soubor zálohy V1 (.json)</span>
+          <input type="file" id="groups-legacy-file" accept="application/json,.json" />
+        </label>
+        <div id="groups-legacy-preview" class="groups-preview" role="status" aria-live="polite"></div>
+        <div class="groups-dialog-actions">
+          <button type="button" class="groups-button groups-button-secondary" data-dialog-close data-cs="Zavřít bez uložení" data-en="Close without saving">Zavřít bez uložení</button>
         </div>
       </form>
     </dialog>
