@@ -1,0 +1,59 @@
+name: Studio CLB integration full preproduction QA (NO DEPLOY)
+on:
+  pull_request:
+    branches: [candidate]
+    paths:
+      - '.github/workflows/studio-clb-hardening-preprod.yml'
+      - 'src/index.html'
+      - 'src/app.js'
+      - 'src/polish.css'
+      - 'src/integration/conversation-lab/portal-route.js'
+      - 'src/config/platform-consumers.json'
+      - 'scripts/test-studio-ux.mjs'
+      - 'scripts/qa-visual.mjs'
+      - 'scripts/test-clb-studio-portal-route.mjs'
+      - 'qa/visual-plan.json'
+  workflow_dispatch:
+permissions:
+  contents: read
+concurrency:
+  group: studio-clb-preprod-${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: true
+jobs:
+  full-preprod:
+    if: ${{ github.event_name == 'workflow_dispatch' || github.event.pull_request.head.ref == 'fix/studio-clb-integration-hardening-20261103' }}
+    runs-on: ubuntu-24.04
+    timeout-minutes: 90
+    steps:
+      - name: Checkout exact PR source (no persisted credentials)
+        uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683 # v4.2.2
+        with:
+          persist-credentials: false
+          ref: ${{ github.event.pull_request.head.sha || github.sha }}
+      - name: Install pinned Node
+        uses: actions/setup-node@49933ea5288caeca8642d1e84afbd3f7d6820020 # v4.4.0
+        with:
+          node-version: 22.22.2
+          cache: npm
+      - name: Install locked dependencies without lifecycle scripts
+        run: npm ci --ignore-scripts --no-audit --no-fund --registry=https://registry.npmjs.org
+      - name: Install real Chromium for visual, PWA, and browser gates
+        run: npx playwright install --with-deps chromium
+      - name: Verify release metadata and explicit CLB routing contracts
+        run: |
+          node scripts/verify-release-version-freshness.mjs --content-only
+          node --test scripts/test-clb-studio-portal-route.mjs scripts/test-clb-e121-offline-static-module.mjs
+      - name: Synchronize source consumers and validate Studio UX
+        run: |
+          npm run sync
+          npm run format:generated-json
+          node scripts/sync-platform-consumers.mjs --check
+          npm run test:studio-ux
+      - name: Full existing Studio release QA (includes visual collision checks)
+        run: npm run qa:release
+        env:
+          GHRAB_VISUAL_ATTEMPTS: '3'
+          GHRAB_VISUAL_SCREENSHOT_ATTEMPTS: '3'
+      - name: Full existing P5/GARP CI chain (read-only)
+        run: npm run qa:p5:ci
+# No promotion, merge, deploy, Pages publish, or production data access.
