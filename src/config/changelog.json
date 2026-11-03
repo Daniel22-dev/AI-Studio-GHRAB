@@ -1,7 +1,29 @@
 {
   "schema": "ai-studio-changelog-v1",
-  "current": "0.21.263",
+  "current": "0.21.264",
   "items": [
+    {
+      "version": "0.21.264",
+      "date": "2026-11-03",
+      "title": {
+        "cs": "Conversation Lab – oprava integrace a navigace AI Studia",
+        "en": "Conversation Lab – Studio navigation and integration hardening"
+      },
+      "changes": [
+        {
+          "cs": "Odstraněn nevhodný vstup do lokálního importéru z globální navigace; pro desktop doplněno kompaktní menu a vizuální kontrola překryvu hlavičky.",
+          "en": "Removed the local Topic Manager entry from global navigation; added compact desktop navigation and header-overlap QA."
+        },
+        {
+          "cs": "Spuštění veřejného pilotu 0.12 nezávisí na starých revizních metadatech 0.11, ale zachovává CLB-01, izolaci a předchozí kontrolu oprávnění. Při chybě směrování se portál bezpečně obnoví.",
+          "en": "Public pilot 0.12 launch is independent of signed 0.11 revision metadata while preserving CLB-01 access checks and isolation. Route errors safely restore the portal."
+        },
+        {
+          "cs": "Aktualizován E121 test a spouštění při změnách souvisejících s offline režimem. Ostatní aplikace a podepsané karty zůstávají nezměněné.",
+          "en": "Updated E121 static regression and its offline-triggered workflow. Other apps and signed lesson assets remain unchanged."
+        }
+      ]
+    },
     {
       "version": "0.21.263",
       "date": "2026-11-02",

@@ -2081,7 +2081,18 @@ function launchApp(app, article) {
     if (completed) return;
     completed = true;
     cinematic.setPhase("complete");
-    const destination = embeddedApplicationUrl(app);
+    let destination;
+    try {
+      destination = embeddedApplicationUrl(app);
+    } catch (error) {
+      console.warn("AI Studio: spuštění aplikace selhalo při ověření cílové adresy.", error);
+      cleanup();
+      showToast(t(
+        "Spuštění aplikace se nezdařilo. Zkontrolujte oprávnění a zkuste to znovu.",
+        "Unable to launch the application. Check your access and try again.",
+      ));
+      return;
+    }
     cleanup();
     if (app.id === "conversation-lab") {
       // A same-tab native anchor preserves no-referrer on the public 0.12 hop.
@@ -2521,12 +2532,19 @@ function portalAppCard(app, index, permissions) {
       !previewMode &&
       canLaunchForOperationalStatus(operationalStatus)
     ) {
+      let legacyDestination = null;
+      try {
+        legacyDestination = studioPortalDestination(app, base);
+      } catch (error) {
+        console.warn("AI Studio: původní podepsaná verze Conversation Lab není dostupná.", error);
+      }
+      if (legacyDestination) {
       const legacy = el(
         "a",
         "portal-unlock-button clb-011-legacy-link",
         t("Původní 0.11 ↗", "Original 0.11 ↗"),
       );
-      legacy.href = studioPortalDestination(app, base);
+      legacy.href = legacyDestination;
       legacy.rel = "noopener noreferrer";
       legacy.title = t(
         "Původní podepsaná verze se 3 tématy pro učitele",
@@ -2534,6 +2552,7 @@ function portalAppCard(app, index, permissions) {
       );
       actions.classList.add("has-clb-version-switch");
       actions.append(legacy);
+      }
     }
   } else {
     const details = el(

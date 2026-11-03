@@ -24,6 +24,7 @@ for (const oldBlock of ["mission-strip", "workflow-home", "communication-lane", 
 check(home.includes('data-nav="about"'), "Domovska navigace nema O aplikaci.");
 check(!home.includes('data-nav="changelog"'), "Domovska navigace stale obsahuje samostatny Katalog zmen.");
 check(home.includes('data-nav="library"'), "Domovska navigace nema server-ready Materialy.");
+check(!home.includes('href="./conversation-lab-topics/"'), "Lokalni CLB importer se znovu dostal do globalni navigace.");
 check(!home.includes('data-nav="workflow"'), "Domovska navigace znovu propaguje centralni tvorbu materialu.");
 check(home.includes('class="first-run-guide"') && home.includes('ai-studio-teacher.html') && home.includes('ai-studio-admin.html'), "Domovska stranka nema nenapadny role-aware prvni pruvodce AI Studia.");
 
@@ -69,6 +70,9 @@ const operationalStatusJs = await text("src/modules/operational-status.js");
 check(appJs.includes("innerHeight <= 820"), "Desktop presentation-fit se znovu spousti na beznem 1080p/scaled viewportu.");
 check(stylesCss.includes("grid-template-rows: repeat(2, auto)") && stylesCss.includes("justify-content: flex-start"), "Kompaktni portal znovu nuti karty do pevne vysky nebo centruje pretikajici obsah.");
 check(!/\.main-nav\s*\{[^}]*flex-wrap:\s*wrap/.test(polishCss), "Hlavni navigace se na desktopu znovu muze zalomit do druheho radku.");
+check(polishCss.includes("(min-width: 901px) and (max-width: 1850px)"), "Desktop menu nema bezpečný breakpoint pro mnoho administratorskych polozek.");
+const visualQa = await text("scripts/qa-visual.mjs");
+check(visualQa.includes("headerOverlaps"), "Vizuální QA nekontroluje překrývání prvků hlavičky.");
 check(appJs.includes('["about", "changelog"].includes(page)'), "O aplikaci nema garantovany pristup pro vsechny role ani kompatibilitu stareho changelog route.");
 check(appJs.includes('[data-teacher-only]'), "Chybi role teacher-only.");
 
