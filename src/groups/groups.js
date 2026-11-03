@@ -101,10 +101,10 @@ function displayError(error) {
     GROUP_SCOPE_BACKUP_OTHER_ACCOUNT: tr("Označení účtu v záloze se neshoduje. Zkontrolujte původ zálohy.", "The account scope label in the backup does not match. Verify its origin."),
     GROUP_RESTORE_SOURCE_CHANGED: tr("Evidence se během obnovy změnila. Nic nebylo přepsáno; zkontrolujte aktuální skupiny a obnovu případně spusťte znovu.", "The groups changed during restore. Nothing was replaced; review current groups before retrying."),
     GROUP_RESTORE_FILE_TOO_LARGE: tr("Soubor zálohy je příliš velký. Obnova byla zastavena.", "The backup file is too large. Restore was blocked."),
-    GROUP_BACKUP_CRYPTO_UNAVAILABLE: tr("Šifrování není dostupné. Bez něj nelze vytvořit zálohu.", "Encryption is unavailable; no backup was exported."),
-    GROUP_BACKUP_PASSPHRASE_WEAK: tr("Heslo zálohy musí mít 16 až 512 znaků.", "Backup password must be 16–512 characters."),
-    GROUP_ENCRYPTED_BACKUP_INVALID: tr("Neplatný formát šifrované zálohy.", "Invalid encrypted backup format."),
-    GROUP_BACKUP_AUTH_FAILED: tr("Nesprávné heslo nebo poškozená záloha. Nic nebylo obnoveno.", "Incorrect password or damaged backup. Nothing restored."),
+    GROUP_BACKUP_CRYPTO_UNAVAILABLE: tr("Šifrování nedostupné. Záloha nevznikla.", "Encryption unavailable. No backup."),
+    GROUP_BACKUP_PASSPHRASE_WEAK: tr("Heslo: 16–512 znaků.", "Password: 16–512 characters."),
+    GROUP_ENCRYPTED_BACKUP_INVALID: tr("Neplatná šifrovaná záloha.", "Invalid encrypted backup."),
+    GROUP_BACKUP_AUTH_FAILED: tr("Chybné heslo či záloha. Nic neobnoveno.", "Wrong password or backup. Nothing restored."),
     GROUP_MIGRATION_TARGET_NOT_EMPTY: tr("Náhled převodu vyžaduje prázdnou cílovou evidenci V2. Stávající skupiny zůstaly nedotčeny.", "Migration preflight requires an empty V2 destination. Existing groups were not changed."),
     GROUP_MIGRATION_SOURCE_INVALID: tr("Soubor není platná záloha skupin V1.", "The file is not a valid V1 groups backup."),
     GROUP_MIGRATION_SOURCE_TOO_LARGE: tr("Záloha přesahuje povolenou velikost.", "The backup exceeds the permitted size."),
@@ -409,7 +409,7 @@ function downloadJson(name, data) {
   const url = URL.createObjectURL(blob); const link = document.createElement("a"); link.href = url; link.download = name; document.body.append(link); link.click(); link.remove(); setTimeout(() => URL.revokeObjectURL(url), 0);
 }
 
-// Passwords stay in a hidden dialog and are never saved to storage or telemetry.
+// No password persistence.
 function backupPhrase(exporting) {
   const d=$("#groups-backup-secret-dialog"),p=$("#groups-secret-input"),
     again=$("#groups-secret-repeat"),err=$("#groups-secret-error");
@@ -451,9 +451,7 @@ async function exportBackup() {
   finally{password=null}
 }
 
-// Before destructive restore, capture the actual account-scoped store.
-// Rechecking inside the async Web Lock prevents another tab's newer data
-// from being overwritten by a backup selected against an older roster.
+// Compare scoped source inside the exclusive restore lock.
 function restoreSourceSnapshot() {
   try {
     const store = groups.exportBackup().store;
@@ -488,8 +486,8 @@ async function importBackupFile(file) {
       }finally{password=null}
     } else {
       if(file.size>12*1024*1024)throw new Error("GROUP_RESTORE_FILE_TOO_LARGE");
-      if(!globalThis.confirm(tr("Tato starší záloha není šifrovaná. Pokračovat jen v zabezpečeném prostředí?",
-         "This old backup is plaintext. Continue only in a secure environment?")))return;
+      if(!globalThis.confirm(tr("Starší záloha není šifrovaná. Pokračovat?",
+         "Old backup is plaintext. Continue?")))return;
     }
     accessGate.requireAllowed();
     // A previously corrupt store is a separately confirmed recovery event.
