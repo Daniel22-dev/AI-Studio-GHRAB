@@ -450,6 +450,8 @@ async function runVisualCase(scenario, viewport) {
           ({ language }) => {
             try {
               localStorage.setItem("ghrab.startup-intro.seen.v1", "seen");
+              // Navigation is tested after the normal first-run installation choice.
+              localStorage.setItem("ghrab.ai-studio.pwa.install-onboarding.v1", "done");
               localStorage.setItem("ghrab.language", language === "en" ? "en" : "cs");
             } catch {}
           },
