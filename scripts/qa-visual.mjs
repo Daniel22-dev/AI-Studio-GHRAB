@@ -445,23 +445,16 @@ async function runVisualCase(scenario, viewport) {
         route.fulfill({ status: 200, contentType: "text/css", body: "" }),
       );
 
-      if (scenario.url === "/index.html") {
-        await page.addInitScript(
-          ({ language }) => {
-            // Test-only override: the QA HTTP harness replaces localStorage
-            // independently, so select the language before Studio bootstraps.
-            document.documentElement.dataset.forceLanguage = language === "en" ? "en" : "cs";
-            try {
-              localStorage.setItem("ghrab.startup-intro.seen.v1", "seen");
-              // Navigation is tested after the normal first-run installation choice.
-              localStorage.setItem("ghrab.ai-studio.pwa.install-onboarding.v1", "done");
-              localStorage.setItem("ghrab.language", language === "en" ? "en" : "cs");
-            } catch {}
-          },
-          { language: scenario.language === "en" ? "en" : "cs" },
-        );
-      }
-      await setLocalDocument(page, serveRoot, scenario.url, baseUrl);
+      // Seed the isolated QA storage before the app starts. The shared
+      // document harness owns localStorage and would replace any earlier mock.
+      const initialStorage = scenario.url === "/index.html"
+        ? {
+          "ghrab.startup-intro.seen.v1": "seen",
+          "ghrab.ai-studio.pwa.install-onboarding.v1": "done",
+          "ghrab.language": scenario.language === "en" ? "en" : "cs",
+        }
+        : {};
+      await setLocalDocument(page, serveRoot, scenario.url, baseUrl, initialStorage);
       for (const step of scenario.steps || []) {
         if (step.action === "wait") await page.waitForTimeout(step.ms || 500);
         if (step.action === "click") {
