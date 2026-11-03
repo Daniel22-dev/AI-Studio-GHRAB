@@ -1,4 +1,4 @@
-name: GIT Stage08 R22 dist size audit (SYNTHETIC ONLY, NO DEPLOY)
+name: GIT R23 lossless PWA PNG compression benchmark (AUDIT ONLY)
 on:
   push:
     branches:
@@ -6,70 +6,71 @@ on:
 permissions:
   contents: read
 jobs:
-  distribution-audit:
+  benchmark:
     runs-on: ubuntu-latest
-    timeout-minutes: 25
+    timeout-minutes: 20
     steps:
-      - name: Checkout exact GIT source
+      - name: Checkout exact read-only GIT sources
         uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683
         with:
           repository: Daniel22-dev/generator-testu
           ref: ca660f34c40e7203c29d3120bb10b9c29ec0837e
           fetch-depth: 0
           persist-credentials: false
-          path: inspected-git
-      - name: Pin Node 22
+          path: source
+      - name: Setup Node 22
         uses: actions/setup-node@49933ea5288caeca8642d1e84afbd3f7d6820020
         with:
           node-version: '22'
-      - name: Install only locked dependencies
-        working-directory: inspected-git
+      - name: Install original locked PNG encoder
+        working-directory: source
         run: npm ci --ignore-scripts --no-audit --no-fund --registry=https://registry.npmjs.org
-      - name: Build exact immutable source; never deploy
-        working-directory: inspected-git
-        run: |
-          test "$(git rev-parse HEAD)" = "ca660f34c40e7203c29d3120bb10b9c29ec0837e"
-          npm run build
-          test "$(git rev-parse HEAD)" = "ca660f34c40e7203c29d3120bb10b9c29ec0837e"
-      - name: Print size offenders and whitespace data (read only)
-        working-directory: inspected-git
+      - name: Evaluate exact pixel-preserving PNG re-encoding (NO OUTPUT WRITE)
+        working-directory: source
         shell: bash
         run: |
           set -euo pipefail
+          test "$(git rev-parse HEAD)" = "ca660f34c40e7203c29d3120bb10b9c29ec0837e"
           node --input-type=module <<'NODE'
           import fs from 'node:fs';
-          import path from 'node:path';
-          const root='dist',out=[];
-          function walk(dir){
-            for(const item of fs.readdirSync(dir,{withFileTypes:true})){
-              const p=path.join(dir,item.name);
-              if(item.isDirectory())walk(p);
-              else if(item.isFile())out.push({file:p.slice(root.length+1).replaceAll('\\','/'),bytes:fs.statSync(p).size});
+          import {PNG} from 'pngjs';
+          const names=[
+            'public/icons/icon-512.png',
+            'public/icons/icon-maskable-512.png',
+            'public/icons/icon-192.png',
+            'public/icons/apple-touch-icon.png',
+            'public/assets/brand/school-logo.png'
+          ];
+          let originalTotal=0,smallestTotal=0;
+          for(const filename of names){
+            const raw=fs.readFileSync(filename);
+            const reference=PNG.sync.read(raw);
+            const opaque=[...reference.data].every((_,i)=>i%4!==3||reference.data[i]===255);
+            let best={bytes:raw.length,filter:'original',strategy:'original',type:'original'};
+            const typeOptions=opaque?[6,2]:[6];
+            for(const colorType of typeOptions)
+            for(const filterType of [-1,0,1,2,3,4])
+            for(const deflateStrategy of [0,1]){
+              try{
+                const candidate=PNG.sync.write({
+                  width:reference.width,height:reference.height,data:reference.data
+                },{colorType,inputHasAlpha:true,deflateLevel:9,
+                  filterType,deflateStrategy});
+                const again=PNG.sync.read(candidate);
+                if(again.width!==reference.width||again.height!==reference.height||
+                   !Buffer.from(again.data).equals(Buffer.from(reference.data)))continue;
+                if(candidate.length<best.bytes)
+                  best={bytes:candidate.length,filter:filterType,strategy:deflateStrategy,type:colorType};
+              }catch(e){/* incompatible filters rejected; never alter source */}
             }
+            originalTotal+=raw.length;smallestTotal+=best.bytes;
+            console.log(JSON.stringify({asset:filename,width:reference.width,height:reference.height,
+              original:raw.length,...best,saved:raw.length-best.bytes,opaque}));
           }
-          walk(root);
-          out.sort((a,b)=>b.bytes-a.bytes);
-          const excluded=new Set(['quality-report.json','config/quality-manifest.json']);
-          const actual=out.filter(x=>!excluded.has(x.file));
-          const sum=x=>x.reduce((n,r)=>n+r.bytes,0);
-          const entry=fs.readFileSync('dist/index.html','utf8');
-          const manual=fs.readFileSync('dist/manual/index.html','utf8');
-          const whitespace=txt=>({
-            bytes:Buffer.byteLength(txt),
-            lines:txt.split('\n').length,
-            indentationBytes:(txt.match(/^[ \t]+/gm)||[]).reduce((n,s)=>n+s.length,0),
-            intertagWhitespaceBytes:(txt.match(/>\s+</g)||[]).reduce((n,s)=>n+s.length-2,0)
-          });
-          const optional=out.filter(x=>x.file.startsWith('features/')||x.file.startsWith('manual/')||x.file.startsWith('access/'));
-          console.log(JSON.stringify({
-            schema:'ghrab-git-r22-dist-readonly-v1',
-            source:'ca660f34c40e7203c29d3120bb10b9c29ec0837e',
-            distBytes:sum(actual),
-            budget:2806000,
-            overBy:sum(actual)-2806000,
-            topFiles:out.slice(0,45),
-            options:optional.slice(0,30),
-            entry:whitespace(entry),
-            manual:whitespace(manual)
-          },null,2));
+          console.log(JSON.stringify({source:'ca660f34c40e7203c29d3120bb10b9c29ec0837e',originalTotal,smallestTotal,
+            savings:originalTotal-smallestTotal,needed:21194,
+            enough:(originalTotal-smallestTotal)>21194,
+            modifiedSource:false,actualDeploy:false}));
           NODE
+          test "$(git rev-parse HEAD)" = "ca660f34c40e7203c29d3120bb10b9c29ec0837e"
+          test -z "$(git status --porcelain --untracked-files=no)"
