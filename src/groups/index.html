@@ -51,6 +51,18 @@
         >
           Jednou založená skupina může postupně sloužit více školním aplikacím. V této etapě zůstávají data pouze v tomto prohlížeči a do ostatních aplikací se zatím automaticky nepřenášejí.
         </p>
+        <p
+          class="groups-help"
+          data-cs="Ochrana údajů: účty učitelů mají v tomto prohlížeči oddělené evidenční klíče, ale společné úložiště profilu zůstává přístupné místním uživatelům a skriptům stejného původu. Nejde o šifrování ani serverovou izolaci. Používejte oddělený profil prohlížeče."
+          data-en="Privacy: teachers have separate account keys in this browser, but the shared browser-profile storage remains accessible to local users and same-origin scripts. It is neither encryption nor server isolation. Use a separate browser profile."
+        >
+          Ochrana údajů: účty učitelů mají v tomto prohlížeči oddělené evidenční klíče, ale společné úložiště profilu zůstává přístupné místním uživatelům a skriptům stejného původu. Nejde o šifrování ani serverovou izolaci. Používejte oddělený profil prohlížeče.
+        </p>
+        <p class="groups-help" role="note"
+          data-cs="PŘEDPRODUKČNÍ TEST: do schválení školou používejte pouze smyšlené osoby a domény example.invalid. Neukládejte skutečná jména ani školní e-maily."
+          data-en="PREPRODUCTION TEST: use fictional people and example.invalid addresses only until school approval. Do not enter actual pupil names or school emails.">
+          PŘEDPRODUKČNÍ TEST: do schválení školou používejte pouze smyšlené osoby a domény example.invalid. Neukládejte skutečná jména ani školní e-maily.
+        </p>
         <div class="groups-hero-badges" aria-label="Vlastnosti">
           <span>LOCAL-FIRST</span><span>GARP 2.7</span><span>ghrab-teaching-group-v1</span>
         </div>
@@ -63,10 +75,10 @@
           <div>
             <strong data-cs="Seznamy obsahují osobní údaje studentů" data-en="Rosters contain student personal data">Seznamy obsahují osobní údaje studentů</strong>
             <p
-              data-cs="Jména a školní e-maily se neodesílají do telemetrie ani do material handoffu. Záloha JSON je lokální soubor a je nutné s ní zacházet jako s osobními údaji."
-              data-en="Names and school emails are not sent to telemetry or material handoff. A JSON backup is a local file and must be handled as personal data."
+              data-cs="Nové zálohy jsou šifrované. Staré JSON chraňte."
+              data-en="New backups encrypted. Protect old plaintext JSON."
             >
-              Jména a školní e-maily se neodesílají do telemetrie ani do material handoffu. Záloha JSON je lokální soubor a je nutné s ní zacházet jako s osobními údaji.
+              Nové zálohy jsou šifrované. Staré JSON chraňte.
             </p>
           </div>
         </aside>
@@ -81,8 +93,9 @@
               <button type="button" class="is-active" data-group-filter="active" data-cs="Aktivní" data-en="Active">Aktivní</button>
               <button type="button" data-group-filter="archived" data-cs="Archiv" data-en="Archive">Archiv</button>
             </div>
-            <button type="button" class="groups-button groups-button-secondary" id="groups-backup-export" data-cs="Záloha JSON" data-en="JSON backup">Záloha JSON</button>
+            <button type="button" class="groups-button groups-button-secondary" id="groups-backup-export" data-cs="Šifrovaná záloha" data-en="Encrypted backup">Šifrovaná záloha</button>
             <button type="button" class="groups-button groups-button-secondary" id="groups-backup-import" data-cs="Obnovit zálohu" data-en="Restore backup">Obnovit zálohu</button>
+            <button type="button" class="groups-button groups-button-secondary" id="groups-legacy-open" data-cs="Prověřit zálohu V1" data-en="Check V1 backup">Prověřit zálohu V1</button>
             <button type="button" class="groups-button groups-button-primary" id="group-create" data-cs="+ Nová skupina" data-en="+ New group">+ Nová skupina</button>
             <input type="file" id="groups-backup-file" accept="application/json,.json" hidden />
           </div>
@@ -133,6 +146,39 @@
         </div>
       </form>
     </dialog>
+
+    <dialog id="groups-legacy-dialog" class="groups-dialog" aria-labelledby="groups-legacy-title">
+      <form method="dialog">
+        <div class="groups-dialog-head">
+          <div>
+            <p class="eyebrow" data-cs="POUZE KONTROLNÍ NÁHLED" data-en="READ-ONLY PREFLIGHT">POUZE KONTROLNÍ NÁHLED</p>
+            <h2 id="groups-legacy-title" data-cs="Zkontrolovat starou zálohu V1" data-en="Review an old V1 backup">Zkontrolovat starou zálohu V1</h2>
+          </div>
+          <button type="button" class="groups-icon-button" data-dialog-close aria-label="Zavřít">×</button>
+        </div>
+        <p class="groups-help" data-cs="Jen pro smyšlená data. Vyberte dříve exportovaný JSON V1. Kontrola probíhá místně, nic nepřevádí ani nezapisuje. Cílová evidence V2 musí být prázdná. Skutečný převod vyžaduje ověření vlastníka školou." data-en="Fictional data only. Choose a V1 JSON backup. The local check never migrates or writes data; the V2 destination must be empty. Real migration requires school-verified ownership.">Jen pro smyšlená data. Vyberte dříve exportovaný JSON V1. Kontrola probíhá místně, nic nepřevádí ani nezapisuje. Cílová evidence V2 musí být prázdná. Skutečný převod vyžaduje ověření vlastníka školou.</p>
+        <label class="groups-roster-field">
+          <span data-cs="Soubor zálohy V1 (.json)" data-en="V1 backup file (.json)">Soubor zálohy V1 (.json)</span>
+          <input type="file" id="groups-legacy-file" accept="application/json,.json" />
+        </label>
+        <div id="groups-legacy-preview" class="groups-preview" role="status" aria-live="polite"></div>
+        <div class="groups-dialog-actions">
+          <button type="button" class="groups-button groups-button-secondary" data-dialog-close data-cs="Zavřít bez uložení" data-en="Close without saving">Zavřít bez uložení</button>
+        </div>
+      </form>
+    </dialog>
+
+<dialog id="groups-backup-secret-dialog" class="groups-dialog" aria-labelledby="groups-backup-secret-title">
+<form method="dialog" id="groups-backup-secret-form">
+<h2 id="groups-backup-secret-title">Heslo zálohy</h2>
+<p class="groups-help" data-cs="Unikátní heslo min. 16 znaků. Ztracené heslo nelze obnovit." data-en="Unique password, 16+ characters. Lost passwords cannot be recovered.">Unikátní heslo min. 16 znaků. Ztracené heslo nelze obnovit.</p>
+<label class="groups-roster-field"><span data-cs="Heslo" data-en="Password">Heslo</span><input id="groups-secret-input" type="password" autocomplete="new-password" minlength="16" maxlength="512" required></label>
+<label class="groups-roster-field" id="groups-secret-repeat-wrap"><span data-cs="Znovu" data-en="Repeat">Znovu</span><input id="groups-secret-repeat" type="password" autocomplete="new-password" maxlength="512"></label>
+<p id="groups-secret-error" class="groups-form-error" role="alert"></p>
+<div class="groups-dialog-actions"><button type="button" class="groups-button groups-button-secondary" data-dialog-close data-cs="Zrušit" data-en="Cancel">Zrušit</button>
+<button type="submit" class="groups-button groups-button-primary" data-cs="Pokračovat" data-en="Continue">Pokračovat</button></div>
+</form>
+</dialog>
 
     <footer class="site-footer">
       <div class="shell-wide footer-inner"><div><strong>AI Studio GHRAB</strong><p data-cs="Autor a vývojový garant: Daniel Baláž · Školní projekt Gymnázia, Ostrava-Hrabůvka · verze __APP_VERSION__" data-en="Author and development guarantor: Daniel Baláž · School project of Gymnázium, Ostrava-Hrabůvka · version __APP_VERSION__">Autor a vývojový garant: Daniel Baláž · Školní projekt Gymnázia, Ostrava-Hrabůvka · verze __APP_VERSION__</p></div></div>

@@ -1,7 +1,51 @@
 {
   "schema": "ai-studio-changelog-v1",
-  "current": "0.21.263",
+  "current": "0.21.265",
   "items": [
+    {
+      "version": "0.21.265",
+      "date": "2026-11-03",
+      "title": {
+        "cs": "Moje skupiny – bezpečné reakce na změny ve více kartách a mobilní ověření",
+        "en": "My Groups – cross-tab safety and mobile browser verification"
+      },
+      "changes": [
+        {
+          "cs": "Při změně evidenčních dat v jiné kartě se v otevřené stránce obnoví aktuální skupina, uzavře rozpracovaný editor a odstraní zastaralý náhled se jmény studentů. Poškozené úložiště zůstává uzamčené.",
+          "en": "Changes from another browser tab refresh the current roster, close and clear pending editors and remove stale pupil previews. Corrupted storage remains fail-closed."
+        },
+        {
+          "cs": "Upozornění přesně popisuje omezení: účty mají samostatné evidenční klíče, ale profil prohlížeče neslouží jako šifrovaná či serverová hranice; školní pilot do schválení přijímá jen smyšlené údaje.",
+          "en": "The UI now correctly states that account-scoped keys do not provide encryption or server isolation, and restricts the preproduction pilot to synthetic data pending school approval."
+        },
+        {
+          "cs": "Do skutečného prohlížečového CI přidány negativní testy poškození a aktualizace z druhé karty a kontrola zobrazení na šířkách telefonu, tabletu a počítače v Chromium. Testy nenahrazují fyzické iOS/Android UAT ani školní SSO.",
+          "en": "Real Chromium CI now covers cross-tab corruption, stale-draft scrubbing and mobile/tablet/desktop viewport smoke. These tests do not replace physical iOS/Android UAT or school SSO."
+        }
+      ]
+    },
+    {
+      "version": "0.21.264",
+      "date": "2026-11-03",
+      "title": {
+        "cs": "Moje skupiny v2 – předprodukční integrace bezpečné evidence",
+        "en": "My Groups v2 – preproduction integration of secure rosters"
+      },
+      "changes": [
+        {
+          "cs": "Předprodukční integrace skupin do aktuálního AI Studia: oddělení podle přihlášeného učitele v lokálním úložišti prohlížeče, ověřovaný přístup a transakční zámky. Nejde o šifrování ani serverově garantovanou izolaci.",
+          "en": "Preproduction integration of account-scoped browser-local teaching groups with verified access and coordinated write locks. Browser namespaces are neither encryption nor server-enforced tenant isolation."
+        },
+        {
+          "cs": "Oprava záměn identit studentů, atomický import, odmítnutí neplatných a duplicitních řádků a bezpečná obnova poškozených dat s uchováním původního obsahu.",
+          "en": "Protection against student identity confusion, atomic imports, rejection of invalid and duplicate rows, and fail-closed recovery preserving original damaged storage bytes."
+        },
+        {
+          "cs": "Přidány předprodukční testy na skutečném Chromium a úplná kontrola P5/GARP. Produkční nasazení a migrace školních dat jsou odloženy do školního UAT a výslovného schválení.",
+          "en": "Preproduction tests now cover real Chromium and the complete P5/GARP chain. Production deployment and school-data migration remain blocked pending school UAT and explicit approval."
+        }
+      ]
+    },
     {
       "version": "0.21.263",
       "date": "2026-11-02",

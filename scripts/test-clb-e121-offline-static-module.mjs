@@ -4,7 +4,7 @@ import {readFile} from 'node:fs/promises';
 const read=async p=>readFile(new URL('../'+p,import.meta.url),'utf8');
 const app=await read('src/app.js'),build=await read('scripts/build.mjs');
 test('E121 portal imports an isolated Conversation Lab router but service worker always precaches it',()=>{
- assert.match(app,/import\s+\{\s*studioPortalDestination\s*\}\s+from\s+["']\.\/integration\/conversation-lab\/portal-route\.js["']/);
+ assert.match(app,/import\s+\{\s*studioPortalDestination\s*,\s*studioPrimaryPortalDestination\s*\}\s+from\s+["']\.\/integration\/conversation-lab\/portal-route\.js["']/);
  const required=build.split('const requiredCacheFiles = [')[1]?.split('];')[0];
  const optional=build.split('const offlineEssentialAssets = new Set([')[1]?.split(']);')[0];
  assert.ok(required,'missing SW required precache');
