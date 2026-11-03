@@ -92,7 +92,7 @@ test('Main Conversation Lab CTA opens all 0.12 cards; signed 0.11 remains availa
 test('Portal main button, card click and keyboard share the protected primary route', async () => {
   const src=await readFile(new URL('../src/app.js',import.meta.url),'utf8');
   assert.match(src,/return studioPrimaryPortalDestination\(app, base\)/);
-  assert.match(src,/const destination = embeddedApplicationUrl\(app\);/);
+  assert.match(src,/destination = embeddedApplicationUrl\(app\);/);
   assert.match(src,/outbound\.href = destination/);
   assert.match(src,/outbound\.rel = "noreferrer noopener"/);
   assert.match(src,/outbound\.referrerPolicy = "no-referrer"/);
