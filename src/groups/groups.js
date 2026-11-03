@@ -99,6 +99,8 @@ function displayError(error) {
     GROUP_BACKUP_SOURCE_UNAVAILABLE: tr("Nelze exportovat zálohu z neověřených nebo poškozených dat.", "Cannot export backup from unverified or corrupted data."),
     GROUP_SCOPE_BACKUP_INVALID: tr("Záloha není ověřený formát v2 pro tento účet. Starší zálohy vyžadují kontrolovaný převod.", "The backup is not the v2 account format. Older backups need a controlled migration."),
     GROUP_SCOPE_BACKUP_OTHER_ACCOUNT: tr("Označení účtu v záloze se neshoduje. Zkontrolujte původ zálohy.", "The account scope label in the backup does not match. Verify its origin."),
+    GROUP_RESTORE_SOURCE_CHANGED: tr("Evidence se během obnovy změnila. Nic nebylo přepsáno; zkontrolujte aktuální skupiny a obnovu případně spusťte znovu.", "The groups changed during restore. Nothing was replaced; review current groups before retrying."),
+    GROUP_RESTORE_FILE_TOO_LARGE: tr("Soubor zálohy je příliš velký. Obnova byla zastavena.", "The backup file is too large. Restore was blocked."),
     GROUP_MIGRATION_TARGET_NOT_EMPTY: tr("Náhled převodu vyžaduje prázdnou cílovou evidenci V2. Stávající skupiny zůstaly nedotčeny.", "Migration preflight requires an empty V2 destination. Existing groups were not changed."),
     GROUP_MIGRATION_SOURCE_INVALID: tr("Soubor není platná záloha skupin V1.", "The file is not a valid V1 groups backup."),
     GROUP_MIGRATION_SOURCE_TOO_LARGE: tr("Záloha přesahuje povolenou velikost.", "The backup exceeds the permitted size."),
@@ -409,17 +411,45 @@ function exportBackup() {
   downloadJson(`ai-studio-moje-skupiny-ucet-v2-${date}.json`, backup);
 }
 
-async function importBackupFile(file) {
-  if (!file || !globalThis.confirm(tr("Nahradit skupiny ověřenou zálohou?", "Replace groups with a verified backup?"))) return;
+// Before destructive restore, capture the actual account-scoped store.
+// Rechecking inside the async Web Lock prevents another tab's newer data
+// from being overwritten by a backup selected against an older roster.
+function restoreSourceSnapshot() {
   try {
+    const store = groups.exportBackup().store;
+    return { mode: "healthy", payload: JSON.stringify(store) };
+  } catch (error) {
+    if (error?.message !== "GROUP_STORAGE_RECOVERY_REQUIRED") throw error;
+    return { mode: "corrupt" };
+  }
+}
+function assertRestoreSourceUnchanged(snapshot) {
+  accessGate.requireAllowed();
+  const current = restoreSourceSnapshot();
+  if (current.mode !== snapshot.mode ||
+      (snapshot.mode === "healthy" && current.payload !== snapshot.payload)) {
+    throw new Error("GROUP_RESTORE_SOURCE_CHANGED");
+  }
+}
+
+async function importBackupFile(file) {
+  if (!file) return;
+  try {
+    const source = restoreSourceSnapshot();
+    if (!globalThis.confirm(tr("Nahradit skupiny ověřenou zálohou?", "Replace groups with a verified backup?"))) return;
+    if (file.size > 12 * 1024 * 1024) throw new Error("GROUP_RESTORE_FILE_TOO_LARGE");
     const backup = JSON.parse(await file.text());
-    try {
-      await groups.withWriteLock(tx => tx.importBackup(backup));
-    } catch (error) {
-      if (error?.message !== "GROUP_STORAGE_RECOVERY_REQUIRED") throw error;
-      if (!globalThis.confirm(tr("Obnova nejprve uchová původní poškozená data a až poté nahraje zálohu. Ověřte její původ a potvrďte obnovu.", "Recovery first preserves original damaged bytes, then restores the verified backup. Confirm?"))) return;
-      await groups.withWriteLock(tx => tx.importBackup(backup, { confirmRecovery: true }));
-    }
+    // A previously corrupt store is a separately confirmed recovery event.
+    // Never treat an unexpected new corruption as permission to overwrite it.
+    if (source.mode === "corrupt" &&
+        !globalThis.confirm(tr(
+          "Obnova nejprve uchová původní poškozená data a až poté nahraje zálohu. Ověřte její původ a potvrďte obnovu.",
+          "Recovery preserves original corrupt bytes before restoring. Verify the backup and confirm."
+        ))) return;
+    await groups.withWriteLock(tx => {
+      assertRestoreSourceUnchanged(source);
+      return tx.importBackup(backup, { confirmRecovery: source.mode === "corrupt" });
+    });
     selectedGroupId = null;
     filter = "active";
     render();

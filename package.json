@@ -97,7 +97,7 @@
     "qa:fallback": "node scripts/sync-runtime-fallback.mjs --check",
     "test:runtime-fallback": "node scripts/test-runtime-fallback.mjs && node --test scripts/test-runtime-fallback-admission.mjs",
     "test:manual-pdf": "node scripts/test-manual-pdf.mjs",
-    "test:groups:v2": "node scripts/test-groups-verified-client-browser.mjs && node scripts/test-groups-legacy-migration.mjs && node scripts/test-groups-access-browser.mjs && node scripts/test-groups-crossapp-browser.mjs && node scripts/test-groups-legacy-migration-browser.mjs && node scripts/test-groups-real-access-browser.mjs && node scripts/test-groups-v2-atomic-recovery.mjs && node scripts/test-groups-legacy-preview-browser.mjs && node scripts/test-groups-roster-review-browser.mjs",
+    "test:groups:v2": "node scripts/test-groups-verified-client-browser.mjs && node scripts/test-groups-legacy-migration.mjs && node scripts/test-groups-access-browser.mjs && node scripts/test-groups-crossapp-browser.mjs && node scripts/test-groups-legacy-migration-browser.mjs && node scripts/test-groups-real-access-browser.mjs && node scripts/test-groups-v2-atomic-recovery.mjs && node scripts/test-groups-legacy-preview-browser.mjs && node scripts/test-groups-roster-review-browser.mjs && node scripts/test-groups-backup-restore-r18-browser.mjs",
     "test:groups:r14": "node scripts/test-groups-r14-safety.mjs"
   },
   "engines": {
