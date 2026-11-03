@@ -413,6 +413,7 @@ function downloadJson(name, data) {
 function backupPhrase(exporting) {
   const d=$("#groups-backup-secret-dialog"),p=$("#groups-secret-input"),
     again=$("#groups-secret-repeat"),err=$("#groups-secret-error");
+  if(d.open)return null;
   $("#groups-backup-secret-title").textContent=exporting
     ? tr("Šifrovat zálohu","Encrypt backup") : tr("Odemknout zálohu","Unlock backup");
   $("#groups-secret-repeat-wrap").hidden=!exporting;
