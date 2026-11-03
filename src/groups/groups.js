@@ -132,6 +132,26 @@ Object.defineProperty(globalThis, "GHRAB_GROUPS", {
   writable: false,
 });
 
+// Cross-tab writes can invalidate the list and any open import preview.
+// Always close and scrub the old editor before rendering current storage.
+groups.subscribe(detail => {
+  if (detail.kind !== "external-storage-change") return;
+  if (!accessGate.allowed()) { denyGroupsPage(); return; }
+  rosterPreview = null;
+  for (const dialog of document.querySelectorAll("dialog")) {
+    try { if (dialog.open) closeDialog(dialog); } catch { /* Continue scrubbing. */ }
+    for (const field of dialog.querySelectorAll("input, textarea")) field.value = "";
+    if (dialog.dataset) {
+      dialog.dataset.groupId = "";
+      dialog.dataset.expectedRevision = "";
+    }
+  }
+  $("#roster-preview")?.replaceChildren();
+  const confirm = $("#roster-confirm-button");
+  if (confirm) confirm.disabled = true;
+  render();
+});
+
 function renderDiagnostic() {
   const box = $("#groups-diagnostic");
   if (!box) return;
