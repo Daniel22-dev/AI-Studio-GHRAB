@@ -101,7 +101,15 @@ try {
   });
   await restore();
   await page.evaluate(()=>window.__releaseFileRead());
-  await page.waitForFunction(()=>window.GHRAB_GROUPS.listGroups().length===1);
+  // Before async restoration finishes, the storage is intentionally corrupt:
+  // polling must treat the temporary fail-closed read as pending, not as a crash.
+  await page.waitForFunction(()=>{
+    try { return window.GHRAB_GROUPS.listGroups().length===1; }
+    catch (error) {
+      if(error?.message==="GROUP_STORAGE_RECOVERY_REQUIRED")return false;
+      throw error;
+    }
+  });
   const recovered=await page.evaluate(key=>{
     return{
       archive:localStorage.getItem(key+".original-corrupt.v1"),
