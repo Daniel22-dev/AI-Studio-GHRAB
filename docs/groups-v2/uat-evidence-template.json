@@ -1,0 +1,50 @@
+{
+  "schema": "ghrab-groups-v2-school-uat-template-v1",
+  "purpose": "SYNTHETIC_ONLY_SCHOOL_WITNESSED_UAT",
+  "status": "NOT_RUN",
+  "evidencePolicy": "COPY_TO_APPROVED_PRIVATE_SCHOOL_STORAGE_ONLY",
+  "recordedDate": "FILL_PRIVATELY",
+  "finalFiveAppSha": "REVERIFY_ALL_FIVE_ON_TEST_DAY",
+  "prerequisites": {
+    "A01": "NOT_RUN",
+    "A02": "NOT_RUN",
+    "A03": "NOT_RUN",
+    "A04": "NOT_RUN",
+    "A05": "NOT_RUN"
+  },
+  "scenarios": {
+    "U01": "NOT_RUN",
+    "U02": "NOT_RUN",
+    "U03": "NOT_RUN",
+    "U04": "NOT_RUN",
+    "U05": "NOT_RUN",
+    "U06": "NOT_RUN",
+    "U07": "NOT_RUN",
+    "U08": "NOT_RUN",
+    "U09": "NOT_RUN",
+    "U10": "NOT_RUN",
+    "U11": "NOT_RUN"
+  },
+  "physicalDevices": {
+    "WINDOWS_CHROME": "NOT_RUN",
+    "WINDOWS_EDGE": "NOT_RUN",
+    "ANDROID_CHROME": "NOT_RUN",
+    "IPHONE_SAFARI": "NOT_RUN",
+    "IPAD_SAFARI_SPLIT_VIEW": "NOT_RUN"
+  },
+  "approvals": {
+    "D01": "NOT_RUN",
+    "D02": "NOT_RUN",
+    "D03": "NOT_RUN",
+    "D04": "NOT_RUN",
+    "D05": "NOT_RUN"
+  },
+  "schoolDataControllerApproved": false,
+  "backendTenantIsolationVerified": false,
+  "managedProfilesExceptionApproved": false,
+  "realTeacherABVerified": false,
+  "legacyOwnerMigrationApproved": false,
+  "oldServiceWorkerClearanceVerified": false,
+  "productionReleaseAuthorized": false,
+  "noPersonalDataIncluded": true
+}
