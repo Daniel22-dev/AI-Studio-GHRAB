@@ -1,4 +1,56 @@
-import { LocalGroupsProvider, installGlobalGroupsApi } from "./group-service.js";
+import { createGroupsPageAccessGate, createPrincipalGroupsSession } from "./group-service.js";
+
+/* An unauthenticated page must not render a remembered browser-profile roster.
+   This guards the UI/service facade, not raw same-origin browser storage. */
+function denyGroupsPage() {
+  for (const dialog of document.querySelectorAll("dialog")) {
+    try { if (dialog.open) dialog.close(); } catch { /* Already closed. */ }
+    dialog.remove();
+  }
+  const main = document.querySelector("main");
+  if (!main) return;
+  const section = document.createElement("section");
+  section.className = "page-hero shell access-denied-page";
+  section.setAttribute("role", "alert");
+  const title = document.createElement("h1");
+  title.textContent = "Moje skupiny jsou uzamčeny";
+  const description = document.createElement("p");
+  description.textContent = "Pro práci se seznamy žáků je nutné platné oprávnění učitele. Na sdíleném počítači používejte vlastní profil prohlížeče; místní úložiště není odděleno mezi účty.";
+  const link = document.createElement("a");
+  link.className = "button primary";
+  link.href = "../access/";
+  link.textContent = "Otevřít Můj přístup";
+  section.append(title, description, link);
+  main.replaceChildren(section);
+}
+
+async function startGroupsPage() {
+  const studio = globalThis.GHRAB;
+  if (!studio?.accessReady || typeof studio.getAccessSnapshot !== "function") {
+    denyGroupsPage();
+    return;
+  }
+  try { await studio.accessReady; } catch { denyGroupsPage(); return; }
+  let accessGate;
+  try {
+    accessGate = createGroupsPageAccessGate({
+      getSnapshot: () => studio.getAccessSnapshot(),
+      isPreview: () => Boolean(studio.isColleaguePreview?.()),
+    });
+  } catch {
+    denyGroupsPage();
+    return;
+  }
+  const invalidateIfNeeded = () => {
+    if (!accessGate.allowed()) denyGroupsPage();
+  };
+  document.addEventListener("ghrab:access-changed", invalidateIfNeeded);
+  document.addEventListener("visibilitychange", () => {
+    if (!document.hidden) invalidateIfNeeded();
+  });
+  window.addEventListener("focus", invalidateIfNeeded);
+  window.addEventListener("pageshow", invalidateIfNeeded);
+
 
 const $ = (selector, root = document) => root.querySelector(selector);
 const diagnostics = [];
@@ -29,25 +81,60 @@ function displayError(error) {
     GROUP_REVISION_CONFLICT: tr("Skupina se mezitím změnila. Načtěte nový náhled a potvrďte jej znovu.", "The group changed in the meantime. Refresh the preview and confirm it again."),
     ROSTER_EMPTY: tr("V seznamu nebyl rozpoznán žádný platný student.", "No valid student was recognized in the roster."),
     ROSTER_IMPORT_TOO_LARGE: tr("Vložený seznam je příliš velký.", "The pasted roster is too large."),
+    ROSTER_IMPORT_TRUNCATED: tr("Seznam přesahuje limit 500 studentů; nic nebylo uloženo.", "Roster exceeds 500 students; no changes were saved."),
     GROUP_STORAGE_WRITE_FAILED: tr("Data se nepodařilo bezpečně uložit v tomto prohlížeči.", "The data could not be safely stored in this browser."),
+    GROUP_STORAGE_CORRUPT_WRITE_BLOCKED: tr("Úložiště je poškozené. Zápis byl zastaven, původní data zůstala zachována; obraťte se na správce.", "Storage is corrupted. The write was blocked and original bytes retained; contact an administrator."),
+    GROUP_WRITE_LOCK_UNAVAILABLE: tr("Bezpečný zámek zápisu není dostupný. Ověřte HTTPS a prohlížeč.", "Safe write lock unavailable. Check HTTPS and browser."),
+    GROUP_WRITE_LOCK_REQUIRED: tr("Zápis vyžaduje transakční zámek.", "Transaction lock required to write."),
+    GROUP_STORAGE_UNVERIFIED_WRITE_BLOCKED: tr("Čtení skupin není ověřené. Zápis byl zastaven; použijte ověřenou obnovu zálohy.", "Storage unverified; writing blocked. Restore a verified backup."),
+    GROUP_BACKUP_SOURCE_UNAVAILABLE: tr("Nelze exportovat zálohu z neověřených nebo poškozených dat.", "Cannot export backup from unverified or corrupted data."),
+    GROUP_SCOPE_BACKUP_INVALID: tr("Záloha není ověřený formát v2 pro tento účet. Starší zálohy vyžadují kontrolovaný převod.", "The backup is not the v2 account format. Older backups need a controlled migration."),
+    GROUP_SCOPE_BACKUP_OTHER_ACCOUNT: tr("Označení účtu v záloze se neshoduje. Zkontrolujte původ zálohy.", "The account scope label in the backup does not match. Verify its origin."),
+    GROUP_ACCESS_DENIED: tr("Vaše oprávnění se změnilo. Otevřete Moje skupiny znovu.", "Your access changed. Reopen My Groups."),
+
   };
   return messages[code] || tr("Operaci se nepodařilo dokončit.", "The operation could not be completed.");
 }
 
-const provider = new LocalGroupsProvider({
-  onDiagnostic(detail) {
-    diagnostics.push(detail?.code || "GROUP_STORAGE_DIAGNOSTIC");
-    renderDiagnostic();
-  },
+let legacyStorePresent = false;
+let scoped;
+try {
+  scoped = await createPrincipalGroupsSession({
+    getSnapshot: () => studio.getAccessSnapshot(),
+    isPreview: () => Boolean(studio.isColleaguePreview?.()),
+    onDiagnostic(detail) {
+      diagnostics.push(detail?.code || "GROUP_STORAGE_DIAGNOSTIC");
+      renderDiagnostic();
+    },
+  });
+  accessGate.requireAllowed(); // Reject an account switch while SHA-256 is computed.
+} catch {
+  denyGroupsPage();
+  return;
+}
+legacyStorePresent = scoped.legacyStorePresent;
+const groups = scoped.service;
+if (Object.prototype.hasOwnProperty.call(globalThis, "GHRAB_GROUPS")) {
+  denyGroupsPage();
+  return;
+}
+Object.defineProperty(globalThis, "GHRAB_GROUPS", {
+  value: groups,
+  configurable: false,
+  enumerable: true,
+  writable: false,
 });
-const groups = installGlobalGroupsApi({ provider });
 
 function renderDiagnostic() {
   const box = $("#groups-diagnostic");
   if (!box) return;
-  if (!diagnostics.length) { box.hidden = true; box.textContent = ""; return; }
+  if (!diagnostics.length && !legacyStorePresent) {
+    box.hidden = true; box.textContent = ""; return;
+  }
   box.hidden = false;
-  box.textContent = tr("Úložiště skupin hlásí problém. Zkontrolujte, zda prohlížeč neblokuje místní úložiště; osobní údaje nejsou součástí diagnostiky.", "Group storage reports a problem. Check whether the browser blocks local storage; personal data is not included in diagnostics.");
+  box.textContent = diagnostics.length
+    ? tr("Úložiště skupin hlásí problém. Zkontrolujte, zda prohlížeč neblokuje místní úložiště; osobní údaje nejsou součástí diagnostiky.", "Group storage reports a problem. Check whether the browser blocks local storage; personal data is not included in diagnostics.")
+    : tr("V tomto prohlížeči jsou i starší společné skupiny. Nejsou automaticky přiřazeny vašemu účtu; jejich převod musí být výslovně ověřen.", "This browser also contains older shared groups. They are not assigned to your account; migration requires explicit ownership review.");
 }
 
 function renderList() {
@@ -146,6 +233,7 @@ function renderDetail() {
 }
 
 function render() {
+  if (!accessGate.allowed()) { denyGroupsPage(); return; }
   document.querySelectorAll("[data-group-filter]").forEach((node) => node.classList.toggle("is-active", node.dataset.groupFilter === filter));
   renderList(); renderDiagnostic();
 }
@@ -156,6 +244,7 @@ function closeDialog(dialog) { if (typeof dialog.close === "function") dialog.cl
 
 function openGroupDialog(group = null) {
   $("#group-edit-id").value = group?.groupId || "";
+  $("#group-dialog").dataset.expectedRevision = group ? String(group.revision) : "";
   $("#group-name").value = group?.displayName || "";
   $("#group-year").value = group?.schoolYear || currentSchoolYear();
   $("#group-subject").value = group?.subject || "";
@@ -172,10 +261,10 @@ function currentSchoolYear() {
 
 async function archiveGroup(group) {
   if (!globalThis.confirm(tr(`Archivovat skupinu „${group.displayName}“? Seznam ani stabilní identity studentů se nesmažou.`, `Archive “${group.displayName}”? The roster and stable student identities will not be deleted.`))) return;
-  try { groups.archiveGroup(group.groupId, { expectedRevision: group.revision }); selectedGroupId = groups.listGroups({ status: filter })[0]?.groupId || null; render(); } catch (error) { globalThis.alert(displayError(error)); }
+  try { await groups.withWriteLock(tx => tx.archiveGroup(group.groupId, { expectedRevision: group.revision })); selectedGroupId = groups.listGroups({ status: filter })[0]?.groupId || null; render(); } catch (error) { globalThis.alert(displayError(error)); }
 }
 async function reactivateGroup(group) {
-  try { const next = groups.updateGroup(group.groupId, { status: "active" }, { expectedRevision: group.revision }); filter = "active"; selectedGroupId = next.groupId; render(); } catch (error) { globalThis.alert(displayError(error)); }
+  try { const next = await groups.withWriteLock(tx => tx.updateGroup(group.groupId, { status: "active" }, { expectedRevision: group.revision })); filter = "active"; selectedGroupId = next.groupId; render(); } catch (error) { globalThis.alert(displayError(error)); }
 }
 
 function diffRows(preview) {
@@ -221,7 +310,7 @@ function previewRoster() {
     const groupId = $("#roster-dialog").dataset.groupId;
     rosterPreview = groups.previewRosterImport(groupId, $("#roster-input").value, { replace: $("#roster-replace").checked });
     renderRosterPreview(rosterPreview);
-    $("#roster-confirm-button").disabled = rosterPreview.parsed.entries.length === 0 || !rosterPreview.diff.hasChanges;
+    $("#roster-confirm-button").disabled = rosterPreview.parsed.entries.length === 0 || !rosterPreview.diff.hasChanges || rosterPreview.parsed.truncated;
   } catch (error) {
     rosterPreview = null; $("#roster-confirm-button").disabled = true; setFormError("#roster-form-error", displayError(error));
   }
@@ -233,37 +322,46 @@ function downloadJson(name, data) {
 }
 
 function exportBackup() {
-  const backup = groups.exportBackup();
+  let backup; try { backup = groups.exportBackup(); } catch(error) { globalThis.alert(displayError(error)); return; }
   const date = new Date().toISOString().slice(0, 10);
-  downloadJson(`ai-studio-moje-skupiny-${date}.json`, backup);
+  downloadJson(`ai-studio-moje-skupiny-ucet-v2-${date}.json`, backup);
 }
 
 async function importBackupFile(file) {
   if (!file) return;
   if (!globalThis.confirm(tr("Tato operace nahradí současnou centrální evidenci obsahem zálohy. Pokračovat?", "This operation replaces the current central group data with the backup. Continue?"))) return;
-  try { const parsed = JSON.parse(await file.text()); groups.importBackup(parsed); selectedGroupId = null; filter = "active"; render(); } catch (error) { globalThis.alert(displayError(error)); }
+  try { const parsed = JSON.parse(await file.text()); await groups.withWriteLock(tx => tx.importBackup(parsed)); selectedGroupId = null; filter = "active"; render(); } catch (error) { globalThis.alert(displayError(error)); }
 }
 
 $("#group-create").addEventListener("click", () => openGroupDialog());
 document.querySelectorAll("[data-group-filter]").forEach((node) => node.addEventListener("click", () => { filter = node.dataset.groupFilter; selectedGroupId = null; render(); }));
 document.querySelectorAll("[data-dialog-close]").forEach((node) => node.addEventListener("click", () => closeDialog(node.closest("dialog"))));
-$("#group-form").addEventListener("submit", (event) => {
+$("#group-form").addEventListener("submit", async (event) => {
   event.preventDefault(); setFormError("#group-form-error");
   try {
     const id = $("#group-edit-id").value;
     const input = { displayName: $("#group-name").value, schoolYear: $("#group-year").value, subject: $("#group-subject").value, grade: $("#group-grade").value };
-    const result = id ? groups.updateGroup(id, input, { expectedRevision: groups.getRevision(id) }) : groups.createGroup(input);
+    const expectedRevision = Number($("#group-dialog").dataset.expectedRevision);
+    if (id && (!Number.isSafeInteger(expectedRevision) || expectedRevision < 1)) throw new Error("GROUP_REVISION_CONFLICT");
+    const result = await groups.withWriteLock(tx => id ? tx.updateGroup(id, input, { expectedRevision }) : tx.createGroup(input));
     filter = result.status; selectedGroupId = result.groupId; closeDialog($("#group-dialog")); render();
   } catch (error) { setFormError("#group-form-error", displayError(error)); }
 });
 $("#roster-preview-button").addEventListener("click", previewRoster);
 $("#roster-input").addEventListener("input", () => { rosterPreview = null; $("#roster-confirm-button").disabled = true; $("#roster-preview").replaceChildren(); });
 $("#roster-replace").addEventListener("change", () => { rosterPreview = null; $("#roster-confirm-button").disabled = true; $("#roster-preview").replaceChildren(); });
-$("#roster-form").addEventListener("submit", (event) => {
+$("#roster-form").addEventListener("submit", async (event) => {
   event.preventDefault(); setFormError("#roster-form-error");
   if (!rosterPreview) { previewRoster(); return; }
   try {
-    const result = groups.importRoster({ groupId: rosterPreview.groupId, rawText: $("#roster-input").value, replace: $("#roster-replace").checked, expectedRevision: rosterPreview.currentRevision });
+    const pendingPreview = rosterPreview;
+    const pendingText = $("#roster-input").value;
+    const pendingReplace = $("#roster-replace").checked;
+    $("#roster-confirm-button").disabled = true;
+    const result = await groups.withWriteLock(tx => tx.importRoster({
+      groupId: pendingPreview.groupId, rawText: pendingText,
+      replace: pendingReplace, expectedRevision: pendingPreview.currentRevision,
+    }));
     selectedGroupId = result.group.groupId; closeDialog($("#roster-dialog")); rosterPreview = null; render();
   } catch (error) { setFormError("#roster-form-error", displayError(error)); $("#roster-confirm-button").disabled = true; rosterPreview = null; }
 });
@@ -273,3 +371,7 @@ $("#groups-backup-file").addEventListener("change", (event) => { const file = ev
 document.querySelectorAll("[data-lang]").forEach((node) => node.addEventListener("click", () => setTimeout(render, 0)));
 
 render();
+
+}
+
+void startGroupsPage().catch(() => denyGroupsPage());
