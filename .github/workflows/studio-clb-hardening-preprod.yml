@@ -48,6 +48,7 @@ jobs:
           npm run sync
           npm run format:generated-json
           node scripts/sync-platform-consumers.mjs --check
+          npm run build
           npm run test:studio-ux
       - name: Full existing Studio release QA (includes visual collision checks)
         run: npm run qa:release
