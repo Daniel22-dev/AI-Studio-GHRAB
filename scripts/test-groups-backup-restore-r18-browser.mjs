@@ -79,8 +79,8 @@ try {
     "older backup must not erase a newer group");
   assert.ok((await page.evaluate(()=>window.GHRAB_GROUPS.listGroups()))
     .some(g=>g.groupId===newer.groupId));
-  assert.equal(await page.evaluate(()=>window.__restoreConfirmations.length),1,
-    "healthy snapshot uses one confirmation");
+  assert.equal(await page.evaluate(()=>window.__restoreConfirmations.length),2,
+    "plain JSON requires restore consent and a separate plaintext warning");
 
   // A new explicit confirmation on an unchanged source may restore the backup.
   await restore();
@@ -111,8 +111,8 @@ try {
   assert.equal(recovered.archive,corrupt.raw,
     "corrupt bytes must be preserved before recovery");
   assert.equal(recovered.restored,"Synthetic Base");
-  assert.equal(await page.evaluate(()=>window.__restoreConfirmations.length),4,
-    "two single-confirm healthy attempts plus double-confirm recovery");
+  assert.equal(await page.evaluate(()=>window.__restoreConfirmations.length),7,
+    "each legacy plaintext restore requires a warning; corrupt recovery needs another confirmation");
   assert.deepEqual(errors,[]);
   console.log("PASS Groups R18: stale backup restore denied; retry works; corrupt recovery preserves raw bytes");
   await context.close();

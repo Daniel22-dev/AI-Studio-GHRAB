@@ -75,10 +75,10 @@
           <div>
             <strong data-cs="Seznamy obsahují osobní údaje studentů" data-en="Rosters contain student personal data">Seznamy obsahují osobní údaje studentů</strong>
             <p
-              data-cs="Jména a školní e-maily se neodesílají do telemetrie ani do material handoffu. Záloha JSON je lokální soubor a je nutné s ní zacházet jako s osobními údaji."
-              data-en="Names and school emails are not sent to telemetry or material handoff. A JSON backup is a local file and must be handled as personal data."
+              data-cs="Jména a školní e-maily se neodesílají do telemetrie. Nová záloha je šifrovaná heslem; staré nešifrované soubory chraňte jako osobní údaje."
+              data-en="Names and school emails are not sent to telemetry. New backups are password-encrypted; protect old plaintext files as personal data."
             >
-              Jména a školní e-maily se neodesílají do telemetrie ani do material handoffu. Záloha JSON je lokální soubor a je nutné s ní zacházet jako s osobními údaji.
+              Jména a školní e-maily se neodesílají do telemetrie. Nová záloha je šifrovaná heslem; staré nešifrované soubory chraňte jako osobní údaje.
             </p>
           </div>
         </aside>
@@ -93,7 +93,7 @@
               <button type="button" class="is-active" data-group-filter="active" data-cs="Aktivní" data-en="Active">Aktivní</button>
               <button type="button" data-group-filter="archived" data-cs="Archiv" data-en="Archive">Archiv</button>
             </div>
-            <button type="button" class="groups-button groups-button-secondary" id="groups-backup-export" data-cs="Záloha JSON" data-en="JSON backup">Záloha JSON</button>
+            <button type="button" class="groups-button groups-button-secondary" id="groups-backup-export" data-cs="Šifrovaná záloha" data-en="Encrypted backup">Šifrovaná záloha</button>
             <button type="button" class="groups-button groups-button-secondary" id="groups-backup-import" data-cs="Obnovit zálohu" data-en="Restore backup">Obnovit zálohu</button>
             <button type="button" class="groups-button groups-button-secondary" id="groups-legacy-open" data-cs="Prověřit zálohu V1" data-en="Check V1 backup">Prověřit zálohu V1</button>
             <button type="button" class="groups-button groups-button-primary" id="group-create" data-cs="+ Nová skupina" data-en="+ New group">+ Nová skupina</button>
@@ -165,6 +165,17 @@
         <div class="groups-dialog-actions">
           <button type="button" class="groups-button groups-button-secondary" data-dialog-close data-cs="Zavřít bez uložení" data-en="Close without saving">Zavřít bez uložení</button>
         </div>
+      </form>
+    </dialog>
+
+    <dialog id="groups-backup-secret-dialog" class="groups-dialog" aria-labelledby="groups-backup-secret-title">
+      <form method="dialog" id="groups-backup-secret-form">
+        <h2 id="groups-backup-secret-title">Heslo zálohy</h2>
+        <p class="groups-help" data-cs="Použijte jedinečnou frázi nejméně 16 znaků. Zapomenuté heslo nelze obnovit; přihlášení školy jej nenahradí." data-en="Use a unique phrase of at least 16 characters. Lost passwords cannot be recovered by school sign-in.">Použijte jedinečnou frázi nejméně 16 znaků. Zapomenuté heslo nelze obnovit; přihlášení školy jej nenahradí.</p>
+        <label class="groups-roster-field"><span data-cs="Heslo zálohy" data-en="Backup password">Heslo zálohy</span><input id="groups-secret-input" type="password" autocomplete="new-password" minlength="16" maxlength="512" required /></label>
+        <label class="groups-roster-field" id="groups-secret-repeat-wrap"><span data-cs="Zopakovat heslo" data-en="Repeat password">Zopakovat heslo</span><input id="groups-secret-repeat" type="password" autocomplete="new-password" maxlength="512" /></label>
+        <p id="groups-secret-error" class="groups-form-error" role="alert"></p>
+        <div class="groups-dialog-actions"><button type="button" class="groups-button groups-button-secondary" data-dialog-close data-cs="Zrušit" data-en="Cancel">Zrušit</button><button type="submit" class="groups-button groups-button-primary" data-cs="Pokračovat" data-en="Continue">Pokračovat</button></div>
       </form>
     </dialog>
 

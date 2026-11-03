@@ -101,6 +101,10 @@ function displayError(error) {
     GROUP_SCOPE_BACKUP_OTHER_ACCOUNT: tr("Označení účtu v záloze se neshoduje. Zkontrolujte původ zálohy.", "The account scope label in the backup does not match. Verify its origin."),
     GROUP_RESTORE_SOURCE_CHANGED: tr("Evidence se během obnovy změnila. Nic nebylo přepsáno; zkontrolujte aktuální skupiny a obnovu případně spusťte znovu.", "The groups changed during restore. Nothing was replaced; review current groups before retrying."),
     GROUP_RESTORE_FILE_TOO_LARGE: tr("Soubor zálohy je příliš velký. Obnova byla zastavena.", "The backup file is too large. Restore was blocked."),
+    GROUP_BACKUP_CRYPTO_UNAVAILABLE: tr("Šifrování není dostupné. Bez něj nelze vytvořit zálohu.", "Encryption is unavailable; no backup was exported."),
+    GROUP_BACKUP_PASSPHRASE_WEAK: tr("Heslo zálohy musí mít 16 až 512 znaků.", "Backup password must be 16–512 characters."),
+    GROUP_ENCRYPTED_BACKUP_INVALID: tr("Neplatný formát šifrované zálohy.", "Invalid encrypted backup format."),
+    GROUP_BACKUP_AUTH_FAILED: tr("Nesprávné heslo nebo poškozená záloha. Nic nebylo obnoveno.", "Incorrect password or damaged backup. Nothing restored."),
     GROUP_MIGRATION_TARGET_NOT_EMPTY: tr("Náhled převodu vyžaduje prázdnou cílovou evidenci V2. Stávající skupiny zůstaly nedotčeny.", "Migration preflight requires an empty V2 destination. Existing groups were not changed."),
     GROUP_MIGRATION_SOURCE_INVALID: tr("Soubor není platná záloha skupin V1.", "The file is not a valid V1 groups backup."),
     GROUP_MIGRATION_SOURCE_TOO_LARGE: tr("Záloha přesahuje povolenou velikost.", "The backup exceeds the permitted size."),
@@ -405,10 +409,46 @@ function downloadJson(name, data) {
   const url = URL.createObjectURL(blob); const link = document.createElement("a"); link.href = url; link.download = name; document.body.append(link); link.click(); link.remove(); setTimeout(() => URL.revokeObjectURL(url), 0);
 }
 
-function exportBackup() {
-  let backup; try { backup = groups.exportBackup(); } catch(error) { globalThis.alert(displayError(error)); return; }
-  const date = new Date().toISOString().slice(0, 10);
-  downloadJson(`ai-studio-moje-skupiny-ucet-v2-${date}.json`, backup);
+// Passwords stay in a hidden dialog and are never saved to storage or telemetry.
+function backupPhrase(exporting) {
+  const d=$("#groups-backup-secret-dialog"),p=$("#groups-secret-input"),
+    again=$("#groups-secret-repeat"),err=$("#groups-secret-error");
+  $("#groups-backup-secret-title").textContent=exporting
+    ? tr("Šifrovat zálohu","Encrypt backup") : tr("Odemknout zálohu","Unlock backup");
+  $("#groups-secret-repeat-wrap").hidden=!exporting;
+  p.value=again.value=err.textContent="";
+  return new Promise(resolve=>{
+    let done=false;
+    const finish=value=>{
+      if(done)return;done=true;
+      d.removeEventListener("submit",submit);d.removeEventListener("close",cancel);
+      p.value=again.value="";
+      if(d.open)closeDialog(d);
+      resolve(value);
+    };
+    const submit=e=>{
+      e.preventDefault();const value=p.value;
+      if(value.length<16||value.length>512){err.textContent=displayError(new Error("GROUP_BACKUP_PASSPHRASE_WEAK"));return}
+      if(exporting&&value!==again.value){err.textContent=tr("Hesla se neshodují.","Passwords do not match.");return}
+      finish(value);
+    };
+    const cancel=()=>finish(null);
+    d.addEventListener("submit",submit);d.addEventListener("close",cancel);
+    showDialog(d);p.focus();
+  });
+}
+async function exportBackup() {
+  let password=await backupPhrase(true);
+  if(password===null)return;
+  try {
+    accessGate.requireAllowed();
+    const backup=groups.exportBackup();
+    const {encryptGroupsBackup}=await import("./encrypted-backup.js");
+    const sealed=await encryptGroupsBackup(backup,password);
+    accessGate.requireAllowed();
+    downloadJson(`ai-studio-moje-skupiny-sifrovana-v2-${new Date().toISOString().slice(0,10)}.json`,sealed);
+  }catch(e){globalThis.alert(displayError(e))}
+  finally{password=null}
 }
 
 // Before destructive restore, capture the actual account-scoped store.
@@ -437,8 +477,21 @@ async function importBackupFile(file) {
   try {
     const source = restoreSourceSnapshot();
     if (!globalThis.confirm(tr("Nahradit skupiny ověřenou zálohou?", "Replace groups with a verified backup?"))) return;
-    if (file.size > 12 * 1024 * 1024) throw new Error("GROUP_RESTORE_FILE_TOO_LARGE");
-    const backup = JSON.parse(await file.text());
+    if (file.size > 20 * 1024 * 1024) throw new Error("GROUP_RESTORE_FILE_TOO_LARGE");
+    let backup = JSON.parse(await file.text());
+    if (backup?.schema === "ghrab-teaching-groups-encrypted-v1") {
+      let password=await backupPhrase(false);
+      if(password===null)return;
+      try{
+        const {decryptGroupsBackup}=await import("./encrypted-backup.js");
+        backup=await decryptGroupsBackup(backup,password);
+      }finally{password=null}
+    } else {
+      if(file.size>12*1024*1024)throw new Error("GROUP_RESTORE_FILE_TOO_LARGE");
+      if(!globalThis.confirm(tr("Tato starší záloha není šifrovaná. Pokračovat jen v zabezpečeném prostředí?",
+         "This old backup is plaintext. Continue only in a secure environment?")))return;
+    }
+    accessGate.requireAllowed();
     // A previously corrupt store is a separately confirmed recovery event.
     // Never treat an unexpected new corruption as permission to overwrite it.
     if (source.mode === "corrupt" &&
