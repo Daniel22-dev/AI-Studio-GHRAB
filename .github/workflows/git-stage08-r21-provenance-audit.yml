@@ -1,90 +1,54 @@
-name: GIT R28 safe icon and manual compaction benchmark (AUDIT ONLY)
+name: GIT R29 AST-core isolated preproduction admission (NO DEPLOY)
 on:
   push:
     branches: [audit/git-stage08-r21-provenance-20261103]
 permissions:
   contents: read
 jobs:
-  benchmark:
+  preproduction:
     runs-on: ubuntu-latest
-    timeout-minutes: 35
+    timeout-minutes: 40
     steps:
-      - uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683
+      - name: Checkout exact source from isolated GIT QA branch
+        uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683
         with:
           repository: Daniel22-dev/generator-testu
-          ref: 27cd0fe049a415f431cfd94b4fce5401a11f54ea
+          ref: 5813206c7dab2d01eb8c9be793fde73300feccbd
           fetch-depth: 0
           persist-credentials: false
-          path: src
-      - uses: actions/setup-node@49933ea5288caeca8642d1e84afbd3f7d6820020
+          path: audited
+      - name: Node 22
+        uses: actions/setup-node@49933ea5288caeca8642d1e84afbd3f7d6820020
         with:
           node-version: '22'
-      - name: Build original GIT release draft
-        working-directory: src
-        run: |
-          npm ci --ignore-scripts --no-audit --no-fund --registry=https://registry.npmjs.org
-          npm run build
-      - name: Analyze more PNG filters and exact source/manual scripts in memory
-        working-directory: src
+      - name: Install pinned dependencies only
+        working-directory: audited
+        run: npm ci --ignore-scripts --no-audit --no-fund --registry=https://registry.npmjs.org
+      - name: Full original build, vendor source and quality parity
+        working-directory: audited
         shell: bash
         run: |
           set -euo pipefail
+          test "$(git rev-parse HEAD)" = "5813206c7dab2d01eb8c9be793fde73300feccbd"
+          npm run build
+          node scripts/qa-p3-quality.mjs
+          node scripts/check-csp.mjs
+          npm run check:stage08-groups
+          npm run check:stage08-results
+          test "$(git rev-parse HEAD)" = "5813206c7dab2d01eb8c9be793fde73300feccbd"
+          test -z "$(git status --porcelain --untracked-files=no)"
+      - name: Show current quality and immutable vendor checks
+        if: always()
+        working-directory: audited
+        shell: bash
+        run: |
           node --input-type=module <<'NODE'
           import fs from 'node:fs';
-          import {PNG} from 'pngjs';
-          import {parse,tokenizer} from 'acorn';
-          const b=fs.readFileSync('scripts/build.mjs','utf8');
-          const begin=b.indexOf('function stripJsComments('),end=b.indexOf('function splitGeneratorAssistant(');
-          const {tight}=new Function('parse','tokenizer','fail',b.slice(begin,end)+'\nreturn {tight:compactJsWhitespaceTight};')(parse,tokenizer,why=>{throw Error(why)});
-          let iconSum=0;
-          for(const file of ['icons/icon-512.png','icons/icon-maskable-512.png','icons/icon-192.png','icons/apple-touch-icon.png']){
-            const original=fs.readFileSync('public/'+file);
-            const originalPng=PNG.sync.read(original);
-            const palette=new Set();
-            for(let i=0;i<originalPng.data.length;i+=4){
-              palette.add(originalPng.data.subarray(i,i+4).toString('hex'));
-              if(palette.size>1000)break;
-            }
-            const shipped=fs.readFileSync('dist/'+file);
-            let best={bytes:shipped.length,filter:'shipped',strategy:'shipped',mem:'shipped'};
-            for(const filterType of [-1,0,1,2,3,4])
-            for(const deflateStrategy of [0,1,2,3,4])
-            for(const deflateMemLevel of [7,8,9]){
-              try{
-                const candidate=PNG.sync.write({width:originalPng.width,height:originalPng.height,data:originalPng.data},
-                  {colorType:6,inputHasAlpha:true,filterType,deflateStrategy,deflateLevel:9,deflateMemLevel});
-                if(candidate.length>=best.bytes)continue;
-                const again=PNG.sync.read(candidate);
-                if(!Buffer.from(again.data).equals(Buffer.from(originalPng.data)))continue;
-                best={bytes:candidate.length,filter:filterType,strategy:deflateStrategy,mem:deflateMemLevel};
-              }catch(e){}
-            }
-            iconSum+=shipped.length-best.bytes;
-            console.log(JSON.stringify({icon:file,uniqueColorsAtMost1000:palette.size,
-              original:original.length,shipped:shipped.length,best,
-              extraSaving:shipped.length-best.bytes}));
-          }
-          let manualSum=0;
-          for(const file of ['dist/manual/index.html','dist/manual/rozesilani-kodu.html','dist/index.html']){
-            const raw=fs.readFileSync(file,'utf8');
-            let sections=0,save=0,fail=0,largest=[];
-            for(const match of raw.matchAll(/<script([^>]*)>([\s\S]*?)<\/script>/gi)){
-              const attrs=match[1],body=match[2];
-              if(/\bsrc\s*=/i.test(attrs)||!body.trim())continue;
-              sections++;
-              try{
-                const compact=tight(body,file+'#'+sections);
-                const diff=body.length-compact.length;
-                save+=diff;
-                largest.push({size:body.length,saving:diff,label:attrs.slice(0,120)});
-              }catch(e){fail++;largest.push({size:body.length,error:e.message.slice(0,120)});}
-            }
-            manualSum+=file==='dist/index.html'?0:save;
-            console.log(JSON.stringify({html:file,sections,savingIfTight:save,failed:fail,
-              top:largest.sort((a,b)=>b.saving-a.saving).slice(0,10)}));
-          }
-          console.log(JSON.stringify({schema:'git-r28-extended-safe-analysis-v1',
-            remainingDeficit:8950,moreIconSavings:iconSum,potentialManualInlineScriptSaving:manualSum,
-            modifiedSource:false}));
+          const f='dist/quality-report.json';
+          if(!fs.existsSync(f)){console.log('NO P3 QUALITY REPORT');process.exit(0)}
+          const j=JSON.parse(fs.readFileSync(f,'utf8'));
+          const bad=j.checks?.filter(x=>!x.ok)||[];
+          console.log(JSON.stringify({metrics:j.metrics?.distBytes||j.metrics,
+            status:j.status,failed:bad.map(x=>({id:x.id,detail:x.detail}))},null,2));
           NODE
-          test "$(git rev-parse HEAD)" = "27cd0fe049a415f431cfd94b4fce5401a11f54ea"
+          echo "SOURCE HEAD=$(git rev-parse HEAD)"
