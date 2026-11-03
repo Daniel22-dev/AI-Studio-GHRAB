@@ -40,6 +40,14 @@ export const CLB_012_PILOT_URL = 'https://conversation-lab-012-pilot.danikin35.w
 /** Route the main Studio CTA to the approved 0.12 catalog while checking the
  * existing signed legacy manifest contract first. All other apps are unchanged. */
 export function studioPrimaryPortalDestination(app, base) {
-  const originalDestination = studioPortalDestination(app, base);
-  return app.id === 'conversation-lab' ? CLB_012_PILOT_URL : originalDestination;
+  if (typeof app?.id !== 'string' || !app.id) throw Error('STUDIO_APP_ID_REQUIRED');
+  if (app.id !== 'conversation-lab') return studioPortalDestination(app, base);
+  // Public 0.12 has a separate lifecycle from signed 0.11, but the Studio
+  // teacher entry must still preserve its restricted no-credential boundary.
+  if (app.integration?.launchMode !== 'studio-teacher' ||
+      app.integration?.teacherTrainingRequired !== true ||
+      app.integration?.credentialBridgeAllowed !== false ||
+      app.integration?.securityBoundary !== 'isolated-anonymous-read-only')
+    throw Error('CLB_012_STUDIO_LAUNCH_NOT_AUTHORIZED');
+  return CLB_012_PILOT_URL;
 }

@@ -4,6 +4,10 @@ on:
     branches: [candidate]
     paths:
       - 'scripts/build.mjs'
+      - 'src/app.js'
+      - 'src/integration/conversation-lab/portal-route.js'
+      - 'src/sw.js'
+      - 'src/index.html'
       - 'scripts/test-clb-e121-offline-static-module.mjs'
       - '.github/workflows/clb-e121-offline-portal-regression.yml'
 permissions:

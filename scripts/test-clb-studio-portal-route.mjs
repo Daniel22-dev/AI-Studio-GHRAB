@@ -70,12 +70,16 @@ test('Main Conversation Lab CTA opens all 0.12 cards; signed 0.11 remains availa
   for (const id of ['generator','differentiator','essay-evaluator','correspondence','ludus','activity-builder','sortio','lesson-hub','maturita-desk']) {
     assert.equal(studioPrimaryPortalDestination({id}, './'), studioPortalDestination({id}, './'));
   }
-  for (const corrupted of [
+  // Upgrading the signed legacy content must not block unrelated public 0.12.
+  for (const upgraded of [
     {...teacher,version:'0.12.0'},
+    {...teacher,integration:{...teacher.integration,releaseId:'later-signed-release'}},
+  ]) assert.equal(studioPrimaryPortalDestination(upgraded,'./'),CLB_012_PILOT_URL);
+  for (const corrupted of [
     {...teacher,integration:{...teacher.integration,credentialBridgeAllowed:true}},
-    {...teacher,integration:{...teacher.integration,releaseId:'unsigned-0.12.0'}},
     {...teacher,integration:{...teacher.integration,launchMode:'direct'}},
-  ]) assert.throws(()=>studioPrimaryPortalDestination(corrupted,'./'));
+    {...teacher,integration:{...teacher.integration,teacherTrainingRequired:false}},
+  ]) assert.throws(()=>studioPrimaryPortalDestination(corrupted,'./'),/CLB_012_STUDIO_LAUNCH_NOT_AUTHORIZED/);
   const target=new URL(CLB_012_PILOT_URL);
   assert.equal(target.protocol,'https:');
   assert.equal(target.pathname,'/');
@@ -94,6 +98,7 @@ test('Portal main button, card click and keyboard share the protected primary ro
   assert.match(src,/outbound\.referrerPolicy = "no-referrer"/);
   assert.match(src,/outbound\.click\(\)/);
   assert.match(src,/window\.location\.assign\(destination\)/);
+  assert.match(src,/catch \(error\) \{[\s\S]*?Spuštění aplikace se nezdařilo/);
   const begin=src.indexOf('function portalAppCard(');
   const end=src.indexOf('function renderExtraApps(',begin);
   assert.ok(begin>=0 && end>begin);
@@ -117,12 +122,14 @@ test('Signed legacy 0.11 remains reachable only by gated secondary link and teac
   const end=src.indexOf('function renderExtraApps(',begin);
   const card=src.slice(begin,end);
   const gate=card.indexOf('if (access.enabled) {');
-  const old=card.indexOf('legacy.href = studioPortalDestination(app, base)');
+  const old=card.indexOf('legacy.href = legacyDestination');
   assert.ok(gate>=0 && old>gate);
   assert.match(card,/!previewMode &&/);
   assert.match(card,/canLaunchForOperationalStatus\(operationalStatus\)/);
   assert.match(card,/Původní 0\.11/);
   assert.match(card,/legacy\.rel = "noopener noreferrer"/);
+  assert.match(card,/legacyDestination = studioPortalDestination\(app, base\)/);
+  assert.match(card,/if \(legacyDestination\)/);
   const legacy=await readFile(new URL('../src/conversation-lab/teacher-entry.js',import.meta.url),'utf8');
   assert.match(legacy,/assertClbSignedTrainingPolicy\(requiredTraining\('conversation-lab'\)\)/);
   assert.match(legacy,/hasAppAccess\('conversation-lab'\)/);

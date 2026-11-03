@@ -3458,3 +3458,27 @@ button.colleague-preview-choice:focus-visible {
     flex: 1 1 100%;
   }
 }
+
+/* Reserve a safe desktop fallback for the full role-aware navigation. */
+@media (min-width: 901px) and (max-width: 1850px) {
+  .site-header { grid-template-columns: minmax(0, 1fr) auto auto; }
+  .nav-toggle { display: block; }
+  .main-nav {
+    position: absolute;
+    top: calc(100% + 6px);
+    left: clamp(16px, 3vw, 46px);
+    right: clamp(16px, 3vw, 46px);
+    display: none;
+    flex-direction: column;
+    align-items: stretch;
+    overflow-y: auto;
+    max-height: calc(100vh - 105px);
+    padding: 8px;
+    background: rgba(3, 13, 24, 0.98);
+    border: 1px solid var(--line);
+    border-radius: 16px;
+    box-shadow: var(--shadow);
+  }
+  .main-nav.open { display: flex; }
+  .header-actions { justify-self: end; }
+}

@@ -183,6 +183,27 @@ async function inspectPage(page, scenario) {
         .trim();
       const vw = innerWidth;
       const vh = innerHeight;
+      const headerElements = [".site-header > .brand", ".site-header > .main-nav",
+        ".site-header > .nav-toggle", ".site-header > .header-actions"]
+        .map((selector) => {
+          const el = document.querySelector(selector);
+          if (!el) return null;
+          const style = getComputedStyle(el);
+          const rect = el.getBoundingClientRect();
+          if (style.display === "none" || style.visibility === "hidden" ||
+            rect.width <= 0 || rect.height <= 0) return null;
+          return { selector, rect };
+        }).filter(Boolean);
+      const headerOverlaps = [];
+      for (let i = 0; i < headerElements.length; i++) {
+        for (let j = i + 1; j < headerElements.length; j++) {
+          const a = headerElements[i], b = headerElements[j];
+          if (a.rect.left < b.rect.right - 2 && a.rect.right > b.rect.left + 2 &&
+              a.rect.top < b.rect.bottom - 2 && a.rect.bottom > b.rect.top + 2) {
+            headerOverlaps.push(a.selector + " overlaps " + b.selector);
+          }
+        }
+      }
       const overlays = [...document.querySelectorAll("body *")]
         .map((el) => {
           const rect = el.getBoundingClientRect();
@@ -287,6 +308,7 @@ async function inspectPage(page, scenario) {
           (value) => value === "hidden" || value === "clip",
         ),
         interactiveOutside,
+        headerOverlaps,
         overlays,
         visible,
         broken,
@@ -487,6 +509,8 @@ async function runVisualCase(scenario, viewport) {
           `horizontální přetékání ${checks.overflow}px${checks.interactiveOutside.length ? " s interaktivním prvkem mimo viewport" : ""}`,
         );
       }
+      if (checks.headerOverlaps.length)
+        problems.push("překrývání navigace: " + checks.headerOverlaps.join("; "));
       if (checks.overlays.length)
         problems.push("prázdná interaktivní fullscreen vrstva");
       if (checks.visible.some((item) => !item.ok)) {
