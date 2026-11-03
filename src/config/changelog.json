@@ -1,7 +1,29 @@
 {
   "schema": "ai-studio-changelog-v1",
-  "current": "0.21.264",
+  "current": "0.21.265",
   "items": [
+    {
+      "version": "0.21.265",
+      "date": "2026-11-03",
+      "title": {
+        "cs": "Moje skupiny – bezpečné reakce na změny ve více kartách a mobilní ověření",
+        "en": "My Groups – cross-tab safety and mobile browser verification"
+      },
+      "changes": [
+        {
+          "cs": "Při změně evidenčních dat v jiné kartě se v otevřené stránce obnoví aktuální skupina, uzavře rozpracovaný editor a odstraní zastaralý náhled se jmény studentů. Poškozené úložiště zůstává uzamčené.",
+          "en": "Changes from another browser tab refresh the current roster, close and clear pending editors and remove stale pupil previews. Corrupted storage remains fail-closed."
+        },
+        {
+          "cs": "Upozornění přesně popisuje omezení: účty mají samostatné evidenční klíče, ale profil prohlížeče neslouží jako šifrovaná či serverová hranice; školní pilot do schválení přijímá jen smyšlené údaje.",
+          "en": "The UI now correctly states that account-scoped keys do not provide encryption or server isolation, and restricts the preproduction pilot to synthetic data pending school approval."
+        },
+        {
+          "cs": "Do skutečného prohlížečového CI přidány negativní testy poškození a aktualizace z druhé karty a kontrola zobrazení na šířkách telefonu, tabletu a počítače v Chromium. Testy nenahrazují fyzické iOS/Android UAT ani školní SSO.",
+          "en": "Real Chromium CI now covers cross-tab corruption, stale-draft scrubbing and mobile/tablet/desktop viewport smoke. These tests do not replace physical iOS/Android UAT or school SSO."
+        }
+      ]
+    },
     {
       "version": "0.21.264",
       "date": "2026-11-03",
