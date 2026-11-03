@@ -250,6 +250,9 @@ for (const sourceOnlyDoc of [
   "integration/VERIFY-INTEGRATION.md",
   "integration/SAVE-TO-STUDIO.md",
   "ai-core/releases/1.0.0/README.md",
+  // Full AI Core specification is a development-time Markdown contract.
+  // Keep it in src and Git; no browser runtime imports or links require a dist copy.
+  "ai-core/releases/1.0.0/ghrab-ai-contract-v1.0.0.md",
   // Developer examples and server-only setup templates have no browser
   // runtime imports. Keep their authoritative files in src/ and git, not in
   // the production download. Do not modify P5 or performance thresholds.
