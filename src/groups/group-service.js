@@ -45,7 +45,7 @@ function normalizeName(value) {
 }
 
 function normalizeEmail(value) {
-  return String(value ?? "").trim().toLowerCase().slice(0, MAX_EMAIL_LENGTH);
+  return String(value ?? "").trim().toLowerCase();
 }
 
 function isValidEmail(value) {
@@ -142,105 +142,130 @@ export function validateGroupsStore(store) {
 
 export class LocalGroupsProvider {
   constructor({ storage = globalThis.localStorage, storageKey = STORAGE_KEY, onDiagnostic = () => {}, writeGuard = null } = {}) {
-    if (!storage || typeof storage.getItem !== "function" || typeof storage.setItem !== "function") {
-      throw new Error("GROUP_STORAGE_UNAVAILABLE");
-    }
+    if (!storage || typeof storage.getItem !== "function" || typeof storage.setItem !== "function") throw new Error("GROUP_STORAGE_UNAVAILABLE");
     this.storage = storage;
     this.storageKey = storageKey;
     this.onDiagnostic = typeof onDiagnostic === "function" ? onDiagnostic : () => {};
-    this.writeGuard = typeof writeGuard === "function" ? writeGuard : null;
     this.lastGood = null;
-    this.readFault = null;
-    this.hadDurableStore = false;
+    this.writeGuard = typeof writeGuard === "function" ? writeGuard : null;
+    this._observedRaw = undefined;
+    this._blockedCode = null;
+    this._corruptRaw = null;
+  }
+
+  _stop(code) {
+    if (!this._blockedCode) {
+      this._blockedCode = code;
+      try { this.onDiagnostic({ code }); } catch { /* Diagnostic failure never changes storage safety. */ }
+    }
+    throw new Error("GROUP_STORAGE_RECOVERY_REQUIRED");
+  }
+
+  _getRaw() {
+    try { return this.storage.getItem(this.storageKey); }
+    catch { return this._stop("GROUP_STORAGE_READ_FAILED"); }
+  }
+
+  _parseRaw(raw) {
+    try {
+      const store = JSON.parse(raw);
+      if (!validateGroupsStore(store).ok) throw new Error("GROUP_STORE_INVALID");
+      return store;
+    } catch {
+      this._corruptRaw = raw;
+      return this._stop("GROUP_STORAGE_CORRUPT");
+    }
   }
 
   read() {
-    let raw;
-    try {
-      raw = this.storage.getItem(this.storageKey);
-    } catch {
-      this.readFault = "GROUP_STORAGE_READ_FAILED";
-      this.onDiagnostic({ code: "GROUP_STORAGE_READ_FAILED" });
-      return clone(this.lastGood || emptyStore());
-    }
-    if (raw === null || raw === undefined) {
-      if (this.hadDurableStore) {
-        this.readFault = "GROUP_STORAGE_MISSING_AFTER_PERSISTENCE";
-        this.onDiagnostic({ code: this.readFault });
-        return clone(this.lastGood || emptyStore());
-      }
+    if (this._blockedCode) throw new Error("GROUP_STORAGE_RECOVERY_REQUIRED");
+    const raw = this._getRaw();
+    if (raw === null) {
+      if (this._observedRaw !== undefined && this._observedRaw !== null) return this._stop("GROUP_STORAGE_REMOVED_EXTERNALLY");
+      this._observedRaw = null;
       const store = emptyStore();
       this.lastGood = clone(store);
-      this.readFault = null;
       return store;
     }
+    const store = this._parseRaw(raw);
+    this._observedRaw = raw;
+    this.lastGood = clone(store);
+    return clone(store);
+  }
+
+  _commit(store) {
+    if (this.writeGuard && !this.writeGuard()) throw new Error("GROUP_WRITE_LOCK_REQUIRED");
+    const serialised = JSON.stringify(store);
     try {
-      const parsed = JSON.parse(raw);
-      const validation = validateGroupsStore(parsed);
-      if (!validation.ok) throw new Error("INVALID_GROUP_STORE");
-      this.lastGood = clone(parsed);
-      this.readFault = null;
-      this.hadDurableStore = true;
-      return clone(parsed);
+      this.storage.setItem(this.storageKey, serialised);
+      const verifyRaw = this.storage.getItem(this.storageKey);
+      if (verifyRaw !== serialised || !validateGroupsStore(JSON.parse(verifyRaw || "null")).ok) throw new Error("GROUP_STORAGE_VERIFY_FAILED");
+      this._observedRaw = serialised;
+      this.lastGood = clone(store);
+      this._blockedCode = null;
+      this._corruptRaw = null;
+      return clone(store);
     } catch {
-      this.readFault = "GROUP_STORAGE_CORRUPT";
-      this.onDiagnostic({ code: "GROUP_STORAGE_CORRUPT" });
-      return clone(this.lastGood || emptyStore());
+      return this._stop("GROUP_STORAGE_WRITE_FAILED");
     }
   }
 
-  write(store, { allowRecovery = false } = {}) {
-    // Browser-profile scope: cooperative single-origin Web Lock, not server isolation.
+  write(store) {
     if (this.writeGuard && !this.writeGuard()) throw new Error("GROUP_WRITE_LOCK_REQUIRED");
-    if (this.readFault && !allowRecovery) throw new Error(this.readFault === "GROUP_STORAGE_CORRUPT" ? "GROUP_STORAGE_CORRUPT_WRITE_BLOCKED" : "GROUP_STORAGE_UNVERIFIED_WRITE_BLOCKED");
+    if (this._blockedCode) throw new Error("GROUP_STORAGE_RECOVERY_REQUIRED");
+    if (this._observedRaw === undefined) throw new Error("GROUP_STORAGE_UNOBSERVED_WRITE");
     const validation = validateGroupsStore(store);
-    if (!validation.ok) throw new Error(`GROUP_STORE_VALIDATION_FAILED:${validation.errors.join(",")}`);
-    const serialised = JSON.stringify(store);
-    try {
-      const previousRaw = this.storage.getItem(this.storageKey);
-      if (!allowRecovery && previousRaw !== null && previousRaw !== undefined) {
-        let healthy = false;
-        try { healthy = validateGroupsStore(JSON.parse(previousRaw)).ok; } catch {}
-        if (!healthy) throw new Error("GROUP_STORAGE_CORRUPT_WRITE_BLOCKED");
-      }
-      this.storage.setItem(this.storageKey, serialised);
-      const verifyRaw = this.storage.getItem(this.storageKey);
-      if (verifyRaw !== serialised) throw new Error("GROUP_STORAGE_VERIFY_FAILED");
-      const verify = JSON.parse(verifyRaw);
-      if (!validateGroupsStore(verify).ok) throw new Error("GROUP_STORAGE_VERIFY_FAILED");
-      this.lastGood = clone(verify);
-      this.readFault = null;
-      this.hadDurableStore = true;
-      return clone(verify);
-    } catch (error) {
-      if (error?.message === "GROUP_STORAGE_CORRUPT_WRITE_BLOCKED") {
-        this.onDiagnostic({ code: "GROUP_STORAGE_CORRUPT_WRITE_BLOCKED" });
-        throw error;
-      }
-      this.onDiagnostic({ code: error?.message === "GROUP_STORAGE_VERIFY_FAILED" ? "GROUP_STORAGE_VERIFY_FAILED" : "GROUP_STORAGE_WRITE_FAILED" });
-      throw new Error("GROUP_STORAGE_WRITE_FAILED");
-    }
+    if (!validation.ok) throw new Error("GROUP_STORE_VALIDATION_FAILED:" + validation.errors.join(","));
+    const currentRaw = this._getRaw();
+    if (currentRaw !== null) this._parseRaw(currentRaw);
+    if (currentRaw !== this._observedRaw) throw new Error("GROUP_STORAGE_STALE_WRITE");
+    return this._commit(store);
   }
 
   exportBackup() {
-    const store = this.read();
-    if (this.readFault) throw new Error("GROUP_BACKUP_SOURCE_UNAVAILABLE");
-    return {
-      schema: BACKUP_SCHEMA,
-      version: 1,
-      exportedAt: nowIso(),
-      store,
-    };
+    return { schema: BACKUP_SCHEMA, version: 1, exportedAt: nowIso(), store: this.read() };
   }
 
-  importBackup(backup) {
-    if (!backup || backup.schema !== BACKUP_SCHEMA || backup.version !== 1 || !isIsoTimestamp(backup.exportedAt)) {
-      throw new Error("GROUP_BACKUP_INVALID");
+  _recoverCorruptStore(store) {
+    if (this.writeGuard && !this.writeGuard()) throw new Error("GROUP_WRITE_LOCK_REQUIRED");
+    if (this._blockedCode !== "GROUP_STORAGE_CORRUPT") throw new Error("GROUP_STORAGE_RECOVERY_REQUIRED");
+    const raw = this._getRaw();
+    if (raw === null) throw new Error("GROUP_RECOVERY_SOURCE_MISSING");
+    if (raw !== this._corruptRaw) throw new Error("GROUP_RECOVERY_SOURCE_CHANGED");
+    try {
+      const parsed = JSON.parse(raw);
+      if (validateGroupsStore(parsed).ok) throw new Error("GROUP_RECOVERY_SOURCE_CHANGED");
+    } catch (error) {
+      if (error?.message === "GROUP_RECOVERY_SOURCE_CHANGED") throw error;
     }
-    const validation = validateGroupsStore(backup.store);
-    if (!validation.ok) throw new Error("GROUP_BACKUP_STORE_INVALID");
-    // Schema validated and owner-scope checked before guarded recovery.
-    return this.write({ ...clone(backup.store), updatedAt: nowIso() }, { allowRecovery: true });
+    const recoveryKey = this.storageKey + ".original-corrupt.v1";
+    try {
+      const previous = this.storage.getItem(recoveryKey);
+      if (previous !== null && previous !== raw) throw new Error("GROUP_RECOVERY_SNAPSHOT_EXISTS");
+      if (previous === null) this.storage.setItem(recoveryKey, raw);
+      if (this.storage.getItem(recoveryKey) !== raw) throw new Error("GROUP_RECOVERY_PRESERVE_FAILED");
+    } catch (error) {
+      if (error?.message === "GROUP_RECOVERY_SNAPSHOT_EXISTS") throw error;
+      throw new Error("GROUP_RECOVERY_PRESERVE_FAILED");
+    }
+    if (this._getRaw() !== raw) throw new Error("GROUP_RECOVERY_SOURCE_CHANGED");
+    return this._commit({ ...clone(store), updatedAt: nowIso() });
+  }
+
+  importBackup(backup, { confirmRecovery = false } = {}) {
+    if (!backup || backup.schema !== BACKUP_SCHEMA || backup.version !== 1 || !isIsoTimestamp(backup.exportedAt)) throw new Error("GROUP_BACKUP_INVALID");
+    if (!validateGroupsStore(backup.store).ok) throw new Error("GROUP_BACKUP_STORE_INVALID");
+    let corrupt = false;
+    try { this.read(); }
+    catch (error) {
+      if (error?.message !== "GROUP_STORAGE_RECOVERY_REQUIRED") throw error;
+      corrupt = true;
+    }
+    if (corrupt) {
+      if (!confirmRecovery) throw new Error("GROUP_STORAGE_RECOVERY_REQUIRED");
+      return this._recoverCorruptStore(backup.store);
+    }
+    return this.write({ ...clone(backup.store), updatedAt: nowIso() });
   }
 }
 
@@ -491,6 +516,13 @@ function buildRosterPlan(group, parsed, { replace = true, idFactory = secureId }
   const existing = group.members || [];
   const byEmail = uniqueMap(existing, (member) => member.schoolEmail ? normalizeEmail(member.schoolEmail) : "");
   const byName = uniqueMap(existing, (member) => normalizeName(member.name));
+  const repeatedNames = new Set();
+  const seenNames = new Set();
+  for (const member of existing) {
+    const key = normalizeName(member.name);
+    if (seenNames.has(key)) repeatedNames.add(key);
+    seenNames.add(key);
+  }
   const matched = new Set();
   const added = [];
   const changed = [];
@@ -503,8 +535,13 @@ function buildRosterPlan(group, parsed, { replace = true, idFactory = secureId }
     const emailKey = row.schoolEmail ? normalizeEmail(row.schoolEmail) : "";
     const nameKey = normalizeName(row.name);
     let match = emailKey ? byEmail.get(emailKey) : null;
-    if (!match && nameKey) match = byName.get(nameKey) || null;
-    if (match && matched.has(match.memberId)) match = null;
+    if (!match && nameKey) {
+      if (repeatedNames.has(nameKey)) throw new Error("ROSTER_IDENTITY_AMBIGUOUS_NAME");
+      match = byName.get(nameKey) || null;
+      if (match && emailKey && match.schoolEmail && normalizeEmail(match.schoolEmail) !== emailKey)
+        throw new Error("ROSTER_IDENTITY_EMAIL_CONFLICT");
+    }
+    if (match && matched.has(match.memberId)) throw new Error("ROSTER_IDENTITY_DUPLICATE_MATCH");
     if (!match) {
       const member = {
         memberId: idFactory("mem"),
@@ -523,7 +560,7 @@ function buildRosterPlan(group, parsed, { replace = true, idFactory = secureId }
     const next = {
       ...match,
       name: safeText(row.name),
-      schoolEmail: row.schoolEmail ? normalizeEmail(row.schoolEmail) : null,
+      schoolEmail: emailKey || match.schoolEmail || null,
       status: "active",
     };
     const after = comparableMember(next);
@@ -756,6 +793,7 @@ export function createGroupsService({ provider, idFactory = secureId, eventTarge
       if (expectedRevision != null && group.revision !== expectedRevision) throw new Error("GROUP_REVISION_CONFLICT");
       const parsed = parseRosterText(rawText);
       if (parsed.truncated) throw new Error("ROSTER_IMPORT_TRUNCATED");
+      if (parsed.invalid.length || parsed.duplicates.length) throw new Error("ROSTER_IMPORT_INVALID");
       if (!parsed.entries.length) throw new Error("ROSTER_EMPTY");
       const plan = buildRosterPlan(group, parsed, { replace, idFactory });
       if (!plan.hasChanges) {
@@ -819,8 +857,8 @@ export function createGroupsService({ provider, idFactory = secureId, eventTarge
       return clone(provider.exportBackup());
     },
 
-    importBackup(backup) {
-      const store = provider.importBackup(clone(backup));
+    importBackup(backup, options = {}) {
+      const store = provider.importBackup(clone(backup), options);
       emit({ kind: "backup-imported", groupId: null, revision: null });
       return clone(store);
     },
@@ -1019,7 +1057,7 @@ export async function createPrincipalGroupsSession({
         store: backup.store,
       };
     },
-    importBackup: (backup) => {
+    importBackup: (backup, options = {}) => {
       gate.requireAllowed();
       if (!backup || typeof backup !== "object" || Array.isArray(backup) ||
           Object.keys(backup).some((key) => !["schema", "version", "scopeId", "exportedAt", "store"].includes(key)) ||
@@ -1031,7 +1069,7 @@ export async function createPrincipalGroupsSession({
       return service.importBackup({
         schema: BACKUP_SCHEMA, version: 1,
         exportedAt: backup.exportedAt, store: backup.store,
-      });
+      }, options);
     },
   });
   // The key is deliberately not exposed in this API. Service methods enforce
