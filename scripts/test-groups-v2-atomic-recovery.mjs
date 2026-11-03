@@ -52,7 +52,7 @@ assert.throws(()=>a.service.listGroups(),/GROUP_STORAGE_RECOVERY_REQUIRED/);
 assert.throws(()=>a.service.exportBackup(),/GROUP_STORAGE_RECOVERY_REQUIRED/);
 await assert.rejects(a.service.withWriteLock(tx=>tx.createGroup({displayName:'Unsafe',schoolYear:'2026/27'})),/GROUP_STORAGE_RECOVERY_REQUIRED/);
 assert.equal(storage.map.get(scopedKey),'{corrupt json');
-assert.throws(()=>a.service.importBackup(backup),/GROUP_WRITE_LOCK_REQUIRED/);
+assert.throws(()=>a.service.importBackup(backup),/GROUP_STORAGE_RECOVERY_REQUIRED/,'damaged source must block import before write-lock checks');
 const other=await open('synthetic-classroom-B');
 await assert.rejects(other.service.withWriteLock(tx=>tx.importBackup(backup)),/GROUP_SCOPE_BACKUP_OTHER_ACCOUNT/);
 await assert.rejects(a.service.withWriteLock(tx=>tx.importBackup(backup)),/GROUP_STORAGE_RECOVERY_REQUIRED/);
