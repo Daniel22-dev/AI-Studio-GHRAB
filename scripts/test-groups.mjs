@@ -5,6 +5,9 @@ import { fileURLToPath } from "node:url";
 import {
   LocalGroupsProvider,
   createGroupsService,
+  createGroupsPageAccessGate,
+  createPrincipalGroupsSession,
+  principalGroupsStorageKey,
   parseRosterText,
   validateTeachingGroup,
   rosterProjectionToCsv,
@@ -222,6 +225,205 @@ assert.equal(hostile.invalid.length, 2);
   assert.ok(!/recordEvent|telemetry|errorReporter|queryString/i.test(serviceSource), "group service has no telemetry/reporting transport");
   assert.ok(appSource.includes('link.dataset.groupsAccess = ""'), "My Groups navigation uses a dedicated capability marker");
   assert.ok(appSource.includes("const teachingGroups = Boolean(teacher || admin || operator);"), "My Groups is available to teacher, admin and operator roles without broadening generic teacher-only UI");
+}
+
+{
+  // My Groups may mount only after the real Studio permit/session is validated.
+  const now = 1800000000;
+  const teacher = (sub = "teacher-A", role = "teacher") => ({
+    ready: true,
+    valid: true,
+    permit: { sub, role, exp: now + 3600 },
+  });
+  let active = teacher();
+  let preview = false;
+  const makeGate = () => createGroupsPageAccessGate({
+    getSnapshot: () => active,
+    isPreview: () => preview,
+    nowSeconds: () => now,
+  });
+  const gate = makeGate();
+  const { service } = serviceFixture();
+  const protectedService = gate.protect(service);
+  assert.equal(protectedService.schema, service.schema);
+  assert.equal(protectedService.listGroups().length, 0);
+  const created = protectedService.createGroup({
+    displayName: "Synthetic group",
+    schoolYear: "2026/27",
+  });
+  assert.equal(protectedService.getGroup(created.groupId).groupId, created.groupId);
+  assert.ok(Object.isFrozen(protectedService));
+
+  active = teacher("teacher-B");
+  assert.equal(gate.allowed(), false, "different teacher must invalidate the open page");
+  assert.throws(() => protectedService.listGroups(), /GROUP_ACCESS_DENIED/);
+  active = teacher("teacher-A");
+  assert.throws(() => protectedService.getGroup(created.groupId), /GROUP_ACCESS_DENIED/,
+    "a revoked view cannot be reactivated by returning to its old principal");
+
+  active = teacher();
+  preview = true;
+  assert.throws(makeGate, /GROUP_ACCESS_DENIED/, "colleague preview is never an authenticated teacher");
+  preview = false;
+  for (const invalid of [
+    { ready: false, valid: true, permit: teacher().permit },
+    { ready: true, valid: false, permit: teacher().permit },
+    { ready: true, valid: true, permit: { ...teacher().permit, sub: "" } },
+    teacher("synthetic", "student"),
+    { ready: true, valid: true, permit: { ...teacher().permit, exp: now } },
+  ]) {
+    active = invalid;
+    assert.throws(makeGate, /GROUP_ACCESS_DENIED/);
+  }
+  active = teacher("teacher-C", "operator");
+  assert.equal(makeGate().allowed(), true, "authorized deputy/operator role is supported");
+  active = teacher("teacher-D", "admin");
+  assert.equal(makeGate().allowed(), true, "authorized administrator role is supported");
+  active = {
+    ...teacher("teacher-E", "school-administrator"),
+    policy: { administratorRoles: ["school-administrator"], operatorRoles: ["operator"] },
+  };
+  assert.equal(makeGate().allowed(), true, "signed policy-defined administrator role is supported");
+  active = { ready: true, valid: true, permit: { sub: "server-teacher", role: "teacher" } };
+  assert.equal(makeGate().allowed(), true, "verified server session need not carry an explicit expiry");
+  assert.throws(() => createGroupsPageAccessGate(), /GROUP_ACCESS_CONFIG_INVALID/);
+}
+
+{
+  const js = await readFile(path.join(root, "src/groups/groups.js"), "utf8");
+  assert.ok(js.indexOf("await studio.accessReady") >= 0);
+  assert.ok(js.indexOf("await studio.accessReady") < js.indexOf("await createPrincipalGroupsSession("),
+    "account-scoped group service must not mount before signed Studio authorization");
+  assert.match(js, /await createPrincipalGroupsSession\(/,
+    "My Groups writer must use account-scoped verified v2 session");
+  assert.match(js, /const groups = scoped\.service;/,
+    "global group API must expose only the verified v2 facade");
+  assert.ok(!js.includes("new LocalGroupsProvider("), "v1 shared browser provider must not mount");
+  assert.ok(!js.includes("createGroupsService({ provider })"), "v1 consumer fallback forbidden");
+  assert.match(js, /legacyStorePresent = scoped\.legacyStorePresent/,
+    "old v1 groups must signal review without automatic migration");
+  assert.match(js, /ai-studio-moje-skupiny-ucet-v2-/,
+    "account-scoped v2 backup file must be distinguished from v1");
+  assert.match(js, /ghrab:access-changed/, "revocation must invalidate the visible group page");
+  assert.match(js, /function render\(\) \{\s*if \(!accessGate\.allowed\(\)\)/,
+    "late queued UI rendering must fail closed after access revocation");
+  assert.ok(js.includes("denyGroupsPage()"), "denied page must wipe personal data from the DOM");
+  assert.ok(!js.includes("installGlobalGroupsApi"), "page must not export an unguarded service");
+}
+
+
+{
+  // Stage08 privacy migration path: new per-principal namespace is opt-in,
+  // preserves v1 data without silently transferring it to the next teacher.
+  const { webcrypto } = await import("node:crypto");
+  const sharedBrowser = new MemoryStorage();
+  const legacy = createGroupsService({
+    provider: new LocalGroupsProvider({ storage: sharedBrowser }),
+    idFactory: idFactory(),
+    eventTarget: null,
+  });
+  const original = legacy.createGroup({
+    displayName: "Legacy synthetic class", schoolYear: "2026/27",
+  });
+  const now = Math.floor(Date.now() / 1000);
+  const principal = (sub, mode = "signed-permit") => ({
+    ready: true,
+    valid: true,
+    mode,
+    permit: { sub, role: "teacher", exp: now + 3600 },
+  });
+  let access = principal("account-A");
+  const globalSyntheticIds = idFactory();
+  const open = async () => createPrincipalGroupsSession({
+    getSnapshot: () => access,
+    storage: sharedBrowser,
+    cryptoApi: webcrypto,
+    idFactory: globalSyntheticIds,
+    eventTarget: null,
+  });
+  const a1 = await open();
+  assert.equal(a1.schema, "ghrab-groups-principal-session-v2");
+  assert.equal(a1.legacyStorePresent, true, "legacy v1 data should be flagged but not exposed");
+  assert.deepEqual(a1.service.listGroups(), [], "v2 must not auto-import shared v1 data");
+  const classA = a1.service.createGroup({ displayName: "Account A", schoolYear: "2026/27" });
+  assert.equal(a1.service.getGroup(classA.groupId).displayName, "Account A");
+  const updatedRoster = a1.service.importRoster({
+    groupId: classA.groupId,
+    rawText: "Synthetic Student; synthetic@example.invalid",
+    expectedRevision: 1,
+  });
+  assert.equal(updatedRoster.group.members.length, 1);
+  const studentId = updatedRoster.group.members[0].memberId;
+  const linked = a1.service.listGroupMetadata("sortio");
+  assert.equal(linked[0].groupId, classA.groupId);
+  const essayProjection = a1.service.getRosterProjection(classA.groupId, "essay-evaluator");
+  assert.equal(essayProjection.members[0].memberId, studentId);
+  assert.equal(essayProjection.members[0].schoolEmail, "synthetic@example.invalid");
+  assert.equal(a1.service.getRosterProjection(classA.groupId, "generator-forms").members[0].memberId, studentId);
+  assert.ok(!Object.hasOwn(a1.service.getRosterProjection(classA.groupId, "lesson-hub"), "members"));
+
+  access = principal("account-B");
+  assert.throws(() => a1.service.listGroups(), /GROUP_ACCESS_DENIED/,
+    "a user switch permanently revokes old principal's v2 service");
+  const b = await open();
+  assert.deepEqual(b.service.listGroups(), [], "second principal cannot read first principal's groups");
+  const classB = b.service.createGroup({ displayName: "Account B", schoolYear: "2026/27" });
+  assert.notEqual(classA.groupId, classB.groupId, "test fixtures must use unique canonical IDs");
+  assert.equal(b.service.listGroups()[0].groupId, classB.groupId);
+  assert.throws(() => b.service.getRosterProjection(classA.groupId, "essay-evaluator"), /GROUP_NOT_FOUND/,
+    "principal B cannot read principal A's canonical roster");
+  assert.throws(() => a1.service.exportBackup(), /GROUP_ACCESS_DENIED/);
+  const bBackup = b.service.exportBackup();
+  assert.equal(bBackup.schema, "ghrab-teaching-groups-account-backup-v2");
+  assert.equal(bBackup.version, 2);
+  assert.equal(typeof bBackup.scopeId, "string");
+  assert.throws(() => b.service.importBackup(legacy.exportBackup()), /GROUP_SCOPE_BACKUP_INVALID/,
+    "unbound legacy backups must never auto-migrate to a principal");
+
+
+  access = principal("account-A");
+  assert.throws(() => b.service.getGroup(classB.groupId), /GROUP_ACCESS_DENIED/);
+  assert.throws(() => a1.service.getGroup(classA.groupId), /GROUP_ACCESS_DENIED/,
+    "revoked session must not re-open after switching back");
+  const a2 = await open();
+  assert.equal(a2.service.listGroups()[0].groupId, classA.groupId,
+    "new session for same identity preserves stable group ID");
+  assert.equal(a2.service.getRosterProjection(classA.groupId, "essay-evaluator").members[0].memberId, studentId,
+    "member IDs and consumer projection are preserved across sessions");
+  const backup = a2.service.exportBackup();
+  assert.equal(backup.store.groups[0].groupId, classA.groupId);
+  assert.equal(backup.schema, "ghrab-teaching-groups-account-backup-v2");
+  assert.notEqual(backup.scopeId, bBackup.scopeId);
+  assert.throws(() => a2.service.importBackup(bBackup), /GROUP_SCOPE_BACKUP_OTHER_ACCOUNT/,
+    "signed-in teacher must reject a backup bound to another account");
+  assert.throws(() => a2.service.importBackup(legacy.exportBackup()), /GROUP_SCOPE_BACKUP_INVALID/,
+    "legacy v1 archive is not silently adopted");
+  assert.equal(a2.service.importBackup(backup).groups?.length ?? a2.service.listGroups().length, 1);
+
+  assert.equal(legacy.listGroups()[0].groupId, original.groupId,
+    "v1 store must survive scoped operations without mutation");
+  const scopedAKey = await principalGroupsStorageKey({
+    subject: "account-A", cryptoApi: webcrypto,
+  });
+  const scopedBKey = await principalGroupsStorageKey({
+    subject: "account-B", cryptoApi: webcrypto,
+  });
+  const serverKey = await principalGroupsStorageKey({
+    subject: "account-A", mode: "server-session", cryptoApi: webcrypto,
+  });
+  assert.match(scopedAKey, /^ghrab\.ai-studio\.groups\.account\.v2\.[a-f0-9]{64}$/);
+  assert.notEqual(scopedAKey, scopedBKey);
+  assert.notEqual(scopedAKey, serverKey, "server-session migration is explicit");
+  assert.equal(scopedAKey.includes("account-A"), false, "identity must not appear in storage key");
+  assert.deepEqual(Object.keys(Object.fromEntries(sharedBrowser.map)).filter(k => k.startsWith("ghrab.ai-studio.groups.account.v2.")).length, 2);
+  await assert.rejects(principalGroupsStorageKey({ subject: " " }), /GROUP_SCOPE_IDENTITY_INVALID/);
+  await assert.rejects(principalGroupsStorageKey({ subject: " account-A ", cryptoApi: webcrypto }), /GROUP_SCOPE_IDENTITY_INVALID/);
+  await assert.rejects(principalGroupsStorageKey({ subject: "account-A", cryptoApi: {} }), /GROUP_SCOPE_CRYPTO_UNAVAILABLE/);
+  access = principal("account-C");
+  const brokenCryptoSession = createPrincipalGroupsSession({
+    getSnapshot: () => access, storage: sharedBrowser, cryptoApi: {},
+  });
+  await assert.rejects(brokenCryptoSession, /GROUP_SCOPE_CRYPTO_UNAVAILABLE/);
 }
 
 console.log("Moje skupiny v1: all contract, parser, privacy, recovery, projection and UI sanity tests PASS");
