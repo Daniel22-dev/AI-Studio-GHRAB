@@ -169,22 +169,44 @@
     },
     {
       "id": "studio-header-navigation",
-      "name": "Role-aware compact desktop navigation",
+      "name": "Czech desktop tabs directly visible",
       "url": "/index.html",
       "expectedText": "Aplikace",
       "mustVisible": [
         ".site-header",
-        ".nav-toggle",
-        ".main-nav.open"
+        ".brand",
+        ".main-nav",
+        ".main-nav a[data-nav='home']",
+        ".header-actions"
       ],
       "viewports": [
+        {
+          "width": 1024,
+          "height": 800
+        },
+        {
+          "width": 1280,
+          "height": 900
+        },
         {
           "width": 1366,
           "height": 900
         },
         {
+          "width": 1440,
+          "height": 900
+        },
+        {
           "width": 1649,
           "height": 928
+        },
+        {
+          "width": 1800,
+          "height": 980
+        },
+        {
+          "width": 1920,
+          "height": 1080
         }
       ],
       "steps": [
@@ -192,31 +214,49 @@
           "action": "clickIfVisible",
           "selector": "#studio-startup-skip",
           "timeout": 5000
-        },
-        {
-          "action": "click",
-          "selector": ".nav-toggle"
         }
       ]
     },
     {
       "id": "studio-header-navigation-en",
-      "name": "English role-aware desktop navigation without collision",
+      "name": "English desktop tabs directly visible",
       "url": "/index.html",
       "expectedText": "Applications",
       "mustVisible": [
         ".site-header",
-        ".nav-toggle",
-        ".main-nav.open"
+        ".brand",
+        ".main-nav",
+        ".main-nav a[data-nav='home']",
+        ".header-actions"
       ],
       "viewports": [
+        {
+          "width": 1024,
+          "height": 800
+        },
+        {
+          "width": 1280,
+          "height": 900
+        },
         {
           "width": 1366,
           "height": 900
         },
         {
+          "width": 1440,
+          "height": 900
+        },
+        {
           "width": 1649,
           "height": 928
+        },
+        {
+          "width": 1800,
+          "height": 980
+        },
+        {
+          "width": 1920,
+          "height": 1080
         }
       ],
       "steps": [
@@ -224,13 +264,47 @@
           "action": "clickIfVisible",
           "selector": "#studio-startup-skip",
           "timeout": 5000
-        },
-        {
-          "action": "click",
-          "selector": ".nav-toggle"
         }
       ],
       "language": "en"
+    },
+    {
+      "id": "studio-header-role-stress",
+      "name": "Administrator desktop nav visible with additional permitted destinations",
+      "url": "/index.html",
+      "expectedText": "Aplikace",
+      "mustVisible": [
+        ".site-header",
+        ".brand",
+        ".main-nav",
+        ".main-nav a[data-nav='home']",
+        ".header-actions"
+      ],
+      "viewports": [
+        {
+          "width": 1024,
+          "height": 800
+        },
+        {
+          "width": 1366,
+          "height": 900
+        },
+        {
+          "width": 1649,
+          "height": 928
+        },
+        {
+          "width": 1920,
+          "height": 1080
+        }
+      ],
+      "steps": [
+        {
+          "action": "evaluate",
+          "script": "(() => {\n const nav = document.querySelector(\".main-nav\");\n for (const [id, title] of [\n   [\"groups\",\"Moje skupiny\"],[\"report\",\"Report\"],[\"academy\",\"AI Akademie\"],\n   [\"colleague-preview\",\"Pohled kolegy\"],[\"automation\",\"Správa\"],\n   [\"demo\",\"Prezentace\"],[\"extra-test\",\"Využití AI ve škole\"]\n ]) {\n   let link = nav.querySelector('[data-nav=\"' + id + '\"]');\n   if (!link) { link = document.createElement(\"a\"); link.href = \"./\"; link.dataset.nav = id; nav.append(link); }\n   link.hidden = false;\n   link.textContent = title;\n }\n})()"
+        }
+      ],
+      "settleMs": 900
     }
   ]
 }

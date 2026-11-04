@@ -195,6 +195,30 @@ async function inspectPage(page, scenario) {
           return { selector, rect };
         }).filter(Boolean);
       const headerOverlaps = [];
+      const header = document.querySelector(".site-header");
+      const nav = header?.querySelector(".main-nav");
+      const desktopNavProblems = [];
+      if (vw > 900 && header && nav) {
+        const container = header.getBoundingClientRect();
+        const navRect = nav.getBoundingClientRect();
+        const navStyle = getComputedStyle(nav);
+        const toggle = header.querySelector(".nav-toggle");
+        if (navStyle.display === "none" || navRect.width <= 0 || navRect.height <= 0)
+          desktopNavProblems.push("desktop navigation is hidden");
+        if (toggle && getComputedStyle(toggle).display !== "none")
+          desktopNavProblems.push("desktop hamburger is visible");
+        const links = [...nav.querySelectorAll(":scope > a")].filter((a) => {
+          const style = getComputedStyle(a);
+          return !a.hidden && style.display !== "none" && style.visibility !== "hidden";
+        });
+        for (const link of links) {
+          const rect = link.getBoundingClientRect();
+          if (rect.width <= 0 || rect.height <= 0 ||
+              rect.left < container.left - 2 || rect.right > container.right + 2 ||
+              rect.top < container.top - 2 || rect.bottom > container.bottom + 2)
+            desktopNavProblems.push("navigation link outside header: " + (link.dataset.nav || link.textContent));
+        }
+      }
       for (let i = 0; i < headerElements.length; i++) {
         for (let j = i + 1; j < headerElements.length; j++) {
           const a = headerElements[i], b = headerElements[j];
@@ -309,6 +333,7 @@ async function inspectPage(page, scenario) {
         ),
         interactiveOutside,
         headerOverlaps,
+        desktopNavProblems,
         overlays,
         visible,
         broken,
@@ -510,6 +535,8 @@ async function runVisualCase(scenario, viewport) {
       }
       if (checks.headerOverlaps.length)
         problems.push("překrývání navigace: " + checks.headerOverlaps.join("; "));
+      if (checks.desktopNavProblems.length)
+        problems.push("desktop navigace: " + checks.desktopNavProblems.join("; "));
       if (checks.overlays.length)
         problems.push("prázdná interaktivní fullscreen vrstva");
       if (checks.visible.some((item) => !item.ok)) {

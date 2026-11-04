@@ -21,7 +21,7 @@ concurrency:
   cancel-in-progress: true
 jobs:
   full-preprod:
-    if: ${{ github.event_name == 'workflow_dispatch' || github.event.pull_request.head.ref == 'fix/studio-clb-integration-hardening-20261103' }}
+    if: ${{ github.event_name == 'workflow_dispatch' || (github.event.pull_request.head.ref == 'fix/studio-clb-integration-hardening-20261103' || github.event.pull_request.head.ref == 'fix/studio-desktop-nav-visible-20261104') }}
     runs-on: ubuntu-24.04
     timeout-minutes: 90
     steps:

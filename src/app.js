@@ -823,11 +823,70 @@ async function setupHeaderLivePresence() {
   }
 }
 
+
+let headerNavLayoutInstalled = false;
+function setupVisibleDesktopNavigation() {
+  if (headerNavLayoutInstalled) return;
+  const header = document.querySelector(".site-header");
+  const nav = header?.querySelector(".main-nav");
+  const brand = header?.querySelector(".brand");
+  const actions = header?.querySelector(".header-actions");
+  if (!header || !nav || !brand || !actions) return;
+  headerNavLayoutInstalled = true;
+  let pending = false;
+  function measure() {
+    if (window.innerWidth <= 900) {
+      header.classList.remove("nav-stacked");
+      return;
+    }
+    const headerStyle = getComputedStyle(header);
+    const navStyle = getComputedStyle(nav);
+    const px = (value) => Number.parseFloat(value) || 0;
+    const visibleLinks = [...nav.querySelectorAll(":scope > a")].filter(
+      (link) => !link.hidden && getComputedStyle(link).display !== "none",
+    );
+    const linkWidth = visibleLinks.reduce(
+      (total, link) => total + Math.max(link.scrollWidth, link.getBoundingClientRect().width),
+      0,
+    );
+    const linksWithGaps = linkWidth + Math.max(0, visibleLinks.length - 1) * px(navStyle.columnGap);
+    const needed = brand.getBoundingClientRect().width
+      + actions.getBoundingClientRect().width
+      + linksWithGaps + 2 * px(headerStyle.columnGap);
+    const available = header.clientWidth
+      - px(headerStyle.paddingLeft) - px(headerStyle.paddingRight);
+    header.classList.toggle("nav-stacked", needed > available - 8);
+  }
+  function schedule() {
+    if (pending) return;
+    pending = true;
+    requestAnimationFrame(() => {
+      pending = false;
+      measure();
+    });
+  }
+  window.addEventListener("resize", schedule, { passive: true });
+  window.addEventListener("pageshow", schedule);
+  new MutationObserver(schedule).observe(nav, {
+    childList: true,
+    subtree: true,
+    attributes: true,
+    attributeFilter: ["hidden", "style"],
+  });
+  if (typeof ResizeObserver !== "undefined") {
+    const observer = new ResizeObserver(schedule);
+    [header, nav, brand, actions].forEach((element) => observer.observe(element));
+  }
+  document.fonts?.ready.then(schedule).catch(() => {});
+  schedule();
+}
+
 function setupNavigation() {
   ensureGroupsNavigation();
   ensureReportNavigation();
   ensureAcademyNavigation();
   ensureAboutNavigationLast();
+  setupVisibleDesktopNavigation();
   document.querySelectorAll("[data-colleague-preview-link]").forEach((link) => {
     link.addEventListener("click", (event) => {
       if (!canPreviewColleague()) return;
