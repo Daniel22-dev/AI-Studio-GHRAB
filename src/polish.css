@@ -3459,26 +3459,48 @@ button.colleague-preview-choice:focus-visible {
   }
 }
 
-/* Reserve a safe desktop fallback for the full role-aware navigation. */
-@media (min-width: 901px) and (max-width: 1850px) {
-  .site-header { grid-template-columns: minmax(0, 1fr) auto auto; }
-  .nav-toggle { display: block; }
+/* Desktop navigation remains directly visible. With extra permitted links,
+ * the header may use a second VISIBLE tab row instead of a hamburger. */
+@media (min-width: 901px) {
+  .nav-toggle { display: none; }
   .main-nav {
-    position: absolute;
-    top: calc(100% + 6px);
-    left: clamp(16px, 3vw, 46px);
-    right: clamp(16px, 3vw, 46px);
-    display: none;
-    flex-direction: column;
-    align-items: stretch;
-    overflow-y: auto;
-    max-height: calc(100vh - 105px);
-    padding: 8px;
-    background: rgba(3, 13, 24, 0.98);
-    border: 1px solid var(--line);
-    border-radius: 16px;
-    box-shadow: var(--shadow);
+    position: static;
+    display: flex;
+    flex-direction: row;
+    align-items: center;
+    justify-content: center;
+    min-width: 0;
+    max-height: none;
+    overflow: visible;
+    padding: 0;
+    background: none;
+    border: 0;
+    border-radius: 0;
+    box-shadow: none;
   }
-  .main-nav.open { display: flex; }
-  .header-actions { justify-self: end; }
+  .site-header.nav-stacked {
+    grid-template-columns: minmax(0, 1fr) auto;
+    row-gap: 4px;
+  }
+  .site-header.nav-stacked .brand {
+    grid-column: 1;
+    grid-row: 1;
+  }
+  .site-header.nav-stacked .header-actions {
+    grid-column: 2;
+    grid-row: 1;
+    justify-self: end;
+  }
+  .site-header.nav-stacked .main-nav {
+    grid-column: 1 / -1;
+    grid-row: 2;
+    justify-content: center;
+    flex-wrap: wrap;
+    gap: 2px 0;
+  }
+}
+@media (min-width: 901px) and (max-width: 1850px) {
+  .site-header { column-gap: 12px; }
+  .main-nav { gap: 0; }
+  .main-nav a { padding: 8px 6px; font-size: 0.78rem; }
 }

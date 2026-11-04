@@ -69,8 +69,11 @@ const appTestStatusJs = await text("src/modules/app-test-status.js");
 const operationalStatusJs = await text("src/modules/operational-status.js");
 check(appJs.includes("innerHeight <= 820"), "Desktop presentation-fit se znovu spousti na beznem 1080p/scaled viewportu.");
 check(stylesCss.includes("grid-template-rows: repeat(2, auto)") && stylesCss.includes("justify-content: flex-start"), "Kompaktni portal znovu nuti karty do pevne vysky nebo centruje pretikajici obsah.");
-check(!/\.main-nav\s*\{[^}]*flex-wrap:\s*wrap/.test(polishCss), "Hlavni navigace se na desktopu znovu muze zalomit do druheho radku.");
-check(polishCss.includes("(min-width: 901px) and (max-width: 1850px)"), "Desktop menu nema bezpečný breakpoint pro mnoho administratorskych polozek.");
+check(!polishCss.includes("Reserve a safe desktop fallback"), "Desktop navigace se znovu skryva za hamburger.");
+check(polishCss.includes(".site-header.nav-stacked .main-nav") &&
+  polishCss.includes("flex-wrap: wrap"), "Neni pripraveno viditelne dvouradkove rozlozeni pri nedostatku mista.");
+check(appJs.includes("function setupVisibleDesktopNavigation()") &&
+  appJs.includes('header.classList.toggle("nav-stacked"'), "Desktop navigace nema mereni kolizi podle skutecne sady zalozek.");
 const visualQa = await text("scripts/qa-visual.mjs");
 check(visualQa.includes("headerOverlaps"), "Vizuální QA nekontroluje překrývání prvků hlavičky.");
 check(appJs.includes('["about", "changelog"].includes(page)'), "O aplikaci nema garantovany pristup pro vsechny role ani kompatibilitu stareho changelog route.");
