@@ -1,7 +1,29 @@
 {
   "schema": "ai-studio-changelog-v1",
-  "current": "0.21.264",
+  "current": "0.21.265",
   "items": [
+    {
+      "version": "0.21.265",
+      "date": "2026-11-04",
+      "title": {
+        "cs": "Horní navigace – návrat viditelných záložek",
+        "en": "Top navigation – restore visible desktop tabs"
+      },
+      "changes": [
+        {
+          "cs": "Na počítačích jsou dostupné záložky opět přímo viditelné v horní liště. Hamburger nabídka zůstává vyhrazena mobilnímu rozložení.",
+          "en": "Desktop navigation tabs are directly visible in the header again. The hamburger is reserved for mobile layouts."
+        },
+        {
+          "cs": "Při nedostatku místa se záložky automaticky rozloží do dalšího viditelného řádku, aby se nepřekrývaly s logem nebo ovládacími prvky. Rozšířeny testy desktopu včetně administrátorských položek.",
+          "en": "When needed, tabs flow into an additional visible header row to prevent overlap with the logo and controls. Desktop regression tests now include administrator links."
+        },
+        {
+          "cs": "Nadbytečná záložka importéru Conversation Lab zůstává odstraněna. Podepsané karty, katalog na Cloudflare i ostatní aplikace zůstávají beze změn.",
+          "en": "The redundant Conversation Lab importer tab remains removed; signed cards, the Cloudflare catalog and other apps remain unchanged."
+        }
+      ]
+    },
     {
       "version": "0.21.264",
       "date": "2026-11-03",
